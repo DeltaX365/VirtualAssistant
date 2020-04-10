@@ -1,4 +1,8 @@
 package com.vnsolution.virtualassistant.vo;
 
-public class Place {
+import androidx.room.Entity;
+
+@Entity(tableName = "Place")
+public class Place extends AuditEntity {
+
 }

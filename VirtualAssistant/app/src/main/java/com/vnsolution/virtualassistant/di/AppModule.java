@@ -1,7 +1,15 @@
 package com.vnsolution.virtualassistant.di;
 
+import android.app.Application;
+
+import androidx.room.Room;
+
+import com.vnsolution.virtualassistant.VirtualAssistantApp;
 import com.vnsolution.virtualassistant.api.GoogleService;
 import com.vnsolution.virtualassistant.api.WeatherService;
+import com.vnsolution.virtualassistant.db.VirtualAssistantDb;
+import com.vnsolution.virtualassistant.db.dao.PlaceDao;
+import com.vnsolution.virtualassistant.db.dao.SettingDao;
 
 import java.io.IOException;
 
@@ -71,5 +79,33 @@ public class AppModule {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(GoogleService.class);
+    }
+
+    @Singleton
+    @Provides
+    public VirtualAssistantDb provideDb(Application app) {
+        return Room
+                .databaseBuilder(app, VirtualAssistantDb.class, "virtual_assistant.db")
+                .createFromAsset("database/virtual_assistant.db")
+                // https://medium.com/androiddevelopers/understanding-migrations-with-room-f01e04b07929
+                // If you don’t want to provide migrations and you specifically want your database to be cleared when you upgrade the version, call fallbackToDestructiveMigration in the database builder
+                .fallbackToDestructiveMigration()
+                // https://stackoverflow.com/questions/44167111/android-room-simple-select-query-cannot-access-database-on-the-main-thread
+                // It's not recommended but you can access to database on main thread with allowMainThreadQueries()
+                // Cannot access database on the main thread since it may potentially lock the UI for a long period of time.
+                //.allowMainThreadQueries()
+                .build();
+    }
+
+    @Singleton
+    @Provides
+    public PlaceDao providePlaceDao(VirtualAssistantDb db) {
+        return db.placeDao();
+    }
+
+    @Singleton
+    @Provides
+    public SettingDao provideSettingDao(VirtualAssistantDb db) {
+        return db.settingDao();
     }
 }
