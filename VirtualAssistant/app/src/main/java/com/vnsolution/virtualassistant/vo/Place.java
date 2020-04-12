@@ -32,8 +32,8 @@ public class Place extends AuditEntity {
     @ColumnInfo(name = "Icon")
     public String icon;
 
-    @ColumnInfo(name = "GGPlaceId")
-    public String Name;
+    @ColumnInfo(name = "Name")
+    public String placeName;
 
     @ColumnInfo(name = "Rating")
     public int rating;

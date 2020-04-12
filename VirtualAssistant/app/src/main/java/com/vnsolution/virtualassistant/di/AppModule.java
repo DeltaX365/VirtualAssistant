@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import javax.inject.Singleton;
 
+import dagger.Module;
 import dagger.Provides;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -24,6 +25,7 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+@Module
 public class AppModule {
     @Singleton
     @Provides
