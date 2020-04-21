@@ -7,7 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface GoogleService {
+public interface GoogleApi {
     @GET("maps/api/geocode/json")
     Call<GoogleMapPlaceDto> getPlaceByLocation(@Query(value = "latlng", encoded = false) String latlng);
 

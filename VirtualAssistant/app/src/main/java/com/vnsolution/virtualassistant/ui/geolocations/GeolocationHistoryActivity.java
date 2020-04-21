@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -22,49 +24,34 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeolocationHistoryActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+public class GeolocationHistoryActivity extends AppCompatActivity {
     private static final int ALL_PERMISSIONS_RESULT = 1000;
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
-    private static final int UPDATE_INTERVAL = 5000, FASTEST_INTERVAL = 5000; // = 5 seconds
-
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private List<String> permissions = new ArrayList<String>();
+    private String[] permissions = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION };
     private List<String> permissionsToRequest = new ArrayList<String>();
     private List<String> permissionsRejected = new ArrayList<String>();
-
-    private GoogleApiClient googleApiClient;
-    private Location location;
-    private LocationRequest locationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geolocation_history);
+        checkPermissions();
+    }
 
-        // Request Google service permissions
-        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        permissions.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-
+    private void checkPermissions() {
         permissionsToRequest = permissionsToRequest(permissions);
         if(permissionsToRequest.size() > 0) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
             }
+            return;
         }
-
-        // Build google api
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
+        Intent intent = new Intent(Constants.BROADCAST_LOCATION_PERMISSION_CHANGED);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private boolean hasPermission(String permission) {
@@ -74,7 +61,7 @@ public class GeolocationHistoryActivity extends AppCompatActivity implements Goo
         return true;
     }
 
-    private List<String> permissionsToRequest(List<String> permissions) {
+    private List<String> permissionsToRequest(String[] permissions) {
         List<String> result = new ArrayList<String>();
         for (String permission : permissions) {
             if (!hasPermission(permission)) {
@@ -84,93 +71,19 @@ public class GeolocationHistoryActivity extends AppCompatActivity implements Goo
         return result;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (googleApiClient != null) {
-            googleApiClient.connect();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (!checkPlayServices()) {
-            Toast.makeText(GeolocationHistoryActivity.this, "You need to install Google Play Services to use the App properly", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (googleApiClient != null && googleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-            googleApiClient.disconnect();
-        }
-    }
-
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST);
-            } else {
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                &&  ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        // Permissions ok, we get last location
-        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-        if (location != null) {
-            Toast.makeText(this, "Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude(), Toast.LENGTH_SHORT).show();
-        }
-        startLocationUpdates();
-    }
-
-    private void startLocationUpdates() {
-        locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(FASTEST_INTERVAL);
-
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                &&  ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "You need to enable permissions to display location !", Toast.LENGTH_SHORT).show();
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        if (location != null) {
-            Toast.makeText(this, "Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude(), Toast.LENGTH_SHORT).show();
-        }
-    }
+//    private boolean checkPlayServices() {
+//        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+//        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+//        if (resultCode != ConnectionResult.SUCCESS) {
+//            if (apiAvailability.isUserResolvableError(resultCode)) {
+//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST);
+//            } else {
+//                finish();
+//            }
+//            return false;
+//        }
+//        return true;
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -199,10 +112,6 @@ public class GeolocationHistoryActivity extends AppCompatActivity implements Goo
 
                             return;
                         }
-                    }
-                } else {
-                    if (googleApiClient != null) {
-                        googleApiClient.connect();
                     }
                 }
                 break;

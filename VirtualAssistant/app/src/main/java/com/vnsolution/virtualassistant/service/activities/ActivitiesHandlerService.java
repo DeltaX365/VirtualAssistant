@@ -1,23 +1,22 @@
-package com.vnsolution.virtualassistant.service;
+package com.vnsolution.virtualassistant.service.activities;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
+import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
-import com.google.android.gms.location.ActivityTransitionEvent;
-import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
 import com.vnsolution.virtualassistant.common.Constants;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-public class DetectedActivitiesIntentService extends IntentService {
-    protected static final String TAG = DetectedActivitiesIntentService.class.getSimpleName();
+public class ActivitiesHandlerService extends IntentService {
+    protected static final String TAG = ActivitiesHandlerService.class.getSimpleName();
 
-    public DetectedActivitiesIntentService() {
+    public ActivitiesHandlerService() {
         // Use the TAG to name the worker thread.
         super(TAG);
     }
@@ -36,23 +35,16 @@ public class DetectedActivitiesIntentService extends IntentService {
         // device. Each activity is associated with a confidence level, which is an int between
         // 0 and 100.
         ArrayList<DetectedActivity> detectedActivities = (ArrayList) result.getProbableActivities();
-
-        for (DetectedActivity activity : detectedActivities) {
-            Log.e(TAG, "Detected activity: " + activity.getType() + ", " + activity.getConfidence());
+        Collections.sort(detectedActivities, (a1, a2) -> a2.getConfidence() - a1.getConfidence());
+        if (!detectedActivities.isEmpty()) {
+            DetectedActivity activity = detectedActivities.get(0);
+            Toast.makeText(getApplicationContext(),"Detected activity: " + activity.getType() + ", " + activity.getConfidence(), Toast.LENGTH_SHORT).show();
             broadcastActivity(activity);
         }
-
-//        if (ActivityTransitionResult.hasResult(intent)) {
-//            ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
-//            for (ActivityTransitionEvent event : result.getTransitionEvents()) {
-//                Log.e(TAG, "Detected activity: " + event.getTransitionType());
-////                broadcastActivity(activity);
-//            }
-//        }
     }
 
     private void broadcastActivity(DetectedActivity activity) {
-        Intent intent = new Intent(Constants.BROADCAST_DETECTED_ACTIVITY);
+        Intent intent = new Intent(Constants.BROADCAST_ACTIVITY_DETECTED);
         intent.putExtra("type", activity.getType());
         intent.putExtra("confidence", activity.getConfidence());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

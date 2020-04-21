@@ -31,8 +31,9 @@
         <!-- Service that provides activity recognition data. Setting the android:exported attribute
         to "false" stops other apps from starting this service, even when using an explicit
         intent. -->
-        <service android:name=".service.DetectedActivitiesIntentService" android:exported="false" />
-        <service android:name=".service.BackgroundDetectedActivitiesService" />
+        <service android:name=".service.activities.ActivitiesHandlerService" android:exported="false" />
+        <service android:name=".service.activities.ActivitiesService" />
+        <service android:name=".service.geolocation.GeolocationService" />
 
         <!-- Startup -->
         <receiver android:enabled="true" android:name=".startup.StartupReceiver">

@@ -4,9 +4,8 @@ import android.app.Application;
 
 import androidx.room.Room;
 
-import com.vnsolution.virtualassistant.VirtualAssistantApp;
-import com.vnsolution.virtualassistant.api.GoogleService;
-import com.vnsolution.virtualassistant.api.WeatherService;
+import com.vnsolution.virtualassistant.api.GoogleApi;
+import com.vnsolution.virtualassistant.api.WeatherApi;
 import com.vnsolution.virtualassistant.db.VirtualAssistantDb;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.SettingDao;
@@ -29,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AppModule {
     @Singleton
     @Provides
-    public WeatherService provideWeatherService() {
+    public WeatherApi provideWeatherService() {
         final String openWeatherKey = "071dcc0541ea2d9dfaef941b9a414685";
 
         // https://stackoverflow.com/questions/32948083/is-there-a-way-to-add-query-parameter-to-every-request-with-retrofit-2
@@ -53,12 +52,12 @@ public class AppModule {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build()
-                .create(WeatherService.class);
+                .create(WeatherApi.class);
     }
 
     @Singleton
     @Provides
-    public GoogleService provideGoogleService() {
+    public GoogleApi provideGoogleService() {
         final String googleServiceKey = "AIzaSyC498VPSvURSXxlF22TFDUIpF_TC2GFQZ0";
 
         // https://stackoverflow.com/questions/32948083/is-there-a-way-to-add-query-parameter-to-every-request-with-retrofit-2
@@ -80,7 +79,7 @@ public class AppModule {
                 .baseUrl("https://maps.googleapis.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(GoogleService.class);
+                .create(GoogleApi.class);
     }
 
     @Singleton

@@ -1,5 +1,6 @@
-package com.vnsolution.virtualassistant.service;
+package com.vnsolution.virtualassistant.service.activities;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -16,29 +17,21 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.vnsolution.virtualassistant.common.Constants;
 
-public class BackgroundDetectedActivitiesService extends Service {
-    private static final String TAG = BackgroundDetectedActivitiesService.class.getSimpleName();
+public class ActivitiesService extends Service {
+    public static final String[] REQUEST_PERMISSIONS = { Manifest.permission.ACTIVITY_RECOGNITION };
 
     private Intent mIntentService;
     private PendingIntent mPendingIntent;
     private ActivityRecognitionClient mActivityRecognitionClient;
 
-    IBinder mBinder = new BackgroundDetectedActivitiesService.LocalBinder();
-
-    public class LocalBinder extends Binder {
-        public BackgroundDetectedActivitiesService getServerInstance() {
-            return BackgroundDetectedActivitiesService.this;
-        }
-    }
-
-    public BackgroundDetectedActivitiesService() {
+    public ActivitiesService() {
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         mActivityRecognitionClient = new ActivityRecognitionClient(this);
-        mIntentService = new Intent(this, DetectedActivitiesIntentService.class);
+        mIntentService = new Intent(this, ActivitiesHandlerService.class);
         mPendingIntent = PendingIntent.getService(this, 1, mIntentService, PendingIntent.FLAG_UPDATE_CURRENT);
         requestActivityUpdates();
     }
@@ -46,7 +39,7 @@ public class BackgroundDetectedActivitiesService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return mBinder;
+        return null;
     }
 
     @Override

@@ -8,7 +8,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-public interface WeatherService {
+public interface WeatherApi {
     @GET("data/2.5/weather")
     Call<OpenWeatherDto> getWeatherByLocation(@Query("lat") double latitude, @Query("lon") double longitude);
 
