@@ -22,7 +22,10 @@ import com.google.android.gms.location.DetectedActivity;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
+import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.ui.geolocations.GeolocationHistoryActivity;
+import com.vnsolution.virtualassistant.vo.Place;
+import com.vnsolution.virtualassistant.vo.PlaceHistory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +39,17 @@ public class DashboardActivity extends AppCompatActivity {
     private String[] permissions = { Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION };
     BroadcastReceiver broadcastReceiver;
 
-    private TextView txtActivity, txtConfidence;
+    private TextView txtActivity, txtConfidence, txtPlaces;
     private ImageView imgActivity;
+    private List<Place> places = new ArrayList<>();
+    private List<PlaceHistory> placeHistories = new ArrayList<>();
+    private String history = "";
+
+    @Inject
+    public PlaceDao placeDao;
+
+    @Inject
+    public PlaceHistoryDao placeHistoryDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +59,7 @@ public class DashboardActivity extends AppCompatActivity {
         txtActivity = findViewById(R.id.txt_activity);
         txtConfidence = findViewById(R.id.txt_confidence);
         imgActivity = findViewById(R.id.img_activity);
+        txtPlaces = findViewById(R.id.places);
 
         broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -55,6 +68,8 @@ public class DashboardActivity extends AppCompatActivity {
                     int type = intent.getIntExtra("type", -1);
                     int confidence = intent.getIntExtra("confidence", 0);
                     handleUserActivity(type, confidence);
+                } else if (intent.getAction().equals(Constants.BROADCAST_PLACE_ADDED)) {
+                    fetchPlaceHistory();
                 }
             }
         };
@@ -117,8 +132,10 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(Constants.BROADCAST_ACTIVITY_DETECTED));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constants.BROADCAST_ACTIVITY_DETECTED);
+        filter.addAction(Constants.BROADCAST_PLACE_ADDED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, filter);
     }
 
     @Override
@@ -151,6 +168,30 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void fetchPlaceHistory() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                places = placeDao.getAll();
+                placeHistories = placeHistoryDao.getAll();
+                for( PlaceHistory placeHistory : placeHistories) {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        Place place = places.stream().filter(p -> p.id.equals(placeHistory.placeId)).findFirst().get();
+                        if (place != null) {
+                            history += place.formattedAddress + " >>> " + placeHistory.enterTime.toString() + " - " + placeHistory.existTime.toString() + "\n";
+                        }
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        txtPlaces.setText(history);
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override

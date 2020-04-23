@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Handler;
 import android.os.IBinder;
 import android.widget.Toast;
 
@@ -58,11 +59,13 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
         public Location location;
         public Date enter;
         public Date exist;
+        public Boolean isSynced;
 
         public StopPoint(Location location, Date enter, Date exist) {
             this.location = location;
             this.enter = enter;
             this.exist = exist;
+            this.isSynced = false;
         }
     }
 
@@ -127,18 +130,38 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
         isInGeofence = true;
         StopPoint stopPoint = new StopPoint(location, new Date(), new Date());
         stopPoints.add(stopPoint);
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                saveToDb(location);
-//            }
-//        }).start();
     }
 
-    private void saveToDb(Location location) {
-        if (location != null) {
-            List<Address> addresses = getAddressFromLocation(location);
+    private void checkOut() {
+        if (isInGeofence) {
+            keepTrack();
+        }
+        isInGeofence = false;
+    }
+
+    private void keepTrack() {
+        StopPoint stopPoint = getLatestStopPoint();
+        if (stopPoint != null) {
+            stopPoint.exist = new Date();
+            if (!stopPoint.isSynced) {
+                    //&& (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= Constants.STOP_DETECTION_IN_MILLISECONDS)) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        saveToDb(stopPoint);
+                        stopPoint.isSynced = true;
+
+                        Intent intent = new Intent(Constants.BROADCAST_PLACE_ADDED);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    }
+                }).start();
+            }
+        }
+    }
+
+    private void saveToDb(StopPoint stopPoint) {
+        if (stopPoint != null && stopPoint.location != null) {
+            List<Address> addresses = getAddressFromLocation(stopPoint.location);
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
 
@@ -156,24 +179,10 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
                 PlaceHistory placeHistory = new PlaceHistory();
                 placeHistory.id = UUID.randomUUID().toString();
                 placeHistory.placeId = place.id;
-                placeHistory.enterTime = new Date();
-                placeHistory.existTime = new Date();
+                placeHistory.enterTime = stopPoint.enter;
+                placeHistory.existTime = stopPoint.exist;
                 placeHistoryDao.insert(placeHistory);
             }
-        }
-    }
-
-    private void checkOut() {
-        if (isInGeofence) {
-            keepTrack();
-        }
-        isInGeofence = false;
-    }
-
-    private void keepTrack() {
-        StopPoint stopPoint = getLatestStopPoint();
-        if (stopPoint != null) {
-            stopPoint.exist = new Date();
         }
     }
 
