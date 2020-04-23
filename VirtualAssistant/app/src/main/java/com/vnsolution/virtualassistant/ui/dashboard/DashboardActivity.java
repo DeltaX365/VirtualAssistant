@@ -14,6 +14,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -59,7 +61,7 @@ public class DashboardActivity extends AppCompatActivity {
         txtActivity = findViewById(R.id.txt_activity);
         txtConfidence = findViewById(R.id.txt_confidence);
         imgActivity = findViewById(R.id.img_activity);
-        txtPlaces = findViewById(R.id.places);
+        txtPlaces = findViewById(R.id.txt_place);
 
         broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -184,7 +186,7 @@ public class DashboardActivity extends AppCompatActivity {
                         }
                     }
                 }
-                runOnUiThread(new Runnable() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         txtPlaces.setText(history);

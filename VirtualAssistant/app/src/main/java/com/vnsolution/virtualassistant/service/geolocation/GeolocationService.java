@@ -143,8 +143,8 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
         StopPoint stopPoint = getLatestStopPoint();
         if (stopPoint != null) {
             stopPoint.exist = new Date();
-            if (!stopPoint.isSynced) {
-                    //&& (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= Constants.STOP_DETECTION_IN_MILLISECONDS)) {
+            if (!stopPoint.isSynced
+                    && (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= Constants.STOP_DETECTION_IN_MILLISECONDS)) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
