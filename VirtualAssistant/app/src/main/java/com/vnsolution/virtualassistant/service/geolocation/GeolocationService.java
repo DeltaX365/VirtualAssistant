@@ -20,12 +20,22 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.db.dao.PlaceDao;
+import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
+import com.vnsolution.virtualassistant.vo.Place;
+import com.vnsolution.virtualassistant.vo.PlaceHistory;
 
+import java.io.Console;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 public class GeolocationService extends Service implements OnSuccessListener<Location> {
     public static final String[] REQUEST_PERMISSIONS = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION };
@@ -37,6 +47,12 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
 
     private boolean isInGeofence;
     private List<StopPoint> stopPoints = new ArrayList<>();
+
+    @Inject
+    public PlaceDao placeDao;
+
+    @Inject
+    public PlaceHistoryDao placeHistoryDao;
 
     private class StopPoint {
         public Location location;
@@ -55,6 +71,7 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
 
     @Override
     public void onCreate() {
+        AndroidInjection.inject(this);
         super.onCreate();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         startObservingActivityUpdates();
@@ -93,7 +110,7 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
     @Override
     public void onSuccess(Location location) {
         if (location != null) {
-            Toast.makeText(this, "Activity: " + activityType + "\nConfidence: " + activityConfidence + "\nlatitude : " + location.getLatitude() + "\nlongitude : " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Activity: " + activityType + "\nConfidence: " + activityConfidence + "\nlatitude : " + location.getLatitude() + "\nlongitude : " + location.getLongitude(), Toast.LENGTH_SHORT).show();
             if (isStoppedOutGeofence(location)) {
                 checkIn(location);
             }
@@ -110,7 +127,40 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
         isInGeofence = true;
         StopPoint stopPoint = new StopPoint(location, new Date(), new Date());
         stopPoints.add(stopPoint);
-        //getAddress(location);
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                saveToDb(location);
+//            }
+//        }).start();
+    }
+
+    private void saveToDb(Location location) {
+        if (location != null) {
+            List<Address> addresses = getAddressFromLocation(location);
+            if (addresses.size() > 0) {
+                Address address = addresses.get(0);
+
+                // Save place
+                Place place = new Place();
+                place.id = UUID.randomUUID().toString();
+                place.placeName = address.getFeatureName();
+                place.formattedAddress = address.getAddressLine(0);
+                place.latitude = address.getLatitude();
+                place.longitude = address.getLongitude();
+                place.createdDate = new Date();
+                placeDao.insert(place);
+
+                // Save place history
+                PlaceHistory placeHistory = new PlaceHistory();
+                placeHistory.id = UUID.randomUUID().toString();
+                placeHistory.placeId = place.id;
+                placeHistory.enterTime = new Date();
+                placeHistory.existTime = new Date();
+                placeHistoryDao.insert(placeHistory);
+            }
+        }
     }
 
     private void checkOut() {
@@ -127,7 +177,7 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
         }
     }
 
-    private List<Address> getAddress(Location location) {
+    private List<Address> getAddressFromLocation(Location location) {
         List<Address> addresses = new ArrayList<>();
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
@@ -135,7 +185,7 @@ public class GeolocationService extends Service implements OnSuccessListener<Loc
             return addresses;
         } catch (IOException exception) {
             exception.printStackTrace();
-            Toast.makeText(this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
         }
         return addresses;
     }

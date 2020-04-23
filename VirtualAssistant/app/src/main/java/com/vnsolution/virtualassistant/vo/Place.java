@@ -15,10 +15,10 @@ public class Place extends AuditEntity {
     public String formattedAddressInHtml;
 
     @ColumnInfo(name = "Latitude")
-    public Double latitude;
+    public double latitude;
 
     @ColumnInfo(name = "Longitude")
-    public Double longitude;
+    public double longitude;
 
     @ColumnInfo(name = "PlusCodeCompound")
     public String plusCodeCompound;

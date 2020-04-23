@@ -40,6 +40,7 @@ public class AppService {
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.BROADCAST_ACTIVITY_RECOGNITION_PERMISSION_CHANGED);
+        filter.addAction(Constants.BROADCAST_LOCATION_PERMISSION_CHANGED);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mBroadcastReceiver, filter);
     }
 

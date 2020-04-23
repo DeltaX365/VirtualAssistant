@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -19,10 +21,19 @@ import android.widget.TextView;
 import com.google.android.gms.location.DetectedActivity;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.db.dao.PlaceDao;
+import com.vnsolution.virtualassistant.ui.geolocations.GeolocationHistoryActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 public class DashboardActivity extends AppCompatActivity {
     private String TAG = DashboardActivity.class.getSimpleName();
-    private static final int ACTIVITY_RECOGNITION_REQUEST = 1000;
+
+    private static final int ALL_PERMISSIONS_RESULT = 1000;
+    private String[] permissions = { Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION };
     BroadcastReceiver broadcastReceiver;
 
     private TextView txtActivity, txtConfidence;
@@ -118,19 +129,34 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{ Manifest.permission.ACTIVITY_RECOGNITION }, ACTIVITY_RECOGNITION_REQUEST);
-                return;
+            for (String permission : permissions) {
+                if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{permission}, ALL_PERMISSIONS_RESULT);
+                    return;
+                }
+                String action = "";
+                switch (permission) {
+                    case Manifest.permission.ACTIVITY_RECOGNITION:
+                        action = Constants.BROADCAST_ACTIVITY_RECOGNITION_PERMISSION_CHANGED;
+                        break;
+                    case Manifest.permission.ACCESS_COARSE_LOCATION:
+                    case Manifest.permission.ACCESS_FINE_LOCATION:
+                    case Manifest.permission.ACCESS_BACKGROUND_LOCATION:
+                        action = Constants.BROADCAST_LOCATION_PERMISSION_CHANGED;
+                        break;
+                }
+                if (!action.isEmpty()) {
+                    Intent intent = new Intent(action);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                }
             }
         }
-        Intent intent = new Intent(Constants.BROADCAST_ACTIVITY_RECOGNITION_PERMISSION_CHANGED);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == ACTIVITY_RECOGNITION_REQUEST) {
+        if (requestCode == ALL_PERMISSIONS_RESULT) {
             checkPermissions();
         }
     }

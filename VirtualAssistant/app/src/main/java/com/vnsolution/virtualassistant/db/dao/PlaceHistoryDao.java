@@ -9,7 +9,7 @@ import com.vnsolution.virtualassistant.vo.PlaceHistory;
 import java.util.List;
 
 @Dao
-public abstract class PlaceHistoryDao implements BaseDao<PlaceHistory> {
+public interface PlaceHistoryDao extends BaseDao<PlaceHistory> {
     @Query("SELECT * FROM PlaceHistory")
-    abstract List<PlaceHistory> getAll();
+    List<PlaceHistory> getAll();
 }

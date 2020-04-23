@@ -9,7 +9,7 @@ import com.vnsolution.virtualassistant.vo.Place;
 import java.util.List;
 
 @Dao
-public abstract class GeolocationHistoryDao implements BaseDao<GeolocationHistory> {
+public interface GeolocationHistoryDao extends BaseDao<GeolocationHistory> {
     @Query("SELECT * FROM GeolocationHistory")
-    abstract List<GeolocationHistory> getAll();
+    List<GeolocationHistory> getAll();
 }

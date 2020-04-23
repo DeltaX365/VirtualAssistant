@@ -3,7 +3,6 @@ package com.vnsolution.virtualassistant.di;
 import android.app.Application;
 
 import com.vnsolution.virtualassistant.VirtualAssistantApp;
-import com.vnsolution.virtualassistant.di.activities.DashboardActivityModule;
 
 import javax.inject.Singleton;
 
@@ -15,9 +14,11 @@ import dagger.android.AndroidInjectionModule;
 @Component(modules = {
         AndroidInjectionModule.class,
         AppModule.class,
-        //To use Dagger in Android, should add all activity modules right here. Wait for the next version of Dagger for this fixing
+        //To use Dagger in Android, should add all activity/service modules right here. Wait for the next version of Dagger for this fixing
         //https://dagger.dev/android
-        DashboardActivityModule.class
+        //https://github.com/android/architecture-components-samples/issues/253
+        ServiceBuildersModule.class,
+        ActivityBuildersModule.class
 })
 public interface AppComponent {
     @Component.Builder

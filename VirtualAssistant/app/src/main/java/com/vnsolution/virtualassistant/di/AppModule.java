@@ -8,6 +8,7 @@ import com.vnsolution.virtualassistant.api.GoogleApi;
 import com.vnsolution.virtualassistant.api.WeatherApi;
 import com.vnsolution.virtualassistant.db.VirtualAssistantDb;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
+import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.db.dao.SettingDao;
 
 import java.io.IOException;
@@ -103,6 +104,10 @@ public class AppModule {
     public PlaceDao providePlaceDao(VirtualAssistantDb db) {
         return db.placeDao();
     }
+
+    @Singleton
+    @Provides
+    public PlaceHistoryDao providePlaceHistoryDao(VirtualAssistantDb db) { return db.placeHistoryDao(); }
 
     @Singleton
     @Provides

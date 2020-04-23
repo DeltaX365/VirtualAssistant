@@ -15,10 +15,10 @@ public class Device extends AuditEntity {
     public String carrier;
 
     @ColumnInfo(name = "FreeDiskStorage")
-    public String freeDiskStorage;
+    public double freeDiskStorage;
 
     @ColumnInfo(name = "UsedMemory")
-    public String usedMemory;
+    public double usedMemory;
 
     @ColumnInfo(name = "Host")
     public String host;

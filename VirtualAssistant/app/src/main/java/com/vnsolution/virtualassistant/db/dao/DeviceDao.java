@@ -9,7 +9,7 @@ import com.vnsolution.virtualassistant.vo.Place;
 import java.util.List;
 
 @Dao
-public abstract class DeviceDao implements BaseDao<Device> {
+public interface DeviceDao extends BaseDao<Device> {
     @Query("SELECT * FROM Device")
-    abstract List<Device> getAll();
+    List<Device> getAll();
 }

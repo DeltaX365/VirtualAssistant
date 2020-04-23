@@ -9,7 +9,10 @@ import com.vnsolution.virtualassistant.vo.Setting;
 import java.util.List;
 
 @Dao
-public abstract class PlaceDao implements BaseDao<Place> {
+public interface PlaceDao extends BaseDao<Place> {
     @Query("SELECT * FROM Place")
-    abstract List<Place> getAll();
+    List<Place> getAll();
+
+    @Query("SELECT * FROM Place WHERE Id=:id")
+    Place getById(String id);
 }
