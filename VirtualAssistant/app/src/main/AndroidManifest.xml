@@ -2,12 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vnsolution.virtualassistant">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:name=".VirtualAssistantApp"
@@ -32,15 +32,23 @@
         to "false" stops other apps from starting this service, even when using an explicit
         intent. -->
         <service android:name=".service.activities.ActivitiesHandlerService" android:exported="false" />
-        <service android:name=".service.activities.ActivitiesService" />
-        <service android:name=".service.geolocation.GeolocationService" />
+        <service android:name=".service.activities.ActivityTrackingService" />
+        <service android:name=".service.geolocation.GeolocationTrackingService" />
 
         <!-- Startup -->
-        <receiver android:enabled="true" android:name=".startup.StartupReceiver">
+        <receiver android:enabled="true" android:name=".startup.StartupBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+        <receiver android:name=".service.activities.ActivityTransitionBroadcastReceiver"
+            android:exported="false"
+            android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">
+            <intent-filter>
+                <action android:name="com.vnsolution.virtualassistant.ACTION_PROCESS_ACTIVITY_TRANSITIONS"></action>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".service.geolocation.GeofenceBroadcastReceiver" android:exported="false" />
     </application>
 
 </manifest>

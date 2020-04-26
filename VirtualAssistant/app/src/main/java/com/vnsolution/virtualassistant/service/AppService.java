@@ -11,8 +11,8 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.vnsolution.virtualassistant.common.Constants;
-import com.vnsolution.virtualassistant.service.activities.ActivitiesService;
-import com.vnsolution.virtualassistant.service.geolocation.GeolocationService;
+import com.vnsolution.virtualassistant.service.activities.ActivityTrackingService;
+import com.vnsolution.virtualassistant.service.geolocation.GeolocationTrackingService;
 
 public class AppService {
     private static Context mContext;
@@ -26,9 +26,10 @@ public class AppService {
     }
 
     private static boolean startServices() {
-        return
-            startActivitiesObserverService() &&
-            startGeolocationObserverService();
+//        return
+//            startActivitiesObserverService() &&
+//            startGeolocationObserverService();
+        return startActivitiesObserverService();
     }
 
     private static void startObservingPermissionChanged() {
@@ -62,8 +63,8 @@ public class AppService {
     }
 
     private static boolean startActivitiesObserverService() {
-        if(hasPermissions(ActivitiesService.REQUEST_PERMISSIONS) == true) {
-            Intent intent = new Intent(mContext, ActivitiesService.class);
+        if(hasPermissions(ActivityTrackingService.REQUEST_PERMISSIONS) == true) {
+            Intent intent = new Intent(mContext, ActivityTrackingService.class);
             mContext.startService(intent);
             return true;
         }
@@ -71,8 +72,8 @@ public class AppService {
     }
 
     private static boolean startGeolocationObserverService() {
-        if(hasPermissions(GeolocationService.REQUEST_PERMISSIONS) == true) {
-            Intent intent = new Intent(mContext, GeolocationService.class);
+        if(hasPermissions(GeolocationTrackingService.REQUEST_PERMISSIONS) == true) {
+            Intent intent = new Intent(mContext, GeolocationTrackingService.class);
             mContext.startService(intent);
             return true;
         }

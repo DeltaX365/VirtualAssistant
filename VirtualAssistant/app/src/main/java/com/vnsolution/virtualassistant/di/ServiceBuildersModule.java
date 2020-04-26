@@ -1,7 +1,6 @@
 package com.vnsolution.virtualassistant.di;
 
-import com.vnsolution.virtualassistant.service.geolocation.GeolocationService;
-import com.vnsolution.virtualassistant.ui.dashboard.DashboardActivity;
+import com.vnsolution.virtualassistant.service.geolocation.GeolocationTrackingService;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -9,5 +8,5 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class ServiceBuildersModule {
     @ContributesAndroidInjector
-    abstract GeolocationService contributeGeolocationService();
+    abstract GeolocationTrackingService contributeGeolocationService();
 }
