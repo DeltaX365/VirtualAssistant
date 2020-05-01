@@ -18,14 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
-    private static final String TAG = GeofenceBroadcastReceiver.class.getSimpleName();
+    private static final String TAG = GeofenceBroadcastReceiver.class.getName();
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        // Enqueues a JobIntentService passing the context and intent as parameters
+        // GeofenceTransitionsJobIntentService.enqueueWork(context, intent);
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
-            String errorMsg = getErrorString(geofencingEvent.getErrorCode() );
-            Log.e( TAG, errorMsg );
+            String errorMessage = getErrorString(geofencingEvent.getErrorCode());
+            Log.e(TAG, errorMessage);
             return;
         }
         handleEvent(context, geofencingEvent);
@@ -34,8 +36,9 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     private void handleEvent(Context context, GeofencingEvent geofencingEvent) {
         int geoFenceTransition = geofencingEvent.getGeofenceTransition();
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) {
+
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-            String geofenceTransitionDetails = getGeofenceTrasitionDetails(geoFenceTransition, triggeringGeofences );
+            String geofenceTransitionDetails = getGeofenceTransitionDetails(geoFenceTransition, triggeringGeofences );
             Toast.makeText(context, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent(Constants.BROADCAST_GEOFENCE_EXIST_DETECTED);
@@ -43,15 +46,22 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private String getGeofenceTrasitionDetails(int geoFenceTransition, List<Geofence> triggeringGeofences) {
+    /**
+     * Gets transition details and returns them as a formatted string.
+     *
+     * @param geofenceTransition    The ID of the geofence transition.
+     * @param triggeringGeofences   The geofence(s) triggered.
+     * @return                      The transition details formatted as String.
+     */
+    private String getGeofenceTransitionDetails(int geofenceTransition, List<Geofence> triggeringGeofences) {
         ArrayList<String> triggeringGeofencesList = new ArrayList<>();
         for ( Geofence geofence : triggeringGeofences ) {
             triggeringGeofencesList.add( geofence.getRequestId() );
         }
         String status = null;
-        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER )
+        if ( geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER )
             status = "Entering ";
-        else if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT )
+        else if ( geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT )
             status = "Exiting ";
         return status + TextUtils.join( ", ", triggeringGeofencesList);
     }

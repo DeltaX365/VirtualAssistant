@@ -10,4 +10,6 @@ public class Constants {
 
     public static final int GEOFENCE_RADIUS_IN_METERS = 100;
     public static final int STOP_DETECTION_IN_MILLISECONDS = 5*60*1000; //stop at least 5 minutes
+    public static final int GEOLOCATION_INTERVAL_UPDATE = 2*60*1000;
+    public static final int GEOLOCATION_FAST_INTERVAL_UPDATE = 2*60*1000;
 }

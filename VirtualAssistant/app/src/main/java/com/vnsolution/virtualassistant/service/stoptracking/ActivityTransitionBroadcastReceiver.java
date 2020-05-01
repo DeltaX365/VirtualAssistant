@@ -20,9 +20,10 @@ public class ActivityTransitionBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent != null && INTENT_ACTION.equals(intent.getAction())) {
+            // Enqueues a JobIntentService passing the context and intent as parameters
+            // ActivityTransitionsJobIntentService.enqueueWork(context, intent);
             if (ActivityTransitionResult.hasResult(intent)) {
-                ActivityTransitionResult activityTransitionResult = ActivityTransitionResult
-                        .extractResult(intent);
+                ActivityTransitionResult activityTransitionResult = ActivityTransitionResult.extractResult(intent);
                 handleActivityTransitionResult(context, activityTransitionResult);
             }
         }
@@ -33,7 +34,7 @@ public class ActivityTransitionBroadcastReceiver extends BroadcastReceiver {
         if (events != null && !events.isEmpty()) {
             ActivityTransitionEvent event = result.getTransitionEvents().get(0);
             if ((event.getActivityType() == DetectedActivity.STILL)
-                && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
+                    && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
                 Intent intent = new Intent(Constants.BROADCAST_STOP_DETECTED);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
