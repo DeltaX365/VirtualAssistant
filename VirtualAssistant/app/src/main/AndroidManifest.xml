@@ -18,37 +18,34 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.settings.SettingsActivity"></activity>
-        <activity android:name=".ui.geolocations.GeolocationHistoryActivity" />
-        <activity android:name=".ui.places.PlaceHistoryActivity" />
+        <!-- Activities -->
         <activity android:name=".ui.dashboard.DashboardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.settings.SettingsActivity"></activity>
+        <activity android:name=".ui.geolocations.GeolocationHistoryActivity" />
+        <activity android:name=".ui.places.PlaceHistoryActivity" />
 
-        <!-- Service that provides activity recognition data. Setting the android:exported attribute
-        to "false" stops other apps from starting this service, even when using an explicit
-        intent. -->
-        <service android:name=".service.activities.ActivitiesHandlerService" android:exported="false" />
-        <service android:name=".service.activities.ActivityTrackingService" />
-        <service android:name=".service.geolocation.GeolocationTrackingService" />
+        <!-- Services -->
+        <service android:name=".service.stoptracking.StopTrackingService" />
 
-        <!-- Startup -->
+        <!-- Receivers -->
         <receiver android:enabled="true" android:name=".startup.StartupBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".service.activities.ActivityTransitionBroadcastReceiver"
+        <receiver android:name=".service.stoptracking.ActivityTransitionBroadcastReceiver"
             android:exported="false"
             android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">
             <intent-filter>
                 <action android:name="com.vnsolution.virtualassistant.ACTION_PROCESS_ACTIVITY_TRANSITIONS"></action>
             </intent-filter>
         </receiver>
-        <receiver android:name=".service.geolocation.GeofenceBroadcastReceiver" android:exported="false" />
+        <receiver android:name=".service.stoptracking.GeofenceBroadcastReceiver" android:exported="false" />
     </application>
 
 </manifest>

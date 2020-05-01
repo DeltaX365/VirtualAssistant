@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.service.geolocation;
+package com.vnsolution.virtualassistant.service.stoptracking;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,10 +7,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
-import com.vnsolution.virtualassistant.ui.dashboard.DashboardActivity;
+import com.vnsolution.virtualassistant.common.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,28 +32,22 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void handleEvent(Context context, GeofencingEvent geofencingEvent) {
-        // Retrieve GeofenceTrasition
         int geoFenceTransition = geofencingEvent.getGeofenceTransition();
-        // Check if the transition type
-        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) {
-            // Get the geofence that were triggered
+        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) {
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-            // Create a detail message with Geofences received
             String geofenceTransitionDetails = getGeofenceTrasitionDetails(geoFenceTransition, triggeringGeofences );
-            // Send notification details as a String
             Toast.makeText(context, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
+
+            Intent intent = new Intent(Constants.BROADCAST_GEOFENCE_EXIST_DETECTED);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         }
     }
 
-    // Create a detail message with Geofences received
     private String getGeofenceTrasitionDetails(int geoFenceTransition, List<Geofence> triggeringGeofences) {
-        // get the ID of each geofence triggered
         ArrayList<String> triggeringGeofencesList = new ArrayList<>();
         for ( Geofence geofence : triggeringGeofences ) {
             triggeringGeofencesList.add( geofence.getRequestId() );
         }
-
         String status = null;
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER )
             status = "Entering ";
@@ -60,7 +56,6 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         return status + TextUtils.join( ", ", triggeringGeofencesList);
     }
 
-    // Handle errors
     private static String getErrorString(int errorCode) {
         switch (errorCode) {
             case GeofenceStatusCodes.GEOFENCE_NOT_AVAILABLE:

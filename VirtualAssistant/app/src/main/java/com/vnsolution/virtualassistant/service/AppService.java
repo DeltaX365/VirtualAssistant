@@ -11,8 +11,7 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.vnsolution.virtualassistant.common.Constants;
-import com.vnsolution.virtualassistant.service.activities.ActivityTrackingService;
-import com.vnsolution.virtualassistant.service.geolocation.GeolocationTrackingService;
+import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
 
 public class AppService {
     private static Context mContext;
@@ -23,13 +22,6 @@ public class AppService {
         if(!startServices()) {
             startObservingPermissionChanged();
         }
-    }
-
-    private static boolean startServices() {
-//        return
-//            startActivitiesObserverService() &&
-//            startGeolocationObserverService();
-        return startActivitiesObserverService();
     }
 
     private static void startObservingPermissionChanged() {
@@ -52,32 +44,15 @@ public class AppService {
     }
 
     private static void handlePermissionChanged(Intent intent) {
-        switch (intent.getAction()) {
-            case Constants.BROADCAST_ACTIVITY_RECOGNITION_PERMISSION_CHANGED:
-                startActivitiesObserverService();
-                break;
-            case Constants.BROADCAST_LOCATION_PERMISSION_CHANGED:
-                startGeolocationObserverService();
-                break;
+        if (hasPermissions(StopTrackingService.REQUEST_PERMISSIONS)) {
+            startServices();
         }
     }
 
-    private static boolean startActivitiesObserverService() {
-        if(hasPermissions(ActivityTrackingService.REQUEST_PERMISSIONS) == true) {
-            Intent intent = new Intent(mContext, ActivityTrackingService.class);
-            mContext.startService(intent);
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean startGeolocationObserverService() {
-        if(hasPermissions(GeolocationTrackingService.REQUEST_PERMISSIONS) == true) {
-            Intent intent = new Intent(mContext, GeolocationTrackingService.class);
-            mContext.startService(intent);
-            return true;
-        }
-        return false;
+    private static boolean startServices() {
+        Intent intent = new Intent(mContext, StopTrackingService.class);
+        mContext.startService(intent);
+        return true;
     }
 
     private static boolean hasPermissions(String[] permissions) {

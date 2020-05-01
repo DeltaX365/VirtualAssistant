@@ -1,6 +1,6 @@
 package com.vnsolution.virtualassistant.di;
 
-import com.vnsolution.virtualassistant.service.geolocation.GeolocationTrackingService;
+import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -8,5 +8,5 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class ServiceBuildersModule {
     @ContributesAndroidInjector
-    abstract GeolocationTrackingService contributeGeolocationService();
+    abstract StopTrackingService contributeStopTrackingService();
 }
