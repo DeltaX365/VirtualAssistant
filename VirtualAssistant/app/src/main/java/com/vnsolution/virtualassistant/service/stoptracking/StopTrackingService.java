@@ -161,7 +161,6 @@ public class StopTrackingService extends Service {
 
     @Override
     public void onDestroy() {
-        AppService.sendNotification(this, "Stop tracking service is stopped");
         super.onDestroy();
     }
 
