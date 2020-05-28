@@ -107,7 +107,7 @@ public class DashboardActivity extends FragmentActivity implements OnMapReadyCal
     }
 
     private void handleLocationUpdated(Location location) {
-        if(location != null) {
+        if(location != null && mGoogleMap != null) {
             //Place current location marker.
             if (mCurrentMarker != null) {
                 mCurrentMarker.remove();

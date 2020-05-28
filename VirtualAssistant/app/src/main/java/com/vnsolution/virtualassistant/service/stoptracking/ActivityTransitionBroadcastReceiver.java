@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.ActivityTransition;
@@ -11,6 +12,7 @@ import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
 import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.service.AppService;
 
 import java.util.List;
 
@@ -35,8 +37,10 @@ public class ActivityTransitionBroadcastReceiver extends BroadcastReceiver {
             ActivityTransitionEvent event = result.getTransitionEvents().get(0);
             if ((event.getActivityType() == DetectedActivity.STILL)
                     && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
-                Intent intent = new Intent(Constants.BROADCAST_STOP_DETECTED);
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                // Whenever user enters still, then we indicate that they are stopping at a new position, so check-in event will be invoked
+                Intent serviceIntent = new Intent(context, StopTrackingService.class);
+                serviceIntent.setAction(StopTrackingService.INTENT_ACTION_CHECK_IN);
+                ContextCompat.startForegroundService(context, serviceIntent);
             }
         }
     }

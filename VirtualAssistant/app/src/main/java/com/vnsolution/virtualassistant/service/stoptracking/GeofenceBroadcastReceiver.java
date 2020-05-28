@@ -7,12 +7,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
 import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.service.AppService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +43,9 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             String geofenceTransitionDetails = getGeofenceTransitionDetails(geoFenceTransition, triggeringGeofences );
             Toast.makeText(context, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
 
-            Intent intent = new Intent(Constants.BROADCAST_GEOFENCE_EXIST_DETECTED);
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            Intent serviceIntent = new Intent(context, StopTrackingService.class);
+            serviceIntent.setAction(StopTrackingService.INTENT_ACTION_CHECK_OUT);
+            ContextCompat.startForegroundService(context, serviceIntent);
         }
     }
 
