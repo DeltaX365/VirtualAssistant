@@ -13,6 +13,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.widget.Toast;
 
@@ -33,6 +34,9 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -64,17 +68,25 @@ public class StopTrackingService extends Service {
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_BACKGROUND_LOCATION
     };
-    public static final String CHANNEL_ID = "FOREGROUND_SERVICE";
+
     public static final String INTENT_ACTION_INITIAL = "com.vnsolution.virtualassistant.ACTION_INITIAL";
     public static final String INTENT_ACTION_CHECK_IN = "com.vnsolution.virtualassistant.ACTION_CHECK_IN";
     public static final String INTENT_ACTION_CHECK_OUT = "com.vnsolution.virtualassistant.ACTION_CHECK_OUT";
-    public static final int MAX_STOP_POINTS = 10;
+
+    private static final String STOP_TRACKING_CHANNEL_ID = "com.vnsolution.virtualassistant.STOP_TRACKING_FOREGROUND_SERVICE";
+    private static final String STOP_TRACKING_CHANNEL_NAME = "Stop Detection";
+    private static final String STOP_TRACKING_NOTIFY_TITLE = "Foreground Service";
+    private static final String STOP_TRACKING_NOTIFY_TEXT = "Checking activity...";
+    private static final int MAX_STOP_POINTS = 10;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     private ActivityRecognitionClient activityRecognitionClient; //user activities
     private PendingIntent activityTransitionPendingIntent;
     private GeofencingClient geofencingClient; //geofence
     private PendingIntent geofencePendingIntent;
     private FusedLocationProviderClient fusedLocationClient; //geolocation
+    private LocationCallback locationCallback;
 
     // Stop position
     private List<StopPoint> stopPoints = new ArrayList<>();
@@ -125,9 +137,9 @@ public class StopTrackingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         createNotificationChannel();
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Foreground Service")
-                .setContentText("Checking activity...")
+        Notification notification = new NotificationCompat.Builder(this, STOP_TRACKING_CHANNEL_ID)
+                .setContentTitle(STOP_TRACKING_NOTIFY_TITLE)
+                .setContentText(STOP_TRACKING_NOTIFY_TEXT)
                 .setSmallIcon(R.drawable.ic_unknown)
                 .build();
         startForeground((int) (Math.random() * 999999), notification);
@@ -182,6 +194,7 @@ public class StopTrackingService extends Service {
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 //                    simulateTransition();
 //                }
+                stopSelf();
             }
         });
 
@@ -189,6 +202,7 @@ public class StopTrackingService extends Service {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(StopTrackingService.this,"Failed to request activity updates", Toast.LENGTH_SHORT).show();
+                stopSelf();
             }
         });
     }
@@ -233,19 +247,20 @@ public class StopTrackingService extends Service {
     }
 
     private void checkIn() {
-        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    StopPoint stopPoint = new StopPoint(location, new Date(), new Date());
-                    saveStopPointInCache(stopPoint);
-
-                    stopActivityTransitionMonitor();
-                    startGeofenceMonitor(stopPoint);
-                    stopSelf();
-                }
-            }
-        });
+//        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+//            @Override
+//            public void onSuccess(Location location) {
+//                if (location != null) {
+//                    StopPoint stopPoint = new StopPoint(location, new Date(), new Date());
+//                    saveStopPointInCache(stopPoint);
+//
+//                    stopActivityTransitionMonitor();
+//                    startGeofenceMonitor(stopPoint);
+//                    stopSelf();
+//                }
+//            }
+//        });
+        startLocationUpdates();
     }
 
     private void checkOut() {
@@ -254,7 +269,7 @@ public class StopTrackingService extends Service {
             stopPoint.exist = new Date();
             if (!stopPoint.isSynced
                     && (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= Constants.STOP_DETECTION_IN_MILLISECONDS)) {
-                new Thread(new Runnable() {
+                Thread checkOutThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         saveToDb(stopPoint);
@@ -264,7 +279,13 @@ public class StopTrackingService extends Service {
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                         AppService.sendNotification(StopTrackingService.this, "New place is added");
                     }
-                }).start();
+                });
+                checkOutThread.start();
+                try {
+                    checkOutThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         stopGeofenceMonitor();
@@ -272,11 +293,43 @@ public class StopTrackingService extends Service {
         stopSelf();
     }
 
+    private void startLocationUpdates() {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult != null) {
+                    Location location = locationResult.getLastLocation();
+                    if (location != null) {
+                        StopPoint stopPoint = new StopPoint(location, new Date(), new Date());
+                        saveStopPointInCache(stopPoint);
+                        stopLocationUpdates();
+
+                        stopActivityTransitionMonitor();
+                        startGeofenceMonitor(stopPoint);
+                        stopSelf();
+                    }
+                }
+            }
+        };
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+    }
+
+    private void stopLocationUpdates() {
+        if (locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+        }
+    }
+
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Foreground Service Channel",
+                    STOP_TRACKING_CHANNEL_ID,
+                    STOP_TRACKING_CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             NotificationManager manager = getSystemService(NotificationManager.class);
@@ -348,7 +401,33 @@ public class StopTrackingService extends Service {
     }
 
     private StopPoint getLatestStopPoint() {
+        stopPoints = getStopPointsFromCache();
         return (!stopPoints.isEmpty() ? stopPoints.get(stopPoints.size() - 1) : null);
+    }
+
+    private void saveStopPointInCache(StopPoint stopPoint) {
+        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Gson gson = new Gson();
+
+        // Only keep 10 recent stop points
+        stopPoints.add(stopPoint);
+        if (stopPoints.size() > MAX_STOP_POINTS) {
+            int startIndex = stopPoints.size() - MAX_STOP_POINTS - 1;
+            int stopIndex = stopPoints.size() - 1;
+            stopPoints = stopPoints.subList(startIndex, stopIndex);
+        }
+
+        editor.putString("StopPoints", gson.toJson(stopPoints));
+        editor.commit();
+    }
+
+    private List<StopPoint> getStopPointsFromCache() {
+        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        String stopPointsString = sharedPref.getString("StopPoints", "");
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<StopPoint>>() {}.getType();
+        return !stopPointsString.isEmpty()? gson.fromJson(stopPointsString, type) : new ArrayList<>();
     }
 
     private void saveToDb(StopPoint stopPoint) {
@@ -379,31 +458,6 @@ public class StopTrackingService extends Service {
                 AppService.sendNotification(this, place.formattedAddress);
             }
         }
-    }
-
-    private void saveStopPointInCache(StopPoint stopPoint) {
-        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        Gson gson = new Gson();
-
-        // Only keep 10 recent stop points
-        stopPoints.add(stopPoint);
-        if (stopPoints.size() > MAX_STOP_POINTS) {
-            int startIndex = stopPoints.size() - MAX_STOP_POINTS - 1;
-            int stopIndex = stopPoints.size() - 1;
-            stopPoints = stopPoints.subList(startIndex, stopIndex);
-        }
-
-        editor.putString("StopPoints", gson.toJson(stopPoints));
-        editor.commit();
-    }
-
-    private List<StopPoint> getStopPointsFromCache() {
-        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
-        String stopPointsString = sharedPref.getString("StopPoints", "");
-        Gson gson = new Gson();
-        Type type = new TypeToken<ArrayList<StopPoint>>() {}.getType();
-        return !stopPointsString.isEmpty()? gson.fromJson(stopPointsString, type) : new ArrayList<>();
     }
 
     private List<Address> getAddressFromLocation(Location location) {
