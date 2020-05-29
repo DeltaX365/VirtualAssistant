@@ -50,8 +50,8 @@
 
         <!-- Receivers -->
         <receiver
-            android:exported="true"
-            android:name=".startup.StartupBroadcastReceiver">
+            android:name=".startup.StartupBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
@@ -66,7 +66,15 @@
         </receiver>
         <receiver
             android:name=".service.stoptracking.GeofenceBroadcastReceiver"
-            android:exported="true" />
+            android:exported="true">
+        </receiver>
+        <receiver
+            android:name=".service.stoptracking.LocationUpdatesBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.vnsolution.virtualassistant.ACTION_UPDATE_LOCATIONS" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

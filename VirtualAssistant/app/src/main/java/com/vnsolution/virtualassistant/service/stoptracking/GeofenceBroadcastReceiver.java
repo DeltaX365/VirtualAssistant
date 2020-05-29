@@ -29,7 +29,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = getErrorString(geofencingEvent.getErrorCode());
-            Log.e(TAG, errorMessage);
+            AppService.sendNotification(context, errorMessage);
             return;
         }
         handleEvent(context, geofencingEvent);
@@ -37,15 +37,22 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
     private void handleEvent(Context context, GeofencingEvent geofencingEvent) {
         int geoFenceTransition = geofencingEvent.getGeofenceTransition();
+        String geofencingStatus = "";
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) {
-
-            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-            String geofenceTransitionDetails = getGeofenceTransitionDetails(geoFenceTransition, triggeringGeofences );
-            Toast.makeText(context, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
+//            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+//            String geofenceTransitionDetails = getGeofenceTransitionDetails(geoFenceTransition, triggeringGeofences );
+//            Toast.makeText(context, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
+            geofencingStatus = "GEOFENCE_TRANSITION_EXIT";
 
             Intent serviceIntent = new Intent(context, StopTrackingService.class);
             serviceIntent.setAction(StopTrackingService.INTENT_ACTION_CHECK_OUT);
             ContextCompat.startForegroundService(context, serviceIntent);
+        }
+        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ) {
+            geofencingStatus = "GEOFENCE_TRANSITION_ENTER";
+        }
+        if (!geofencingStatus.isEmpty()) {
+            AppService.sendNotification(context, geofencingStatus);
         }
     }
 

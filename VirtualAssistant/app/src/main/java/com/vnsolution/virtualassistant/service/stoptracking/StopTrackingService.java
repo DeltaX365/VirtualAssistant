@@ -13,7 +13,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.widget.Toast;
 
@@ -34,15 +33,14 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
@@ -52,7 +50,6 @@ import com.vnsolution.virtualassistant.vo.Place;
 import com.vnsolution.virtualassistant.vo.PlaceHistory;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,25 +68,31 @@ public class StopTrackingService extends Service {
 
     public static final String INTENT_ACTION_INITIAL = "com.vnsolution.virtualassistant.ACTION_INITIAL";
     public static final String INTENT_ACTION_CHECK_IN = "com.vnsolution.virtualassistant.ACTION_CHECK_IN";
+    public static final String INTENT_ACTION_LOCATION_UPDATED = "com.vnsolution.virtualassistant.INTENT_ACTION_LOCATION_UPDATED";
     public static final String INTENT_ACTION_CHECK_OUT = "com.vnsolution.virtualassistant.ACTION_CHECK_OUT";
 
     private static final String STOP_TRACKING_CHANNEL_ID = "com.vnsolution.virtualassistant.STOP_TRACKING_FOREGROUND_SERVICE";
     private static final String STOP_TRACKING_CHANNEL_NAME = "Stop Detection";
     private static final String STOP_TRACKING_NOTIFY_TITLE = "Foreground Service";
     private static final String STOP_TRACKING_NOTIFY_TEXT = "Checking activity...";
-    private static final int MAX_STOP_POINTS = 10;
+
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+    private static final String START_ACTIVITY_TRANSACTION_MONITOR = "START_ACTIVITY_TRANSACTION_MONITOR";
+    private static final String STOP_ACTIVITY_TRANSACTION_MONITOR = "STOP_ACTIVITY_TRANSACTION_MONITOR";
+    private static final String START_GEOFENCE_MONITOR = "START_GEOFENCE_MONITOR";
+    private static final String STOP_GEOFENCE_MONITOR = "STOP_GEOFENCE_MONITOR";
+    private static final String START_REQUEST_LOCATION_UPDATES = "START_LOCATION_UPDATES";
+    private static final String STOP_REQUEST_LOCATION_UPDATES = "STOP_LOCATION_UPDATES";
+    private static final String STOP_FOREGROUND_SERVICE = "STOP_FOREGROUND_SERVICE";
+    public static final String MARK_AS_VISITED = "MARK_AS_VISITED";
 
     private ActivityRecognitionClient activityRecognitionClient; //user activities
     private PendingIntent activityTransitionPendingIntent;
     private GeofencingClient geofencingClient; //geofence
     private PendingIntent geofencePendingIntent;
     private FusedLocationProviderClient fusedLocationClient; //geolocation
-    private LocationCallback locationCallback;
-
-    // Stop position
-    private List<StopPoint> stopPoints = new ArrayList<>();
+    private PendingIntent locationUpdatesPendingIntent;
 
     @Inject
     public PlaceDao placeDao;
@@ -130,7 +133,7 @@ public class StopTrackingService extends Service {
 
         // For getting geolocation.
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        stopPoints = getStopPointsFromCache();
+        locationUpdatesPendingIntent = getLocationUpdatesPendingIntent();
     }
 
     @Override
@@ -147,16 +150,20 @@ public class StopTrackingService extends Service {
         //do heavy work on a background thread
         switch (intent.getAction()) {
             case INTENT_ACTION_INITIAL:
-                startActivityTransitionMonitor();
-                AppService.sendNotification(this, "Initial");
+                AppService.sendNotification(this, "INITIAL");
+                runInit();
                 break;
             case INTENT_ACTION_CHECK_IN:
+                AppService.sendNotification(this, "CHECK_IN");
                 checkIn();
-                AppService.sendNotification(this, "Check-in");
+                break;
+            case INTENT_ACTION_LOCATION_UPDATED:
+                AppService.sendNotification(this, "LOCATION_UPDATED");
+                updatePosition(intent);
                 break;
             case INTENT_ACTION_CHECK_OUT:
+                AppService.sendNotification(this, "CHECK_OUT");
                 checkOut();
-                AppService.sendNotification(this, "Check-out");
                 break;
         }
         //stopSelf();
@@ -182,102 +189,196 @@ public class StopTrackingService extends Service {
         return null;
     }
 
-    private void startActivityTransitionMonitor() {
-        ActivityTransitionRequest request = buildActivityTransitionRequest();
-        Task<Void> task = activityRecognitionClient
-                .requestActivityTransitionUpdates(request, activityTransitionPendingIntent);
+    private List<String> processChainTasks(List<String> tasks) {
+        List<String> taskResult = new ArrayList<>();
+        processChainTasksRecurring(tasks, 0, taskResult);
+        return taskResult;
+    }
 
-        task.addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(StopTrackingService.this,"Successfully requested activity updates", Toast.LENGTH_SHORT).show();
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//                    simulateTransition();
+    private void processChainTasksRecurring(List<String> tasks, int taskIndex, List<String> taskResult) {
+        if (tasks == null || tasks.size() == 0 || taskIndex > tasks.size() - 1) return;
+        String taskName = tasks.get(taskIndex);
+
+        Task<Void> runningTask = null;
+        switch (taskName) {
+            case START_ACTIVITY_TRANSACTION_MONITOR:
+                runningTask = startActivityTransitionMonitor();
+                break;
+            case STOP_ACTIVITY_TRANSACTION_MONITOR:
+                runningTask = stopActivityTransitionMonitor();
+                break;
+            case START_GEOFENCE_MONITOR:
+                runningTask = startGeofenceMonitor();
+                break;
+            case STOP_GEOFENCE_MONITOR:
+                runningTask = stopGeofenceMonitor();
+                break;
+            case START_REQUEST_LOCATION_UPDATES:
+                runningTask = startLocationUpdates();
+                break;
+            case STOP_REQUEST_LOCATION_UPDATES:
+                runningTask = stopLocationUpdates();
+                break;
+            case MARK_AS_VISITED:
+                maskAsVisited();
+                break;
+            case STOP_FOREGROUND_SERVICE:
+                stopSelf();
+                break;
+        }
+
+        if (runningTask != null) {
+            runningTask.addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    String event = taskName + "_SUCCESS";
+                    AppService.sendNotification(StopTrackingService.this, event);
+                    taskResult.add(event);
+                    processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
+                }
+            });
+            runningTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    String event = taskName + "_FAILURE";
+                    AppService.sendNotification(StopTrackingService.this, event);
+                    taskResult.add(event);
+                    processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
+                }
+            });
+//            runningTask.addOnCanceledListener(new OnCanceledListener() {
+//                @Override
+//                public void onCanceled() {
+//                    String event = taskName + "_CANCELED";
+//                    AppService.sendNotification(StopTrackingService.this, event);
+//                    taskResult.add(event);
+//                    processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
 //                }
-                stopSelf();
-            }
-        });
-
-        task.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(StopTrackingService.this,"Failed to request activity updates", Toast.LENGTH_SHORT).show();
-                stopSelf();
-            }
-        });
+//            });
+//            runningTask.addOnCompleteListener(new OnCompleteListener<Void>() {
+//                @Override
+//                public void onComplete(@NonNull Task<Void> task) {
+//                    String event = taskName + "_COMPLETE";
+//                    AppService.sendNotification(StopTrackingService.this, event);
+//                    taskResult.add(event);
+//                    processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
+//                }
+//            });
+        } else {
+            String event = taskName + "_COMPLETE";
+            AppService.sendNotification(StopTrackingService.this, event);
+            taskResult.add(event);
+            processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
+        }
     }
 
-    private void stopActivityTransitionMonitor() {
-        Task<Void> task = activityRecognitionClient
-                .removeActivityTransitionUpdates(activityTransitionPendingIntent);
+    private void runInit() {
+        List<String> chainTasks = new ArrayList<>();
 
-        task.addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                activityTransitionPendingIntent.cancel();
-                Toast.makeText(StopTrackingService.this,"Successfully cancel activity transition updates", Toast.LENGTH_SHORT).show();
-            }
-        });
+        chainTasks.add(START_ACTIVITY_TRANSACTION_MONITOR);
+        chainTasks.add(STOP_FOREGROUND_SERVICE);
 
-        task.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(StopTrackingService.this,"Failed to cancel activity transition updates", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void startGeofenceMonitor(StopPoint stopPoint) {
-        GeofencingRequest request = buildGeofencingRequest(stopPoint);
-        geofencingClient.addGeofences(request, geofencePendingIntent).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(StopTrackingService.this,"Successfully started geofence monitor", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void stopGeofenceMonitor() {
-        geofencingClient.removeGeofences(geofencePendingIntent).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(StopTrackingService.this,"Failed to start geofence monitor", Toast.LENGTH_SHORT).show();
-            }
-        });
+        processChainTasks(chainTasks);
     }
 
     private void checkIn() {
-//        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-//            @Override
-//            public void onSuccess(Location location) {
-//                if (location != null) {
-//                    StopPoint stopPoint = new StopPoint(location, new Date(), new Date());
-//                    saveStopPointInCache(stopPoint);
-//
-//                    stopActivityTransitionMonitor();
-//                    startGeofenceMonitor(stopPoint);
-//                    stopSelf();
-//                }
-//            }
-//        });
-        startLocationUpdates();
+        List<String> chainTasks = new ArrayList<>();
+
+        chainTasks.add(START_REQUEST_LOCATION_UPDATES);
+        chainTasks.add(STOP_FOREGROUND_SERVICE);
+
+        processChainTasks(chainTasks);
+    }
+
+    private void updatePosition(Intent intent) {
+        Location location = extractLocationResult(intent);
+        if (location != null) {
+            StopPoint stopPoint = new StopPoint(location, new Date(), new Date());
+            saveStopPointInCache(stopPoint);
+
+            List<String> chainTasks = new ArrayList<>();
+
+            chainTasks.add(STOP_REQUEST_LOCATION_UPDATES);
+            chainTasks.add(STOP_ACTIVITY_TRANSACTION_MONITOR);
+            chainTasks.add(START_GEOFENCE_MONITOR);
+            chainTasks.add(STOP_FOREGROUND_SERVICE);
+
+            processChainTasks(chainTasks);
+        }
     }
 
     private void checkOut() {
-        StopPoint stopPoint = getLatestStopPoint();
+        List<String> chainTasks = new ArrayList<>();
+
+        chainTasks.add(MARK_AS_VISITED);
+        chainTasks.add(STOP_GEOFENCE_MONITOR);
+        chainTasks.add(START_ACTIVITY_TRANSACTION_MONITOR);
+        chainTasks.add(STOP_FOREGROUND_SERVICE);
+
+        processChainTasks(chainTasks);
+    }
+
+    private Task<Void> startActivityTransitionMonitor() {
+        ActivityTransitionRequest activityTrackingRequest = buildActivityTransitionRequest();
+        Task<Void> activityTrackingTask = activityRecognitionClient.requestActivityTransitionUpdates(activityTrackingRequest, activityTransitionPendingIntent);
+        return activityTrackingTask;
+    }
+
+    private Task<Void> stopActivityTransitionMonitor() {
+        Task<Void> activityTrackingTask = activityRecognitionClient.removeActivityTransitionUpdates(activityTransitionPendingIntent);
+        return activityTrackingTask;
+    }
+
+    private Task<Void> startGeofenceMonitor() {
+        StopPoint stopPoint = getStopPointFromCache();
+        GeofencingRequest geofencingRequest = buildGeofencingRequest(stopPoint);
+        Task<Void> geofenceTrackingTask = geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent);
+        return geofenceTrackingTask;
+    }
+
+    private Task<Void> stopGeofenceMonitor() {
+        Task<Void> geofenceTrackingTask = geofencingClient.removeGeofences(geofencePendingIntent);
+        return geofenceTrackingTask;
+    }
+
+    private Task<Void> startLocationUpdates() {
+        LocationRequest locationRequest = buildLocationUpdatesRequest();
+        Task<Void> requestLocationUpdatesTask = fusedLocationClient.requestLocationUpdates(locationRequest, locationUpdatesPendingIntent);
+        return requestLocationUpdatesTask;
+    }
+
+    private Task<Void> stopLocationUpdates() {
+        Task<Void> removeLocationUpdatesTask = fusedLocationClient.removeLocationUpdates(locationUpdatesPendingIntent);
+        return removeLocationUpdatesTask;
+    }
+
+    private Location extractLocationResult(Intent intent) {
+        if (intent == null) return null;
+
+        String provider = intent.getStringExtra("Provider");
+        double longitude = intent.getDoubleExtra("Longitude", -1);
+        double latitude = intent.getDoubleExtra("Latitude", -1);
+        if (provider.isEmpty() || longitude == -1 || latitude == -1) return null;
+
+        Location location = new Location(provider);
+        location.setLongitude(longitude);
+        location.setLatitude(latitude);
+        return location;
+    }
+
+    private void maskAsVisited() {
+        StopPoint stopPoint = getStopPointFromCache();
         if (stopPoint != null) {
             stopPoint.exist = new Date();
-            if (!stopPoint.isSynced
-                    && (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= Constants.STOP_DETECTION_IN_MILLISECONDS)) {
+            if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= Constants.STOP_DETECTION_IN_MILLISECONDS) {
                 Thread checkOutThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         saveToDb(stopPoint);
-                        stopPoint.isSynced = true;
+                        removeStopPointFromCache();
 
                         Intent intent = new Intent(Constants.BROADCAST_PLACE_ADDED);
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-                        AppService.sendNotification(StopTrackingService.this, "New place is added");
                     }
                 });
                 checkOutThread.start();
@@ -287,41 +388,6 @@ public class StopTrackingService extends Service {
                     e.printStackTrace();
                 }
             }
-        }
-        stopGeofenceMonitor();
-        startActivityTransitionMonitor();
-        stopSelf();
-    }
-
-    private void startLocationUpdates() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult != null) {
-                    Location location = locationResult.getLastLocation();
-                    if (location != null) {
-                        StopPoint stopPoint = new StopPoint(location, new Date(), new Date());
-                        saveStopPointInCache(stopPoint);
-                        stopLocationUpdates();
-
-                        stopActivityTransitionMonitor();
-                        startGeofenceMonitor(stopPoint);
-                        stopSelf();
-                    }
-                }
-            }
-        };
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-    }
-
-    private void stopLocationUpdates() {
-        if (locationCallback != null) {
-            fusedLocationClient.removeLocationUpdates(locationCallback);
         }
     }
 
@@ -358,20 +424,41 @@ public class StopTrackingService extends Service {
         return geofencePendingIntent;
     }
 
+    private PendingIntent getLocationUpdatesPendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (locationUpdatesPendingIntent != null) {
+            return locationUpdatesPendingIntent;
+        }
+        Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
+        intent.setAction(LocationUpdatesBroadcastReceiver.INTENT_ACTION);
+        locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return locationUpdatesPendingIntent;
+    }
+
     private ActivityTransitionRequest buildActivityTransitionRequest() {
         List<ActivityTransition> transitions = new ArrayList<>();
 
-        transitions.add(
-                new ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.STILL)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build());
+        List<Integer> activities = new ArrayList<>();
+        activities.add(DetectedActivity.STILL);
+        activities.add(DetectedActivity.WALKING);
+        activities.add(DetectedActivity.ON_FOOT);
+        activities.add(DetectedActivity.RUNNING);
+        activities.add(DetectedActivity.ON_BICYCLE);
+        activities.add(DetectedActivity.IN_VEHICLE);
 
-//        transitions.add(
-//                new ActivityTransition.Builder()
-//                        .setActivityType(DetectedActivity.TILTING)
-//                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-//                        .build());
+        for (int activity : activities) {
+            transitions.add(
+                    new ActivityTransition.Builder()
+                            .setActivityType(activity)
+                            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                            .build());
+
+            transitions.add(
+                    new ActivityTransition.Builder()
+                            .setActivityType(activity)
+                            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+                            .build());
+        }
 
         return new ActivityTransitionRequest(transitions);
     }
@@ -400,34 +487,33 @@ public class StopTrackingService extends Service {
         return builder.build();
     }
 
-    private StopPoint getLatestStopPoint() {
-        stopPoints = getStopPointsFromCache();
-        return (!stopPoints.isEmpty() ? stopPoints.get(stopPoints.size() - 1) : null);
+    private LocationRequest buildLocationUpdatesRequest() {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return locationRequest;
     }
 
     private void saveStopPointInCache(StopPoint stopPoint) {
         SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         Gson gson = new Gson();
-
-        // Only keep 10 recent stop points
-        stopPoints.add(stopPoint);
-        if (stopPoints.size() > MAX_STOP_POINTS) {
-            int startIndex = stopPoints.size() - MAX_STOP_POINTS - 1;
-            int stopIndex = stopPoints.size() - 1;
-            stopPoints = stopPoints.subList(startIndex, stopIndex);
-        }
-
-        editor.putString("StopPoints", gson.toJson(stopPoints));
+        editor.putString("StopPoint", gson.toJson(stopPoint));
         editor.commit();
     }
 
-    private List<StopPoint> getStopPointsFromCache() {
+    private StopPoint getStopPointFromCache() {
         SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
-        String stopPointsString = sharedPref.getString("StopPoints", "");
+        String stopPointString = sharedPref.getString("StopPoint", "");
         Gson gson = new Gson();
-        Type type = new TypeToken<ArrayList<StopPoint>>() {}.getType();
-        return !stopPointsString.isEmpty()? gson.fromJson(stopPointsString, type) : new ArrayList<>();
+        return !stopPointString.isEmpty()? gson.fromJson(stopPointString, StopPoint.class) : null;
+    }
+
+    private void removeStopPointFromCache() {
+        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.remove("StopPoint");
     }
 
     private void saveToDb(StopPoint stopPoint) {
