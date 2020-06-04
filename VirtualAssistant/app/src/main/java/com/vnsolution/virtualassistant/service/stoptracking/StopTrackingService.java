@@ -62,7 +62,7 @@ public class StopTrackingService extends Service {
     public static final String[] REQUEST_PERMISSIONS = {
         Manifest.permission.ACTIVITY_RECOGNITION,
         Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
+//        Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_BACKGROUND_LOCATION
     };
 
@@ -102,14 +102,16 @@ public class StopTrackingService extends Service {
 
     private class StopPoint {
         public String id;
-        public Location location;
+        public double longitude;
+        public double latitude;
         public Date enter;
         public Date exist;
         public Boolean isSynced;
 
-        public StopPoint(Location location, Date enter, Date exist) {
+        public StopPoint(double longitude, double latitude, Date enter, Date exist) {
             this.id = UUID.randomUUID().toString();
-            this.location = location;
+            this.longitude = longitude;
+            this.latitude = latitude;
             this.enter = enter;
             this.exist = exist;
             this.isSynced = false;
@@ -122,18 +124,9 @@ public class StopTrackingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        // For tracking user activities.
         activityRecognitionClient = new ActivityRecognitionClient(this);
-        activityTransitionPendingIntent = getActivityTransitionPendingIntent();
-
-        // For tracking user geofence.
         geofencingClient = LocationServices.getGeofencingClient(this);
-        geofencePendingIntent = getGeofencePendingIntent();
-
-        // For getting geolocation.
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        locationUpdatesPendingIntent = getLocationUpdatesPendingIntent();
     }
 
     @Override
@@ -207,17 +200,17 @@ public class StopTrackingService extends Service {
             case STOP_ACTIVITY_TRANSACTION_MONITOR:
                 runningTask = stopActivityTransitionMonitor();
                 break;
-            case START_GEOFENCE_MONITOR:
-                runningTask = startGeofenceMonitor();
-                break;
-            case STOP_GEOFENCE_MONITOR:
-                runningTask = stopGeofenceMonitor();
-                break;
             case START_REQUEST_LOCATION_UPDATES:
                 runningTask = startLocationUpdates();
                 break;
             case STOP_REQUEST_LOCATION_UPDATES:
                 runningTask = stopLocationUpdates();
+                break;
+            case START_GEOFENCE_MONITOR:
+                runningTask = startGeofenceMonitor();
+                break;
+            case STOP_GEOFENCE_MONITOR:
+                runningTask = stopGeofenceMonitor();
                 break;
             case MARK_AS_VISITED:
                 maskAsVisited();
@@ -232,7 +225,7 @@ public class StopTrackingService extends Service {
                 @Override
                 public void onSuccess(Void aVoid) {
                     String event = taskName + "_SUCCESS";
-                    AppService.sendNotification(StopTrackingService.this, event);
+//                    AppService.sendNotification(StopTrackingService.this, event);
                     taskResult.add(event);
                     processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
                 }
@@ -241,7 +234,7 @@ public class StopTrackingService extends Service {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     String event = taskName + "_FAILURE";
-                    AppService.sendNotification(StopTrackingService.this, event);
+//                    AppService.sendNotification(StopTrackingService.this, event);
                     taskResult.add(event);
                     processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
                 }
@@ -265,8 +258,8 @@ public class StopTrackingService extends Service {
 //                }
 //            });
         } else {
-            String event = taskName + "_COMPLETE";
-            AppService.sendNotification(StopTrackingService.this, event);
+            String event = taskName + "_SUCCESS";
+//            AppService.sendNotification(StopTrackingService.this, event);
             taskResult.add(event);
             processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
         }
@@ -293,7 +286,7 @@ public class StopTrackingService extends Service {
     private void updatePosition(Intent intent) {
         Location location = extractLocationResult(intent);
         if (location != null) {
-            StopPoint stopPoint = new StopPoint(location, new Date(), new Date());
+            StopPoint stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
             saveStopPointInCache(stopPoint);
 
             List<String> chainTasks = new ArrayList<>();
@@ -304,6 +297,7 @@ public class StopTrackingService extends Service {
             chainTasks.add(STOP_FOREGROUND_SERVICE);
 
             processChainTasks(chainTasks);
+            notifyPosition(stopPoint);
         }
     }
 
@@ -320,36 +314,36 @@ public class StopTrackingService extends Service {
 
     private Task<Void> startActivityTransitionMonitor() {
         ActivityTransitionRequest activityTrackingRequest = buildActivityTransitionRequest();
-        Task<Void> activityTrackingTask = activityRecognitionClient.requestActivityTransitionUpdates(activityTrackingRequest, activityTransitionPendingIntent);
+        Task<Void> activityTrackingTask = activityRecognitionClient.requestActivityTransitionUpdates(activityTrackingRequest, getActivityTransitionPendingIntent());
         return activityTrackingTask;
     }
 
     private Task<Void> stopActivityTransitionMonitor() {
-        Task<Void> activityTrackingTask = activityRecognitionClient.removeActivityTransitionUpdates(activityTransitionPendingIntent);
+        Task<Void> activityTrackingTask = activityRecognitionClient.removeActivityTransitionUpdates(getActivityTransitionPendingIntent());
         return activityTrackingTask;
+    }
+
+    private Task<Void> startLocationUpdates() {
+        LocationRequest locationRequest = buildLocationUpdatesRequest();
+        Task<Void> requestLocationUpdatesTask = fusedLocationClient.requestLocationUpdates(locationRequest, getLocationUpdatesPendingIntent());
+        return requestLocationUpdatesTask;
+    }
+
+    private Task<Void> stopLocationUpdates() {
+        Task<Void> removeLocationUpdatesTask = fusedLocationClient.removeLocationUpdates(getLocationUpdatesPendingIntent());
+        return removeLocationUpdatesTask;
     }
 
     private Task<Void> startGeofenceMonitor() {
         StopPoint stopPoint = getStopPointFromCache();
         GeofencingRequest geofencingRequest = buildGeofencingRequest(stopPoint);
-        Task<Void> geofenceTrackingTask = geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent);
+        Task<Void> geofenceTrackingTask = geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent());
         return geofenceTrackingTask;
     }
 
     private Task<Void> stopGeofenceMonitor() {
-        Task<Void> geofenceTrackingTask = geofencingClient.removeGeofences(geofencePendingIntent);
+        Task<Void> geofenceTrackingTask = geofencingClient.removeGeofences(getGeofencePendingIntent());
         return geofenceTrackingTask;
-    }
-
-    private Task<Void> startLocationUpdates() {
-        LocationRequest locationRequest = buildLocationUpdatesRequest();
-        Task<Void> requestLocationUpdatesTask = fusedLocationClient.requestLocationUpdates(locationRequest, locationUpdatesPendingIntent);
-        return requestLocationUpdatesTask;
-    }
-
-    private Task<Void> stopLocationUpdates() {
-        Task<Void> removeLocationUpdatesTask = fusedLocationClient.removeLocationUpdates(locationUpdatesPendingIntent);
-        return removeLocationUpdatesTask;
     }
 
     private Location extractLocationResult(Intent intent) {
@@ -387,6 +381,17 @@ public class StopTrackingService extends Service {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+        notifyPosition(stopPoint);
+    }
+
+    private void notifyPosition(StopPoint stopPoint) {
+        if (stopPoint != null) {
+            List<Address> addresses = getAddressFromLocation(stopPoint);
+            if (addresses.size() > 0) {
+                Address address = addresses.get(0);
+                AppService.sendNotification(StopTrackingService.this, address.getAddressLine(0));
             }
         }
     }
@@ -441,7 +446,7 @@ public class StopTrackingService extends Service {
         List<Integer> activities = new ArrayList<>();
         activities.add(DetectedActivity.STILL);
         activities.add(DetectedActivity.WALKING);
-        activities.add(DetectedActivity.ON_FOOT);
+        activities.add(DetectedActivity.ON_FOOT); //Does it exist?
         activities.add(DetectedActivity.RUNNING);
         activities.add(DetectedActivity.ON_BICYCLE);
         activities.add(DetectedActivity.IN_VEHICLE);
@@ -469,19 +474,24 @@ public class StopTrackingService extends Service {
         geofences.add(new Geofence.Builder()
                 .setRequestId(stopPoint.id)
                 .setCircularRegion(
-                        stopPoint.location.getLatitude(),
-                        stopPoint.location.getLongitude(),
+                        stopPoint.latitude,
+                        stopPoint.longitude,
                         Constants.GEOFENCE_RADIUS_IN_METERS
                 )
-                //.setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+//                .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(
-                        Geofence.GEOFENCE_TRANSITION_EXIT |
-                        Geofence.GEOFENCE_TRANSITION_ENTER)
+                        Geofence.GEOFENCE_TRANSITION_ENTER
+                        | Geofence.GEOFENCE_TRANSITION_DWELL
+                        | Geofence.GEOFENCE_TRANSITION_EXIT
+                )
+                .setLoiteringDelay(Constants.GEOFENCE_DWELLING_IN_MILLISECONDS)
                 .build());
 
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-        //builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+
+//        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+//        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_EXIT);
         builder.addGeofences(geofences);
 
         return builder.build();
@@ -499,7 +509,8 @@ public class StopTrackingService extends Service {
         SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         Gson gson = new Gson();
-        editor.putString("StopPoint", gson.toJson(stopPoint));
+        String stopPointString = gson.toJson(stopPoint);
+        editor.putString("StopPoint", stopPointString);
         editor.commit();
     }
 
@@ -517,8 +528,8 @@ public class StopTrackingService extends Service {
     }
 
     private void saveToDb(StopPoint stopPoint) {
-        if (stopPoint != null && stopPoint.location != null) {
-            List<Address> addresses = getAddressFromLocation(stopPoint.location);
+        if (stopPoint != null) {
+            List<Address> addresses = getAddressFromLocation(stopPoint);
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
 
@@ -546,11 +557,11 @@ public class StopTrackingService extends Service {
         }
     }
 
-    private List<Address> getAddressFromLocation(Location location) {
+    private List<Address> getAddressFromLocation(StopPoint stopPoint) {
         List<Address> addresses = new ArrayList<>();
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
-            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            addresses = geocoder.getFromLocation(stopPoint.latitude, stopPoint.longitude,1);
             return addresses;
         } catch (IOException exception) {
             exception.printStackTrace();

@@ -36,23 +36,35 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void handleEvent(Context context, GeofencingEvent geofencingEvent) {
-        int geoFenceTransition = geofencingEvent.getGeofenceTransition();
         String geofencingStatus = "";
-        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) {
+        String action = "";
+        int geoFenceTransition = geofencingEvent.getGeofenceTransition();
+
 //            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 //            String geofenceTransitionDetails = getGeofenceTransitionDetails(geoFenceTransition, triggeringGeofences );
 //            Toast.makeText(context, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
-            geofencingStatus = "GEOFENCE_TRANSITION_EXIT";
 
-            Intent serviceIntent = new Intent(context, StopTrackingService.class);
-            serviceIntent.setAction(StopTrackingService.INTENT_ACTION_CHECK_OUT);
-            ContextCompat.startForegroundService(context, serviceIntent);
-        }
-        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ) {
+        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ) { //Check-in
             geofencingStatus = "GEOFENCE_TRANSITION_ENTER";
+            action = StopTrackingService.INTENT_ACTION_CHECK_IN;
         }
+        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ) { //Check-in again
+            geofencingStatus = "GEOFENCE_TRANSITION_DWELL";
+            action = StopTrackingService.INTENT_ACTION_CHECK_IN;
+        }
+        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) { //Check-out
+            geofencingStatus = "GEOFENCE_TRANSITION_EXIT";
+            action = StopTrackingService.INTENT_ACTION_CHECK_OUT;
+        }
+
         if (!geofencingStatus.isEmpty()) {
             AppService.sendNotification(context, geofencingStatus);
+        }
+
+        if (!action.isEmpty()) {
+            Intent serviceIntent = new Intent(context, StopTrackingService.class);
+            serviceIntent.setAction(action);
+            ContextCompat.startForegroundService(context, serviceIntent);
         }
     }
 

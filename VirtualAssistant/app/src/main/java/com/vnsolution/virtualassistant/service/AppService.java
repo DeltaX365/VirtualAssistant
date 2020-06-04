@@ -26,9 +26,8 @@ public class AppService {
 
     public static void init(Context context) {
         mContext = context;
-        if(!startServices()) {
-            startObservingPermissionChanged();
-        }
+        startServices();
+//        startObservingPermissionChanged();
     }
 
     /**

@@ -37,7 +37,12 @@ import java.util.List;
 public class DashboardActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int ALL_PERMISSIONS_RESULT = 1000;
 
-    private String[] permissions = { Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION };
+    private String[] permissions = {
+        Manifest.permission.ACTIVITY_RECOGNITION,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+//        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+    };
     private GoogleMap mGoogleMap;
     private Marker mCurrentMarker;
     private Circle mCurrentCircle;
