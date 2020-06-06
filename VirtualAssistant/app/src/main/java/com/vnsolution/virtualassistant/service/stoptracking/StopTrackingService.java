@@ -70,6 +70,7 @@ public class StopTrackingService extends Service {
     public static final String INTENT_ACTION_CHECK_IN = "com.vnsolution.virtualassistant.ACTION_CHECK_IN";
     public static final String INTENT_ACTION_LOCATION_UPDATED = "com.vnsolution.virtualassistant.INTENT_ACTION_LOCATION_UPDATED";
     public static final String INTENT_ACTION_CHECK_OUT = "com.vnsolution.virtualassistant.ACTION_CHECK_OUT";
+    public static final String REQUESTOR_ACTIVITY_TRANSITION_MONITOR = "ActivityTransitionMonitor";
 
     private static final String STOP_TRACKING_CHANNEL_ID = "com.vnsolution.virtualassistant.STOP_TRACKING_FOREGROUND_SERVICE";
     private static final String STOP_TRACKING_CHANNEL_NAME = "Stop Detection";
@@ -85,7 +86,7 @@ public class StopTrackingService extends Service {
     private static final String START_REQUEST_LOCATION_UPDATES = "START_LOCATION_UPDATES";
     private static final String STOP_REQUEST_LOCATION_UPDATES = "STOP_LOCATION_UPDATES";
     private static final String STOP_FOREGROUND_SERVICE = "STOP_FOREGROUND_SERVICE";
-    public static final String MARK_AS_VISITED = "MARK_AS_VISITED";
+    private static final String MARK_AS_VISITED = "MARK_AS_VISITED";
 
     private ActivityRecognitionClient activityRecognitionClient; //user activities
     private PendingIntent activityTransitionPendingIntent;
@@ -436,6 +437,7 @@ public class StopTrackingService extends Service {
         }
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.INTENT_ACTION);
+        intent.putExtra("Requestor", REQUESTOR_ACTIVITY_TRANSITION_MONITOR);
         locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return locationUpdatesPendingIntent;
     }

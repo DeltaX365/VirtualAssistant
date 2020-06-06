@@ -13,10 +13,13 @@ import java.util.List;
 
 public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
     public static final String INTENT_ACTION = "com.vnsolution.virtualassistant.ACTION_UPDATE_LOCATIONS";
+    public static final String ACCEPT_REQUESTOR = StopTrackingService.REQUESTOR_ACTIVITY_TRANSITION_MONITOR;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent != null && INTENT_ACTION.equals(intent.getAction())) {
+        if (intent != null &&
+            INTENT_ACTION.equals(intent.getAction()) &&
+            ACCEPT_REQUESTOR.equals(intent.getStringExtra("Requestor"))) {
             // Enqueues a JobIntentService passing the context and intent as parameters
             // ActivityTransitionsJobIntentService.enqueueWork(context, intent);
             LocationResult result = LocationResult.extractResult(intent);
