@@ -9,17 +9,15 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.LocationResult;
 
-import java.util.List;
-
 public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
     public static final String INTENT_ACTION = "com.vnsolution.virtualassistant.ACTION_UPDATE_LOCATIONS";
-    public static final String ACCEPT_REQUESTOR = StopTrackingService.REQUESTOR_ACTIVITY_TRANSITION_MONITOR;
+    public static final String INTENT_CATEGORY = StopTrackingService.INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent != null &&
-            INTENT_ACTION.equals(intent.getAction()) &&
-            ACCEPT_REQUESTOR.equals(intent.getStringExtra("Requestor"))) {
+            intent.getAction().equals(INTENT_ACTION) &&
+            intent.getCategories().contains(INTENT_CATEGORY)) {
             // Enqueues a JobIntentService passing the context and intent as parameters
             // ActivityTransitionsJobIntentService.enqueueWork(context, intent);
             LocationResult result = LocationResult.extractResult(intent);

@@ -35,8 +35,6 @@ import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCanceledListener;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -70,7 +68,7 @@ public class StopTrackingService extends Service {
     public static final String INTENT_ACTION_CHECK_IN = "com.vnsolution.virtualassistant.ACTION_CHECK_IN";
     public static final String INTENT_ACTION_LOCATION_UPDATED = "com.vnsolution.virtualassistant.INTENT_ACTION_LOCATION_UPDATED";
     public static final String INTENT_ACTION_CHECK_OUT = "com.vnsolution.virtualassistant.ACTION_CHECK_OUT";
-    public static final String REQUESTOR_ACTIVITY_TRANSITION_MONITOR = "ActivityTransitionMonitor";
+    public static final String INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR = "com.vnsolution.virtualassistant.INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR";
 
     private static final String STOP_TRACKING_CHANNEL_ID = "com.vnsolution.virtualassistant.STOP_TRACKING_FOREGROUND_SERVICE";
     private static final String STOP_TRACKING_CHANNEL_NAME = "Stop Detection";
@@ -437,7 +435,7 @@ public class StopTrackingService extends Service {
         }
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.INTENT_ACTION);
-        intent.putExtra("Requestor", REQUESTOR_ACTIVITY_TRANSITION_MONITOR);
+        intent.addCategory(INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR);
         locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return locationUpdatesPendingIntent;
     }
