@@ -12,22 +12,22 @@ import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.db.dao.SettingDao;
 import com.vnsolution.virtualassistant.db.dao.WeatherDao;
-import com.vnsolution.virtualassistant.vo.Device;
-import com.vnsolution.virtualassistant.vo.GeolocationHistory;
-import com.vnsolution.virtualassistant.vo.Place;
-import com.vnsolution.virtualassistant.vo.PlaceHistory;
-import com.vnsolution.virtualassistant.vo.Setting;
-import com.vnsolution.virtualassistant.vo.Weather;
+import com.vnsolution.virtualassistant.db.entity.DeviceEntity;
+import com.vnsolution.virtualassistant.db.entity.GeolocationHistoryEntity;
+import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
+import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
+import com.vnsolution.virtualassistant.db.entity.SettingEntity;
+import com.vnsolution.virtualassistant.db.entity.WeatherEntity;
 
 
 @Database(
     entities = {
-        Device.class,
-        GeolocationHistory.class,
-        Place.class,
-        PlaceHistory.class,
-        Weather.class,
-        Setting.class
+        DeviceEntity.class,
+        GeolocationHistoryEntity.class,
+        PlaceEntity.class,
+        PlaceHistoryEntity.class,
+        WeatherEntity.class,
+        SettingEntity.class
     },
     version = 1,
     exportSchema = false

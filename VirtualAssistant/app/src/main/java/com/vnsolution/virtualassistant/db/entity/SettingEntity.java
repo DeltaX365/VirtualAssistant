@@ -1,13 +1,10 @@
-package com.vnsolution.virtualassistant.vo;
+package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-import java.util.Date;
 
 @Entity(tableName = "Setting")
-public class Setting extends AuditEntity {
+public class SettingEntity extends AuditEntity {
     @ColumnInfo(name = "Name")
     public String name;
 

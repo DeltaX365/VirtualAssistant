@@ -6,22 +6,22 @@ import androidx.annotation.RequiresApi;
 import androidx.room.Dao;
 import androidx.room.Query;
 
-import com.vnsolution.virtualassistant.vo.Setting;
+import com.vnsolution.virtualassistant.db.entity.SettingEntity;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 @Dao
-public abstract class SettingDao implements BaseDao<Setting> {
+public abstract class SettingDao implements BaseDao<SettingEntity> {
     @Query("SELECT * FROM Setting")
-    abstract List<Setting> getAll();
+    abstract List<SettingEntity> getAll();
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    Optional<Setting> findByName(final String name) {
-        return getAll().stream().filter(new Predicate<Setting>() {
+    Optional<SettingEntity> findByName(final String name) {
+        return getAll().stream().filter(new Predicate<SettingEntity>() {
             @Override
-            public boolean test(Setting s) {
+            public boolean test(SettingEntity s) {
                 return s.name.equals(name);
             }
         }).findFirst();

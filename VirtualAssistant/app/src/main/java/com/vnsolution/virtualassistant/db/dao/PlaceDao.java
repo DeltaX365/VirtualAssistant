@@ -3,16 +3,15 @@ package com.vnsolution.virtualassistant.db.dao;
 import androidx.room.Dao;
 import androidx.room.Query;
 
-import com.vnsolution.virtualassistant.vo.Place;
-import com.vnsolution.virtualassistant.vo.Setting;
+import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 
 import java.util.List;
 
 @Dao
-public interface PlaceDao extends BaseDao<Place> {
+public interface PlaceDao extends BaseDao<PlaceEntity> {
     @Query("SELECT * FROM Place")
-    List<Place> getAll();
+    List<PlaceEntity> getAll();
 
     @Query("SELECT * FROM Place WHERE Id=:id")
-    Place getById(String id);
+    PlaceEntity getById(String id);
 }

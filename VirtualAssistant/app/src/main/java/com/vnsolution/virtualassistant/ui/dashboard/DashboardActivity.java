@@ -6,6 +6,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -28,11 +29,10 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
-
-import java.util.List;
+import com.vnsolution.virtualassistant.model.StopPoint;
 
 public class DashboardActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int ALL_PERMISSIONS_RESULT = 1000;
@@ -40,12 +40,13 @@ public class DashboardActivity extends FragmentActivity implements OnMapReadyCal
     private String[] permissions = {
         Manifest.permission.ACTIVITY_RECOGNITION,
         Manifest.permission.ACCESS_FINE_LOCATION,
-//        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_BACKGROUND_LOCATION
     };
     private GoogleMap mGoogleMap;
     private Marker mCurrentMarker;
     private Circle mCurrentCircle;
+    private Location mCurrentLocation;
     private LocationCallback mLocationCallback;
     private FusedLocationProviderClient fusedLocationClient;
 
@@ -101,44 +102,7 @@ public class DashboardActivity extends FragmentActivity implements OnMapReadyCal
         mGoogleMap = googleMap;
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
-
-        // Add a marker in current location.
-        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                handleLocationUpdated(location);
-            }
-        });
-    }
-
-    private void handleLocationUpdated(Location location) {
-        if(location != null && mGoogleMap != null) {
-            //Place current location marker.
-            if (mCurrentMarker != null) {
-                mCurrentMarker.remove();
-            }
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title(latLng.latitude + "," + latLng.longitude);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            mCurrentMarker = mGoogleMap.addMarker(markerOptions);
-
-            //Add geofence to current location.
-            if (mCurrentCircle != null) {
-                mCurrentCircle.remove();
-            }
-            CircleOptions circleOptions = new CircleOptions()
-                    .center(latLng)
-                    .strokeColor(Color.argb(50, 70, 70, 70))
-                    .fillColor(Color.argb(100, 150, 150, 150))
-                    .radius(Constants.GEOFENCE_RADIUS_IN_METERS);
-            mCurrentCircle = mGoogleMap.addCircle(circleOptions);
-
-            //Move map camera.
-            float zoom = 15f;
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-        }
+        requestLocationUpdates();
     }
 
     @Override
@@ -153,6 +117,42 @@ public class DashboardActivity extends FragmentActivity implements OnMapReadyCal
         removeLocationUpdates();
     }
 
+    private void updateLocation() {
+        if(mCurrentLocation != null && mGoogleMap != null) {
+            //Place current location marker.
+            if (mCurrentMarker != null) {
+                mCurrentMarker.remove();
+            }
+            LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title(latLng.latitude + "," + latLng.longitude);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            mCurrentMarker = mGoogleMap.addMarker(markerOptions);
+        }
+    }
+
+    private void updateGeofence() {
+        StopPoint stopPoint = getStopPointFromCache();
+        if(stopPoint != null && mGoogleMap != null) {
+            //Add geofence to current location.
+            if (mCurrentCircle != null) {
+                mCurrentCircle.remove();
+            }
+            LatLng latLng = new LatLng(stopPoint.latitude, stopPoint.longitude);
+            CircleOptions circleOptions = new CircleOptions()
+                    .center(latLng)
+                    .strokeColor(Color.argb(50, 70, 70, 70))
+                    .fillColor(Color.argb(100, 150, 150, 150))
+                    .radius(Constants.GEOFENCE_RADIUS_IN_METERS);
+            mCurrentCircle = mGoogleMap.addCircle(circleOptions);
+
+            //Move map camera.
+            float zoom = 15f;
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        }
+    }
+
     private void requestLocationUpdates() {
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(Constants.GEOLOCATION_INTERVAL_UPDATE);
@@ -161,12 +161,9 @@ public class DashboardActivity extends FragmentActivity implements OnMapReadyCal
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                List<Location> locationList = locationResult.getLocations();
-                if (locationList.size() > 0) {
-                    //The last location in the list is the newest
-                    Location location = locationList.get(locationList.size() - 1);
-                    handleLocationUpdated(location);
-                }
+                mCurrentLocation = locationResult.getLastLocation();
+                updateLocation();
+                updateGeofence();
             }
         };
         fusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.getMainLooper());
@@ -174,5 +171,12 @@ public class DashboardActivity extends FragmentActivity implements OnMapReadyCal
 
     private void removeLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    private StopPoint getStopPointFromCache() {
+        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        String stopPointString = sharedPref.getString("StopPoint", "");
+        Gson gson = new Gson();
+        return !stopPointString.isEmpty()? gson.fromJson(stopPointString, StopPoint.class) : null;
     }
 }

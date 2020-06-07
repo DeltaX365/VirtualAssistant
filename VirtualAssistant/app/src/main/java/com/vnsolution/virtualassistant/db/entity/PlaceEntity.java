@@ -1,10 +1,10 @@
-package com.vnsolution.virtualassistant.vo;
+package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
 @Entity(tableName = "Place")
-public class Place extends AuditEntity {
+public class PlaceEntity extends AuditEntity {
     @ColumnInfo(name = "GGPlaceId")
     public String ggPlaceId;
 

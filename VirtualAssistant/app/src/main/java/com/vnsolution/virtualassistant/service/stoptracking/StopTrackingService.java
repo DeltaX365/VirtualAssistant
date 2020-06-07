@@ -43,9 +43,10 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
+import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.service.AppService;
-import com.vnsolution.virtualassistant.vo.Place;
-import com.vnsolution.virtualassistant.vo.PlaceHistory;
+import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
+import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class StopTrackingService extends Service {
     public static final String[] REQUEST_PERMISSIONS = {
         Manifest.permission.ACTIVITY_RECOGNITION,
         Manifest.permission.ACCESS_FINE_LOCATION,
-//        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_BACKGROUND_LOCATION
     };
 
@@ -98,24 +99,6 @@ public class StopTrackingService extends Service {
 
     @Inject
     public PlaceHistoryDao placeHistoryDao;
-
-    private class StopPoint {
-        public String id;
-        public double longitude;
-        public double latitude;
-        public Date enter;
-        public Date exist;
-        public Boolean isSynced;
-
-        public StopPoint(double longitude, double latitude, Date enter, Date exist) {
-            this.id = UUID.randomUUID().toString();
-            this.longitude = longitude;
-            this.latitude = latitude;
-            this.enter = enter;
-            this.exist = exist;
-            this.isSynced = false;
-        }
-    }
 
     public StopTrackingService() {
     }
@@ -490,8 +473,8 @@ public class StopTrackingService extends Service {
 
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
 
-//        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-//        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_EXIT);
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_EXIT);
         builder.addGeofences(geofences);
 
         return builder.build();
@@ -534,7 +517,7 @@ public class StopTrackingService extends Service {
                 Address address = addresses.get(0);
 
                 //Save place
-                Place place = new Place();
+                PlaceEntity place = new PlaceEntity();
                 place.id = UUID.randomUUID().toString();
                 place.placeName = address.getFeatureName();
                 place.formattedAddress = address.getAddressLine(0);
@@ -544,7 +527,7 @@ public class StopTrackingService extends Service {
                 placeDao.insert(place);
 
                 //Save place history
-                PlaceHistory placeHistory = new PlaceHistory();
+                PlaceHistoryEntity placeHistory = new PlaceHistoryEntity();
                 placeHistory.id = UUID.randomUUID().toString();
                 placeHistory.placeId = place.id;
                 placeHistory.enterTime = stopPoint.enter;

@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.vo;
+package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -6,7 +6,7 @@ import androidx.room.Entity;
 import java.util.Date;
 
 @Entity(tableName = "GeolocationHistory")
-public class GeolocationHistory extends BaseEntity {
+public class GeolocationHistoryEntity extends BaseEntity {
     @ColumnInfo(name = "Latitude")
     public double latitude;
 

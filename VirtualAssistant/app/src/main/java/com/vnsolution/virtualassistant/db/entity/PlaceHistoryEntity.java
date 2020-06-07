@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.vo;
+package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity(tableName = "PlaceHistory",
     foreignKeys = {
         @ForeignKey(
-            entity = Place.class,
+            entity = PlaceEntity.class,
             parentColumns = "Id",
             childColumns = "PlaceId",
             onDelete = ForeignKey.NO_ACTION
@@ -18,7 +18,7 @@ import java.util.Date;
     },
     indices = { @Index(value = "PlaceId")}
 )
-public class PlaceHistory extends BaseEntity {
+public class PlaceHistoryEntity extends BaseEntity {
     @ColumnInfo(name = "PlaceId")
     public String placeId;
 

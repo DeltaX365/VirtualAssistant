@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.vo;
+package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 

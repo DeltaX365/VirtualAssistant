@@ -1,10 +1,10 @@
-package com.vnsolution.virtualassistant.vo;
+package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
 @Entity(tableName = "Device")
-public class Device extends AuditEntity {
+public class DeviceEntity extends AuditEntity {
     @ColumnInfo(name = "AvailableLocationProviders")
     public String availableLocationProviders;
 

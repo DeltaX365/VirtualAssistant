@@ -1,10 +1,10 @@
-package com.vnsolution.virtualassistant.vo;
+package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
 @Entity(tableName = "Weather")
-public class Weather extends AuditEntity {
+public class WeatherEntity extends AuditEntity {
     @ColumnInfo(name = "Longitude")
     public double longitude;
 

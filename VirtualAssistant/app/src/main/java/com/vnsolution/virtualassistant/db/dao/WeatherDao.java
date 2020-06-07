@@ -3,13 +3,12 @@ package com.vnsolution.virtualassistant.db.dao;
 import androidx.room.Dao;
 import androidx.room.Query;
 
-import com.vnsolution.virtualassistant.vo.Place;
-import com.vnsolution.virtualassistant.vo.Weather;
+import com.vnsolution.virtualassistant.db.entity.WeatherEntity;
 
 import java.util.List;
 
 @Dao
-public interface WeatherDao extends BaseDao<Weather> {
+public interface WeatherDao extends BaseDao<WeatherEntity> {
     @Query("SELECT * FROM Weather")
-    List<Weather> getAll();
+    List<WeatherEntity> getAll();
 }
