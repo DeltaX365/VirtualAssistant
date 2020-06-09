@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -56,6 +57,8 @@ import java.util.Locale;
 import java.util.UUID;
 
 import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 public class StopTrackingService extends Service {
     public static final String[] REQUEST_PERMISSIONS = {
@@ -113,6 +116,7 @@ public class StopTrackingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        AndroidInjection.inject(this);
         createNotificationChannel();
 
         Notification notification = new NotificationCompat.Builder(this, STOP_TRACKING_CHANNEL_ID)
@@ -516,7 +520,7 @@ public class StopTrackingService extends Service {
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
 
-                //Save place
+                // Place
                 PlaceEntity place = new PlaceEntity();
                 place.id = UUID.randomUUID().toString();
                 place.placeName = address.getFeatureName();
@@ -524,15 +528,21 @@ public class StopTrackingService extends Service {
                 place.latitude = address.getLatitude();
                 place.longitude = address.getLongitude();
                 place.createdDate = new Date();
-                placeDao.insert(place);
 
-                //Save place history
+                // Place History
                 PlaceHistoryEntity placeHistory = new PlaceHistoryEntity();
                 placeHistory.id = UUID.randomUUID().toString();
                 placeHistory.placeId = place.id;
                 placeHistory.enterTime = stopPoint.enter;
                 placeHistory.existTime = stopPoint.exist;
-                placeHistoryDao.insert(placeHistory);
+
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        placeDao.insert(place);
+                        placeHistoryDao.insert(placeHistory);
+                    }
+                });
 
                 //Notify
                 AppService.sendNotification(this, place.formattedAddress);
