@@ -2,15 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vnsolution.virtualassistant">
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<!--    <uses-permission android:name="android.permission.WAKE_LOCK" />-->
 
     <application
         android:name=".VirtualAssistantApp"
@@ -20,40 +19,40 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBQr8YzGqe0PWQiEMx9JbsnXmbpRZvQURo" />
 
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBQr8YzGqe0PWQiEMx9JbsnXmbpRZvQURo"/>
-
-        <!-- Activities -->
-        <activity android:name=".ui.dashboard.DashboardActivity">
+        <activity
+            android:name=".ui.HomeActivity"
+            android:label="@string/title_activity_home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.settings.SettingsActivity" />
-        <activity android:name=".ui.geolocations.GeolocationHistoryActivity" />
-        <activity android:name=".ui.places.PlaceHistoryActivity" />
 
-        <!-- Services -->
         <service
             android:name=".service.stoptracking.StopTrackingService"
             android:exported="true" />
         <service
             android:name=".service.stoptracking.ActivityTransitionsJobIntentService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true" />
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".service.stoptracking.GeofenceTransitionsJobIntentService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true" />
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <!-- Receivers -->
         <receiver
             android:name=".startup.StartupBroadcastReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver
@@ -61,13 +60,12 @@
             android:exported="true"
             android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">
             <intent-filter>
-                <action android:name="com.vnsolution.virtualassistant.ACTION_PROCESS_ACTIVITY_TRANSITIONS"></action>
+                <action android:name="com.vnsolution.virtualassistant.ACTION_PROCESS_ACTIVITY_TRANSITIONS" />
             </intent-filter>
         </receiver>
         <receiver
             android:name=".service.stoptracking.GeofenceBroadcastReceiver"
-            android:exported="true">
-        </receiver>
+            android:exported="true" />
         <receiver
             android:name=".service.stoptracking.LocationUpdatesBroadcastReceiver"
             android:exported="true">

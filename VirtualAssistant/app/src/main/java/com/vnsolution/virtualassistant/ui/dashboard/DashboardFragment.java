@@ -1,18 +1,21 @@
 package com.vnsolution.virtualassistant.ui.dashboard;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import android.Manifest;
-import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -21,9 +24,11 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -34,15 +39,10 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.model.StopPoint;
 
-public class DashboardActivity extends FragmentActivity implements OnMapReadyCallback {
-    private static final int ALL_PERMISSIONS_RESULT = 1000;
+public class DashboardFragment extends Fragment {
+    private DashboardViewModel dashboardViewModel;
 
-    private String[] permissions = {
-        Manifest.permission.ACTIVITY_RECOGNITION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_BACKGROUND_LOCATION
-    };
+    private MapView mMapView;
     private GoogleMap mGoogleMap;
     private Marker mCurrentMarker;
     private Circle mCurrentCircle;
@@ -50,71 +50,59 @@ public class DashboardActivity extends FragmentActivity implements OnMapReadyCal
     private LocationCallback mLocationCallback;
     private FusedLocationProviderClient fusedLocationClient;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        dashboardViewModel =
+                ViewModelProviders.of(this).get(DashboardViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (checkPermissions()) {
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+        // https://stackoverflow.com/questions/19353255/how-to-put-google-maps-v2-on-a-fragment-using-viewpager
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity().getApplicationContext());
+        mMapView = (MapView) root.findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.onResume(); // needed to get the map to display immediately
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    private boolean checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : permissions) {
-                if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{permission}, ALL_PERMISSIONS_RESULT);
-                    return false;
-                }
-                String action = "";
-                switch (permission) {
-                    case Manifest.permission.ACTIVITY_RECOGNITION:
-                        action = Constants.BROADCAST_ACTIVITY_RECOGNITION_PERMISSION_CHANGED;
-                        break;
-                    case Manifest.permission.ACCESS_COARSE_LOCATION:
-                    case Manifest.permission.ACCESS_FINE_LOCATION:
-                    case Manifest.permission.ACCESS_BACKGROUND_LOCATION:
-                        action = Constants.BROADCAST_LOCATION_PERMISSION_CHANGED;
-                        break;
-                }
-                if (!action.isEmpty()) {
-                    Intent intent = new Intent(action);
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-                }
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap mMap) {
+                mGoogleMap = mMap;
+                mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+                mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                requestLocationUpdates();
             }
-        }
-        return true;
+        });
+
+        return root;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == ALL_PERMISSIONS_RESULT) {
-            checkPermissions();
-        }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mGoogleMap = googleMap;
-        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-        mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
-        requestLocationUpdates();
-    }
-
-    @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        mMapView.onResume();
         requestLocationUpdates();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
         removeLocationUpdates();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
     }
 
     private void updateLocation() {
@@ -174,7 +162,7 @@ public class DashboardActivity extends FragmentActivity implements OnMapReadyCal
     }
 
     private StopPoint getStopPointFromCache() {
-        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences sharedPref = getActivity().getApplicationContext().getSharedPreferences("com.vnsolution.VirtualAssistant", Context.MODE_PRIVATE);
         String stopPointString = sharedPref.getString("StopPoint", "");
         Gson gson = new Gson();
         return !stopPointString.isEmpty()? gson.fromJson(stopPointString, StopPoint.class) : null;

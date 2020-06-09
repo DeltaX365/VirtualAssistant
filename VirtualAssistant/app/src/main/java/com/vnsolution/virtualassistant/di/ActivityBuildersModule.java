@@ -1,6 +1,6 @@
 package com.vnsolution.virtualassistant.di;
 
-import com.vnsolution.virtualassistant.ui.dashboard.DashboardActivity;
+import com.vnsolution.virtualassistant.ui.HomeActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -8,5 +8,5 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class ActivityBuildersModule {
     @ContributesAndroidInjector
-    abstract DashboardActivity contributeDashboardActivity();
+    abstract HomeActivity contributeHomeActivity();
 }
