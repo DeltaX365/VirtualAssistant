@@ -274,7 +274,6 @@ public class StopTrackingService extends Service {
         if (location != null) {
             StopPoint stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
             saveStopPointInCache(stopPoint);
-            saveToDb(stopPoint);
 
             List<String> chainTasks = new ArrayList<>();
 

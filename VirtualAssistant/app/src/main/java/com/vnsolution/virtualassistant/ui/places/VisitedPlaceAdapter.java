@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
@@ -20,11 +19,27 @@ public class VisitedPlaceAdapter extends RecyclerView.Adapter<VisitedPlaceAdapte
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class VisitedPlacesViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
-        public VisitedPlacesViewHolder(View v) {
-            super(v);
-            textView = v.findViewById(R.id.text_visited_place);
+    public static class VisitedPlacesViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+        public TextView textPlaceName;
+        public TextView textPlaceAddress;
+
+        public VisitedPlacesViewHolder(View view) {
+            super(view);
+            view.setOnLongClickListener(this);
+            textPlaceName = view.findViewById(R.id.text_place_name);
+            textPlaceAddress = view.findViewById(R.id.text_place_address);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Thread deletePlaceThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            });
+            deletePlaceThread.start();
+            return false;
         }
     }
 
@@ -53,7 +68,8 @@ public class VisitedPlaceAdapter extends RecyclerView.Adapter<VisitedPlaceAdapte
     public void onBindViewHolder(@NonNull VisitedPlaceAdapter.VisitedPlacesViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.textView.setText(dataSource.get(position).formattedAddress);
+        holder.textPlaceName.setText(dataSource.get(position).placeName);
+        holder.textPlaceAddress.setText(dataSource.get(position).formattedAddress);
     }
 
     @Override
