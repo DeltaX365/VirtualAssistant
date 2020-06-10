@@ -1,5 +1,6 @@
 package com.vnsolution.virtualassistant.db.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
 
@@ -10,8 +11,8 @@ import java.util.List;
 @Dao
 public interface PlaceDao extends BaseDao<PlaceEntity> {
     @Query("SELECT * FROM Place")
-    List<PlaceEntity> getAll();
+    LiveData<List<PlaceEntity>> getAll();
 
     @Query("SELECT * FROM Place WHERE Id=:id")
-    PlaceEntity getById(String id);
+    LiveData<PlaceEntity> getById(String id);
 }

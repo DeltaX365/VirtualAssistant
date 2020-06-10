@@ -1,5 +1,6 @@
 package com.vnsolution.virtualassistant.db.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
 
@@ -10,5 +11,5 @@ import java.util.List;
 @Dao
 public interface DeviceDao extends BaseDao<DeviceEntity> {
     @Query("SELECT * FROM Device")
-    List<DeviceEntity> getAll();
+    LiveData<List<DeviceEntity>> getAll();
 }
