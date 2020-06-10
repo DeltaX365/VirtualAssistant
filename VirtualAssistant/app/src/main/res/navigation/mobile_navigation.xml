@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_places"
-        android:name="com.vnsolution.virtualassistant.ui.places.VisitedPlacesFragment"
+        android:name="com.vnsolution.virtualassistant.ui.places.VisitedPlaceFragment"
         android:label="@string/title_places"
         tools:layout="@layout/fragment_visited_places" />
 

@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -37,9 +38,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.StopPoint;
 
-public class DashboardFragment extends Fragment {
+import javax.inject.Inject;
+
+public class DashboardFragment extends Fragment implements Injectable {
     private DashboardViewModel dashboardViewModel;
 
     private MapView mMapView;
@@ -49,34 +53,21 @@ public class DashboardFragment extends Fragment {
     private Location mCurrentLocation;
     private LocationCallback mLocationCallback;
     private FusedLocationProviderClient fusedLocationClient;
+    private Context mContext;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                ViewModelProviders.of(this).get(DashboardViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+    @Inject
+    public ViewModelProvider.Factory viewModelFactory;
 
-        // https://stackoverflow.com/questions/19353255/how-to-put-google-maps-v2-on-a-fragment-using-viewpager
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity().getApplicationContext());
-        mMapView = (MapView) root.findViewById(R.id.mapView);
-        mMapView.onCreate(savedInstanceState);
-        mMapView.onResume(); // needed to get the map to display immediately
-        try {
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        mMapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap mMap) {
-                mGoogleMap = mMap;
-                mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-                mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
-                requestLocationUpdates();
-            }
-        });
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
 
-        return root;
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
     }
 
     @Override
@@ -103,6 +94,35 @@ public class DashboardFragment extends Fragment {
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        dashboardViewModel = ViewModelProviders.of(this, viewModelFactory).get(DashboardViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
+        if (mContext != null) {
+            // https://stackoverflow.com/questions/19353255/how-to-put-google-maps-v2-on-a-fragment-using-viewpager
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
+            mMapView = (MapView) root.findViewById(R.id.mapView);
+            mMapView.onCreate(savedInstanceState);
+            mMapView.onResume(); // needed to get the map to display immediately
+            try {
+                MapsInitializer.initialize(mContext);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mMapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap mMap) {
+                    mGoogleMap = mMap;
+                    mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+                    mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                    requestLocationUpdates();
+                }
+            });
+        }
+
+        return root;
     }
 
     private void updateLocation() {
@@ -162,9 +182,12 @@ public class DashboardFragment extends Fragment {
     }
 
     private StopPoint getStopPointFromCache() {
-        SharedPreferences sharedPref = getActivity().getApplicationContext().getSharedPreferences("com.vnsolution.VirtualAssistant", Context.MODE_PRIVATE);
-        String stopPointString = sharedPref.getString("StopPoint", "");
+        String stopPointString = "";
+        if (mContext != null) {
+            SharedPreferences sharedPref = mContext.getSharedPreferences("com.vnsolution.VirtualAssistant", Context.MODE_PRIVATE);
+            stopPointString = sharedPref.getString("StopPoint", "");
+        }
         Gson gson = new Gson();
-        return !stopPointString.isEmpty()? gson.fromJson(stopPointString, StopPoint.class) : null;
+        return !stopPointString.isEmpty() ? gson.fromJson(stopPointString, StopPoint.class) : null;
     }
 }

@@ -18,7 +18,16 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class HomeActivity extends AppCompatActivity {
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasAndroidInjector;
+
+public class HomeActivity extends AppCompatActivity implements HasAndroidInjector {
+    @Inject
+    DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
+    
     private static final int ALL_PERMISSIONS_RESULT = 1000;
 
     private String[] permissions = {
@@ -83,5 +92,10 @@ public class HomeActivity extends AppCompatActivity {
         if (requestCode == ALL_PERMISSIONS_RESULT) {
             checkPermissions();
         }
+    }
+
+    @Override
+    public AndroidInjector<Object> androidInjector() {
+        return dispatchingAndroidInjector;
     }
 }

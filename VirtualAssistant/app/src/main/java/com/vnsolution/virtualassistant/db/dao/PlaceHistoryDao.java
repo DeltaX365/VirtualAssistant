@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Query;
 
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
+import com.vnsolution.virtualassistant.db.entity.PlaceHistoryWithDetailEntity;
 
 import java.util.List;
 
@@ -12,4 +13,7 @@ import java.util.List;
 public interface PlaceHistoryDao extends BaseDao<PlaceHistoryEntity> {
     @Query("SELECT * FROM PlaceHistory")
     LiveData<List<PlaceHistoryEntity>> getAll();
+
+    @Query("SELECT * FROM PlaceHistory")
+    LiveData<List<PlaceHistoryWithDetailEntity>> getPlaceHistoriesWithDetail();
 }
