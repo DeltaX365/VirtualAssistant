@@ -9,12 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 
 import java.util.List;
 
 public class VisitedPlaceAdapter extends RecyclerView.Adapter<VisitedPlaceAdapter.VisitedPlacesViewHolder> {
-    private List<PlaceHistory> dataSource;
+    private List<Place> dataSource;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -44,12 +45,12 @@ public class VisitedPlaceAdapter extends RecyclerView.Adapter<VisitedPlaceAdapte
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public VisitedPlaceAdapter(List<PlaceHistory> data) {
+    public VisitedPlaceAdapter(List<Place> data) {
         dataSource = data;
     }
 
-    public void setData(List<PlaceHistory> placeHistories) {
-        dataSource = placeHistories;
+    public void setData(List<Place> places) {
+        dataSource = places;
         notifyDataSetChanged();
     }
 

@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant.db.dao;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
+import androidx.room.Transaction;
 
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryWithDetailEntity;
@@ -14,6 +15,7 @@ public interface PlaceHistoryDao extends BaseDao<PlaceHistoryEntity> {
     @Query("SELECT * FROM PlaceHistory")
     LiveData<List<PlaceHistoryEntity>> getAll();
 
+    @Transaction
     @Query("SELECT * FROM PlaceHistory")
     LiveData<List<PlaceHistoryWithDetailEntity>> getPlaceHistoriesWithDetail();
 }

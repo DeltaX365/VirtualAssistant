@@ -15,12 +15,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
@@ -103,6 +104,49 @@ public class StopTrackingService extends Service {
     @Inject
     public PlaceHistoryDao placeHistoryDao;
 
+    public class SaveToDBTask extends AsyncTask<StopPoint, Void, PlaceEntity> {
+
+        @Override
+        protected PlaceEntity doInBackground(StopPoint... stopPoints) {
+            StopPoint stopPoint = stopPoints[0];
+
+            // Place
+            PlaceEntity placeEntity = placeDao.getByLocation(stopPoint.latitude, stopPoint.longitude);
+            if (placeEntity == null) {
+                List<Address> addresses = getAddressFromLocation(stopPoint);
+                if (addresses.size() > 0) {
+                    Address address = addresses.get(0);
+                    placeEntity = placeDao.getByAddress(address.getAddressLine(0));
+                    if (placeEntity == null) {
+                        placeEntity = new PlaceEntity();
+                        placeEntity.id = UUID.randomUUID().toString();
+                        placeEntity.placeName = address.getFeatureName();
+                        placeEntity.formattedAddress = address.getAddressLine(0);
+                        placeEntity.latitude = address.getLatitude();
+                        placeEntity.longitude = address.getLongitude();
+                        placeEntity.createdDate = new Date();
+                        placeDao.insert(placeEntity);
+                    }
+                }
+            }
+
+            // Place History
+            PlaceHistoryEntity placeHistoryEntity = new PlaceHistoryEntity();
+            placeHistoryEntity.id = UUID.randomUUID().toString();
+            placeHistoryEntity.placeId = placeEntity.id;
+            placeHistoryEntity.enterTime = stopPoint.enter;
+            placeHistoryEntity.existTime = stopPoint.exist;
+            placeHistoryDao.insert(placeHistoryEntity);
+            return placeEntity;
+        }
+
+        @Override
+        protected void onPostExecute(PlaceEntity placeEntity) {
+            //Notify
+            AppService.sendNotification(StopTrackingService.this, placeEntity.formattedAddress);
+        }
+    }
+
     public StopTrackingService() {
     }
 
@@ -127,25 +171,27 @@ public class StopTrackingService extends Service {
         startForeground((int) (Math.random() * 999999), notification);
 
         //do heavy work on a background thread
-        switch (intent.getAction()) {
-            case INTENT_ACTION_INITIAL:
-                AppService.sendNotification(this, "INITIAL");
-                runInit();
-                break;
-            case INTENT_ACTION_CHECK_IN:
-                AppService.sendNotification(this, "CHECK_IN");
-                checkIn();
-                break;
-            case INTENT_ACTION_LOCATION_UPDATED:
-                AppService.sendNotification(this, "LOCATION_UPDATED");
-                updatePosition(intent);
-                break;
-            case INTENT_ACTION_CHECK_OUT:
-                AppService.sendNotification(this, "CHECK_OUT");
-                checkOut();
-                break;
+        if (intent != null) {
+            switch (intent.getAction()) {
+                case INTENT_ACTION_INITIAL:
+                    AppService.sendNotification(this, "INITIAL");
+                    runInit();
+                    break;
+                case INTENT_ACTION_CHECK_IN:
+                    AppService.sendNotification(this, "CHECK_IN");
+                    checkIn();
+                    break;
+                case INTENT_ACTION_LOCATION_UPDATED:
+                    AppService.sendNotification(this, "LOCATION_UPDATED");
+                    updatePosition(intent);
+                    break;
+                case INTENT_ACTION_CHECK_OUT:
+                    AppService.sendNotification(this, "CHECK_OUT");
+                    checkOut();
+                    break;
+            }
+            //stopSelf();
         }
-        //stopSelf();
 
         return START_NOT_STICKY;
     }
@@ -351,22 +397,27 @@ public class StopTrackingService extends Service {
         if (stopPoint != null) {
             stopPoint.exist = new Date();
             if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= Constants.STOP_DETECTION_IN_MILLISECONDS) {
-                Thread checkOutThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        saveToDb(stopPoint);
-                        removeStopPointFromCache();
+//                Thread checkOutThread = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        new SaveToDBTask().execute(stopPoint);
+//                        removeStopPointFromCache();
+//
+//                        Intent intent = new Intent(Constants.BROADCAST_PLACE_ADDED);
+//                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//                    }
+//                });
+//                checkOutThread.start();
+//                try {
+//                    checkOutThread.join();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+                new SaveToDBTask().execute(stopPoint);
+                removeStopPointFromCache();
 
-                        Intent intent = new Intent(Constants.BROADCAST_PLACE_ADDED);
-                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-                    }
-                });
-                checkOutThread.start();
-                try {
-                    checkOutThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Intent intent = new Intent(Constants.BROADCAST_PLACE_ADDED);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
             }
         }
         notifyPosition(stopPoint);
@@ -514,42 +565,6 @@ public class StopTrackingService extends Service {
         editor.remove("StopPoint");
     }
 
-    private void saveToDb(StopPoint stopPoint) {
-        if (stopPoint != null) {
-            List<Address> addresses = getAddressFromLocation(stopPoint);
-            if (addresses.size() > 0) {
-                Address address = addresses.get(0);
-
-                // Place
-                PlaceEntity place = new PlaceEntity();
-                place.id = UUID.randomUUID().toString();
-                place.placeName = address.getFeatureName();
-                place.formattedAddress = address.getAddressLine(0);
-                place.latitude = address.getLatitude();
-                place.longitude = address.getLongitude();
-                place.createdDate = new Date();
-
-                // Place History
-                PlaceHistoryEntity placeHistory = new PlaceHistoryEntity();
-                placeHistory.id = UUID.randomUUID().toString();
-                placeHistory.placeId = place.id;
-                placeHistory.enterTime = stopPoint.enter;
-                placeHistory.existTime = stopPoint.exist;
-
-                AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        placeDao.insert(place);
-                        placeHistoryDao.insert(placeHistory);
-                    }
-                });
-
-                //Notify
-                AppService.sendNotification(this, place.formattedAddress);
-            }
-        }
-    }
-
     private List<Address> getAddressFromLocation(StopPoint stopPoint) {
         List<Address> addresses = new ArrayList<>();
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -558,7 +573,6 @@ public class StopTrackingService extends Service {
             return addresses;
         } catch (IOException exception) {
             exception.printStackTrace();
-            Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
         }
         return addresses;
     }

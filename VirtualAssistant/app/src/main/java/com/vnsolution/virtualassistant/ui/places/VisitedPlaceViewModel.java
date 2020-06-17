@@ -9,6 +9,8 @@ import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryWithDetailEntity;
+import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
+import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 
 import java.util.ArrayList;
@@ -19,35 +21,47 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 
 public class VisitedPlaceViewModel extends ViewModel {
-    private PlaceHistoryDao placeHistoryDao;
+    private PlaceDao placeDao;
 
     @Inject
-    public VisitedPlaceViewModel(PlaceHistoryDao placeHistoryDao) {
-        this.placeHistoryDao = placeHistoryDao;
+    public VisitedPlaceViewModel(PlaceDao placeDao) {
+        this.placeDao = placeDao;
     }
 
-    public LiveData<List<PlaceHistory>> getVisitedPlaces() {
-        LiveData<List<PlaceHistoryWithDetailEntity>> placeHistoriesLiveData = placeHistoryDao.getPlaceHistoriesWithDetail();
-        return Transformations.map(placeHistoriesLiveData, placeHistoryEntities -> {
-            List<PlaceHistory> placeHistories = new ArrayList<>();
-            for (PlaceHistoryWithDetailEntity placeHistoryEntity: placeHistoryEntities) {
-                PlaceHistory placeHistory = toPlaceHistory(placeHistoryEntity);
-                placeHistories.add(placeHistory);
+    public LiveData<List<Place>> getVisitedPlaces() {
+        LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getPlaceWithHistories();
+        return Transformations.map(placesLiveData, placeEntities -> {
+            List<Place> places = new ArrayList<>();
+            for (PlaceWithHistoryDetailEntity placeEntity: placeEntities) {
+                Place place = toPlace(placeEntity);
+                places.add(place);
             }
-            return placeHistories;
+            return places;
         });
     }
 
-    public PlaceHistory toPlaceHistory(PlaceHistoryWithDetailEntity placeHistoryEntity) {
+    public Place toPlace(PlaceWithHistoryDetailEntity placeEntity) {
+        Place place = new Place();
+        place.id = placeEntity.place.id;
+        place.placeName = placeEntity.place.placeName;
+        place.formattedAddress = placeEntity.place.formattedAddress;
+        place.latitude = placeEntity.place.latitude;
+        place.longitude = placeEntity.place.longitude;
+        place.createdDate = placeEntity.place.createdDate;
+        place.placeHistories = new ArrayList<>();
+        for (PlaceHistoryEntity placeHistoryEntity: placeEntity.placeHistories) {
+            PlaceHistory placeHistory = toPlaceHistory(placeHistoryEntity);
+            place.placeHistories.add(placeHistory);
+        }
+        return place;
+    }
+
+    public PlaceHistory toPlaceHistory(PlaceHistoryEntity placeHistoryEntity) {
         PlaceHistory placeHistory = new PlaceHistory();
-        placeHistory.placeId = placeHistoryEntity.placeHistory.placeId;
-        placeHistory.placeName = placeHistoryEntity.place.placeName;
-        placeHistory.formattedAddress = placeHistoryEntity.place.formattedAddress;
-        placeHistory.latitude = placeHistoryEntity.place.latitude;
-        placeHistory.longitude = placeHistoryEntity.place.longitude;
-        placeHistory.enterTime = placeHistoryEntity.placeHistory.enterTime;
-        placeHistory.existTime =  placeHistoryEntity.placeHistory.existTime;
-        placeHistory.createdDate = placeHistoryEntity.place.createdDate;
+        placeHistory.id = placeHistoryEntity.id;
+        placeHistory.placeId = placeHistoryEntity.placeId;
+        placeHistory.enterTime = placeHistoryEntity.enterTime;
+        placeHistory.existTime =  placeHistoryEntity.existTime;
         return placeHistory;
     }
 }

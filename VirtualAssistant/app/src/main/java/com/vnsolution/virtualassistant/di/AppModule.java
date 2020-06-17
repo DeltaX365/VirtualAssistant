@@ -91,7 +91,7 @@ public class AppModule {
                 .createFromAsset("database/virtual_assistant.db")
                 // https://medium.com/androiddevelopers/understanding-migrations-with-room-f01e04b07929
                 // If you don’t want to provide migrations and you specifically want your database to be cleared when you upgrade the version, call fallbackToDestructiveMigration in the database builder
-//                .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration()
                 // https://stackoverflow.com/questions/44167111/android-room-simple-select-query-cannot-access-database-on-the-main-thread
                 // It's not recommended but you can access to database on main thread with allowMainThreadQueries()
                 // Cannot access database on the main thread since it may potentially lock the UI for a long period of time.

@@ -29,7 +29,7 @@ import com.vnsolution.virtualassistant.db.entity.WeatherEntity;
         WeatherEntity.class,
         SettingEntity.class
     },
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters({

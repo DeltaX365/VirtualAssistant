@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.di.Injectable;
+import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class VisitedPlaceFragment extends Fragment implements Injectable {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private VisitedPlaceAdapter visitedPlaceAdapter;
-    private List<PlaceHistory> visitedPlaces = new ArrayList<>();
+    private List<Place> visitedPlaces = new ArrayList<>();
     private VisitedPlaceViewModel visitedPlaceViewModel;
     private Context mContext;
 
@@ -66,10 +67,10 @@ public class VisitedPlaceFragment extends Fragment implements Injectable {
             visitedPlaceAdapter = new VisitedPlaceAdapter(visitedPlaces);
             recyclerView.setAdapter(visitedPlaceAdapter);
 
-            visitedPlaceViewModel.getVisitedPlaces().observe(getViewLifecycleOwner(), new Observer<List<PlaceHistory>>() {
+            visitedPlaceViewModel.getVisitedPlaces().observe(getViewLifecycleOwner(), new Observer<List<Place>>() {
                 @Override
-                public void onChanged(@Nullable List<PlaceHistory> placeHistories) {
-                    visitedPlaceAdapter.setData(placeHistories);
+                public void onChanged(@Nullable List<Place> places) {
+                    visitedPlaceAdapter.setData(places);
                 }
             });
         }
