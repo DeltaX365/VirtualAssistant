@@ -122,6 +122,7 @@ public class DashboardFragment extends Fragment implements Injectable {
                 public void onMapReady(GoogleMap mMap) {
                     mGoogleMap = mMap;
                     mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+                    mGoogleMap.setMyLocationEnabled(true);
                     mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
                     requestLocationUpdates();
                 }

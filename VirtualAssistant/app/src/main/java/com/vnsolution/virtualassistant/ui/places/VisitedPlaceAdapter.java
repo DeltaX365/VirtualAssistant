@@ -11,53 +11,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
+import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.List;
 
-public class VisitedPlaceAdapter extends RecyclerView.Adapter<VisitedPlaceAdapter.VisitedPlacesViewHolder> {
+public class VisitedPlaceAdapter extends RecyclerView.Adapter<VisitedPlacesViewHolder> {
     private List<Place> dataSource;
+    private OnItemActionListerner onItemActionListerner;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class VisitedPlacesViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
-        public TextView textPlaceName;
-        public TextView textPlaceAddress;
-
-        public VisitedPlacesViewHolder(View view) {
-            super(view);
-            view.setOnLongClickListener(this);
-            textPlaceName = view.findViewById(R.id.text_place_name);
-            textPlaceAddress = view.findViewById(R.id.text_place_address);
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            Thread deletePlaceThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
-            deletePlaceThread.start();
-            return false;
-        }
-    }
-
-    // Provide a suitable constructor (depends on the kind of dataset)
-    public VisitedPlaceAdapter(List<Place> data) {
-        dataSource = data;
+    public VisitedPlaceAdapter(List<Place> dataSource) {
+        this.dataSource = dataSource;
     }
 
     public void setData(List<Place> places) {
-        dataSource = places;
+        this.dataSource = places;
         notifyDataSetChanged();
+    }
+
+    public void setHandler(OnItemActionListerner onItemActionListerner) {
+        this.onItemActionListerner = onItemActionListerner;
     }
 
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
-    public VisitedPlaceAdapter.VisitedPlacesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public VisitedPlacesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.item_visited_place, parent, false);
         VisitedPlacesViewHolder viewHolder = new VisitedPlacesViewHolder(view);
@@ -66,11 +44,12 @@ public class VisitedPlaceAdapter extends RecyclerView.Adapter<VisitedPlaceAdapte
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(@NonNull VisitedPlaceAdapter.VisitedPlacesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull VisitedPlacesViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.textPlaceName.setText(dataSource.get(position).placeName);
         holder.textPlaceAddress.setText(dataSource.get(position).formattedAddress);
+        holder.onItemActionListerner = onItemActionListerner;
     }
 
     @Override
