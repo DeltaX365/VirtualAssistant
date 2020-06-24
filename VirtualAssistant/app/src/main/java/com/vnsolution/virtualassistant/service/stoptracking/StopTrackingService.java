@@ -131,19 +131,23 @@ public class StopTrackingService extends Service {
             }
 
             // Place History
-            PlaceHistoryEntity placeHistoryEntity = new PlaceHistoryEntity();
-            placeHistoryEntity.id = UUID.randomUUID().toString();
-            placeHistoryEntity.placeId = placeEntity.id;
-            placeHistoryEntity.enterTime = stopPoint.enter;
-            placeHistoryEntity.existTime = stopPoint.exist;
-            placeHistoryDao.insert(placeHistoryEntity);
+            if (placeEntity != null) {
+                PlaceHistoryEntity placeHistoryEntity = new PlaceHistoryEntity();
+                placeHistoryEntity.id = UUID.randomUUID().toString();
+                placeHistoryEntity.placeId = placeEntity.id;
+                placeHistoryEntity.enterTime = stopPoint.enter;
+                placeHistoryEntity.existTime = stopPoint.exist;
+                placeHistoryDao.insert(placeHistoryEntity);
+            }
+
             return placeEntity;
         }
 
         @Override
         protected void onPostExecute(PlaceEntity placeEntity) {
-            //Notify
-            AppService.sendNotification(StopTrackingService.this, placeEntity.formattedAddress);
+            if (placeEntity != null) {
+                AppService.sendNotification(StopTrackingService.this, placeEntity.formattedAddress);
+            }
         }
     }
 
