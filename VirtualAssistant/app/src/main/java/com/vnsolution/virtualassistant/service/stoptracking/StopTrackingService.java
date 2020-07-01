@@ -322,17 +322,26 @@ public class StopTrackingService extends Service {
     private void updatePosition(Intent intent) {
         Location location = extractLocationResult(intent);
         if (location != null) {
-            StopPoint stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
+            // Update stop point.
+            StopPoint stopPoint = getStopPointFromCache();
+            if (stopPoint == null) {
+                stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
+            } else {
+                stopPoint.longitude = location.getLongitude();
+                stopPoint.latitude = location.getLatitude();
+                stopPoint.exist = new Date();
+            }
             saveStopPointInCache(stopPoint);
 
+            // Process chain tasks.
             List<String> chainTasks = new ArrayList<>();
-
             chainTasks.add(STOP_REQUEST_LOCATION_UPDATES);
             chainTasks.add(STOP_ACTIVITY_TRANSACTION_MONITOR);
             chainTasks.add(START_GEOFENCE_MONITOR);
             chainTasks.add(STOP_FOREGROUND_SERVICE);
-
             processChainTasks(chainTasks);
+
+            // Notify new position.
             notifyPosition(stopPoint);
         }
     }
