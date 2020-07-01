@@ -13,13 +13,13 @@
 
     <fragment
         android:id="@+id/navigation_places"
-        android:name="com.vnsolution.virtualassistant.ui.places.VisitedPlaceFragment"
+        android:name="com.vnsolution.virtualassistant.ui.places.VisitedPlacesFragment"
         android:label="@string/title_places"
         tools:layout="@layout/fragment_visited_places" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.vnsolution.virtualassistant.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:name="com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsFragment"
+        android:label="@string/title_applications"
+        tools:layout="@layout/fragment_installed_applications" />
 </navigation>

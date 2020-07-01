@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardViewModel;
 import com.vnsolution.virtualassistant.ui.notifications.NotificationsViewModel;
-import com.vnsolution.virtualassistant.ui.places.VisitedPlaceViewModel;
+import com.vnsolution.virtualassistant.ui.places.VisitedPlacesViewModel;
 import com.vnsolution.virtualassistant.viewmodel.VirtualAssistantViewModelFactory;
 
 import dagger.Binds;
@@ -21,8 +21,8 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(VisitedPlaceViewModel.class)
-    abstract ViewModel bindVisitedPlaceViewModel(VisitedPlaceViewModel visitedPlaceViewModel);
+    @ViewModelKey(VisitedPlacesViewModel.class)
+    abstract ViewModel bindVisitedPlaceViewModel(VisitedPlacesViewModel visitedPlaceViewModel);
 
     @Binds
     @IntoMap

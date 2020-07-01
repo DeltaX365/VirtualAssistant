@@ -13,13 +13,13 @@
         android:paddingHorizontal="20dp">
 
         <TextView
-            android:id="@+id/text_place_name"
+            android:id="@+id/place_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="14sp"/>
 
         <TextView
-            android:id="@+id/text_place_address"
+            android:id="@+id/place_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="14sp"/>

@@ -17,8 +17,8 @@ public class VisitedPlacesViewHolder extends RecyclerView.ViewHolder {
 
     public VisitedPlacesViewHolder(View view) {
         super(view);
-        textPlaceName = view.findViewById(R.id.text_place_name);
-        textPlaceAddress = view.findViewById(R.id.text_place_address);
+        textPlaceName = view.findViewById(R.id.place_name);
+        textPlaceAddress = view.findViewById(R.id.place_address);
         view.setOnTouchListener(new View.OnTouchListener() {
 
             private GestureDetector gestureDetector = new GestureDetector(view.getContext(), new GestureDetector.SimpleOnGestureListener() {

@@ -15,11 +15,11 @@ import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.List;
 
-public class VisitedPlaceAdapter extends RecyclerView.Adapter<VisitedPlacesViewHolder> {
+public class VisitedPlacesAdapter extends RecyclerView.Adapter<VisitedPlacesViewHolder> {
     private List<Place> dataSource;
     private OnItemActionListerner onItemActionListerner;
 
-    public VisitedPlaceAdapter(List<Place> dataSource) {
+    public VisitedPlacesAdapter(List<Place> dataSource) {
         this.dataSource = dataSource;
     }
 

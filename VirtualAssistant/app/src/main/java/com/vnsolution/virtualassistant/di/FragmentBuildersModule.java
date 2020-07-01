@@ -1,8 +1,9 @@
 package com.vnsolution.virtualassistant.di;
 
+import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsFragment;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardFragment;
 import com.vnsolution.virtualassistant.ui.notifications.NotificationsFragment;
-import com.vnsolution.virtualassistant.ui.places.VisitedPlaceFragment;
+import com.vnsolution.virtualassistant.ui.places.VisitedPlacesFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -15,7 +16,9 @@ public abstract class FragmentBuildersModule {
     @ContributesAndroidInjector
     abstract DashboardFragment contributeDashboardFragment();
     @ContributesAndroidInjector
-    abstract VisitedPlaceFragment contributeVisitedPlaceFragment();
+    abstract VisitedPlacesFragment contributeVisitedPlacesFragment();
     @ContributesAndroidInjector
     abstract NotificationsFragment contributeNotificationsFragment();
+    @ContributesAndroidInjector
+    abstract InstalledApplicationsFragment contributeInstalledApplicationsFragment();
 }

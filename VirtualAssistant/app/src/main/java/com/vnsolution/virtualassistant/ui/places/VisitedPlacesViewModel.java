@@ -20,11 +20,11 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
-public class VisitedPlaceViewModel extends ViewModel {
+public class VisitedPlacesViewModel extends ViewModel {
     private PlaceDao placeDao;
 
     @Inject
-    public VisitedPlaceViewModel(PlaceDao placeDao) {
+    public VisitedPlacesViewModel(PlaceDao placeDao) {
         this.placeDao = placeDao;
     }
 
