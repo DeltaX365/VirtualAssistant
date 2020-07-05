@@ -49,7 +49,7 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        applicationViewModel = new InstalledApplicationsViewModel(getActivity().getApplicationContext());
+        applicationViewModel = new InstalledApplicationsViewModel(getContext());
         View root = inflater.inflate(R.layout.fragment_installed_applications, container, false);
 
         if (mContext != null) {
@@ -64,7 +64,7 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
             recyclerView.setLayoutManager(layoutManager);
 
             // specify an adapter
-            installedApplicationAdapter = new InstalledApplicationsAdapter(installedApplications);
+            installedApplicationAdapter = new InstalledApplicationsAdapter(mContext, installedApplications);
             recyclerView.setAdapter(installedApplicationAdapter);
             recyclerView.setOnItemAction(this);
 

@@ -18,8 +18,14 @@
         tools:layout="@layout/fragment_visited_places" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_apps"
         android:name="com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsFragment"
         android:label="@string/title_applications"
         tools:layout="@layout/fragment_installed_applications" />
+
+    <fragment
+        android:id="@+id/navigation_call_logs"
+        android:name="com.vnsolution.virtualassistant.ui.calllogs.CallLogsFragment"
+        android:label="@string/title_call_logs"
+        tools:layout="@layout/fragment_call_logs" />
 </navigation>

@@ -1,5 +1,8 @@
 package com.vnsolution.virtualassistant.ui.applications;
 
+import android.content.Context;
+import android.icu.text.DateFormat;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.Application;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
@@ -14,10 +18,12 @@ import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 import java.util.List;
 
 public class InstalledApplicationsAdapter extends RecyclerView.Adapter<InstalledApplicationsViewHolder> {
+    private Context context;
     private List<Application> dataSource;
     private OnItemActionListerner onItemActionListerner;
 
-    public InstalledApplicationsAdapter(List<Application> dataSource) {
+    public InstalledApplicationsAdapter(Context context, List<Application> dataSource) {
+        this.context = context;
         this.dataSource = dataSource;
     }
 
@@ -46,11 +52,16 @@ public class InstalledApplicationsAdapter extends RecyclerView.Adapter<Installed
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         try {
-            holder.imageAppIcon.setImageDrawable(dataSource.get(position).appIcon);
-            holder.textAppName.setText(dataSource.get(position).appName);
-            holder.textVersionCode.setText(dataSource.get(position).versionCode);
-            holder.textVersionName.setText(dataSource.get(position).versionName);
-            holder.textPackageName.setText(dataSource.get(position).packageName);
+            Glide.with(context).load(dataSource.get(position).appIcon).into(holder.imageAppIcon);
+            holder.textAppName.setText(dataSource.get(position).appName + " (v" + dataSource.get(position).versionName + ")");
+            String appLastUsedTime = "";
+            String appUsageTime = "";
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                appLastUsedTime += DateUtils.formatSameDayTime(dataSource.get(position).usageStats.getLastTimeUsed(), System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM);
+                appUsageTime += DateUtils.formatElapsedTime(dataSource.get(position).usageStats.getTotalTimeInForeground() / 1000);
+            }
+            holder.textAppLastUsedTime.setText("Last time used: " + appLastUsedTime);
+            holder.textAppUsage.setText("App usage: " + appUsageTime);
         }
         catch (Exception e) {
             e.printStackTrace();

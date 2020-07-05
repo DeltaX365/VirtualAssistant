@@ -1,11 +1,15 @@
 package com.vnsolution.virtualassistant.ui.applications;
 
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
+import android.provider.Settings;
+import android.util.ArrayMap;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -13,12 +17,13 @@ import androidx.lifecycle.ViewModel;
 import com.vnsolution.virtualassistant.model.Application;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class InstalledApplicationsViewModel extends ViewModel {
-    private static final int delayFetchDataInMilisecond = 1 * 1000; // 1 second
+    private static final int DELAY_FETCH_DATA_IN_MILLISECONDS = 1 * 1000; // 1 second
     private Context context;
     private MutableLiveData<List<Application>> installedApplicationsLiveData;
 
@@ -69,9 +74,39 @@ public class InstalledApplicationsViewModel extends ViewModel {
                         return a1.appName.compareTo(a2.appName);
                     }
                 });
+                getUsageStats(applications);
                 installedApplicationsLiveData.setValue(applications);
             }
-        }, delayFetchDataInMilisecond);
+        }, DELAY_FETCH_DATA_IN_MILLISECONDS);
+    }
+
+    private void getUsageStats(List<Application> applications) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP
+                && context != null && applications != null && !applications.isEmpty()) {
+
+            UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_YEAR, -7);
+            List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, calendar.getTimeInMillis(), System.currentTimeMillis());
+            if (usageStats.isEmpty()) {
+                context.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+            }
+
+            ArrayMap<String, UsageStats> appUsageStats = new ArrayMap<>();
+            for (UsageStats usageStat: usageStats) {
+                UsageStats existingStat = appUsageStats.get(usageStat.getPackageName());
+                if (existingStat == null) {
+                    appUsageStats.put(usageStat.getPackageName(), usageStat);
+                } else {
+                    existingStat.add(usageStat);
+                }
+            }
+
+            for (Application application: applications) {
+                UsageStats usageStat = appUsageStats.get(application.packageName);
+                application.usageStats = usageStat;
+            }
+        }
     }
 
     private boolean isSystemPackage(PackageInfo packageInfo) {

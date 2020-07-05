@@ -14,9 +14,8 @@ import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 public class InstalledApplicationsViewHolder extends RecyclerView.ViewHolder {
     public ImageView imageAppIcon;
     public TextView textAppName;
-    public TextView textVersionCode;
-    public TextView textVersionName;
-    public TextView textPackageName;
+    public TextView textAppUsage;
+    public TextView textAppLastUsedTime;
     public OnItemActionListerner onItemActionListerner;
 
     public InstalledApplicationsViewHolder(View view) {
@@ -24,9 +23,8 @@ public class InstalledApplicationsViewHolder extends RecyclerView.ViewHolder {
 
         imageAppIcon = view.findViewById(R.id.app_icon);
         textAppName = view.findViewById(R.id.app_name);
-        textVersionCode = view.findViewById(R.id.version_code);
-        textVersionName = view.findViewById(R.id.version_name);
-        textPackageName = view.findViewById(R.id.package_name);
+        textAppUsage = view.findViewById(R.id.app_usage);
+        textAppLastUsedTime = view.findViewById(R.id.app_last_used_time);
 
         view.setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(view.getContext(), new GestureDetector.SimpleOnGestureListener() {
