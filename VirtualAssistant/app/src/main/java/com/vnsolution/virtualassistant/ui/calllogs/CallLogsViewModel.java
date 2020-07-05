@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 
@@ -47,25 +46,13 @@ public class CallLogsViewModel extends ViewModel {
                         String phoneNumber = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.NUMBER));
                         String callType = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.TYPE));
                         int callDirectionCode = Integer.parseInt(callType);
-                        String callDirection = "";
-                        switch (callDirectionCode) {
-                            case android.provider.CallLog.Calls.OUTGOING_TYPE:
-                                callDirection = "OUTGOING";
-                                break;
-                            case android.provider.CallLog.Calls.INCOMING_TYPE:
-                                callDirection = "INCOMING";
-                                break;
-                            case android.provider.CallLog.Calls.MISSED_TYPE:
-                                callDirection = "MISSED";
-                                break;
-                        }
                         String callDate = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.DATE));
                         //Date callDateTime = new Date(Long.valueOf(callDate));
                         String callDuration = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.DURATION));
 
                         CallLog callLog = new CallLog();
                         callLog.phoneNumber = phoneNumber;
-                        callLog.callDirection = callDirection;
+                        callLog.callDirectionCode = callDirectionCode;
                         callLog.callDate = callDate;
                         callLog.callDuration = callDuration;
                         callLogs.add(callLog);

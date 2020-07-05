@@ -14,7 +14,6 @@ import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 public class CallLogsViewHolder extends RecyclerView.ViewHolder {
     public ImageView imageCallIcon;
     public TextView textPhoneNumber;
-    public TextView textCallDirection;
     public TextView textCallDate;
     public TextView textCallDuration;
     public OnItemActionListerner onItemActionListerner;
@@ -24,7 +23,6 @@ public class CallLogsViewHolder extends RecyclerView.ViewHolder {
 
         imageCallIcon = view.findViewById(R.id.call_icon);
         textPhoneNumber = view.findViewById(R.id.phone_number);
-        textCallDirection = view.findViewById(R.id.call_direction);
         textCallDate = view.findViewById(R.id.call_date);
         textCallDuration = view.findViewById(R.id.call_duration);
 

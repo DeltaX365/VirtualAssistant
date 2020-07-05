@@ -49,8 +49,18 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         try {
+            switch (dataSource.get(position).callDirectionCode) {
+                case android.provider.CallLog.Calls.INCOMING_TYPE:
+                    holder.imageCallIcon.setImageResource(R.drawable.ic_call_received_black_24dp);
+                    break;
+                case android.provider.CallLog.Calls.OUTGOING_TYPE:
+                    holder.imageCallIcon.setImageResource(R.drawable.ic_call_made_black_24dp);
+                    break;
+                case android.provider.CallLog.Calls.MISSED_TYPE:
+                    holder.imageCallIcon.setImageResource(R.drawable.ic_call_missed_black_24dp);
+                    break;
+            }
             holder.textPhoneNumber.setText(dataSource.get(position).phoneNumber);
-            holder.textCallDirection.setText(dataSource.get(position).callDirection);
             holder.textCallDate.setText("Time: " + dataSource.get(position).callDate);
             holder.textCallDuration.setText("Duration: " + dataSource.get(position).callDuration);
         }
