@@ -1,6 +1,7 @@
 package com.vnsolution.virtualassistant.service.stoptracking;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -20,8 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
@@ -42,6 +41,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.api.GoogleApi;
+import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
@@ -60,6 +61,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import retrofit2.Response;
 
 public class StopTrackingService extends Service {
     public static final String[] REQUEST_PERMISSIONS = {
@@ -104,6 +106,9 @@ public class StopTrackingService extends Service {
     @Inject
     public PlaceHistoryDao placeHistoryDao;
 
+    @Inject
+    public GoogleApi googleService;
+
     public class SaveToDBTask extends AsyncTask<StopPoint, Void, PlaceEntity> {
 
         @Override
@@ -113,9 +118,8 @@ public class StopTrackingService extends Service {
             // Place
             PlaceEntity placeEntity = placeDao.getByLocation(stopPoint.latitude, stopPoint.longitude);
             if (placeEntity == null) {
-                List<Address> addresses = getAddressFromLocation(stopPoint);
-                if (addresses.size() > 0) {
-                    Address address = addresses.get(0);
+                Address address = getAddressFromLocation(stopPoint);
+                if (address != null) {
                     placeEntity = placeDao.getByAddress(address.getAddressLine(0));
                     if (placeEntity == null) {
                         placeEntity = new PlaceEntity();
@@ -370,7 +374,7 @@ public class StopTrackingService extends Service {
 
     private Task<Void> startLocationUpdates() {
         LocationRequest locationRequest = buildLocationUpdatesRequest();
-        Task<Void> requestLocationUpdatesTask = fusedLocationClient.requestLocationUpdates(locationRequest, getLocationUpdatesPendingIntent());
+        @SuppressLint("MissingPermission") Task<Void> requestLocationUpdatesTask = fusedLocationClient.requestLocationUpdates(locationRequest, getLocationUpdatesPendingIntent());
         return requestLocationUpdatesTask;
     }
 
@@ -382,7 +386,7 @@ public class StopTrackingService extends Service {
     private Task<Void> startGeofenceMonitor() {
         StopPoint stopPoint = getStopPointFromCache();
         GeofencingRequest geofencingRequest = buildGeofencingRequest(stopPoint);
-        Task<Void> geofenceTrackingTask = geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent());
+        @SuppressLint("MissingPermission") Task<Void> geofenceTrackingTask = geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent());
         return geofenceTrackingTask;
     }
 
@@ -438,9 +442,9 @@ public class StopTrackingService extends Service {
 
     private void notifyPosition(StopPoint stopPoint) {
         if (stopPoint != null) {
-            List<Address> addresses = getAddressFromLocation(stopPoint);
-            if (addresses.size() > 0) {
-                Address address = addresses.get(0);
+//            searchNearByFromLocation(stopPoint);
+            Address address = getAddressFromLocation(stopPoint);
+            if (address != null) {
                 AppService.sendNotification(StopTrackingService.this, address.getAddressLine(0));
             }
         }
@@ -578,16 +582,36 @@ public class StopTrackingService extends Service {
         editor.remove("StopPoint");
     }
 
-    private List<Address> getAddressFromLocation(StopPoint stopPoint) {
-        List<Address> addresses = new ArrayList<>();
+    private Address getAddressFromLocation(StopPoint stopPoint) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
-            addresses = geocoder.getFromLocation(stopPoint.latitude, stopPoint.longitude,1);
-            return addresses;
+            List<Address> addresses = geocoder.getFromLocation(stopPoint.latitude, stopPoint.longitude,1);
+            if (addresses.size() > 0) {
+                Address address = addresses.get(0);
+                return address;
+            }
         } catch (IOException exception) {
             exception.printStackTrace();
         }
-        return addresses;
+        return null;
+    }
+
+    private void searchNearByFromLocation(StopPoint stopPoint) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String location = stopPoint.latitude + "," + stopPoint.longitude;
+                try {
+                    Response<GoogleMapNearByDto> searchNearByLocationResponse = googleService.searchNearByLocation(location, "distance").execute();
+                    if (searchNearByLocationResponse.isSuccessful()) {
+                        GoogleMapNearByDto nearByPlace = searchNearByLocationResponse.body();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
     }
 
 //    private BroadcastReceiver registerBroadcastReceiver() {

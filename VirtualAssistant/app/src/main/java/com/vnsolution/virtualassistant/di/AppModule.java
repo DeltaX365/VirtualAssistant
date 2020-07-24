@@ -6,6 +6,7 @@ import androidx.room.Room;
 
 import com.vnsolution.virtualassistant.api.GoogleApi;
 import com.vnsolution.virtualassistant.api.WeatherApi;
+import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.db.VirtualAssistantDb;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
@@ -59,26 +60,43 @@ public class AppModule {
     @Singleton
     @Provides
     public GoogleApi provideGoogleService() {
-        final String googleServiceKey = "AIzaSyC498VPSvURSXxlF22TFDUIpF_TC2GFQZ0";
-
         // https://stackoverflow.com/questions/32948083/is-there-a-way-to-add-query-parameter-to-every-request-with-retrofit-2
         // Add query params to each request.
-        OkHttpClient client = new OkHttpClient();
-        client.interceptors().add(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request request = chain.request();
-                HttpUrl url = request.url().newBuilder()
-                        .addQueryParameter("key", googleServiceKey)
-                        .build();
-                request = request.newBuilder().url(url).build();
-                return chain.proceed(request);
-            }
-        });
+        // Issue: https://stackoverflow.com/questions/34674820/unsupported-operation-android-retrofit-okhttp-adding-interceptor-in-okhttpcl
+        // Retrofit 2.0-beta2
+//        OkHttpClient client = new OkHttpClient();
+//        client.interceptors().add(new Interceptor() {
+//            @Override
+//            public Response intercept(Chain chain) throws IOException {
+//                Request request = chain.request();
+//                HttpUrl url = request.url().newBuilder()
+//                        .addQueryParameter("key", Constants.GM_API_KEY)
+//                        .build();
+//                request = request.newBuilder().url(url).build();
+//                return chain.proceed(request);
+//            }
+//        });
+        // Retrofit 2.0-beta3
+        // We have to use builder if you want to create OkHttpClient object.
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(
+                        new Interceptor() {
+                            @Override
+                            public Response intercept(Chain chain) throws IOException {
+                                Request request = chain.request();
+                                HttpUrl url = request.url().newBuilder()
+                                        .addQueryParameter("key", Constants.GM_API_KEY)
+                                        .build();
+                                request = request.newBuilder().url(url).build();
+                                return chain.proceed(request);
+                            }
+                        })
+                .build();
 
         return new Retrofit.Builder()
                 .baseUrl("https://maps.googleapis.com/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
                 .build()
                 .create(GoogleApi.class);
     }

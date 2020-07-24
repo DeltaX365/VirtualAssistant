@@ -1,6 +1,8 @@
 package com.vnsolution.virtualassistant.common;
 
 public class Constants {
+    public static final String GM_API_KEY = "AIzaSyBQr8YzGqe0PWQiEMx9JbsnXmbpRZvQURo";
+
     public static final String BROADCAST_ACTIVITY_RECOGNITION_PERMISSION_CHANGED = "BROADCAST_ACTIVITY_RECOGNITION_PERMISSION_CHANGED";
     public static final String BROADCAST_LOCATION_PERMISSION_CHANGED = "BROADCAST_LOCATION_PERMISSION_CHANGED";
     public static final String BROADCAST_ACTIVITY_DETECTED = "BROADCAST_ACTIVITY_DETECTED";

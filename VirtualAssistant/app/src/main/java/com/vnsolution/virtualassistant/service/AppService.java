@@ -17,7 +17,7 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
 
-import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class AppService {
     private static Context mContext;
