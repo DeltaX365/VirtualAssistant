@@ -1,5 +1,6 @@
 package com.vnsolution.virtualassistant.service;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -72,8 +73,10 @@ public class AppService {
         // Define the notification settings.
         builder.setContentTitle("Event triggered")
                 .setSmallIcon(R.drawable.ic_unknown)
-                .setContentText(message)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
 //                .setContentIntent(notificationPendingIntent)
+                .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                .setPriority(Notification.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         // Set the Channel ID for Android O.

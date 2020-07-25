@@ -21,6 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.LifecycleService;
+import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
@@ -42,6 +44,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.api.GoogleApi;
+import com.vnsolution.virtualassistant.api.adapter.ApiEmptyResponse;
+import com.vnsolution.virtualassistant.api.adapter.ApiErrorResponse;
+import com.vnsolution.virtualassistant.api.adapter.ApiResponse;
+import com.vnsolution.virtualassistant.api.adapter.ApiSuccessResponse;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
@@ -57,6 +63,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
@@ -118,17 +130,14 @@ public class StopTrackingService extends Service {
             // Place
             PlaceEntity placeEntity = placeDao.getByLocation(stopPoint.latitude, stopPoint.longitude);
             if (placeEntity == null) {
-                Address address = getAddressFromLocation(stopPoint);
-                if (address != null) {
-                    placeEntity = placeDao.getByAddress(address.getAddressLine(0));
+                GoogleMapNearByDto.NearBy nearBy = searchNearByFromLocation(stopPoint); // Address address = getAddressFromLocation(stopPoint);
+                if (nearBy != null) {
+                    placeEntity = placeDao.getByAddress(nearBy.vicinity);
                     if (placeEntity == null) {
-                        placeEntity = new PlaceEntity();
-                        placeEntity.id = UUID.randomUUID().toString();
-                        placeEntity.placeName = address.getFeatureName();
-                        placeEntity.formattedAddress = address.getAddressLine(0);
-                        placeEntity.latitude = address.getLatitude();
-                        placeEntity.longitude = address.getLongitude();
-                        placeEntity.createdDate = new Date();
+                        placeEntity = placeDao.getByGGPlaceId(nearBy.placeId);
+                    }
+                    if (placeEntity == null) {
+                        placeEntity = convertToPlaceEntityFrom(nearBy);
                         placeDao.insert(placeEntity);
                     }
                 }
@@ -442,10 +451,10 @@ public class StopTrackingService extends Service {
 
     private void notifyPosition(StopPoint stopPoint) {
         if (stopPoint != null) {
-//            searchNearByFromLocation(stopPoint);
-            Address address = getAddressFromLocation(stopPoint);
-            if (address != null) {
-                AppService.sendNotification(StopTrackingService.this, address.getAddressLine(0));
+            GoogleMapNearByDto.NearBy nearBy = searchNearByFromLocation(stopPoint); //Address address = getAddressFromLocation(stopPoint);
+            if (nearBy != null) {
+                String address = nearBy.name + "\n" + nearBy.vicinity;
+                AppService.sendNotification(StopTrackingService.this, address);
             }
         }
     }
@@ -596,22 +605,85 @@ public class StopTrackingService extends Service {
         return null;
     }
 
-    private void searchNearByFromLocation(StopPoint stopPoint) {
-        Thread thread = new Thread(new Runnable() {
+    private PlaceEntity convertToPlaceEntityFrom(Address address) {
+        PlaceEntity placeEntity = new PlaceEntity();
+        placeEntity.id = UUID.randomUUID().toString();
+        placeEntity.placeName = address.getFeatureName();
+        placeEntity.formattedAddress = address.getAddressLine(0);
+        placeEntity.latitude = address.getLatitude();
+        placeEntity.longitude = address.getLongitude();
+        placeEntity.createdDate = new Date();
+        return placeEntity;
+    }
+
+    private GoogleMapNearByDto.NearBy searchNearByFromLocation(StopPoint stopPoint) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<GoogleMapNearByDto.NearBy>> nearByListFuture = executor.submit(new Callable<List<GoogleMapNearByDto.NearBy>>() {
             @Override
-            public void run() {
+            public List<GoogleMapNearByDto.NearBy> call() throws Exception {
                 String location = stopPoint.latitude + "," + stopPoint.longitude;
-                try {
-                    Response<GoogleMapNearByDto> searchNearByLocationResponse = googleService.searchNearByLocation(location, "distance").execute();
-                    if (searchNearByLocationResponse.isSuccessful()) {
-                        GoogleMapNearByDto nearByPlace = searchNearByLocationResponse.body();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                Response<GoogleMapNearByDto> searchNearByLocationResponse = googleService.searchNearByLocation(location, "distance").execute();
+                if (searchNearByLocationResponse.isSuccessful()) {
+                    GoogleMapNearByDto nearByPlace = searchNearByLocationResponse.body();
+                    return nearByPlace.results;
                 }
+                return new ArrayList<>();
             }
         });
-        thread.start();
+        GoogleMapNearByDto.NearBy nearBy = null;
+        try {
+            List<GoogleMapNearByDto.NearBy> nearByList = nearByListFuture.get();
+            if (nearByList != null && !nearByList.isEmpty()) {
+                nearBy = nearByList.get(0);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        executor.shutdown();
+//        String location = stopPoint.latitude + "," + stopPoint.longitude;
+//        googleService.searchNearByLocation(location, "distance").observeForever(new Observer<ApiResponse<GoogleMapNearByDto>>() {
+//            @Override
+//            public void onChanged(ApiResponse<GoogleMapNearByDto> googleMapNearByDtoApiResponse) {
+//                if (googleMapNearByDtoApiResponse instanceof ApiSuccessResponse) {
+//                    GoogleMapNearByDto googleMapNearByDto = ((ApiSuccessResponse<GoogleMapNearByDto>)googleMapNearByDtoApiResponse).getBody();
+//                }
+//                if (googleMapNearByDtoApiResponse instanceof ApiErrorResponse) {
+//
+//                }
+//                if (googleMapNearByDtoApiResponse instanceof ApiEmptyResponse) {
+//
+//                }
+//            }
+//        });
+        return nearBy;
+    }
+
+    private PlaceEntity convertToPlaceEntityFrom(GoogleMapNearByDto.NearBy nearBy) {
+        PlaceEntity placeEntity = new PlaceEntity();
+        placeEntity.id = UUID.randomUUID().toString();
+        placeEntity.ggPlaceId = nearBy.placeId;
+        placeEntity.placeName = nearBy.name;
+        placeEntity.formattedAddress = nearBy.vicinity;
+        placeEntity.latitude = nearBy.geometry.location.lat;
+        placeEntity.longitude = nearBy.geometry.location.lng;
+        placeEntity.plusCodeCompound = nearBy.plusCode.compoundCode;
+        placeEntity.plusCodeGlobal = nearBy.plusCode.globalCode;
+        placeEntity.types = join(",", nearBy.types);
+        placeEntity.icon = nearBy.icon;
+        placeEntity.reference = nearBy.reference;
+        placeEntity.scope = nearBy.scope;
+        placeEntity.userRatingsTotal = nearBy.userRatingsTotal;
+        placeEntity.createdDate = new Date();
+        return placeEntity;
+    }
+
+    private String join(String delimiter, List<String> types) {
+        StringBuffer sb = new StringBuffer();
+        for (String type: types) {
+            sb.append(type);
+            sb.append(delimiter);
+        }
+        return sb.toString();
     }
 
 //    private BroadcastReceiver registerBroadcastReceiver() {

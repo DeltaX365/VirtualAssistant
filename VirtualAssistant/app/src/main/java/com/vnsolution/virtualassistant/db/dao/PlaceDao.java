@@ -28,4 +28,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
 
     @Query("SELECT * FROM Place WHERE FormattedAddress=:formattedAddress")
     PlaceEntity getByAddress(String formattedAddress);
+
+    @Query("SELECT * FROM Place WHERE GGPlaceId=:ggPlaceId")
+    PlaceEntity getByGGPlaceId(String ggPlaceId);
 }

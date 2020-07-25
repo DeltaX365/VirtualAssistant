@@ -2,6 +2,9 @@ package com.vnsolution.virtualassistant.api;
 
 import android.location.Address;
 
+import androidx.lifecycle.LiveData;
+
+import com.vnsolution.virtualassistant.api.adapter.ApiResponse;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
@@ -20,4 +23,5 @@ public interface GoogleApi {
 
     @GET("maps/api/place/nearbysearch/json")
     Call<GoogleMapNearByDto> searchNearByLocation(@Query(value = "location", encoded = false) String location, @Query("rankby") String rankby);
+//    LiveData<ApiResponse<GoogleMapNearByDto>> searchNearByLocation(@Query(value = "location", encoded = false) String location, @Query("rankby") String rankby);
 }
