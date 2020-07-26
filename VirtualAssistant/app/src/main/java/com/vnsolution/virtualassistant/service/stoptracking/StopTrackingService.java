@@ -21,9 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.lifecycle.LifecycleService;
-import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.room.util.StringUtil;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
 import com.google.android.gms.location.ActivityRecognitionClient;
@@ -44,11 +43,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.api.GoogleApi;
-import com.vnsolution.virtualassistant.api.adapter.ApiEmptyResponse;
-import com.vnsolution.virtualassistant.api.adapter.ApiErrorResponse;
-import com.vnsolution.virtualassistant.api.adapter.ApiResponse;
-import com.vnsolution.virtualassistant.api.adapter.ApiSuccessResponse;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
+import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
+import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDto;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
@@ -65,7 +62,6 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -130,14 +126,14 @@ public class StopTrackingService extends Service {
             // Place
             PlaceEntity placeEntity = placeDao.getByLocation(stopPoint.latitude, stopPoint.longitude);
             if (placeEntity == null) {
-                GoogleMapNearByDto.NearBy nearBy = searchNearByFromLocation(stopPoint); // Address address = getAddressFromLocation(stopPoint);
-                if (nearBy != null) {
-                    placeEntity = placeDao.getByAddress(nearBy.vicinity);
+                GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint); // Address address = getAddressFromLocation(stopPoint);
+                if (placeDetail != null) {
+                    placeEntity = placeDao.getByAddress(placeDetail.formattedAddress);
                     if (placeEntity == null) {
-                        placeEntity = placeDao.getByGGPlaceId(nearBy.placeId);
+                        placeEntity = placeDao.getByGGPlaceId(placeDetail.placeId);
                     }
                     if (placeEntity == null) {
-                        placeEntity = convertToPlaceEntityFrom(nearBy);
+                        placeEntity = convertToPlaceEntityFrom(placeDetail);
                         placeDao.insert(placeEntity);
                     }
                 }
@@ -451,9 +447,9 @@ public class StopTrackingService extends Service {
 
     private void notifyPosition(StopPoint stopPoint) {
         if (stopPoint != null) {
-            GoogleMapNearByDto.NearBy nearBy = searchNearByFromLocation(stopPoint); //Address address = getAddressFromLocation(stopPoint);
-            if (nearBy != null) {
-                String address = nearBy.name + "\n" + nearBy.vicinity;
+            GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint); //Address address = getAddressFromLocation(stopPoint);
+            if (placeDetail != null) {
+                String address = placeDetail.name + "\n" + placeDetail.formattedAddress;
                 AppService.sendNotification(StopTrackingService.this, address);
             }
         }
@@ -664,24 +660,109 @@ public class StopTrackingService extends Service {
         placeEntity.ggPlaceId = nearBy.placeId;
         placeEntity.placeName = nearBy.name;
         placeEntity.formattedAddress = nearBy.vicinity;
-        placeEntity.latitude = nearBy.geometry.location.lat;
-        placeEntity.longitude = nearBy.geometry.location.lng;
-        placeEntity.plusCodeCompound = nearBy.plusCode.compoundCode;
-        placeEntity.plusCodeGlobal = nearBy.plusCode.globalCode;
+        placeEntity.latitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lat : 0;
+        placeEntity.longitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lng : 0;
+        placeEntity.plusCodeCompound = (nearBy.plusCode != null)? nearBy.plusCode.compoundCode : "";
+        placeEntity.plusCodeGlobal = (nearBy.plusCode != null)? nearBy.plusCode.globalCode : "";
         placeEntity.types = join(",", nearBy.types);
         placeEntity.icon = nearBy.icon;
         placeEntity.reference = nearBy.reference;
         placeEntity.scope = nearBy.scope;
         placeEntity.userRatingsTotal = nearBy.userRatingsTotal;
+        placeEntity.vicinity = nearBy.vicinity;
         placeEntity.createdDate = new Date();
         return placeEntity;
     }
 
+    private GoogleMapPlaceDetailDto.PlaceDetail getPlaceDetailByLocation(StopPoint stopPoint) {
+        GoogleMapPlaceDto.Place place = getPlaceByLocation(stopPoint);
+        if (place != null && place.placeId != null && !place.placeId.isEmpty()) {
+            GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailById(place.placeId);
+            return placeDetail;
+        }
+        return null;
+    }
+
+    private PlaceEntity convertToPlaceEntityFrom(GoogleMapPlaceDetailDto.PlaceDetail placeDetail) {
+        PlaceEntity placeEntity = new PlaceEntity();
+        placeEntity.id = UUID.randomUUID().toString();
+        placeEntity.ggPlaceId = placeDetail.placeId;
+        placeEntity.placeName = placeDetail.name;
+        placeEntity.formattedAddress = placeDetail.formattedAddress;
+        placeEntity.latitude = (placeDetail.geometry != null && placeDetail.geometry.location != null)? placeDetail.geometry.location.lat : 0;
+        placeEntity.longitude = (placeDetail.geometry != null && placeDetail.geometry.location != null)? placeDetail.geometry.location.lng : 0;
+        placeEntity.plusCodeCompound = (placeDetail.plusCode != null)? placeDetail.plusCode.compoundCode : "";
+        placeEntity.plusCodeGlobal = (placeDetail.plusCode != null)? placeDetail.plusCode.globalCode : "";
+        placeEntity.types = join(",", placeDetail.types);
+        placeEntity.icon = placeDetail.icon;
+        placeEntity.rating = placeDetail.rating;
+        placeEntity.reference = placeDetail.reference;
+        placeEntity.scope = placeDetail.scope;
+        placeEntity.url = placeDetail.url;
+        placeEntity.userRatingsTotal = placeDetail.userRatingsTotal;
+        placeEntity.utcOffset = String.valueOf(placeDetail.utcOffset);
+        placeEntity.vicinity = placeDetail.vicinity;
+        placeEntity.createdDate = new Date();
+        return placeEntity;
+    }
+
+    private GoogleMapPlaceDto.Place getPlaceByLocation(StopPoint stopPoint) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<GoogleMapPlaceDto.Place>> placeFuture = executor.submit(new Callable<List<GoogleMapPlaceDto.Place>>() {
+            @Override
+            public List<GoogleMapPlaceDto.Place> call() throws Exception {
+                String location = stopPoint.latitude + "," + stopPoint.longitude;
+                Response<GoogleMapPlaceDto> placeResponse = googleService.getPlaceByLocation(location).execute();
+                if (placeResponse.isSuccessful()) {
+                    GoogleMapPlaceDto place = placeResponse.body();
+                    return place.results;
+                }
+                return new ArrayList<>();
+            }
+        });
+        GoogleMapPlaceDto.Place place = null;
+        try {
+            List<GoogleMapPlaceDto.Place> placeList = placeFuture.get();
+            if (placeList != null && !placeList.isEmpty()) {
+                place = placeList.get(0);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        executor.shutdown();
+        return place;
+    }
+
+    private GoogleMapPlaceDetailDto.PlaceDetail getPlaceDetailById(String placeId) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<GoogleMapPlaceDetailDto.PlaceDetail> placeDetailFuture = executor.submit(new Callable<GoogleMapPlaceDetailDto.PlaceDetail>() {
+            @Override
+            public GoogleMapPlaceDetailDto.PlaceDetail call() throws Exception {
+                Response<GoogleMapPlaceDetailDto> placeDetailResponse = googleService.getPlaceDetail(placeId).execute();
+                if (placeDetailResponse.isSuccessful()) {
+                    GoogleMapPlaceDetailDto placeDetail = placeDetailResponse.body();
+                    return placeDetail.result;
+                }
+                return null;
+            }
+        });
+        GoogleMapPlaceDetailDto.PlaceDetail placeDetail = null;
+        try {
+            placeDetail = placeDetailFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        executor.shutdown();
+        return placeDetail;
+    }
+
     private String join(String delimiter, List<String> types) {
         StringBuffer sb = new StringBuffer();
-        for (String type: types) {
-            sb.append(type);
-            sb.append(delimiter);
+        if (types != null) {
+            for (String type : types) {
+                sb.append(type);
+                sb.append(delimiter);
+            }
         }
         return sb.toString();
     }

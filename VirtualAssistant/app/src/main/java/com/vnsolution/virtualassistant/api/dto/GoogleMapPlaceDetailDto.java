@@ -1,5 +1,7 @@
 package com.vnsolution.virtualassistant.api.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -88,62 +90,123 @@ import java.util.List;
  * }
  */
 public class GoogleMapPlaceDetailDto {
+    @SerializedName("html_attributions")
     public List<String> htmlAttributions;
-    public List<PlaceDetail> results;
+
+    @SerializedName("result")
+    public PlaceDetail result;
+
+    @SerializedName("status")
     public String status;
 
     public class PlaceDetail {
+        @SerializedName("address_components")
         public List<AddressComponent> addressComponents;
+
+        @SerializedName("adr_address")
         public String adrAddress;
+
+        @SerializedName("formatted_address")
         public String formattedAddress;
+
+        @SerializedName("geometry")
         public Geometry geometry;
+
+        @SerializedName("icon")
         public String icon;
+
+        @SerializedName("id")
         public String id;
+
+        @SerializedName("name")
         public String name;
+
+        @SerializedName("place_id")
         public String placeId;
+
+        @SerializedName("plus_code")
         public PlusCode plusCode;
+
+        @SerializedName("rating")
         public int rating;
+
+        @SerializedName("reference")
         public String reference;
+
+        @SerializedName("scope")
         public String scope;
+
+        @SerializedName("types")
         public List<String> types;
+
+        @SerializedName("url")
         public String url;
+
+        @SerializedName("user_ratings_total")
         public int userRatingsTotal;
+
+        @SerializedName("utc_offset")
         public int utcOffset;
+
+        @SerializedName("vicinity")
         public String vicinity;
 
         public class AddressComponent {
+            @SerializedName("long_name")
             public String longName;
+
+            @SerializedName("short_name")
             public String shortName;
+
+            @SerializedName("types")
             public List<String> types;
         }
 
         public class Geometry {
+            @SerializedName("location")
             public Location location;
+
+            @SerializedName("viewport")
             public Viewport viewport;
 
             public class Location {
+                @SerializedName("lat")
                 public double lat;
+
+                @SerializedName("lng")
                 public double lng;
             }
 
             public class Viewport {
+                @SerializedName("northeast")
                 public Northeast northeast;
+
+                @SerializedName("southwest")
                 public Southwest southwest;
 
                 public class Northeast {
+                    @SerializedName("lat")
                     public double lat;
+
+                    @SerializedName("lng")
                     public double lng;
                 }
 
                 public class Southwest {
+                    @SerializedName("lat")
                     public double lat;
+
+                    @SerializedName("lng")
                     public double lng;
                 }
             }
         }
 
         public class PlusCode {
+            @SerializedName("compound_code")
             public String compoundCode;
+
+            @SerializedName("global_code")
             public String globalCode;
         }
     }

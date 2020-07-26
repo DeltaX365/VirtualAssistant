@@ -1,5 +1,7 @@
 package com.vnsolution.virtualassistant.api.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -731,52 +733,93 @@ import java.util.List;
  * }
  */
 public class GoogleMapPlaceDto {
+    @SerializedName("plus_code")
     public Place.PlusCode plusCode;
+
+    @SerializedName("status")
     public String status;
+
+    @SerializedName("results")
     public List<Place> results;
 
     public class Place {
+        @SerializedName("address_components")
         public List<AddressComponent> addressComponents;
+
+        @SerializedName("formatted_address")
         public String formattedAddress;
+
+        @SerializedName("geometry")
         public Geometry geometry;
+
+        @SerializedName("place_id")
         public String placeId;
+
+        @SerializedName("plus_code")
         public PlusCode plusCode;
+
+        @SerializedName("types")
         public List<String> types;
 
         public class AddressComponent {
+            @SerializedName("long_name")
             public String longName;
+
+            @SerializedName("short_name")
             public String shortName;
+
+            @SerializedName("types")
             public List<String> types;
         }
 
         public class Geometry {
+            @SerializedName("location")
             public Location location;
+
+            @SerializedName("location_type")
             public String locationType;
+
+            @SerializedName("viewport")
             public Viewport viewport;
 
             public class Location {
+                @SerializedName("lat")
                 public double lat;
+
+                @SerializedName("lng")
                 public double lng;
             }
 
             public class Viewport {
+                @SerializedName("northeast")
                 public Northeast northeast;
+
+                @SerializedName("southwest")
                 public Southwest southwest;
 
                 public class Northeast {
+                    @SerializedName("lat")
                     public double lat;
+
+                    @SerializedName("lng")
                     public double lng;
                 }
 
                 public class Southwest {
+                    @SerializedName("lat")
                     public double lat;
+
+                    @SerializedName("lng")
                     public double lng;
                 }
             }
         }
 
         public class PlusCode {
+            @SerializedName("compound_code")
             public String compoundCode;
+
+            @SerializedName("global_code")
             public String globalCode;
         }
     }
