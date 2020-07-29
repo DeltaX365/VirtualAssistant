@@ -31,4 +31,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
 
     @Query("SELECT * FROM Place WHERE GGPlaceId=:ggPlaceId")
     PlaceEntity getByGGPlaceId(String ggPlaceId);
+
+    @Query("DELETE FROM Place")
+    void reset();
 }

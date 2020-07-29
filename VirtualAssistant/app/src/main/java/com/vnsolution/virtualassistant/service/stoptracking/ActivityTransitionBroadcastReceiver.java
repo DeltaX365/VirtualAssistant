@@ -37,7 +37,7 @@ public class ActivityTransitionBroadcastReceiver extends BroadcastReceiver {
             String activityStatus = "";
             for(ActivityTransitionEvent event: events) {
                 if ((event.getActivityType() == DetectedActivity.STILL) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
-                    activityStatus += "ENTER_STILL" + "\n";
+                    activityStatus += "Enter still." + "\n";
                     // Whenever user enters still, then we indicate that they are stopping at a new position, so check-in event will be invoked
                     Intent serviceIntent = new Intent(context, StopTrackingService.class);
                     serviceIntent.setAction(StopTrackingService.INTENT_ACTION_CHECK_IN);
@@ -45,41 +45,41 @@ public class ActivityTransitionBroadcastReceiver extends BroadcastReceiver {
                     break;
                 }
                 if ((event.getActivityType() == DetectedActivity.STILL) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_EXIT)) {
-                    activityStatus += "EXIST_STILL" + "\n";
+                    activityStatus += "Exist still." + "\n";
                 }
                 if ((event.getActivityType() == DetectedActivity.WALKING) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
-                    activityStatus += "ENTER_WALKING" + "\n";
+                    activityStatus += "Enter walking." + "\n";
                 }
                 if ((event.getActivityType() == DetectedActivity.WALKING) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_EXIT)) {
-                    activityStatus += "EXIST_WALKING" + "\n";
+                    activityStatus += "Exist walking." + "\n";
                 }
                 if ((event.getActivityType() == DetectedActivity.ON_FOOT) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
-                    activityStatus += "ENTER_ON_FOOT" + "\n";
+                    activityStatus += "Enter on foot." + "\n";
                 }
                 if ((event.getActivityType() == DetectedActivity.ON_FOOT) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_EXIT)) {
-                    activityStatus += "EXIST_ON_FOOT" + "\n";
+                    activityStatus += "Exist on foot." + "\n";
                 }
                 if ((event.getActivityType() == DetectedActivity.RUNNING) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
-                    activityStatus += "ENTER_RUNNING" + "\n";
+                    activityStatus += "Enter running." + "\n";
                 }
                 if ((event.getActivityType() == DetectedActivity.RUNNING) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_EXIT)) {
-                    activityStatus += "EXIST_RUNNING" + "\n";
+                    activityStatus += "Exist running." + "\n";
                 }
                 if ((event.getActivityType() == DetectedActivity.ON_BICYCLE) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
-                    activityStatus += "ENTER_ON_BICYCLE" + "\n";
+                    activityStatus += "Enter on bicycle." + "\n";
                 }
                 if ((event.getActivityType() == DetectedActivity.ON_BICYCLE) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_EXIT)) {
-                    activityStatus += "EXIST_ON_BICYCLE";
+                    activityStatus += "Exist on bicycle.";
                 }
                 if ((event.getActivityType() == DetectedActivity.IN_VEHICLE) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
-                    activityStatus += "ENTER_IN_VEHICLE" + "\n";
+                    activityStatus += "Enter in vehicle." + "\n";
                 }
                 if ((event.getActivityType() == DetectedActivity.IN_VEHICLE) && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_EXIT)) {
-                    activityStatus += "EXIST_IN_VEHICLE" + "\n";
+                    activityStatus += "Exist in vehicle." + "\n";
                 }
             }
             if (!activityStatus.isEmpty()) {
-                AppService.sendNotification(context, activityStatus);
+                AppService.sendNotification(context, "ACTIVITY TRANSITIONS BROADCAST", activityStatus);
             }
         }
     }

@@ -35,7 +35,7 @@ public class AppService {
      * Posts a notification in the notification bar when a transition is detected.
      * If the user clicks the notification, control goes to the MainActivity.
      */
-    public static void sendNotification(Context context, String message) {
+    public static void sendNotification(Context context, String title, String message) {
         // Get an instance of the Notification manager
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -71,7 +71,7 @@ public class AppService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
         // Define the notification settings.
-        builder.setContentTitle("Event triggered")
+        builder.setContentTitle(title)
                 .setSmallIcon(R.drawable.ic_unknown)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
 //                .setContentIntent(notificationPendingIntent)

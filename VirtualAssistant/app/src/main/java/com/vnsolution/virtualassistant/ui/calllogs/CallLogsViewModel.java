@@ -56,9 +56,9 @@ public class CallLogsViewModel extends ViewModel {
                         callLog.callDate = callDate;
                         callLog.callDuration = callDuration;
                         callLogs.add(callLog);
+                        callLogsLiveData.setValue(callLogs);
                     }
                     cursor.close();
-                    callLogsLiveData.setValue(callLogs);
                 }
             }
         }, DELAY_FETCH_DATA_IN_MILLISECONDS);

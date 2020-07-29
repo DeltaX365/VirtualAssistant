@@ -155,7 +155,7 @@ public class StopTrackingService extends Service {
         @Override
         protected void onPostExecute(PlaceEntity placeEntity) {
             if (placeEntity != null) {
-                AppService.sendNotification(StopTrackingService.this, placeEntity.formattedAddress);
+                AppService.sendNotification(StopTrackingService.this, "CHECK OUT", placeEntity.formattedAddress);
             }
         }
     }
@@ -187,19 +187,19 @@ public class StopTrackingService extends Service {
         if (intent != null) {
             switch (intent.getAction()) {
                 case INTENT_ACTION_INITIAL:
-                    AppService.sendNotification(this, "INITIAL");
+                    AppService.sendNotification(this, "EVENT TRIGGER", "Initial service.");
                     runInit();
                     break;
                 case INTENT_ACTION_CHECK_IN:
-                    AppService.sendNotification(this, "CHECK_IN");
+                    AppService.sendNotification(this, "EVENT TRIGGER", "Checks in.");
                     checkIn();
                     break;
                 case INTENT_ACTION_LOCATION_UPDATED:
-                    AppService.sendNotification(this, "LOCATION_UPDATED");
+                    AppService.sendNotification(this, "EVENT TRIGGER", "Update location.");
                     updatePosition(intent);
                     break;
                 case INTENT_ACTION_CHECK_OUT:
-                    AppService.sendNotification(this, "CHECK_OUT");
+                    AppService.sendNotification(this, "EVENT TRIGGER", "Check out.");
                     checkOut();
                     break;
             }
@@ -450,8 +450,23 @@ public class StopTrackingService extends Service {
             GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint); //Address address = getAddressFromLocation(stopPoint);
             if (placeDetail != null) {
                 String address = placeDetail.name + "\n" + placeDetail.formattedAddress;
-                AppService.sendNotification(StopTrackingService.this, address);
+                AppService.sendNotification(StopTrackingService.this, "PLACE", address);
             }
+            GoogleMapNearByDto.NearBy nearBy = searchNearByFromLocation(stopPoint);
+            if (nearBy != null) {
+                String address = nearBy.name + "\n" + nearBy.vicinity;
+                AppService.sendNotification(StopTrackingService.this, "NEARBY", address);
+            }
+            Address place = getAddressFromLocation(stopPoint);
+            if (place != null) {
+                String address = place.getFeatureName() + "\n" + place.getAddressLine(0);
+                AppService.sendNotification(StopTrackingService.this, "ADDRESS", address);
+            }
+            if (placeDetail == null && nearBy == null && place == null) {
+                AppService.sendNotification(StopTrackingService.this, "NOTICE", "Can not get address of stop position.");
+            }
+        } else {
+            AppService.sendNotification(StopTrackingService.this, "NOTICE", "Stop position is not available.");
         }
     }
 

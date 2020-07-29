@@ -1,5 +1,6 @@
 package com.vnsolution.virtualassistant.ui.dashboard;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -39,12 +40,20 @@ import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.di.Injectable;
+import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.StopPoint;
+import com.vnsolution.virtualassistant.ui.places.VisitedPlacesViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 public class DashboardFragment extends Fragment implements Injectable {
     private DashboardViewModel dashboardViewModel;
+    private VisitedPlacesViewModel visitedPlaceViewModel;
+
+    private List<Place> visitedPlaces = new ArrayList<>();
 
     private MapView mMapView;
     private GoogleMap mGoogleMap;
@@ -118,6 +127,7 @@ public class DashboardFragment extends Fragment implements Injectable {
                 e.printStackTrace();
             }
             mMapView.getMapAsync(new OnMapReadyCallback() {
+                @SuppressLint("MissingPermission")
                 @Override
                 public void onMapReady(GoogleMap mMap) {
                     mGoogleMap = mMap;
@@ -128,6 +138,15 @@ public class DashboardFragment extends Fragment implements Injectable {
                 }
             });
         }
+
+        visitedPlaceViewModel = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
+        visitedPlaceViewModel.getVisitedPlaces().observe(getViewLifecycleOwner(), new Observer<List<Place>>() {
+            @Override
+            public void onChanged(@Nullable List<Place> places) {
+                visitedPlaces = places;
+                presentVisitedPlaces(visitedPlaces);
+            }
+        });
 
         return root;
     }
@@ -168,6 +187,20 @@ public class DashboardFragment extends Fragment implements Injectable {
         }
     }
 
+    private void presentVisitedPlaces(List<Place> places) {
+        if(mGoogleMap != null) {
+            for(Place place: places) {
+                LatLng latLng = new LatLng(place.latitude, place.longitude);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title(place.placeName + " \n" + place.formattedAddress);
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                mGoogleMap.addMarker(markerOptions);
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(Constants.GEOLOCATION_INTERVAL_UPDATE);

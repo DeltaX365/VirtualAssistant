@@ -5,6 +5,7 @@ import com.vnsolution.virtualassistant.ui.calllogs.CallLogsFragment;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardFragment;
 import com.vnsolution.virtualassistant.ui.notifications.NotificationsFragment;
 import com.vnsolution.virtualassistant.ui.places.VisitedPlacesFragment;
+import com.vnsolution.virtualassistant.ui.settings.SettingsFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -24,4 +25,6 @@ public abstract class FragmentBuildersModule {
     abstract InstalledApplicationsFragment contributeInstalledApplicationsFragment();
     @ContributesAndroidInjector
     abstract CallLogsFragment contributeCallLogsFragment();
+    @ContributesAndroidInjector
+    abstract SettingsFragment contributeSettingsFragment();
 }

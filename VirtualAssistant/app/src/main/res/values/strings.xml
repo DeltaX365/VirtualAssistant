@@ -14,4 +14,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_applications">Applications</string>
     <string name="title_call_logs">Call Logs</string>
+    <string name="title_settings">Settings</string>
 </resources>

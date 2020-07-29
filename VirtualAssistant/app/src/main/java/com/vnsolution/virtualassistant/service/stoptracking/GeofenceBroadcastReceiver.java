@@ -29,7 +29,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = getErrorString(geofencingEvent.getErrorCode());
-            AppService.sendNotification(context, errorMessage);
+            AppService.sendNotification(context, "GEOFENCE BROADCAST", errorMessage);
             return;
         }
         handleEvent(context, geofencingEvent);
@@ -45,20 +45,20 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 //            Toast.makeText(context, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
 
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ) { //Check-in
-            geofencingStatus = "GEOFENCE_TRANSITION_ENTER";
+            geofencingStatus = "Enter geofence.";
             action = StopTrackingService.INTENT_ACTION_CHECK_IN;
         }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ) { //Check-in again
-            geofencingStatus = "GEOFENCE_TRANSITION_DWELL";
+            geofencingStatus = "Dwell geofence.";
             action = StopTrackingService.INTENT_ACTION_CHECK_IN;
         }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) { //Check-out
-            geofencingStatus = "GEOFENCE_TRANSITION_EXIT";
+            geofencingStatus = "Exist geofence.";
             action = StopTrackingService.INTENT_ACTION_CHECK_OUT;
         }
 
         if (!geofencingStatus.isEmpty()) {
-            AppService.sendNotification(context, geofencingStatus);
+            AppService.sendNotification(context, "GEOFENCE BROADCAST", geofencingStatus);
         }
 
         if (!action.isEmpty()) {

@@ -25,6 +25,7 @@ import java.util.List;
 public class InstalledApplicationsViewModel extends ViewModel {
     private static final int DELAY_FETCH_DATA_IN_MILLISECONDS = 1 * 1000; // 1 second
     private Context context;
+    private ArrayMap<String, UsageStats> appUsageStats;
     private MutableLiveData<List<Application>> installedApplicationsLiveData;
 
     public InstalledApplicationsViewModel(Context context) {
@@ -55,6 +56,12 @@ public class InstalledApplicationsViewModel extends ViewModel {
                 List<Application> applications = new ArrayList<>();
                 if (context != null) {
                     List<PackageInfo> packageInfos = context.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA);
+                    Collections.sort(packageInfos, new Comparator<PackageInfo>() {
+                        @Override
+                        public int compare(PackageInfo a1, PackageInfo a2) {
+                            return a1.applicationInfo.loadLabel(context.getPackageManager()).toString().compareTo(a2.applicationInfo.loadLabel(context.getPackageManager()).toString());
+                        }
+                    });
                     for (PackageInfo packageInfo : packageInfos) {
                         if (!shouldGetSystemPackages && isSystemPackage(packageInfo)) {
                             continue;
@@ -65,24 +72,18 @@ public class InstalledApplicationsViewModel extends ViewModel {
                         application.versionCode = packageInfo.versionCode;
                         application.versionName = packageInfo.versionName;
                         application.appIcon = packageInfo.applicationInfo.loadIcon(context.getPackageManager());
+                        getUsageStats(application);
                         applications.add(application);
+                        installedApplicationsLiveData.setValue(applications);
                     }
                 }
-                Collections.sort(applications, new Comparator<Application>() {
-                    @Override
-                    public int compare(Application a1, Application a2) {
-                        return a1.appName.compareTo(a2.appName);
-                    }
-                });
-                getUsageStats(applications);
-                installedApplicationsLiveData.setValue(applications);
             }
         }, DELAY_FETCH_DATA_IN_MILLISECONDS);
     }
 
-    private void getUsageStats(List<Application> applications) {
+    private void getUsageStats(Application application) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP
-                && context != null && applications != null && !applications.isEmpty()) {
+                && context != null && application != null && appUsageStats == null) {
 
             UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
             Calendar calendar = Calendar.getInstance();
@@ -92,7 +93,7 @@ public class InstalledApplicationsViewModel extends ViewModel {
                 context.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
             }
 
-            ArrayMap<String, UsageStats> appUsageStats = new ArrayMap<>();
+            appUsageStats = new ArrayMap<>();
             for (UsageStats usageStat: usageStats) {
                 UsageStats existingStat = appUsageStats.get(usageStat.getPackageName());
                 if (existingStat == null) {
@@ -101,12 +102,9 @@ public class InstalledApplicationsViewModel extends ViewModel {
                     existingStat.add(usageStat);
                 }
             }
-
-            for (Application application: applications) {
-                UsageStats usageStat = appUsageStats.get(application.packageName);
-                application.usageStats = usageStat;
-            }
         }
+        UsageStats usageStat = appUsageStats.get(application.packageName);
+        application.usageStats = usageStat;
     }
 
     private boolean isSystemPackage(PackageInfo packageInfo) {
