@@ -154,9 +154,8 @@ public class StopTrackingService extends Service {
 
         @Override
         protected void onPostExecute(PlaceEntity placeEntity) {
-            if (placeEntity != null) {
-                AppService.sendNotification(StopTrackingService.this, "CHECK OUT", placeEntity.formattedAddress);
-            }
+            String message = (placeEntity != null) ? placeEntity.formattedAddress : "Place didn't find.";
+            AppService.sendNotification(StopTrackingService.this, "CHECK OUT", message);
         }
     }
 
@@ -436,13 +435,9 @@ public class StopTrackingService extends Service {
 //                    e.printStackTrace();
 //                }
                 new SaveToDBTask().execute(stopPoint);
-                removeStopPointFromCache();
-
-                Intent intent = new Intent(Constants.BROADCAST_PLACE_ADDED);
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
             }
         }
-        notifyPosition(stopPoint);
+        removeStopPointFromCache();
     }
 
     private void notifyPosition(StopPoint stopPoint) {
