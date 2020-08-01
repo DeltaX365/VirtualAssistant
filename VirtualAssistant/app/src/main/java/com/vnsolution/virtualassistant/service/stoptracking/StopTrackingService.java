@@ -125,18 +125,26 @@ public class StopTrackingService extends Service {
 
             // Place
             PlaceEntity placeEntity = placeDao.getByLocation(stopPoint.latitude, stopPoint.longitude);
+            PlaceEntity detectedPlace = null;
             if (placeEntity == null) {
+                Address address = getAddressFromLocation(stopPoint);
+                if (address != null) {
+                    detectedPlace = convertToPlaceEntityFrom(address);
+                }
                 GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint); // Address address = getAddressFromLocation(stopPoint);
                 if (placeDetail != null) {
-                    placeEntity = placeDao.getByAddress(placeDetail.formattedAddress);
+                    detectedPlace = convertToPlaceEntityFrom(placeDetail);
+                }
+                if (detectedPlace != null) {
+                    placeEntity = placeDao.getByName(detectedPlace.placeName);
                     if (placeEntity == null) {
-                        placeEntity = placeDao.getByGGPlaceId(placeDetail.placeId);
-                    }
-                    if (placeEntity == null) {
-                        placeEntity = convertToPlaceEntityFrom(placeDetail);
-                        placeDao.insert(placeEntity);
+                        placeEntity = placeDao.getByGGPlaceId(detectedPlace.ggPlaceId);
                     }
                 }
+            }
+            if (placeEntity == null) {
+                placeEntity = (detectedPlace != null)? detectedPlace : convertToPlaceEntityFrom(stopPoint);
+                placeDao.insert(placeEntity);
             }
 
             // Place History
@@ -154,7 +162,13 @@ public class StopTrackingService extends Service {
 
         @Override
         protected void onPostExecute(PlaceEntity placeEntity) {
-            String message = (placeEntity != null) ? placeEntity.formattedAddress : "Place didn't find.";
+            String message = "Can't detect a place.";
+            if (placeEntity != null) {
+                message = "(" + placeEntity.latitude + "," + placeEntity.longitude + ")";
+                if (!placeEntity.placeName.isEmpty() && !placeEntity.formattedAddress.isEmpty()) {
+                    message = placeEntity.placeName + "\n" + placeEntity.formattedAddress;
+                }
+            }
             AppService.sendNotification(StopTrackingService.this, "CHECK OUT", message);
         }
     }
@@ -187,6 +201,7 @@ public class StopTrackingService extends Service {
             switch (intent.getAction()) {
                 case INTENT_ACTION_INITIAL:
                     AppService.sendNotification(this, "EVENT TRIGGER", "Initial service.");
+                    removeStopPointFromCache();
                     runInit();
                     break;
                 case INTENT_ACTION_CHECK_IN:
@@ -595,6 +610,7 @@ public class StopTrackingService extends Service {
         SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.remove("StopPoint");
+        editor.commit();
     }
 
     private Address getAddressFromLocation(StopPoint stopPoint) {
@@ -764,6 +780,15 @@ public class StopTrackingService extends Service {
         }
         executor.shutdown();
         return placeDetail;
+    }
+
+    private PlaceEntity convertToPlaceEntityFrom(StopPoint stopPoint) {
+        PlaceEntity placeEntity = new PlaceEntity();
+        placeEntity.id = UUID.randomUUID().toString();
+        placeEntity.latitude = stopPoint.latitude;
+        placeEntity.longitude = stopPoint.longitude;
+        placeEntity.createdDate = new Date();
+        return placeEntity;
     }
 
     private String join(String delimiter, List<String> types) {
