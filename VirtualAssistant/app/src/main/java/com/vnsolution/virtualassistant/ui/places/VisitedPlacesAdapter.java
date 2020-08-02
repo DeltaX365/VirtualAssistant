@@ -47,8 +47,14 @@ public class VisitedPlacesAdapter extends RecyclerView.Adapter<VisitedPlacesView
     public void onBindViewHolder(@NonNull VisitedPlacesViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.textPlaceName.setText(dataSource.get(position).placeName);
-        holder.textPlaceAddress.setText(dataSource.get(position).formattedAddress);
+        Place place = dataSource.get(position);
+
+        String placeName = (place.placeName == null || place.placeName.isEmpty()) ? "Unknown" : place.placeName;
+        holder.textPlaceName.setText(placeName);
+
+        String placeAddress = (place.formattedAddress == null || place.formattedAddress.isEmpty()) ? (place.latitude + "," + place.longitude) : place.formattedAddress;
+        holder.textPlaceAddress.setText(placeAddress);
+
         holder.onItemActionListerner = onItemActionListerner;
     }
 
