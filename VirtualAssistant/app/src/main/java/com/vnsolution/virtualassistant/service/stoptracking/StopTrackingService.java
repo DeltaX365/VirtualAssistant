@@ -145,6 +145,12 @@ public class StopTrackingService extends Service {
             if (placeEntity == null) {
                 placeEntity = (detectedPlace != null)? detectedPlace : convertToPlaceEntityFrom(stopPoint);
                 placeDao.insert(placeEntity);
+            } else {
+                if (placeEntity.ggPlaceId.isEmpty() || placeEntity.placeName.isEmpty() && detectedPlace != null) {
+                    detectedPlace.id = placeEntity.id;
+                    placeEntity = detectedPlace;
+                    placeDao.update(placeEntity);
+                }
             }
 
             // Place History
@@ -201,7 +207,6 @@ public class StopTrackingService extends Service {
             switch (intent.getAction()) {
                 case INTENT_ACTION_INITIAL:
                     AppService.sendNotification(this, "EVENT TRIGGER", "Initial service.");
-                    removeStopPointFromCache();
                     runInit();
                     break;
                 case INTENT_ACTION_CHECK_IN:
@@ -255,6 +260,9 @@ public class StopTrackingService extends Service {
         switch (taskName) {
             case START_ACTIVITY_TRANSACTION_MONITOR:
                 runningTask = startActivityTransitionMonitor();
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                    simulateTransition();
+//                }
                 break;
             case STOP_ACTIVITY_TRANSACTION_MONITOR:
                 runningTask = stopActivityTransitionMonitor();

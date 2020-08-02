@@ -163,6 +163,10 @@ public class DashboardFragment extends Fragment implements Injectable {
             markerOptions.title(latLng.latitude + "," + latLng.longitude);
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
             mCurrentMarker = mGoogleMap.addMarker(markerOptions);
+
+            //Move map camera.
+            float zoom = 15f;
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         }
     }
 
@@ -193,7 +197,7 @@ public class DashboardFragment extends Fragment implements Injectable {
                 LatLng latLng = new LatLng(place.latitude, place.longitude);
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
-                markerOptions.title(place.placeName + " \n" + place.formattedAddress);
+                markerOptions.title(place.placeName + " (" + place.formattedAddress + ")");
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 mGoogleMap.addMarker(markerOptions);
             }
