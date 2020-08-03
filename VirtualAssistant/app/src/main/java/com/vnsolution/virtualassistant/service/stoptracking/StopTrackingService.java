@@ -712,7 +712,7 @@ public class StopTrackingService extends Service {
 
     private GoogleMapPlaceDetailDto.PlaceDetail getPlaceDetailByLocation(StopPoint stopPoint) {
         GoogleMapPlaceDto.Place place = getPlaceByLocation(stopPoint);
-        if (place != null && place.placeId != null && !place.placeId.isEmpty()) {
+        if (place != null && place.placeId != null && place.placeId != "") {
             GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailById(place.placeId);
             return placeDetail;
         }
