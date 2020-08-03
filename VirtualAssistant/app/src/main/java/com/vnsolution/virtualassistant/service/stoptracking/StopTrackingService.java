@@ -146,7 +146,8 @@ public class StopTrackingService extends Service {
                 placeEntity = (detectedPlace != null)? detectedPlace : convertToPlaceEntityFrom(stopPoint);
                 placeDao.insert(placeEntity);
             } else {
-                if (placeEntity.ggPlaceId.isEmpty() || placeEntity.placeName.isEmpty() && detectedPlace != null) {
+                if (((placeEntity.ggPlaceId == null) || (placeEntity.ggPlaceId == "")
+                        || (placeEntity.placeName == null) || (placeEntity.placeName == "")) && detectedPlace != null) {
                     detectedPlace.id = placeEntity.id;
                     placeEntity = detectedPlace;
                     placeDao.update(placeEntity);
@@ -171,7 +172,8 @@ public class StopTrackingService extends Service {
             String message = "Can't detect a place.";
             if (placeEntity != null) {
                 message = "(" + placeEntity.latitude + "," + placeEntity.longitude + ")";
-                if (!placeEntity.placeName.isEmpty() && !placeEntity.formattedAddress.isEmpty()) {
+                if ((placeEntity.placeName != null) && (placeEntity.placeName != "")
+                        && (placeEntity.formattedAddress != null) && (placeEntity.formattedAddress != "")) {
                     message = placeEntity.placeName + "\n" + placeEntity.formattedAddress;
                 }
             }

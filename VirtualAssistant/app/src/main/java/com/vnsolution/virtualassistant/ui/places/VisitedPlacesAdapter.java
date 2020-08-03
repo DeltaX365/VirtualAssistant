@@ -49,10 +49,10 @@ public class VisitedPlacesAdapter extends RecyclerView.Adapter<VisitedPlacesView
         // - replace the contents of the view with that element
         Place place = dataSource.get(position);
 
-        String placeName = (place.placeName == null || place.placeName.isEmpty()) ? "Unknown" : place.placeName;
+        String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
         holder.textPlaceName.setText(placeName);
 
-        String placeAddress = (place.formattedAddress == null || place.formattedAddress.isEmpty()) ? (place.latitude + "," + place.longitude) : place.formattedAddress;
+        String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
         holder.textPlaceAddress.setText(placeAddress);
 
         holder.onItemActionListerner = onItemActionListerner;

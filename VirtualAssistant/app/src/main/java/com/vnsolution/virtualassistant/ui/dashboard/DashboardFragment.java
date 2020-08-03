@@ -197,7 +197,9 @@ public class DashboardFragment extends Fragment implements Injectable {
                 LatLng latLng = new LatLng(place.latitude, place.longitude);
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
-                markerOptions.title(place.placeName + " (" + place.formattedAddress + ")");
+                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
+                String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
+                markerOptions.title(placeName + " (" + placeAddress + ")");
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 mGoogleMap.addMarker(markerOptions);
             }
