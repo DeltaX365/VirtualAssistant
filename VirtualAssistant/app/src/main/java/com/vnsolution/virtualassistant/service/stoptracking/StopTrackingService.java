@@ -343,7 +343,7 @@ public class StopTrackingService extends Service {
 
             // Process chain tasks.
             List<String> chainTasks = new ArrayList<>();
-//            chainTasks.add(STOP_REQUEST_LOCATION_UPDATES);
+            chainTasks.add(Constants.STOP_REQUEST_LOCATION_UPDATES);
             chainTasks.add(Constants.STOP_ACTIVITY_TRANSACTION_MONITOR);
             chainTasks.add(Constants.START_GEOFENCE_MONITOR);
             chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
@@ -358,7 +358,6 @@ public class StopTrackingService extends Service {
         List<String> chainTasks = new ArrayList<>();
 
         chainTasks.add(Constants.MARK_AS_VISITED);
-        chainTasks.add(Constants.STOP_REQUEST_LOCATION_UPDATES);
         chainTasks.add(Constants.STOP_GEOFENCE_MONITOR);
         chainTasks.add(Constants.START_ACTIVITY_TRANSACTION_MONITOR);
         chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
@@ -422,22 +421,6 @@ public class StopTrackingService extends Service {
         if (stopPoint != null) {
             stopPoint.exist = new Date();
             if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= Constants.STOP_DETECTION_IN_MILLISECONDS) {
-//                Thread checkOutThread = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        new SaveToDBTask().execute(stopPoint);
-//                        removeStopPointFromCache();
-//
-//                        Intent intent = new Intent(Constants.BROADCAST_PLACE_ADDED);
-//                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-//                    }
-//                });
-//                checkOutThread.start();
-//                try {
-//                    checkOutThread.join();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
                 new SaveToDBTask().execute(stopPoint);
             }
         }
@@ -473,11 +456,7 @@ public class StopTrackingService extends Service {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    Constants.STOP_TRACKING_CHANNEL_ID,
-                    Constants.STOP_TRACKING_CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_DEFAULT
-            );
+            NotificationChannel serviceChannel = new NotificationChannel(Constants.STOP_TRACKING_CHANNEL_ID, Constants.STOP_TRACKING_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
         }
@@ -549,25 +528,15 @@ public class StopTrackingService extends Service {
 
         geofences.add(new Geofence.Builder()
                 .setRequestId(stopPoint.id)
-                .setCircularRegion(
-                        stopPoint.latitude,
-                        stopPoint.longitude,
-                        Constants.GEOFENCE_RADIUS_IN_METERS
-                )
-//                .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setTransitionTypes(
-                        Geofence.GEOFENCE_TRANSITION_ENTER
-//                        | Geofence.GEOFENCE_TRANSITION_DWELL
-                        | Geofence.GEOFENCE_TRANSITION_EXIT
-                )
-//                .setLoiteringDelay(Constants.GEOFENCE_DWELLING_IN_MILLISECONDS)
+                .setCircularRegion(stopPoint.latitude, stopPoint.longitude, Constants.GEOFENCE_RADIUS_IN_METERS)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE) //.setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
+                .setLoiteringDelay(Constants.GEOFENCE_DWELLING_IN_MILLISECONDS)
                 .build());
 
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
 
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_EXIT);
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | GeofencingRequest.INITIAL_TRIGGER_EXIT | GeofencingRequest.INITIAL_TRIGGER_DWELL);
         builder.addGeofences(geofences);
 
         return builder.build();

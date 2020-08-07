@@ -52,6 +52,7 @@ public class DashboardFragment extends Fragment implements Injectable {
     private VisitedPlacesViewModel visitedPlaceViewModel;
 
     private List<Place> visitedPlaces = new ArrayList<>();
+    private boolean isFirstRunning = true;
 
     private MapView mMapView;
     private GoogleMap mGoogleMap;
@@ -149,61 +150,6 @@ public class DashboardFragment extends Fragment implements Injectable {
         return root;
     }
 
-    private void updateLocation() {
-        if(mCurrentLocation != null && mGoogleMap != null) {
-            //Place current location marker.
-            if (mCurrentMarker != null) {
-                mCurrentMarker.remove();
-            }
-            LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title(latLng.latitude + "," + latLng.longitude);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            mCurrentMarker = mGoogleMap.addMarker(markerOptions);
-
-            //Move map camera.
-            float zoom = 15f;
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-        }
-    }
-
-    private void updateGeofence() {
-        StopPoint stopPoint = getStopPointFromCache();
-        if(stopPoint != null && mGoogleMap != null) {
-            //Add geofence to current location.
-            if (mCurrentCircle != null) {
-                mCurrentCircle.remove();
-            }
-            LatLng latLng = new LatLng(stopPoint.latitude, stopPoint.longitude);
-            CircleOptions circleOptions = new CircleOptions()
-                    .center(latLng)
-                    .strokeColor(Color.argb(50, 70, 70, 70))
-                    .fillColor(Color.argb(100, 150, 150, 150))
-                    .radius(Constants.GEOFENCE_RADIUS_IN_METERS);
-            mCurrentCircle = mGoogleMap.addCircle(circleOptions);
-
-            //Move map camera.
-            float zoom = 15f;
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-        }
-    }
-
-    private void presentVisitedPlaces(List<Place> places) {
-        if(mGoogleMap != null) {
-            for(Place place: places) {
-                LatLng latLng = new LatLng(place.latitude, place.longitude);
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
-                String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
-                markerOptions.title(placeName + " (" + placeAddress + ")");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                mGoogleMap.addMarker(markerOptions);
-            }
-        }
-    }
-
     @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
         LocationRequest locationRequest = new LocationRequest();
@@ -223,6 +169,59 @@ public class DashboardFragment extends Fragment implements Injectable {
 
     private void removeLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    private void updateLocation() {
+        if(mCurrentLocation != null && mGoogleMap != null) {
+            //Place current location marker.
+            if (mCurrentMarker != null) {
+                mCurrentMarker.remove();
+            }
+            LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title(latLng.latitude + "," + latLng.longitude);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            mCurrentMarker = mGoogleMap.addMarker(markerOptions);
+
+            //Move map camera.
+            if (isFirstRunning) {
+                isFirstRunning = false;
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
+            }
+        }
+    }
+
+    private void updateGeofence() {
+        StopPoint stopPoint = getStopPointFromCache();
+        if(stopPoint != null && mGoogleMap != null) {
+            //Add geofence to current location.
+            if (mCurrentCircle != null) {
+                mCurrentCircle.remove();
+            }
+            LatLng latLng = new LatLng(stopPoint.latitude, stopPoint.longitude);
+            CircleOptions circleOptions = new CircleOptions()
+                    .center(latLng)
+                    .strokeColor(Color.argb(50, 70, 70, 70))
+                    .fillColor(Color.argb(100, 150, 150, 150))
+                    .radius(Constants.GEOFENCE_RADIUS_IN_METERS);
+            mCurrentCircle = mGoogleMap.addCircle(circleOptions);
+        }
+    }
+
+    private void presentVisitedPlaces(List<Place> places) {
+        if(mGoogleMap != null) {
+            for(Place place: places) {
+                LatLng latLng = new LatLng(place.latitude, place.longitude);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
+                String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
+                markerOptions.title(placeName + " (" + placeAddress + ")");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                mGoogleMap.addMarker(markerOptions);
+            }
+        }
     }
 
     private StopPoint getStopPointFromCache() {
