@@ -72,34 +72,6 @@ import dagger.android.AndroidInjection;
 import retrofit2.Response;
 
 public class StopTrackingService extends Service {
-    public static final String[] REQUEST_PERMISSIONS = {
-        Manifest.permission.ACTIVITY_RECOGNITION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_BACKGROUND_LOCATION
-    };
-
-    public static final String INTENT_ACTION_INITIAL = "com.vnsolution.virtualassistant.ACTION_INITIAL";
-    public static final String INTENT_ACTION_CHECK_IN = "com.vnsolution.virtualassistant.ACTION_CHECK_IN";
-    public static final String INTENT_ACTION_LOCATION_UPDATED = "com.vnsolution.virtualassistant.INTENT_ACTION_LOCATION_UPDATED";
-    public static final String INTENT_ACTION_CHECK_OUT = "com.vnsolution.virtualassistant.ACTION_CHECK_OUT";
-    public static final String INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR = "com.vnsolution.virtualassistant.INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR";
-
-    private static final String STOP_TRACKING_CHANNEL_ID = "com.vnsolution.virtualassistant.STOP_TRACKING_FOREGROUND_SERVICE";
-    private static final String STOP_TRACKING_CHANNEL_NAME = "Stop Detection";
-    private static final String STOP_TRACKING_NOTIFY_TITLE = "Foreground Service";
-    private static final String STOP_TRACKING_NOTIFY_TEXT = "Checking activity...";
-
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-    private static final String START_ACTIVITY_TRANSACTION_MONITOR = "START_ACTIVITY_TRANSACTION_MONITOR";
-    private static final String STOP_ACTIVITY_TRANSACTION_MONITOR = "STOP_ACTIVITY_TRANSACTION_MONITOR";
-    private static final String START_GEOFENCE_MONITOR = "START_GEOFENCE_MONITOR";
-    private static final String STOP_GEOFENCE_MONITOR = "STOP_GEOFENCE_MONITOR";
-    private static final String START_REQUEST_LOCATION_UPDATES = "START_LOCATION_UPDATES";
-    private static final String STOP_REQUEST_LOCATION_UPDATES = "STOP_LOCATION_UPDATES";
-    private static final String STOP_FOREGROUND_SERVICE = "STOP_FOREGROUND_SERVICE";
-    private static final String MARK_AS_VISITED = "MARK_AS_VISITED";
 
     private ActivityRecognitionClient activityRecognitionClient; //user activities
     private PendingIntent activityTransitionPendingIntent;
@@ -139,6 +111,9 @@ public class StopTrackingService extends Service {
                     placeEntity = placeDao.getByName(detectedPlace.placeName);
                     if (placeEntity == null) {
                         placeEntity = placeDao.getByGGPlaceId(detectedPlace.ggPlaceId);
+                    }
+                    if (placeEntity == null) {
+                        placeEntity = placeDao.getByAddress(detectedPlace.formattedAddress);
                     }
                 }
             }
@@ -197,9 +172,9 @@ public class StopTrackingService extends Service {
         AndroidInjection.inject(this);
         createNotificationChannel();
 
-        Notification notification = new NotificationCompat.Builder(this, STOP_TRACKING_CHANNEL_ID)
-                .setContentTitle(STOP_TRACKING_NOTIFY_TITLE)
-                .setContentText(STOP_TRACKING_NOTIFY_TEXT)
+        Notification notification = new NotificationCompat.Builder(this, Constants.STOP_TRACKING_CHANNEL_ID)
+                .setContentTitle(Constants.STOP_TRACKING_NOTIFY_TITLE)
+                .setContentText(Constants.STOP_TRACKING_NOTIFY_TEXT)
                 .setSmallIcon(R.drawable.ic_unknown)
                 .build();
         startForeground((int) (Math.random() * 999999), notification);
@@ -207,19 +182,19 @@ public class StopTrackingService extends Service {
         //do heavy work on a background thread
         if (intent != null) {
             switch (intent.getAction()) {
-                case INTENT_ACTION_INITIAL:
+                case Constants.INTENT_ACTION_INITIAL:
                     AppService.sendNotification(this, "EVENT TRIGGER", "Initial service.");
                     runInit();
                     break;
-                case INTENT_ACTION_CHECK_IN:
+                case Constants.INTENT_ACTION_CHECK_IN:
                     AppService.sendNotification(this, "EVENT TRIGGER", "Checks in.");
                     checkIn();
                     break;
-                case INTENT_ACTION_LOCATION_UPDATED:
+                case Constants.INTENT_ACTION_LOCATION_UPDATED:
                     AppService.sendNotification(this, "EVENT TRIGGER", "Update location.");
                     updatePosition(intent);
                     break;
-                case INTENT_ACTION_CHECK_OUT:
+                case Constants.INTENT_ACTION_CHECK_OUT:
                     AppService.sendNotification(this, "EVENT TRIGGER", "Check out.");
                     checkOut();
                     break;
@@ -260,31 +235,31 @@ public class StopTrackingService extends Service {
 
         Task<Void> runningTask = null;
         switch (taskName) {
-            case START_ACTIVITY_TRANSACTION_MONITOR:
+            case Constants.START_ACTIVITY_TRANSACTION_MONITOR:
                 runningTask = startActivityTransitionMonitor();
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 //                    simulateTransition();
 //                }
                 break;
-            case STOP_ACTIVITY_TRANSACTION_MONITOR:
+            case Constants.STOP_ACTIVITY_TRANSACTION_MONITOR:
                 runningTask = stopActivityTransitionMonitor();
                 break;
-            case START_REQUEST_LOCATION_UPDATES:
+            case Constants.START_REQUEST_LOCATION_UPDATES:
                 runningTask = startLocationUpdates();
                 break;
-            case STOP_REQUEST_LOCATION_UPDATES:
+            case Constants.STOP_REQUEST_LOCATION_UPDATES:
                 runningTask = stopLocationUpdates();
                 break;
-            case START_GEOFENCE_MONITOR:
+            case Constants.START_GEOFENCE_MONITOR:
                 runningTask = startGeofenceMonitor();
                 break;
-            case STOP_GEOFENCE_MONITOR:
+            case Constants.STOP_GEOFENCE_MONITOR:
                 runningTask = stopGeofenceMonitor();
                 break;
-            case MARK_AS_VISITED:
+            case Constants.MARK_AS_VISITED:
                 maskAsVisited();
                 break;
-            case STOP_FOREGROUND_SERVICE:
+            case Constants.STOP_FOREGROUND_SERVICE:
                 stopSelf();
                 break;
         }
@@ -337,8 +312,8 @@ public class StopTrackingService extends Service {
     private void runInit() {
         List<String> chainTasks = new ArrayList<>();
 
-        chainTasks.add(START_ACTIVITY_TRANSACTION_MONITOR);
-        chainTasks.add(STOP_FOREGROUND_SERVICE);
+        chainTasks.add(Constants.START_ACTIVITY_TRANSACTION_MONITOR);
+        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
 
         processChainTasks(chainTasks);
     }
@@ -346,8 +321,8 @@ public class StopTrackingService extends Service {
     private void checkIn() {
         List<String> chainTasks = new ArrayList<>();
 
-        chainTasks.add(START_REQUEST_LOCATION_UPDATES);
-        chainTasks.add(STOP_FOREGROUND_SERVICE);
+        chainTasks.add(Constants.START_REQUEST_LOCATION_UPDATES);
+        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
 
         processChainTasks(chainTasks);
     }
@@ -368,10 +343,10 @@ public class StopTrackingService extends Service {
 
             // Process chain tasks.
             List<String> chainTasks = new ArrayList<>();
-            chainTasks.add(STOP_REQUEST_LOCATION_UPDATES);
-            chainTasks.add(STOP_ACTIVITY_TRANSACTION_MONITOR);
-            chainTasks.add(START_GEOFENCE_MONITOR);
-            chainTasks.add(STOP_FOREGROUND_SERVICE);
+//            chainTasks.add(STOP_REQUEST_LOCATION_UPDATES);
+            chainTasks.add(Constants.STOP_ACTIVITY_TRANSACTION_MONITOR);
+            chainTasks.add(Constants.START_GEOFENCE_MONITOR);
+            chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
             processChainTasks(chainTasks);
 
             // Notify new position.
@@ -382,10 +357,11 @@ public class StopTrackingService extends Service {
     private void checkOut() {
         List<String> chainTasks = new ArrayList<>();
 
-        chainTasks.add(MARK_AS_VISITED);
-        chainTasks.add(STOP_GEOFENCE_MONITOR);
-        chainTasks.add(START_ACTIVITY_TRANSACTION_MONITOR);
-        chainTasks.add(STOP_FOREGROUND_SERVICE);
+        chainTasks.add(Constants.MARK_AS_VISITED);
+        chainTasks.add(Constants.STOP_REQUEST_LOCATION_UPDATES);
+        chainTasks.add(Constants.STOP_GEOFENCE_MONITOR);
+        chainTasks.add(Constants.START_ACTIVITY_TRANSACTION_MONITOR);
+        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
 
         processChainTasks(chainTasks);
     }
@@ -432,9 +408,12 @@ public class StopTrackingService extends Service {
         double latitude = intent.getDoubleExtra("Latitude", -1);
         if (provider.isEmpty() || longitude == -1 || latitude == -1) return null;
 
+        double roundedLongitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        double roundedLatitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
+
         Location location = new Location(provider);
-        location.setLongitude(longitude);
-        location.setLatitude(latitude);
+        location.setLongitude(roundedLongitude);
+        location.setLatitude(roundedLatitude);
         return location;
     }
 
@@ -467,24 +446,26 @@ public class StopTrackingService extends Service {
 
     private void notifyPosition(StopPoint stopPoint) {
         if (stopPoint != null) {
-            GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint); //Address address = getAddressFromLocation(stopPoint);
-            if (placeDetail != null) {
-                String address = placeDetail.name + "\n" + placeDetail.formattedAddress;
-                AppService.sendNotification(StopTrackingService.this, "PLACE", address);
-            }
-            GoogleMapNearByDto.NearBy nearBy = searchNearByFromLocation(stopPoint);
-            if (nearBy != null) {
-                String address = nearBy.name + "\n" + nearBy.vicinity;
-                AppService.sendNotification(StopTrackingService.this, "NEARBY", address);
-            }
+//            GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint); //Address address = getAddressFromLocation(stopPoint);
+//            if (placeDetail != null) {
+//                String address = placeDetail.name + "\n" + placeDetail.formattedAddress;
+//                AppService.sendNotification(StopTrackingService.this, "PLACE", address);
+//            }
+//            GoogleMapNearByDto.NearBy nearBy = searchNearByFromLocation(stopPoint);
+//            if (nearBy != null) {
+//                String address = nearBy.name + "\n" + nearBy.vicinity;
+//                AppService.sendNotification(StopTrackingService.this, "NEARBY", address);
+//            }
             Address place = getAddressFromLocation(stopPoint);
             if (place != null) {
                 String address = place.getFeatureName() + "\n" + place.getAddressLine(0);
                 AppService.sendNotification(StopTrackingService.this, "ADDRESS", address);
-            }
-            if (placeDetail == null && nearBy == null && place == null) {
+            } else {
                 AppService.sendNotification(StopTrackingService.this, "NOTICE", "Can not get address of stop position.");
             }
+//            if (placeDetail == null && nearBy == null && place == null) {
+//                AppService.sendNotification(StopTrackingService.this, "NOTICE", "Can not get address of stop position.");
+//            }
         } else {
             AppService.sendNotification(StopTrackingService.this, "NOTICE", "Stop position is not available.");
         }
@@ -493,8 +474,8 @@ public class StopTrackingService extends Service {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
-                    STOP_TRACKING_CHANNEL_ID,
-                    STOP_TRACKING_CHANNEL_NAME,
+                    Constants.STOP_TRACKING_CHANNEL_ID,
+                    Constants.STOP_TRACKING_CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             NotificationManager manager = getSystemService(NotificationManager.class);
@@ -530,7 +511,7 @@ public class StopTrackingService extends Service {
         }
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.INTENT_ACTION);
-        intent.addCategory(INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR);
+        intent.addCategory(Constants.INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR);
         locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return locationUpdatesPendingIntent;
     }
@@ -577,10 +558,10 @@ public class StopTrackingService extends Service {
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(
                         Geofence.GEOFENCE_TRANSITION_ENTER
-                        | Geofence.GEOFENCE_TRANSITION_DWELL
+//                        | Geofence.GEOFENCE_TRANSITION_DWELL
                         | Geofence.GEOFENCE_TRANSITION_EXIT
                 )
-                .setLoiteringDelay(Constants.GEOFENCE_DWELLING_IN_MILLISECONDS)
+//                .setLoiteringDelay(Constants.GEOFENCE_DWELLING_IN_MILLISECONDS)
                 .build());
 
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
@@ -594,8 +575,8 @@ public class StopTrackingService extends Service {
 
     private LocationRequest buildLocationUpdatesRequest() {
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        locationRequest.setInterval(Constants.GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(Constants.GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }

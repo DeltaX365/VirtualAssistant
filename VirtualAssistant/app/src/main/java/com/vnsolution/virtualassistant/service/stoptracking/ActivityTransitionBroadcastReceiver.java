@@ -40,7 +40,7 @@ public class ActivityTransitionBroadcastReceiver extends BroadcastReceiver {
                     activityStatus += "Enter still." + "\n";
                     // Whenever user enters still, then we indicate that they are stopping at a new position, so check-in event will be invoked
                     Intent serviceIntent = new Intent(context, StopTrackingService.class);
-                    serviceIntent.setAction(StopTrackingService.INTENT_ACTION_CHECK_IN);
+                    serviceIntent.setAction(Constants.INTENT_ACTION_CHECK_IN);
                     ContextCompat.startForegroundService(context, serviceIntent);
                     break;
                 }

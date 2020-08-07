@@ -8,10 +8,11 @@ import android.location.Location;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.LocationResult;
+import com.vnsolution.virtualassistant.common.Constants;
 
 public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
     public static final String INTENT_ACTION = "com.vnsolution.virtualassistant.ACTION_UPDATE_LOCATIONS";
-    public static final String INTENT_CATEGORY = StopTrackingService.INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR;
+    public static final String INTENT_CATEGORY = Constants.INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -25,7 +26,7 @@ public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
                 Location location = result.getLastLocation();
                 Intent serviceIntent = new Intent(context, StopTrackingService.class);
 
-                serviceIntent.setAction(StopTrackingService.INTENT_ACTION_LOCATION_UPDATED);
+                serviceIntent.setAction(Constants.INTENT_ACTION_LOCATION_UPDATED);
                 serviceIntent.putExtra("Provider", location.getProvider());
                 serviceIntent.putExtra("Longitude", location.getLongitude());
                 serviceIntent.putExtra("Latitude", location.getLatitude());

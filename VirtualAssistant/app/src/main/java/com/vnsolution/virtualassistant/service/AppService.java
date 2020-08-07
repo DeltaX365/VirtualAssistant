@@ -18,8 +18,6 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
 
-import java.util.concurrent.TimeUnit;
-
 public class AppService {
     private static Context mContext;
     private static BroadcastReceiver mBroadcastReceiver;
@@ -111,14 +109,14 @@ public class AppService {
     }
 
     private static void handlePermissionChanged(Intent intent) {
-        if (hasPermissions(StopTrackingService.REQUEST_PERMISSIONS)) {
+        if (hasPermissions(Constants.STOP_TRACKING_PERMISSIONS)) {
             startServices();
         }
     }
 
     private static boolean startServices() {
         Intent serviceIntent = new Intent(mContext, StopTrackingService.class);
-        serviceIntent.setAction(StopTrackingService.INTENT_ACTION_INITIAL);
+        serviceIntent.setAction(Constants.INTENT_ACTION_INITIAL);
         ContextCompat.startForegroundService(mContext, serviceIntent);
         return true;
     }

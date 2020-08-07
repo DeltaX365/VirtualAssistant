@@ -10,7 +10,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +29,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -209,8 +207,8 @@ public class DashboardFragment extends Fragment implements Injectable {
     @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(Constants.GEOLOCATION_INTERVAL_UPDATE);
-        locationRequest.setFastestInterval(Constants.GEOLOCATION_FAST_INTERVAL_UPDATE);
+        locationRequest.setInterval(Constants.GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(Constants.GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationCallback = new LocationCallback() {
             @Override
