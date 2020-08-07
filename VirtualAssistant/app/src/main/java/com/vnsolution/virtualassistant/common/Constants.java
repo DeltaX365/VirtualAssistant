@@ -37,7 +37,7 @@ public class Constants {
     public static final int STOP_DETECTION_IN_MILLISECONDS = 10*60*1000;
     public static final int GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS = 2*60*1000;
     public static final int GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS = GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS / 2;
-    public static final int GEOFENCE_RADIUS_IN_METERS = 50;
+    public static final int GEOFENCE_RADIUS_IN_METERS = 100;
     public static final int GEOFENCE_EXPIRATION_IN_MILLISECONDS = 1*60*1000;
     public static final int GEOFENCE_DWELLING_IN_MILLISECONDS = 2*60*1000;
 
