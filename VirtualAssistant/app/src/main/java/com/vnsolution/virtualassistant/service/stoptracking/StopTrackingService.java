@@ -84,6 +84,7 @@ public class StopTrackingService extends Service {
     private GeofencingClient geofencingClient; //geofence
     private PendingIntent geofencePendingIntent;
     private FusedLocationProviderClient fusedLocationClient; //geolocation
+    private LocationCallback locationCallback;
     private PendingIntent locationUpdatesPendingIntent;
 
     @Inject
@@ -326,48 +327,49 @@ public class StopTrackingService extends Service {
 
     @SuppressLint("MissingPermission")
     private void checkIn() {
-        fusedLocationClient.requestLocationUpdates(buildLocationUpdatesRequest(), new LocationCallback() {
+        locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 Location location = locationResult.getLastLocation();
                 if (location != null) {
-                    // Record stop point.
-                    StopPoint stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
+                    fusedLocationClient.removeLocationUpdates(locationCallback);
+                    List<String> taskQueue = new ArrayList<>();
+
+                    StopPoint stopPoint = getStopPointFromCache();
+                    if (stopPoint == null) {
+                        stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
+                        taskQueue.add(Constants.START_GEOFENCE_MONITOR);
+                        taskQueue.add(Constants.STOP_ACTIVITY_TRANSACTION_MONITOR);
+                    } else {
+                        stopPoint.longitude = location.getLongitude();
+                        stopPoint.latitude = location.getLatitude();
+                        stopPoint.exist = new Date();
+                    }
                     saveStopPointInCache(stopPoint);
-
-                    // Process chain tasks.
-                    List<String> chainTasks = new ArrayList<>();
-                    chainTasks.add(Constants.STOP_ACTIVITY_TRANSACTION_MONITOR);
-                    chainTasks.add(Constants.START_GEOFENCE_MONITOR);
-                    chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
-                    processChainTasks(chainTasks);
-
-                    // Notify new position.
                     notifyPosition(stopPoint);
+
+                    taskQueue.add(Constants.STOP_FOREGROUND_SERVICE);
+                    processChainTasks(taskQueue);
                 }
             }
-        }, Looper.getMainLooper());
+        };
+        fusedLocationClient.requestLocationUpdates(buildLocationUpdatesRequest(), locationCallback, Looper.getMainLooper());
     }
 
     private void updatePosition(Intent intent) {
-        Location location = extractLocationResult(intent);
-        StopPoint stopPoint = getStopPointFromCache();
-        if (location != null && stopPoint != null) {
-            // Update stop point.
-            stopPoint.longitude = location.getLongitude();
-            stopPoint.latitude = location.getLatitude();
-            stopPoint.exist = new Date();
-            saveStopPointInCache(stopPoint);
-
-            // Process chain tasks.
-            List<String> chainTasks = new ArrayList<>();
-            chainTasks.add(Constants.STOP_REQUEST_LOCATION_UPDATES);
-            chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
-            processChainTasks(chainTasks);
-
-            // Notify new position.
-            notifyPosition(stopPoint);
-        }
+//        Location location = extractLocationResult(intent);
+//        StopPoint stopPoint = getStopPointFromCache();
+//        if (location != null && stopPoint != null) {
+//            stopPoint.longitude = location.getLongitude();
+//            stopPoint.latitude = location.getLatitude();
+//            stopPoint.exist = new Date();
+//            saveStopPointInCache(stopPoint);
+//            notifyPosition(stopPoint);
+//        }
+        List<String> chainTasks = new ArrayList<>();
+        chainTasks.add(Constants.STOP_REQUEST_LOCATION_UPDATES);
+        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
+        processChainTasks(chainTasks);
     }
 
     private void checkOut() {
@@ -421,7 +423,7 @@ public class StopTrackingService extends Service {
         String provider = intent.getStringExtra("Provider");
         double longitude = intent.getDoubleExtra("Longitude", -1);
         double latitude = intent.getDoubleExtra("Latitude", -1);
-        if (provider.isEmpty() || longitude == -1 || latitude == -1) return null;
+        if (provider == null || provider == "" || longitude == -1 || latitude == -1) return null;
 
         double roundedLongitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
         double roundedLatitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
