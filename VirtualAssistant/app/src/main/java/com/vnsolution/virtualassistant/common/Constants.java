@@ -16,6 +16,7 @@ public class Constants {
     public static final String[] STOP_TRACKING_PERMISSIONS = { Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION };
     public static final String INTENT_ACTION_INITIAL = "com.vnsolution.virtualassistant.ACTION_INITIAL";
     public static final String INTENT_ACTION_CHECK_IN = "com.vnsolution.virtualassistant.ACTION_CHECK_IN";
+    public static final String INTENT_ACTION_CHECK_IN_SCHEDULE = "com.vnsolution.virtualassistant.ACTION_CHECK_IN_UPDATED";
     public static final String INTENT_ACTION_LOCATION_UPDATED = "com.vnsolution.virtualassistant.INTENT_ACTION_LOCATION_UPDATED";
     public static final String INTENT_ACTION_CHECK_OUT = "com.vnsolution.virtualassistant.ACTION_CHECK_OUT";
     public static final String INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR = "com.vnsolution.virtualassistant.INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR";

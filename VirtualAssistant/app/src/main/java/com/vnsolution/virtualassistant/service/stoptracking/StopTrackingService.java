@@ -1,6 +1,5 @@
 package com.vnsolution.virtualassistant.service.stoptracking;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,7 +8,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -22,10 +20,7 @@ import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.room.util.StringUtil;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
 import com.google.android.gms.location.ActivityRecognitionClient;
@@ -42,7 +37,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -194,8 +188,12 @@ public class StopTrackingService extends Service {
                     runInit();
                     break;
                 case Constants.INTENT_ACTION_CHECK_IN:
-                    AppService.sendNotification(this, "EVENT TRIGGER", "Checks in.");
-                    checkIn();
+                    AppService.sendNotification(this, "EVENT TRIGGER", "Check in.");
+                    checkIn(true);
+                    break;
+                case Constants.INTENT_ACTION_CHECK_IN_SCHEDULE:
+                    AppService.sendNotification(this, "EVENT TRIGGER", "Schedule check in.");
+                    checkIn(false);
                     break;
                 case Constants.INTENT_ACTION_LOCATION_UPDATED:
                     AppService.sendNotification(this, "EVENT TRIGGER", "Update location.");
@@ -326,7 +324,7 @@ public class StopTrackingService extends Service {
     }
 
     @SuppressLint("MissingPermission")
-    private void checkIn() {
+    private void checkIn(boolean isFirstCheckedIn) {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -336,7 +334,7 @@ public class StopTrackingService extends Service {
                     List<String> taskQueue = new ArrayList<>();
 
                     StopPoint stopPoint = getStopPointFromCache();
-                    if (stopPoint == null) {
+                    if (stopPoint == null || isFirstCheckedIn) {
                         stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
                         taskQueue.add(Constants.START_GEOFENCE_MONITOR);
                         taskQueue.add(Constants.STOP_ACTIVITY_TRANSACTION_MONITOR);
