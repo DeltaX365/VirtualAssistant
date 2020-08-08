@@ -9,17 +9,20 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.room.util.StringUtil;
@@ -35,8 +38,11 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -118,7 +124,7 @@ public class StopTrackingService extends Service {
                 }
             }
             if (placeEntity == null) {
-                placeEntity = (detectedPlace != null)? detectedPlace : convertToPlaceEntityFrom(stopPoint);
+                placeEntity = (detectedPlace != null) ? detectedPlace : convertToPlaceEntityFrom(stopPoint);
                 placeDao.insert(placeEntity);
             } else {
                 if (((placeEntity.ggPlaceId == null) || (placeEntity.ggPlaceId == "")
@@ -318,34 +324,44 @@ public class StopTrackingService extends Service {
         processChainTasks(chainTasks);
     }
 
+    @SuppressLint("MissingPermission")
     private void checkIn() {
-        List<String> chainTasks = new ArrayList<>();
+        fusedLocationClient.requestLocationUpdates(buildLocationUpdatesRequest(), new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                if (location != null) {
+                    // Record stop point.
+                    StopPoint stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
+                    saveStopPointInCache(stopPoint);
 
-        chainTasks.add(Constants.START_REQUEST_LOCATION_UPDATES);
-        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
+                    // Process chain tasks.
+                    List<String> chainTasks = new ArrayList<>();
+                    chainTasks.add(Constants.STOP_ACTIVITY_TRANSACTION_MONITOR);
+                    chainTasks.add(Constants.START_GEOFENCE_MONITOR);
+                    chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
+                    processChainTasks(chainTasks);
 
-        processChainTasks(chainTasks);
+                    // Notify new position.
+                    notifyPosition(stopPoint);
+                }
+            }
+        }, Looper.getMainLooper());
     }
 
     private void updatePosition(Intent intent) {
         Location location = extractLocationResult(intent);
-        if (location != null) {
+        StopPoint stopPoint = getStopPointFromCache();
+        if (location != null && stopPoint != null) {
             // Update stop point.
-            StopPoint stopPoint = getStopPointFromCache();
-            if (stopPoint == null) {
-                stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
-            } else {
-                stopPoint.longitude = location.getLongitude();
-                stopPoint.latitude = location.getLatitude();
-                stopPoint.exist = new Date();
-            }
+            stopPoint.longitude = location.getLongitude();
+            stopPoint.latitude = location.getLatitude();
+            stopPoint.exist = new Date();
             saveStopPointInCache(stopPoint);
 
             // Process chain tasks.
             List<String> chainTasks = new ArrayList<>();
             chainTasks.add(Constants.STOP_REQUEST_LOCATION_UPDATES);
-            chainTasks.add(Constants.STOP_ACTIVITY_TRANSACTION_MONITOR);
-            chainTasks.add(Constants.START_GEOFENCE_MONITOR);
             chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
             processChainTasks(chainTasks);
 

@@ -50,7 +50,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ) { //Check-in again
             geofencingStatus = "Dwell geofence.";
-            action = Constants.INTENT_ACTION_CHECK_IN;
+            action = Constants.INTENT_ACTION_LOCATION_UPDATED;
         }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) { //Check-out
             geofencingStatus = "Exist geofence.";

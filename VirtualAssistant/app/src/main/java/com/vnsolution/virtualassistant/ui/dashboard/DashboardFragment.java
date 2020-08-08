@@ -172,34 +172,33 @@ public class DashboardFragment extends Fragment implements Injectable {
     }
 
     private void updateLocation() {
-        if(mCurrentLocation != null && mGoogleMap != null) {
-            //Place current location marker.
-            if (mCurrentMarker != null) {
-                mCurrentMarker.remove();
-            }
+        if(mCurrentLocation != null && mGoogleMap != null && isFirstRunning) {
+            isFirstRunning = false;
             LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title(latLng.latitude + "," + latLng.longitude);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            mCurrentMarker = mGoogleMap.addMarker(markerOptions);
-
-            //Move map camera.
-            if (isFirstRunning) {
-                isFirstRunning = false;
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
-            }
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
         }
     }
 
     private void updateGeofence() {
         StopPoint stopPoint = getStopPointFromCache();
         if(stopPoint != null && mGoogleMap != null) {
-            //Add geofence to current location.
+            // Stop point.
+            LatLng latLng = new LatLng(stopPoint.latitude, stopPoint.longitude);
+
+            // Add stop point marker.
+            if (mCurrentMarker != null) {
+                mCurrentMarker.remove();
+            }
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title(latLng.latitude + "," + latLng.longitude);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            mCurrentMarker = mGoogleMap.addMarker(markerOptions);
+
+            // Add geofence to current location.
             if (mCurrentCircle != null) {
                 mCurrentCircle.remove();
             }
-            LatLng latLng = new LatLng(stopPoint.latitude, stopPoint.longitude);
             CircleOptions circleOptions = new CircleOptions()
                     .center(latLng)
                     .strokeColor(Color.argb(50, 70, 70, 70))
