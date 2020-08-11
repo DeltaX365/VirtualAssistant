@@ -31,13 +31,15 @@ public class AppService {
     }
 
     private void startWatchingPermissions() {
-        mBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                stopWatchingPermissions();
-                run();
-            }
-        };
+        if (mBroadcastReceiver == null) {
+            mBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    run();
+                }
+            };
+        }
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mBroadcastReceiver);
         IntentFilter filter = new IntentFilter();
         filter.addAction(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mBroadcastReceiver, filter);

@@ -159,7 +159,7 @@ public class DashboardFragment extends Fragment implements Injectable {
 
     private void startWatchingPermissions() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
+        filter.addAction(StopTracking.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {

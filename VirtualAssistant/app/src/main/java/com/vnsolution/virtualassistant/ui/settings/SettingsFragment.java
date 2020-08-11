@@ -91,8 +91,8 @@ public class SettingsFragment extends Fragment implements Injectable {
             Intent intentL = new Intent(StopTracking.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
             LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intentL);
 
-            Intent intent = new Intent(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
-            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+            Intent intentA = new Intent(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
+            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intentA);
         }
         Toast.makeText(getActivity(), "Stop tracking permissions have been granted", Toast.LENGTH_SHORT).show();
         return true;

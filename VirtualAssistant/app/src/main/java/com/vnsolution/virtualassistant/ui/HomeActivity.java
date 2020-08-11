@@ -66,8 +66,8 @@ public class HomeActivity extends AppCompatActivity implements HasAndroidInjecto
             Intent intentL = new Intent(StopTracking.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentL);
 
-            Intent intent = new Intent(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            Intent intentA = new Intent(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intentA);
         }
         Toast.makeText(this, "Stop tracking permissions have been granted", Toast.LENGTH_SHORT).show();
         return true;
