@@ -1,20 +1,12 @@
 package com.vnsolution.virtualassistant.ui.settings;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,23 +18,17 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.di.Injectable;
-import com.vnsolution.virtualassistant.model.CallLog;
-import com.vnsolution.virtualassistant.ui.calllogs.CallLogsAdapter;
-import com.vnsolution.virtualassistant.ui.calllogs.CallLogsRecycleView;
-import com.vnsolution.virtualassistant.ui.calllogs.CallLogsViewModel;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import javax.inject.Inject;
 
 public class SettingsFragment extends Fragment implements Injectable {
     private Context mContext;
-    private String[] settings = { "Reset Factory" };
+    private String[] settings = { "Grant stop tracking permissions", "Reset factory" };
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
@@ -74,12 +60,50 @@ public class SettingsFragment extends Fragment implements Injectable {
         listSettings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                runResetFactory();
-                Toast.makeText(getActivity(), "Data is reset successfully.", Toast.LENGTH_SHORT).show();
+                switch (position) {
+                    case 0:
+                        requestPermissions();
+                        break;
+                    case 1:
+                        runResetFactory();
+                        Toast.makeText(getActivity(), "Data is reset successfully.", Toast.LENGTH_SHORT).show();
+                        break;
+                }
             }
         });
 
         return root;
+    }
+
+    private boolean requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!PermissionUtils.hasPermissions(getActivity(), StopTracking.PERMISSIONS_ACTIVITY_RECOGNITION)) {
+                requestPermissions(StopTracking.PERMISSIONS_ACTIVITY_RECOGNITION, StopTracking.PERMISSIONS_REQUEST_CODE);
+                return false;
+            }
+            Intent intentUA = new Intent(StopTracking.BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED);
+            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intentUA);
+
+            if (!PermissionUtils.hasPermissions(getActivity(), StopTracking.PERMISSIONS_LOCATION)) {
+                requestPermissions(StopTracking.PERMISSIONS_LOCATION, StopTracking.PERMISSIONS_REQUEST_CODE);
+                return false;
+            }
+            Intent intentL = new Intent(StopTracking.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intentL);
+
+            Intent intent = new Intent(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
+            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+        }
+        Toast.makeText(getActivity(), "Stop tracking permissions have been granted", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == StopTracking.PERMISSIONS_REQUEST_CODE) {
+            requestPermissions();
+        }
     }
 
     private void runResetFactory() {

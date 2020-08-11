@@ -44,8 +44,7 @@ public class ActivityTransitionsJobIntentService extends JobIntentService {
             ActivityTransitionEvent event = result.getTransitionEvents().get(0);
             if ((event.getActivityType() == DetectedActivity.STILL)
                     && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {
-                Intent intent = new Intent(Constants.BROADCAST_STOP_DETECTED);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                //TODO
             }
         }
     }

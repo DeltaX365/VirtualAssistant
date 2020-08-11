@@ -11,7 +11,8 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
 import com.vnsolution.virtualassistant.common.Constants;
-import com.vnsolution.virtualassistant.service.AppService;
+import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.util.NotificationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = getErrorString(geofencingEvent.getErrorCode());
-            AppService.sendNotification(context, "GEOFENCE BROADCAST", errorMessage);
+            NotificationUtils.sendNotification(context, "GEOFENCE BROADCAST", errorMessage);
             return;
         }
         handleEvent(context, geofencingEvent);
@@ -43,19 +44,19 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ) { //Check-in
             geofencingStatus = "Enter geofence.";
-            action = Constants.INTENT_ACTION_CHECK_IN;
+            action = StopTracking.INTENT_ACTION_CHECK_IN;
         }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ) { //Check-in again
             geofencingStatus = "Dwell geofence.";
-            action = Constants.INTENT_ACTION_CHECK_IN_SCHEDULE;
+            action = StopTracking.INTENT_ACTION_CHECK_IN_SCHEDULE;
         }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) { //Check-out
             geofencingStatus = "Exist geofence.";
-            action = Constants.INTENT_ACTION_CHECK_OUT;
+            action = StopTracking.INTENT_ACTION_CHECK_OUT;
         }
 
         if (!geofencingStatus.isEmpty()) {
-            AppService.sendNotification(context, "GEOFENCE BROADCAST", geofencingStatus);
+            NotificationUtils.sendNotification(context, "GEOFENCE BROADCAST", geofencingStatus);
         }
 
         if (!action.isEmpty()) {

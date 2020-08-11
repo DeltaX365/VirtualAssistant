@@ -1,5 +1,6 @@
 package com.vnsolution.virtualassistant.service.stoptracking;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -8,6 +9,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -20,6 +22,7 @@ import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
@@ -46,13 +49,14 @@ import com.vnsolution.virtualassistant.api.GoogleApi;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDto;
-import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.model.StopPoint;
-import com.vnsolution.virtualassistant.service.AppService;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
+import com.vnsolution.virtualassistant.util.NotificationUtils;
+import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,11 +77,11 @@ import retrofit2.Response;
 
 public class StopTrackingService extends Service {
 
-    private ActivityRecognitionClient activityRecognitionClient; //user activities
+    private ActivityRecognitionClient activityRecognitionClient;
     private PendingIntent activityTransitionPendingIntent;
-    private GeofencingClient geofencingClient; //geofence
+    private GeofencingClient geofencingClient;
     private PendingIntent geofencePendingIntent;
-    private FusedLocationProviderClient fusedLocationClient; //geolocation
+    private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private PendingIntent locationUpdatesPendingIntent;
 
@@ -153,7 +157,7 @@ public class StopTrackingService extends Service {
                     message = placeEntity.placeName + "\n" + placeEntity.formattedAddress;
                 }
             }
-            AppService.sendNotification(StopTrackingService.this, "CHECK OUT", message);
+            NotificationUtils.sendNotification(StopTrackingService.this, "CHECK OUT", message);
         }
     }
 
@@ -171,11 +175,24 @@ public class StopTrackingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         AndroidInjection.inject(this);
-        createNotificationChannel();
+        //validate
+        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_STOP_TRACKING)) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            stopSelf();
+            return START_NOT_STICKY;
+        }
 
-        Notification notification = new NotificationCompat.Builder(this, Constants.STOP_TRACKING_CHANNEL_ID)
-                .setContentTitle(Constants.STOP_TRACKING_NOTIFY_TITLE)
-                .setContentText(Constants.STOP_TRACKING_NOTIFY_TEXT)
+        //notification channel
+        createNotificationChannel();
+        Notification notification = new NotificationCompat.Builder(this, StopTracking.NOTIFY_CHANNEL_ID)
+                .setContentTitle(StopTracking.NOTIFY_FOREGROUND_SERVICE_TITLE)
+                .setContentText(StopTracking.NOTIFY_FOREGROUND_SERVICE_TEXT)
                 .setSmallIcon(R.drawable.ic_unknown)
                 .build();
         startForeground((int) (Math.random() * 999999), notification);
@@ -183,24 +200,24 @@ public class StopTrackingService extends Service {
         //do heavy work on a background thread
         if (intent != null) {
             switch (intent.getAction()) {
-                case Constants.INTENT_ACTION_INITIAL:
-                    AppService.sendNotification(this, "EVENT TRIGGER", "Initial service.");
+                case StopTracking.INTENT_ACTION_INITIAL:
+                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Initial service.");
                     runInit();
                     break;
-                case Constants.INTENT_ACTION_CHECK_IN:
-                    AppService.sendNotification(this, "EVENT TRIGGER", "Check in.");
+                case StopTracking.INTENT_ACTION_CHECK_IN:
+                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check in.");
                     checkIn(true);
                     break;
-                case Constants.INTENT_ACTION_CHECK_IN_SCHEDULE:
-                    AppService.sendNotification(this, "EVENT TRIGGER", "Schedule check in.");
+                case StopTracking.INTENT_ACTION_CHECK_IN_SCHEDULE:
+                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Schedule check in.");
                     checkIn(false);
                     break;
-                case Constants.INTENT_ACTION_LOCATION_UPDATED:
-                    AppService.sendNotification(this, "EVENT TRIGGER", "Update location.");
-                    updatePosition(intent);
-                    break;
-                case Constants.INTENT_ACTION_CHECK_OUT:
-                    AppService.sendNotification(this, "EVENT TRIGGER", "Check out.");
+//                case Constants.INTENT_ACTION_LOCATION_UPDATED:
+//                    AppService.sendNotification(this, "EVENT TRIGGER", "Update location.");
+//                    updatePosition(intent);
+//                    break;
+                case StopTracking.INTENT_ACTION_CHECK_OUT:
+                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check out.");
                     checkOut();
                     break;
             }
@@ -209,13 +226,6 @@ public class StopTrackingService extends Service {
 
         return START_NOT_STICKY;
     }
-
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        stopActivityTransitionMonitor();
-//        stopGeofenceMonitor();
-//    }
 
     @Override
     public void onDestroy() {
@@ -228,43 +238,43 @@ public class StopTrackingService extends Service {
         return null;
     }
 
-    private List<String> processChainTasks(List<String> tasks) {
+    private List<String> processChainTasks(List<String> taskQueue) {
         List<String> taskResult = new ArrayList<>();
-        processChainTasksRecurring(tasks, 0, taskResult);
+        processChainTasksRecurring(taskQueue, 0, taskResult);
         return taskResult;
     }
 
-    private void processChainTasksRecurring(List<String> tasks, int taskIndex, List<String> taskResult) {
-        if (tasks == null || tasks.size() == 0 || taskIndex > tasks.size() - 1) return;
-        String taskName = tasks.get(taskIndex);
+    private void processChainTasksRecurring(List<String> taskQueue, int taskIndex, List<String> taskResult) {
+        if (taskQueue == null || taskQueue.size() == 0 || taskIndex > taskQueue.size() - 1) return;
+        String taskName = taskQueue.get(taskIndex);
 
         Task<Void> runningTask = null;
         switch (taskName) {
-            case Constants.START_ACTIVITY_TRANSACTION_MONITOR:
+            case StopTracking.REQUEST_START_ACTIVITY_TRANSACTION_MONITOR:
                 runningTask = startActivityTransitionMonitor();
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 //                    simulateTransition();
 //                }
                 break;
-            case Constants.STOP_ACTIVITY_TRANSACTION_MONITOR:
+            case StopTracking.REQUEST_STOP_ACTIVITY_TRANSACTION_MONITOR:
                 runningTask = stopActivityTransitionMonitor();
                 break;
-            case Constants.START_REQUEST_LOCATION_UPDATES:
+            case StopTracking.REQUEST_START_LOCATION_UPDATES:
                 runningTask = startLocationUpdates();
                 break;
-            case Constants.STOP_REQUEST_LOCATION_UPDATES:
+            case StopTracking.REQUEST_STOP_LOCATION_UPDATES:
                 runningTask = stopLocationUpdates();
                 break;
-            case Constants.START_GEOFENCE_MONITOR:
+            case StopTracking.REQUEST_START_GEOFENCE_MONITOR:
                 runningTask = startGeofenceMonitor();
                 break;
-            case Constants.STOP_GEOFENCE_MONITOR:
+            case StopTracking.REQUEST_STOP_GEOFENCE_MONITOR:
                 runningTask = stopGeofenceMonitor();
                 break;
-            case Constants.MARK_AS_VISITED:
+            case StopTracking.REQUEST_MARK_AS_VISITED:
                 maskAsVisited();
                 break;
-            case Constants.STOP_FOREGROUND_SERVICE:
+            case StopTracking.REQUEST_STOP_FOREGROUND_SERVICE:
                 stopSelf();
                 break;
         }
@@ -276,7 +286,7 @@ public class StopTrackingService extends Service {
                     String event = taskName + "_SUCCESS";
 //                    AppService.sendNotification(StopTrackingService.this, event);
                     taskResult.add(event);
-                    processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
+                    processChainTasksRecurring(taskQueue, taskIndex + 1, taskResult);
                 }
             });
             runningTask.addOnFailureListener(new OnFailureListener() {
@@ -285,7 +295,7 @@ public class StopTrackingService extends Service {
                     String event = taskName + "_FAILURE";
 //                    AppService.sendNotification(StopTrackingService.this, event);
                     taskResult.add(event);
-                    processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
+                    processChainTasksRecurring(taskQueue, taskIndex + 1, taskResult);
                 }
             });
 //            runningTask.addOnCanceledListener(new OnCanceledListener() {
@@ -310,51 +320,65 @@ public class StopTrackingService extends Service {
             String event = taskName + "_SUCCESS";
 //            AppService.sendNotification(StopTrackingService.this, event);
             taskResult.add(event);
-            processChainTasksRecurring(tasks, taskIndex + 1, taskResult);
+            processChainTasksRecurring(taskQueue, taskIndex + 1, taskResult);
         }
     }
 
     private void runInit() {
         List<String> chainTasks = new ArrayList<>();
 
-        chainTasks.add(Constants.START_ACTIVITY_TRANSACTION_MONITOR);
-        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
+        chainTasks.add(StopTracking.REQUEST_START_ACTIVITY_TRANSACTION_MONITOR);
+        chainTasks.add(StopTracking.REQUEST_STOP_FOREGROUND_SERVICE);
 
         processChainTasks(chainTasks);
     }
 
-    @SuppressLint("MissingPermission")
-    private void checkIn(boolean isFirstCheckedIn) {
+    private Task<Void> checkIn(boolean isFirstCheckedIn) {
+        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_LOCATION)) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 Location location = locationResult.getLastLocation();
                 if (location != null) {
                     fusedLocationClient.removeLocationUpdates(locationCallback);
-                    List<String> taskQueue = new ArrayList<>();
+                    double longitude = Math.round(location.getLongitude() * Math.pow(10, 7)) / Math.pow(10, 7);
+                    double latitude = Math.round(location.getLatitude() * Math.pow(10, 7)) / Math.pow(10, 7);
 
                     StopPoint stopPoint = getStopPointFromCache();
-                    if (stopPoint == null || isFirstCheckedIn) {
-                        stopPoint = new StopPoint(location.getLongitude(), location.getLatitude(), new Date(), new Date());
-                        taskQueue.add(Constants.START_GEOFENCE_MONITOR);
-                        taskQueue.add(Constants.STOP_ACTIVITY_TRANSACTION_MONITOR);
+                    if (stopPoint == null) {
+                        stopPoint = new StopPoint(longitude, latitude, new Date(), new Date());
                     } else {
-                        stopPoint.longitude = location.getLongitude();
-                        stopPoint.latitude = location.getLatitude();
+                        stopPoint.longitude = longitude;
+                        stopPoint.latitude = latitude;
                         stopPoint.exist = new Date();
                     }
                     saveStopPointInCache(stopPoint);
                     notifyPosition(stopPoint);
 
-                    taskQueue.add(Constants.STOP_FOREGROUND_SERVICE);
+                    List<String> taskQueue = new ArrayList<>();
+                    if (isFirstCheckedIn) {
+                        taskQueue.add(StopTracking.REQUEST_START_GEOFENCE_MONITOR);
+                        taskQueue.add(StopTracking.REQUEST_STOP_ACTIVITY_TRANSACTION_MONITOR);
+                    }
+                    taskQueue.add(StopTracking.REQUEST_STOP_FOREGROUND_SERVICE);
                     processChainTasks(taskQueue);
                 }
             }
         };
-        fusedLocationClient.requestLocationUpdates(buildLocationUpdatesRequest(), locationCallback, Looper.getMainLooper());
+        @SuppressLint("MissingPermission") Task<Void> requestLocationUpdates = fusedLocationClient.requestLocationUpdates(buildLocationUpdatesRequest(), locationCallback, Looper.getMainLooper());
+        return requestLocationUpdates;
     }
 
-    private void updatePosition(Intent intent) {
+//    private void updatePosition(Intent intent) {
 //        Location location = extractLocationResult(intent);
 //        StopPoint stopPoint = getStopPointFromCache();
 //        if (location != null && stopPoint != null) {
@@ -364,24 +388,34 @@ public class StopTrackingService extends Service {
 //            saveStopPointInCache(stopPoint);
 //            notifyPosition(stopPoint);
 //        }
-        List<String> chainTasks = new ArrayList<>();
-        chainTasks.add(Constants.STOP_REQUEST_LOCATION_UPDATES);
-        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
-        processChainTasks(chainTasks);
-    }
+//        List<String> chainTasks = new ArrayList<>();
+//        chainTasks.add(Constants.STOP_REQUEST_LOCATION_UPDATES);
+//        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
+//        processChainTasks(chainTasks);
+//    }
 
     private void checkOut() {
         List<String> chainTasks = new ArrayList<>();
 
-        chainTasks.add(Constants.MARK_AS_VISITED);
-        chainTasks.add(Constants.STOP_GEOFENCE_MONITOR);
-        chainTasks.add(Constants.START_ACTIVITY_TRANSACTION_MONITOR);
-        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
+        chainTasks.add(StopTracking.REQUEST_MARK_AS_VISITED);
+        chainTasks.add(StopTracking.REQUEST_STOP_GEOFENCE_MONITOR);
+        chainTasks.add(StopTracking.REQUEST_START_ACTIVITY_TRANSACTION_MONITOR);
+        chainTasks.add(StopTracking.REQUEST_STOP_FOREGROUND_SERVICE);
 
         processChainTasks(chainTasks);
     }
 
     private Task<Void> startActivityTransitionMonitor() {
+        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_ACTIVITY_RECOGNITION)) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
         ActivityTransitionRequest activityTrackingRequest = buildActivityTransitionRequest();
         Task<Void> activityTrackingTask = activityRecognitionClient.requestActivityTransitionUpdates(activityTrackingRequest, getActivityTransitionPendingIntent());
         return activityTrackingTask;
@@ -393,6 +427,16 @@ public class StopTrackingService extends Service {
     }
 
     private Task<Void> startLocationUpdates() {
+        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_LOCATION)) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
         LocationRequest locationRequest = buildLocationUpdatesRequest();
         @SuppressLint("MissingPermission") Task<Void> requestLocationUpdatesTask = fusedLocationClient.requestLocationUpdates(locationRequest, getLocationUpdatesPendingIntent());
         return requestLocationUpdatesTask;
@@ -404,9 +448,19 @@ public class StopTrackingService extends Service {
     }
 
     private Task<Void> startGeofenceMonitor() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
         StopPoint stopPoint = getStopPointFromCache();
         GeofencingRequest geofencingRequest = buildGeofencingRequest(stopPoint);
-        @SuppressLint("MissingPermission") Task<Void> geofenceTrackingTask = geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent());
+        Task<Void> geofenceTrackingTask = geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent());
         return geofenceTrackingTask;
     }
 
@@ -415,28 +469,28 @@ public class StopTrackingService extends Service {
         return geofenceTrackingTask;
     }
 
-    private Location extractLocationResult(Intent intent) {
-        if (intent == null) return null;
-
-        String provider = intent.getStringExtra("Provider");
-        double longitude = intent.getDoubleExtra("Longitude", -1);
-        double latitude = intent.getDoubleExtra("Latitude", -1);
-        if (provider == null || provider == "" || longitude == -1 || latitude == -1) return null;
-
-        double roundedLongitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
-        double roundedLatitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
-
-        Location location = new Location(provider);
-        location.setLongitude(roundedLongitude);
-        location.setLatitude(roundedLatitude);
-        return location;
-    }
+//    private Location extractLocationResult(Intent intent) {
+//        if (intent == null) return null;
+//
+//        String provider = intent.getStringExtra("Provider");
+//        double longitude = intent.getDoubleExtra("Longitude", -1);
+//        double latitude = intent.getDoubleExtra("Latitude", -1);
+//        if (provider == null || provider == "" || longitude == -1 || latitude == -1) return null;
+//
+//        double roundedLongitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
+//        double roundedLatitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
+//
+//        Location location = new Location(provider);
+//        location.setLongitude(roundedLongitude);
+//        location.setLatitude(roundedLatitude);
+//        return location;
+//    }
 
     private void maskAsVisited() {
         StopPoint stopPoint = getStopPointFromCache();
         if (stopPoint != null) {
             stopPoint.exist = new Date();
-            if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= Constants.STOP_DETECTION_IN_MILLISECONDS) {
+            if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= StopTracking.CONFIG_STOP_DETECTION_IN_MILLISECONDS) {
                 new SaveToDBTask().execute(stopPoint);
             }
         }
@@ -458,21 +512,21 @@ public class StopTrackingService extends Service {
             Address place = getAddressFromLocation(stopPoint);
             if (place != null) {
                 String address = place.getFeatureName() + "\n" + place.getAddressLine(0);
-                AppService.sendNotification(StopTrackingService.this, "ADDRESS", address);
+                NotificationUtils.sendNotification(StopTrackingService.this, "ADDRESS", address);
             } else {
-                AppService.sendNotification(StopTrackingService.this, "NOTICE", "Can not get address of stop position.");
+                NotificationUtils.sendNotification(StopTrackingService.this, "NOTICE", "Can not get address of stop position.");
             }
 //            if (placeDetail == null && nearBy == null && place == null) {
 //                AppService.sendNotification(StopTrackingService.this, "NOTICE", "Can not get address of stop position.");
 //            }
         } else {
-            AppService.sendNotification(StopTrackingService.this, "NOTICE", "Stop position is not available.");
+            NotificationUtils.sendNotification(StopTrackingService.this, "NOTICE", "Stop position is not available.");
         }
     }
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(Constants.STOP_TRACKING_CHANNEL_ID, Constants.STOP_TRACKING_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel serviceChannel = new NotificationChannel(StopTracking.NOTIFY_CHANNEL_ID, StopTracking.NOTIFY_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
         }
@@ -506,7 +560,7 @@ public class StopTrackingService extends Service {
         }
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.INTENT_ACTION);
-        intent.addCategory(Constants.INTENT_CATEGORY_ACTIVITY_TRANSITION_MONITOR);
+        intent.addCategory(StopTracking.INTENT_CATEGORY_ACTIVITY_TRANSITION);
         locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return locationUpdatesPendingIntent;
     }
@@ -544,10 +598,10 @@ public class StopTrackingService extends Service {
 
         geofences.add(new Geofence.Builder()
                 .setRequestId(stopPoint.id)
-                .setCircularRegion(stopPoint.latitude, stopPoint.longitude, Constants.GEOFENCE_RADIUS_IN_METERS)
+                .setCircularRegion(stopPoint.latitude, stopPoint.longitude, StopTracking.CONFIG_GEOFENCE_RADIUS_IN_METERS)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE) //.setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
-                .setLoiteringDelay(Constants.GEOFENCE_DWELLING_IN_MILLISECONDS)
+                .setLoiteringDelay(StopTracking.CONFIG_GEOFENCE_DWELLING_IN_MILLISECONDS)
                 .build());
 
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
@@ -560,8 +614,8 @@ public class StopTrackingService extends Service {
 
     private LocationRequest buildLocationUpdatesRequest() {
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(Constants.GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(Constants.GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setInterval(StopTracking.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(StopTracking.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }

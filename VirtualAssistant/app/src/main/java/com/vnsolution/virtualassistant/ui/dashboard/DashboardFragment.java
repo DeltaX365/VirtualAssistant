@@ -1,7 +1,10 @@
 package com.vnsolution.virtualassistant.ui.dashboard;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
@@ -17,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -34,13 +38,16 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.ui.places.VisitedPlacesViewModel;
+import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,16 +133,16 @@ public class DashboardFragment extends Fragment implements Injectable {
                 e.printStackTrace();
             }
             mMapView.getMapAsync(new OnMapReadyCallback() {
-                @SuppressLint("MissingPermission")
                 @Override
                 public void onMapReady(GoogleMap mMap) {
                     mGoogleMap = mMap;
                     mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-                    mGoogleMap.setMyLocationEnabled(true);
                     mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                    enableMyLocation();
                     requestLocationUpdates();
                 }
             });
+            startWatchingPermissions();
         }
 
         visitedPlaceViewModel = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
@@ -150,11 +157,34 @@ public class DashboardFragment extends Fragment implements Injectable {
         return root;
     }
 
+    private void startWatchingPermissions() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                enableMyLocation();
+                requestLocationUpdates();
+            }
+        }, filter);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void enableMyLocation() {
+        if (!PermissionUtils.hasPermissions(getActivity(), StopTracking.PERMISSIONS_LOCATION)) {
+            return;
+        }
+        mGoogleMap.setMyLocationEnabled(true);
+    }
+
     @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
+        if (!PermissionUtils.hasPermissions(getActivity(), StopTracking.PERMISSIONS_LOCATION)) {
+            return;
+        }
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(Constants.GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(Constants.GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setInterval(StopTracking.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(StopTracking.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationCallback = new LocationCallback() {
             @Override
@@ -168,7 +198,9 @@ public class DashboardFragment extends Fragment implements Injectable {
     }
 
     private void removeLocationUpdates() {
-        fusedLocationClient.removeLocationUpdates(mLocationCallback);
+        if (mLocationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(mLocationCallback);
+        }
     }
 
     private void updateLocation() {
@@ -203,7 +235,7 @@ public class DashboardFragment extends Fragment implements Injectable {
                     .center(latLng)
                     .strokeColor(Color.argb(50, 70, 70, 70))
                     .fillColor(Color.argb(100, 150, 150, 150))
-                    .radius(Constants.GEOFENCE_RADIUS_IN_METERS);
+                    .radius(StopTracking.CONFIG_GEOFENCE_RADIUS_IN_METERS);
             mCurrentCircle = mGoogleMap.addCircle(circleOptions);
         }
     }

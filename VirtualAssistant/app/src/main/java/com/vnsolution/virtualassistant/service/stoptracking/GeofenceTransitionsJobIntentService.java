@@ -52,9 +52,6 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
             String geofenceTransitionDetails = getGeofenceTransitionDetails(geoFenceTransition, triggeringGeofences );
             Toast.makeText(this, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
-
-            Intent intent = new Intent(Constants.BROADCAST_GEOFENCE_EXIST_DETECTED);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }
     }
 

@@ -20,7 +20,7 @@ public class VirtualAssistantApp extends Application implements HasAndroidInject
     public void onCreate() {
         super.onCreate();
         AppInjector.init(this);
-        AppService.init(getApplicationContext());
+        new AppService(getApplicationContext()).run();
     }
 
     @Override

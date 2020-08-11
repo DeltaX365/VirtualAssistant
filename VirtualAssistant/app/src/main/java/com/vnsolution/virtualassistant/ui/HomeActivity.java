@@ -1,14 +1,14 @@
 package com.vnsolution.virtualassistant.ui;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,15 +27,6 @@ import dagger.android.HasAndroidInjector;
 public class HomeActivity extends AppCompatActivity implements HasAndroidInjector {
     @Inject
     DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
-    
-    private static final int ALL_PERMISSIONS_RESULT = 1000;
-
-    private String[] permissions = {
-            Manifest.permission.ACTIVITY_RECOGNITION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,41 +47,37 @@ public class HomeActivity extends AppCompatActivity implements HasAndroidInjecto
     @Override
     protected void onResume() {
         super.onResume();
-        checkPermissions();
+        requestPermissions();
     }
 
-    private boolean checkPermissions() {
+    private boolean requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : permissions) {
-                if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{permission}, ALL_PERMISSIONS_RESULT);
-                    return false;
-                }
-                String action = "";
-                switch (permission) {
-                    case Manifest.permission.ACTIVITY_RECOGNITION:
-                        action = Constants.BROADCAST_ACTIVITY_RECOGNITION_PERMISSION_CHANGED;
-                        break;
-                    case Manifest.permission.ACCESS_COARSE_LOCATION:
-                    case Manifest.permission.ACCESS_FINE_LOCATION:
-                    case Manifest.permission.ACCESS_BACKGROUND_LOCATION:
-                        action = Constants.BROADCAST_LOCATION_PERMISSION_CHANGED;
-                        break;
-                }
-                if (!action.isEmpty()) {
-                    Intent intent = new Intent(action);
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-                }
+            if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_ACTIVITY_RECOGNITION)) {
+                requestPermissions(StopTracking.PERMISSIONS_ACTIVITY_RECOGNITION, StopTracking.PERMISSIONS_REQUEST_CODE);
+                return false;
             }
+            Intent intentUA = new Intent(StopTracking.BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intentUA);
+
+            if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_LOCATION)) {
+                requestPermissions(StopTracking.PERMISSIONS_LOCATION, StopTracking.PERMISSIONS_REQUEST_CODE);
+                return false;
+            }
+            Intent intentL = new Intent(StopTracking.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intentL);
+
+            Intent intent = new Intent(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }
+        Toast.makeText(this, "Stop tracking permissions have been granted", Toast.LENGTH_SHORT).show();
         return true;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == ALL_PERMISSIONS_RESULT) {
-            checkPermissions();
+        if (requestCode == StopTracking.PERMISSIONS_REQUEST_CODE) {
+            requestPermissions();
         }
     }
 
