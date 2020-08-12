@@ -273,7 +273,7 @@ public class StopTrackingService extends Service {
                 runningTask = stopGeofenceMonitor();
                 break;
             case StopTracking.REQUEST_MARK_AS_VISITED:
-                maskAsVisited();
+                markAsVisited();
                 break;
             case StopTracking.REQUEST_STOP_FOREGROUND_SERVICE:
                 stopSelf();
@@ -487,7 +487,7 @@ public class StopTrackingService extends Service {
 //        return location;
 //    }
 
-    private void maskAsVisited() {
+    private void markAsVisited() {
         StopPoint stopPoint = getStopPointFromCache();
         if (stopPoint != null) {
             stopPoint.exist = new Date();
