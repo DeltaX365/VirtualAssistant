@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -28,6 +30,8 @@ import javax.inject.Inject;
 public class InstalledApplicationsFragment extends Fragment implements Injectable, OnItemActionListerner {
     private InstalledApplicationsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
+    private FrameLayout progressOverlay;
+
     private InstalledApplicationsAdapter installedApplicationAdapter;
     private List<Application> installedApplications = new ArrayList<>();
     private InstalledApplicationsViewModel applicationViewModel;
@@ -54,6 +58,7 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
 
         if (mContext != null) {
             recyclerView = root.findViewById(R.id.list_applications);
+            progressOverlay =  root.findViewById(R.id.progress_overlay);
 
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
@@ -69,11 +74,21 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
             recyclerView.setOnItemAction(this);
 
             // retrieve data
+            AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+            inAnimation.setDuration(200);
+            progressOverlay.setAnimation(inAnimation);
+            progressOverlay.setVisibility(View.VISIBLE);
+
             applicationViewModel.getInstalledApplications(false, false).observe(getViewLifecycleOwner(), new Observer<List<Application>>() {
                 @Override
                 public void onChanged(List<Application> applications) {
                     installedApplications = applications;
                     installedApplicationAdapter.setData(applications);
+
+                    AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+                    outAnimation.setDuration(200);
+                    progressOverlay.setAnimation(outAnimation);
+                    progressOverlay.setVisibility(View.INVISIBLE);
                 }
             });
         }

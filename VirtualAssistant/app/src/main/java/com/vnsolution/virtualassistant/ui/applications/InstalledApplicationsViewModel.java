@@ -74,16 +74,16 @@ public class InstalledApplicationsViewModel extends ViewModel {
                         application.appIcon = packageInfo.applicationInfo.loadIcon(context.getPackageManager());
                         getUsageStats(application);
                         applications.add(application);
-                        installedApplicationsLiveData.setValue(applications);
                     }
                 }
+                installedApplicationsLiveData.setValue(applications);
             }
         }, DELAY_FETCH_DATA_IN_MILLISECONDS);
     }
 
     private void getUsageStats(Application application) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP
-                && context != null && application != null && appUsageStats == null) {
+                && context != null && application != null && (appUsageStats == null || appUsageStats.isEmpty())) {
 
             UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
             Calendar calendar = Calendar.getInstance();

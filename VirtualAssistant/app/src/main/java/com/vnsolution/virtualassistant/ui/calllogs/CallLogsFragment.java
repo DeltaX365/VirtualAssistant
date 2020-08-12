@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -33,6 +35,8 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
     private static final int REQUEST_CODE = 1001;
     private CallLogsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
+    private FrameLayout progressOverlay;
+
     private CallLogsAdapter callLogsAdapter;
     private List<CallLog> callHistory = new ArrayList<>();
     private CallLogsViewModel callLogsViewModel;
@@ -59,6 +63,7 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
 
         if (mContext != null) {
             recyclerView = root.findViewById(R.id.list_call_logs);
+            progressOverlay =  root.findViewById(R.id.progress_overlay);
 
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
@@ -87,11 +92,23 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
                 return;
             }
         }
+
+        // retrieve data
+        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+        inAnimation.setDuration(200);
+        progressOverlay.setAnimation(inAnimation);
+        progressOverlay.setVisibility(View.VISIBLE);
+
         callLogsViewModel.getCallLogs(false).observe(getViewLifecycleOwner(), new Observer<List<CallLog>>() {
             @Override
             public void onChanged(List<CallLog> callLogs) {
                 callHistory = callLogs;
                 callLogsAdapter.setData(callLogs);
+
+                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+                outAnimation.setDuration(200);
+                progressOverlay.setAnimation(outAnimation);
+                progressOverlay.setVisibility(View.INVISIBLE);
             }
         });
     }
