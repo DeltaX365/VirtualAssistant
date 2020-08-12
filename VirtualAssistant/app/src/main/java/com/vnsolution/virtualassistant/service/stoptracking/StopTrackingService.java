@@ -43,6 +43,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.api.GoogleApi;
@@ -653,6 +654,7 @@ public class StopTrackingService extends Service {
             }
         } catch (IOException exception) {
             exception.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(exception);
         }
         return null;
     }
@@ -662,8 +664,10 @@ public class StopTrackingService extends Service {
         placeEntity.id = UUID.randomUUID().toString();
         placeEntity.placeName = address.getFeatureName();
         placeEntity.formattedAddress = address.getAddressLine(0);
-        placeEntity.latitude = address.getLatitude();
-        placeEntity.longitude = address.getLongitude();
+        double longitude = Math.round(address.getLongitude() * Math.pow(10, 7)) / Math.pow(10, 7);
+        double latitude = Math.round(address.getLatitude() * Math.pow(10, 7)) / Math.pow(10, 7);
+        placeEntity.latitude = latitude;
+        placeEntity.longitude = longitude;
         placeEntity.createdDate = new Date();
         return placeEntity;
     }
@@ -690,6 +694,7 @@ public class StopTrackingService extends Service {
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
 //        String location = stopPoint.latitude + "," + stopPoint.longitude;
@@ -716,8 +721,12 @@ public class StopTrackingService extends Service {
         placeEntity.ggPlaceId = nearBy.placeId;
         placeEntity.placeName = nearBy.name;
         placeEntity.formattedAddress = nearBy.vicinity;
-        placeEntity.latitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lat : 0;
-        placeEntity.longitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lng : 0;
+        double latitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lat : 0;
+        double longitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lng : 0;
+        latitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        longitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        placeEntity.latitude = latitude;
+        placeEntity.longitude = longitude;
         placeEntity.plusCodeCompound = (nearBy.plusCode != null)? nearBy.plusCode.compoundCode : "";
         placeEntity.plusCodeGlobal = (nearBy.plusCode != null)? nearBy.plusCode.globalCode : "";
         placeEntity.types = join(",", nearBy.types);
@@ -745,8 +754,12 @@ public class StopTrackingService extends Service {
         placeEntity.ggPlaceId = placeDetail.placeId;
         placeEntity.placeName = placeDetail.name;
         placeEntity.formattedAddress = placeDetail.formattedAddress;
-        placeEntity.latitude = (placeDetail.geometry != null && placeDetail.geometry.location != null)? placeDetail.geometry.location.lat : 0;
-        placeEntity.longitude = (placeDetail.geometry != null && placeDetail.geometry.location != null)? placeDetail.geometry.location.lng : 0;
+        double latitude = (placeDetail.geometry != null && placeDetail.geometry.location != null)? placeDetail.geometry.location.lat : 0;
+        double longitude = (placeDetail.geometry != null && placeDetail.geometry.location != null)? placeDetail.geometry.location.lng : 0;
+        latitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        longitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        placeEntity.latitude = latitude;
+        placeEntity.longitude = longitude;
         placeEntity.plusCodeCompound = (placeDetail.plusCode != null)? placeDetail.plusCode.compoundCode : "";
         placeEntity.plusCodeGlobal = (placeDetail.plusCode != null)? placeDetail.plusCode.globalCode : "";
         placeEntity.types = join(",", placeDetail.types);
@@ -784,6 +797,7 @@ public class StopTrackingService extends Service {
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
         return place;
@@ -807,6 +821,7 @@ public class StopTrackingService extends Service {
             placeDetail = placeDetailFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
         return placeDetail;
