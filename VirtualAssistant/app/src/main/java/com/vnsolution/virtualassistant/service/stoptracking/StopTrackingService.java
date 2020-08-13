@@ -176,6 +176,7 @@ public class StopTrackingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         AndroidInjection.inject(this);
+
         //validate
         if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_STOP_TRACKING)) {
             // TODO: Consider calling
@@ -345,36 +346,39 @@ public class StopTrackingService extends Service {
             // for ActivityCompat#requestPermissions for more details.
             return null;
         }
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                Location location = locationResult.getLastLocation();
-                if (location != null) {
-                    fusedLocationClient.removeLocationUpdates(locationCallback);
-                    double longitude = Math.round(location.getLongitude() * Math.pow(10, 7)) / Math.pow(10, 7);
-                    double latitude = Math.round(location.getLatitude() * Math.pow(10, 7)) / Math.pow(10, 7);
+        if (locationCallback == null) {
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    Location location = locationResult.getLastLocation();
+                    if (location != null) {
+                        fusedLocationClient.removeLocationUpdates(locationCallback);
+                        double longitude = Math.round(location.getLongitude() * Math.pow(10, 7)) / Math.pow(10, 7);
+                        double latitude = Math.round(location.getLatitude() * Math.pow(10, 7)) / Math.pow(10, 7);
 
-                    StopPoint stopPoint = getStopPointFromCache();
-                    if (stopPoint == null) {
-                        stopPoint = new StopPoint(longitude, latitude, new Date(), new Date());
-                    } else {
-                        stopPoint.longitude = longitude;
-                        stopPoint.latitude = latitude;
-                        stopPoint.exist = new Date();
-                    }
-                    saveStopPointInCache(stopPoint);
-                    notifyPosition(stopPoint);
+                        StopPoint stopPoint = getStopPointFromCache();
+                        if (stopPoint == null) {
+                            stopPoint = new StopPoint(longitude, latitude, new Date(), new Date());
+                        } else {
+                            stopPoint.longitude = longitude;
+                            stopPoint.latitude = latitude;
+                            stopPoint.exist = new Date();
+                        }
+                        saveStopPointInCache(stopPoint);
+                        notifyPosition(stopPoint);
 
-                    List<String> taskQueue = new ArrayList<>();
-                    if (isFirstCheckedIn) {
-                        taskQueue.add(StopTracking.REQUEST_START_GEOFENCE_MONITOR);
-                        taskQueue.add(StopTracking.REQUEST_STOP_ACTIVITY_TRANSACTION_MONITOR);
+                        List<String> taskQueue = new ArrayList<>();
+                        if (isFirstCheckedIn) {
+                            taskQueue.add(StopTracking.REQUEST_START_GEOFENCE_MONITOR);
+                            taskQueue.add(StopTracking.REQUEST_STOP_ACTIVITY_TRANSACTION_MONITOR);
+                        }
+                        taskQueue.add(StopTracking.REQUEST_STOP_FOREGROUND_SERVICE);
+                        processChainTasks(taskQueue);
                     }
-                    taskQueue.add(StopTracking.REQUEST_STOP_FOREGROUND_SERVICE);
-                    processChainTasks(taskQueue);
                 }
-            }
-        };
+            };
+        }
+        fusedLocationClient.removeLocationUpdates(locationCallback);
         @SuppressLint("MissingPermission") Task<Void> requestLocationUpdates = fusedLocationClient.requestLocationUpdates(buildLocationUpdatesRequest(), locationCallback, Looper.getMainLooper());
         return requestLocationUpdates;
     }
