@@ -4,13 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.core.app.JobIntentService;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
-import com.vnsolution.virtualassistant.common.Constants;
 
 import java.util.List;
 

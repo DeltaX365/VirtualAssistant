@@ -8,7 +8,6 @@ import android.location.Location;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.LocationResult;
-import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.common.StopTracking;
 
 public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {

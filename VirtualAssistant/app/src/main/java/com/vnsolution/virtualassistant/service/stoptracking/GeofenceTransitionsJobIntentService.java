@@ -7,12 +7,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.JobIntentService;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
-import com.vnsolution.virtualassistant.common.Constants;
 
 import java.util.ArrayList;
 import java.util.List;

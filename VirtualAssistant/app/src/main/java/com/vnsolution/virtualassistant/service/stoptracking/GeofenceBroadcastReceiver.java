@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
-import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.util.NotificationUtils;
 

@@ -10,7 +10,6 @@ import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
-import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.util.NotificationUtils;
 

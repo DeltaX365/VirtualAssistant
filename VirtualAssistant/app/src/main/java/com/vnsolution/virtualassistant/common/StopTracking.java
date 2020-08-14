@@ -33,12 +33,12 @@ public class StopTracking {
     public static final String REQUEST_MARK_AS_VISITED = "STOP_TRACKING_REQUEST_MARK_AS_VISITED";
 
     // Stop tracking configs.
-    public static final int CONFIG_STOP_DETECTION_IN_MILLISECONDS = 30*60*1000;
-    public static final int CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS = 10*60*1000;
+    public static final int CONFIG_STOP_DETECTION_IN_MILLISECONDS = 10*60*1000;
+    public static final int CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS = 2*60*1000;
     public static final int CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS = CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS;
     public static final int CONFIG_GEOFENCE_RADIUS_IN_METERS = 50;
     public static final int CONFIG_GEOFENCE_EXPIRATION_IN_MILLISECONDS = 1*60*1000;
-    public static final int CONFIG_GEOFENCE_DWELLING_IN_MILLISECONDS = 10*60*1000;
+    public static final int CONFIG_GEOFENCE_DWELLING_IN_MILLISECONDS = 30*60*1000;
 
     // Notifications.
     public static final String NOTIFY_CHANNEL_ID = "com.vnsolution.virtualassistant.STOP_TRACKING_FOREGROUND_SERVICE";
