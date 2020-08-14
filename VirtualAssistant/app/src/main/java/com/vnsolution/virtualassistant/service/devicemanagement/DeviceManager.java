@@ -43,6 +43,30 @@ public class DeviceManager {
         return instance;
     }
 
+    public void getTotalInstalledApps() {}
+
+    public void getTop10RecentUsedApps() {}
+
+    public void getTop10MostUsedApps() {}
+
+    public void getTop10FavouriteUsedApps() {}
+
+    public void getTop10UnusedApps() {}
+
+    public void favouriteApp(Application application) {}
+
+    public void categorizeApp(Application application) {}
+
+    public void getTotalCalls() {}
+
+    public void getTotalPhones() {}
+
+    public void getTotalTime() {}
+
+    public void getTop10RecentCalls() {}
+
+    public void getTop10MostCalls() {}
+
     public MutableLiveData<List<Application>> getInstalledApplications(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
         if (installedApplicationsLiveData == null || forceUpdate) {
             installedApplicationsLiveData = new MutableLiveData<>();
