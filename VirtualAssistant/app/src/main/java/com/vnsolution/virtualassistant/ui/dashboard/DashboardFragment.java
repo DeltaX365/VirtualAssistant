@@ -38,10 +38,8 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.Place;
@@ -119,7 +117,7 @@ public class DashboardFragment extends Fragment implements Injectable {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         dashboardViewModel = ViewModelProviders.of(this, viewModelFactory).get(DashboardViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View root = inflater.inflate(R.layout.screen_dashboard, container, false);
 
         if (mContext != null) {
             // https://stackoverflow.com/questions/19353255/how-to-put-google-maps-v2-on-a-fragment-using-viewpager

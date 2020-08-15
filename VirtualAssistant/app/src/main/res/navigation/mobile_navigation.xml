@@ -9,29 +9,29 @@
         android:id="@+id/navigation_dashboard"
         android:name="com.vnsolution.virtualassistant.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/screen_dashboard" />
 
     <fragment
         android:id="@+id/navigation_places"
         android:name="com.vnsolution.virtualassistant.ui.places.VisitedPlacesFragment"
         android:label="@string/title_places"
-        tools:layout="@layout/fragment_visited_places" />
+        tools:layout="@layout/screen_visited_places" />
 
     <fragment
         android:id="@+id/navigation_apps"
         android:name="com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsFragment"
         android:label="@string/title_applications"
-        tools:layout="@layout/fragment_installed_applications" />
+        tools:layout="@layout/screen_installed_applications" />
 
     <fragment
         android:id="@+id/navigation_call_logs"
         android:name="com.vnsolution.virtualassistant.ui.calllogs.CallLogsFragment"
         android:label="@string/title_call_logs"
-        tools:layout="@layout/fragment_call_logs" />
+        tools:layout="@layout/screen_call_logs" />
 
     <fragment
         android:id="@+id/navigation_settings"
         android:name="com.vnsolution.virtualassistant.ui.settings.SettingsFragment"
         android:label="@string/title_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/screen_settings" />
 </navigation>

@@ -54,7 +54,7 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         applicationViewModel = new InstalledApplicationsViewModel(getContext());
-        View root = inflater.inflate(R.layout.fragment_installed_applications, container, false);
+        View root = inflater.inflate(R.layout.screen_installed_applications, container, false);
 
         if (mContext != null) {
             recyclerView = root.findViewById(R.id.list_applications);

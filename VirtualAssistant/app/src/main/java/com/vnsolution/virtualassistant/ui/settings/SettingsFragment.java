@@ -52,7 +52,7 @@ public class SettingsFragment extends Fragment implements Injectable {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_settings, container, false);
+        View root = inflater.inflate(R.layout.screen_settings, container, false);
 
         ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), R.layout.item_setting, settings);
         ListView listSettings = (ListView) root.findViewById(R.id.list_settings);

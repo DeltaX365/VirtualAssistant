@@ -59,7 +59,7 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         callLogsViewModel = new CallLogsViewModel(getContext());
-        View root = inflater.inflate(R.layout.fragment_call_logs, container, false);
+        View root = inflater.inflate(R.layout.screen_call_logs, container, false);
 
         if (mContext != null) {
             recyclerView = root.findViewById(R.id.list_call_logs);

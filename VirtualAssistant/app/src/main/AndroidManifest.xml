@@ -31,13 +31,17 @@
             android:value="AIzaSyBQr8YzGqe0PWQiEMx9JbsnXmbpRZvQURo" />
 
         <activity
-            android:name=".ui.HomeActivity"
+            android:name=".ui.HomeV2Activity"
             android:label="@string/title_activity_home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.places.VisitedPlacesActivity" />
+        <activity android:name=".ui.applications.InstalledApplicationsActivity" />
+        <activity android:name=".ui.calllogs.CallLogsActivity" />
+        <activity android:name=".ui.settings.SettingsActivity" />
 
         <service
             android:name=".service.stoptracking.StopTrackingService"

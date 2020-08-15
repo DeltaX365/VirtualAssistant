@@ -57,7 +57,7 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         visitedPlaceViewModel = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_visited_places, container, false);
+        View root = inflater.inflate(R.layout.screen_visited_places, container, false);
 
         if (mContext != null) {
             recyclerView = root.findViewById(R.id.list_visited_places);
