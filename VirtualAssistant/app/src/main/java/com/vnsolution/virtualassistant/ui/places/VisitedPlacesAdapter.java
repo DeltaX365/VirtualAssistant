@@ -1,25 +1,27 @@
 package com.vnsolution.virtualassistant.ui.places;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.Place;
-import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.List;
 
 public class VisitedPlacesAdapter extends RecyclerView.Adapter<VisitedPlacesViewHolder> {
+    private Context context;
     private List<Place> dataSource;
     private OnItemActionListerner onItemActionListerner;
 
-    public VisitedPlacesAdapter(List<Place> dataSource) {
+    public VisitedPlacesAdapter(Context context, List<Place> dataSource) {
+        this.context = context;
         this.dataSource = dataSource;
     }
 
@@ -48,6 +50,7 @@ public class VisitedPlacesAdapter extends RecyclerView.Adapter<VisitedPlacesView
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         Place place = dataSource.get(position);
+        Glide.with(context).load(place.icon).into(holder.ivPlaceIcon);
 
         String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
         holder.textPlaceName.setText(placeName);
@@ -55,6 +58,7 @@ public class VisitedPlacesAdapter extends RecyclerView.Adapter<VisitedPlacesView
         String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
         holder.textPlaceAddress.setText(placeAddress);
 
+        holder.textPlaceTypes.setText(place.types);
         holder.onItemActionListerner = onItemActionListerner;
     }
 

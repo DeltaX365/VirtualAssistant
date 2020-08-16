@@ -2,7 +2,7 @@ package com.vnsolution.virtualassistant.service.stoptracking;
 
 import com.vnsolution.virtualassistant.model.Place;
 
-public class StopTrackingManager {
+public class StopTrackingManager  {
     private static StopTrackingManager instance;
 
     private StopTrackingManager(){}

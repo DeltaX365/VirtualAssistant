@@ -1,14 +1,8 @@
 package com.vnsolution.virtualassistant.api;
 
-import android.location.Address;
-
-import androidx.lifecycle.LiveData;
-
-import com.vnsolution.virtualassistant.api.adapter.ApiResponse;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
-import com.vnsolution.virtualassistant.model.StopPoint;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

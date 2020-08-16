@@ -63,7 +63,7 @@ public class VisitedPlacesActivity extends AppCompatActivity implements HasAndro
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter
-        visitedPlaceAdapter = new VisitedPlacesAdapter(visitedPlaces);
+        visitedPlaceAdapter = new VisitedPlacesAdapter(this, visitedPlaces);
         recyclerView.setAdapter(visitedPlaceAdapter);
         recyclerView.setOnItemAction(this);
 

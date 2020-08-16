@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant.ui.places;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,14 +12,20 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 public class VisitedPlacesViewHolder extends RecyclerView.ViewHolder {
+    public ImageView ivPlaceIcon;
     public TextView textPlaceName;
     public TextView textPlaceAddress;
+    public TextView textPlaceTypes;
     public OnItemActionListerner onItemActionListerner;
 
     public VisitedPlacesViewHolder(View view) {
         super(view);
+
+        ivPlaceIcon = view.findViewById(R.id.place_icon);
         textPlaceName = view.findViewById(R.id.place_name);
         textPlaceAddress = view.findViewById(R.id.place_address);
+        textPlaceTypes = view.findViewById(R.id.place_types);
+
         view.setOnTouchListener(new View.OnTouchListener() {
 
             private GestureDetector gestureDetector = new GestureDetector(view.getContext(), new GestureDetector.SimpleOnGestureListener() {

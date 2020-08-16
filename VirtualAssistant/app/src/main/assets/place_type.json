@@ -1,0 +1,286 @@
+[{
+  "unique_name": "accounting",
+  "display_name": ""
+}, {
+  "unique_name": "airport",
+  "display_name": ""
+}, {
+  "unique_name": "amusement_park",
+  "display_name": ""
+}, {
+  "unique_name": "aquarium",
+  "display_name": ""
+}, {
+  "unique_name": "art_gallery",
+  "display_name": ""
+}, {
+  "unique_name": "atm",
+  "display_name": "ATM"
+}, {
+  "unique_name": "bakery",
+  "display_name": ""
+}, {
+  "unique_name": "bank",
+  "display_name": "Bank"
+}, {
+  "unique_name": "bar",
+  "display_name": "Bar"
+}, {
+  "unique_name": "beauty_salon",
+  "display_name": ""
+}, {
+  "unique_name": "bicycle_store",
+  "display_name": ""
+}, {
+  "unique_name": "book_store",
+  "display_name": ""
+}, {
+  "unique_name": "bowling_alley",
+  "display_name": ""
+}, {
+  "unique_name": "bus_station",
+  "display_name": ""
+}, {
+  "unique_name": "cafe",
+  "display_name": "Cafe"
+}, {
+  "unique_name": "campground",
+  "display_name": ""
+}, {
+  "unique_name": "car_dealer",
+  "display_name": ""
+}, {
+  "unique_name": "car_rental",
+  "display_name": ""
+}, {
+  "unique_name": "car_repair",
+  "display_name": ""
+}, {
+  "unique_name": "car_wash",
+  "display_name": ""
+}, {
+  "unique_name": "casino",
+  "display_name": ""
+}, {
+  "unique_name": "cemetery",
+  "display_name": ""
+}, {
+  "unique_name": "church",
+  "display_name": ""
+}, {
+  "unique_name": "city_hall",
+  "display_name": ""
+}, {
+  "unique_name": "clothing_store",
+  "display_name": "Clothing store"
+}, {
+  "unique_name": "convenience_store",
+  "display_name": ""
+}, {
+  "unique_name": "courthouse",
+  "display_name": ""
+}, {
+  "unique_name": "dentist",
+  "display_name": ""
+}, {
+  "unique_name": "department_store",
+  "display_name": ""
+}, {
+  "unique_name": "doctor",
+  "display_name": ""
+}, {
+  "unique_name": "drugstore",
+  "display_name": ""
+}, {
+  "unique_name": "electrician",
+  "display_name": ""
+}, {
+  "unique_name": "electronics_store",
+  "display_name": "Electronics store"
+}, {
+  "unique_name": "embassy",
+  "display_name": ""
+}, {
+  "unique_name": "fire_station",
+  "display_name": ""
+}, {
+  "unique_name": "florist",
+  "display_name": ""
+}, {
+  "unique_name": "funeral_home",
+  "display_name": ""
+}, {
+  "unique_name": "furniture_store",
+  "display_name": ""
+}, {
+  "unique_name": "gas_station",
+  "display_name": ""
+}, {
+  "unique_name": "gym",
+  "display_name": "Gym"
+}, {
+  "unique_name": "hair_care",
+  "display_name": ""
+}, {
+  "unique_name": "hardware_store",
+  "display_name": ""
+}, {
+  "unique_name": "hindu_temple",
+  "display_name": ""
+}, {
+  "unique_name": "home_goods_store",
+  "display_name": "Home goods store"
+}, {
+  "unique_name": "hospital",
+  "display_name": "Hospital"
+}, {
+  "unique_name": "insurance_agency",
+  "display_name": ""
+}, {
+  "unique_name": "jewelry_store",
+  "display_name": ""
+}, {
+  "unique_name": "laundry",
+  "display_name": ""
+}, {
+  "unique_name": "lawyer",
+  "display_name": ""
+}, {
+  "unique_name": "library",
+  "display_name": ""
+}, {
+  "unique_name": "light_rail_station",
+  "display_name": ""
+}, {
+  "unique_name": "liquor_store",
+  "display_name": ""
+}, {
+  "unique_name": "local_government_office",
+  "display_name": ""
+}, {
+  "unique_name": "locksmith",
+  "display_name": ""
+}, {
+  "unique_name": "lodging",
+  "display_name": "Lodging"
+}, {
+  "unique_name": "meal_delivery",
+  "display_name": ""
+}, {
+  "unique_name": "meal_takeaway",
+  "display_name": ""
+}, {
+  "unique_name": "mosque",
+  "display_name": ""
+}, {
+  "unique_name": "movie_rental",
+  "display_name": ""
+}, {
+  "unique_name": "movie_theater",
+  "display_name": "Movie theater"
+}, {
+  "unique_name": "moving_company",
+  "display_name": ""
+}, {
+  "unique_name": "museum",
+  "display_name": "Museum"
+}, {
+  "unique_name": "night_club",
+  "display_name": "Night club"
+}, {
+  "unique_name": "painter",
+  "display_name": ""
+}, {
+  "unique_name": "park",
+  "display_name": ""
+}, {
+  "unique_name": "parking",
+  "display_name": ""
+}, {
+  "unique_name": "pet_store",
+  "display_name": ""
+}, {
+  "unique_name": "pharmacy",
+  "display_name": "Pharmacy"
+}, {
+  "unique_name": "physiotherapist",
+  "display_name": ""
+}, {
+  "unique_name": "plumber",
+  "display_name": ""
+}, {
+  "unique_name": "police",
+  "display_name": ""
+}, {
+  "unique_name": "post_office",
+  "display_name": ""
+}, {
+  "unique_name": "primary_school",
+  "display_name": ""
+}, {
+  "unique_name": "real_estate_agency",
+  "display_name": ""
+}, {
+  "unique_name": "restaurant",
+  "display_name": "Restaurant"
+}, {
+  "unique_name": "roofing_contractor",
+  "display_name": ""
+}, {
+  "unique_name": "rv_park",
+  "display_name": ""
+}, {
+  "unique_name": "school",
+  "display_name": "School"
+}, {
+  "unique_name": "secondary_school",
+  "display_name": ""
+}, {
+  "unique_name": "shoe_store",
+  "display_name": ""
+}, {
+  "unique_name": "shopping_mall",
+  "display_name": "Shopping mall"
+}, {
+  "unique_name": "spa",
+  "display_name": ""
+}, {
+  "unique_name": "stadium",
+  "display_name": ""
+}, {
+  "unique_name": "store",
+  "display_name": ""
+}, {
+  "unique_name": "subway_station",
+  "display_name": ""
+}, {
+  "unique_name": "supermarket",
+  "display_name": "Supermarket"
+}, {
+  "unique_name": "synagogue",
+  "display_name": ""
+}, {
+  "unique_name": "taxi_stand",
+  "display_name": ""
+}, {
+  "unique_name": "tourist_attraction",
+  "display_name": ""
+}, {
+  "unique_name": "train_station",
+  "display_name": ""
+}, {
+  "unique_name": "transit_station",
+  "display_name": ""
+}, {
+  "unique_name": "travel_agency",
+  "display_name": ""
+}, {
+  "unique_name": "university",
+  "display_name": ""
+}, {
+  "unique_name": "veterinary_care",
+  "display_name": ""
+}, {
+  "unique_name": "zoo",
+  "display_name": ""
+}]

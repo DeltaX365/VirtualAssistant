@@ -72,7 +72,7 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
             recyclerView.setLayoutManager(layoutManager);
 
             // specify an adapter
-            visitedPlaceAdapter = new VisitedPlacesAdapter(visitedPlaces);
+            visitedPlaceAdapter = new VisitedPlacesAdapter(mContext, visitedPlaces);
             recyclerView.setAdapter(visitedPlaceAdapter);
             recyclerView.setOnItemAction(this);
 

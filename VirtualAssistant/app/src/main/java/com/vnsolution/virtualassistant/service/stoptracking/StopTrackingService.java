@@ -733,7 +733,7 @@ public class StopTrackingService extends Service {
         placeEntity.longitude = longitude;
         placeEntity.plusCodeCompound = (nearBy.plusCode != null)? nearBy.plusCode.compoundCode : "";
         placeEntity.plusCodeGlobal = (nearBy.plusCode != null)? nearBy.plusCode.globalCode : "";
-        placeEntity.types = join(",", nearBy.types);
+        placeEntity.types = join(", ", nearBy.types);
         placeEntity.icon = nearBy.icon;
         placeEntity.reference = nearBy.reference;
         placeEntity.scope = nearBy.scope;
@@ -766,7 +766,7 @@ public class StopTrackingService extends Service {
         placeEntity.longitude = longitude;
         placeEntity.plusCodeCompound = (placeDetail.plusCode != null)? placeDetail.plusCode.compoundCode : "";
         placeEntity.plusCodeGlobal = (placeDetail.plusCode != null)? placeDetail.plusCode.globalCode : "";
-        placeEntity.types = join(",", placeDetail.types);
+        placeEntity.types = join(", ", placeDetail.types);
         placeEntity.icon = placeDetail.icon;
         placeEntity.rating = placeDetail.rating;
         placeEntity.reference = placeDetail.reference;

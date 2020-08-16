@@ -43,8 +43,10 @@ public class VisitedPlacesViewModel extends ViewModel {
     public Place toPlace(PlaceWithHistoryDetailEntity placeEntity) {
         Place place = new Place();
         place.id = placeEntity.place.id;
+        place.icon = placeEntity.place.icon;
         place.placeName = placeEntity.place.placeName;
         place.formattedAddress = placeEntity.place.formattedAddress;
+        place.types = placeEntity.place.types;
         place.latitude = placeEntity.place.latitude;
         place.longitude = placeEntity.place.longitude;
         place.createdDate = placeEntity.place.createdDate;
