@@ -13,6 +13,8 @@ import com.vnsolution.virtualassistant.db.VirtualAssistantDb;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.db.dao.SettingDao;
+import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2Activity;
+import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2ViewPagerAdapter;
 
 import java.io.IOException;
 

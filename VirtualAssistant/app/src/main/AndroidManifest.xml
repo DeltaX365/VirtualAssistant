@@ -11,7 +11,9 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
 
@@ -23,6 +25,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -38,7 +41,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.places.VisitedPlacesActivity" />
+        <activity android:name=".ui.developer.DeveloperActivity" />
+        <activity android:name=".ui.places.v1.VisitedPlacesActivity" />
+        <activity
+            android:name=".ui.places.v2.VisitedPlacesV2Activity"
+            android:label="@string/title_activity_visited_places2"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".ui.applications.InstalledApplicationsActivity" />
         <activity android:name=".ui.calllogs.CallLogsActivity" />
         <activity android:name=".ui.settings.SettingsActivity" />

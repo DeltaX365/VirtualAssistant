@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.places;
+package com.vnsolution.virtualassistant.ui.places.v1;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -31,17 +31,24 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class VisitedPlacesFragment extends Fragment implements Injectable, OnItemActionListerner {
+    public static final String ARG_SECTION_NUMBER = "section_number";
+
     private VisitedPlacesRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private VisitedPlacesAdapter visitedPlaceAdapter;
-    private List<Place> visitedPlaces = new ArrayList<>();
-    private VisitedPlacesViewModel visitedPlaceViewModel;
+    private VisitedPlacesAdapter adapter;
+    private List<Place> places = new ArrayList<>();
+    private VisitedPlacesViewModel vm;
     private Context mContext;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    public VisitedPlacesFragment() {
+        super();
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -55,8 +62,26 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
         mContext = null;
     }
 
+    public static VisitedPlacesFragment newInstance(int index) {
+        VisitedPlacesFragment fragment = new VisitedPlacesFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(ARG_SECTION_NUMBER, index);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        vm = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
+        int index = 1;
+        if (getArguments() != null) {
+            index = getArguments().getInt(ARG_SECTION_NUMBER);
+        }
+        vm.setIndex(index);
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        visitedPlaceViewModel = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
         View root = inflater.inflate(R.layout.screen_visited_places, container, false);
 
         if (mContext != null) {
@@ -72,8 +97,8 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
             recyclerView.setLayoutManager(layoutManager);
 
             // specify an adapter
-            visitedPlaceAdapter = new VisitedPlacesAdapter(mContext, visitedPlaces);
-            recyclerView.setAdapter(visitedPlaceAdapter);
+            adapter = new VisitedPlacesAdapter(mContext, places);
+            recyclerView.setAdapter(adapter);
             recyclerView.setOnItemAction(this);
 
             // retrieve data
@@ -82,11 +107,11 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
             progressOverlay.setAnimation(inAnimation);
             progressOverlay.setVisibility(View.VISIBLE);
 
-            visitedPlaceViewModel.getVisitedPlaces().observe(getViewLifecycleOwner(), new Observer<List<Place>>() {
+            vm.getVisitedPlaces().observe(getViewLifecycleOwner(), new Observer<List<Place>>() {
                 @Override
                 public void onChanged(@Nullable List<Place> places) {
-                    visitedPlaces = places;
-                    visitedPlaceAdapter.setData(places);
+                    VisitedPlacesFragment.this.places = places;
+                    adapter.setData(places);
 
                     AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
                     outAnimation.setDuration(200);
@@ -102,8 +127,8 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
     @Override
     public void onTap(View view, int position) {
         String message = "";
-        if (visitedPlaces != null && position >= 0 && position <= visitedPlaces.size() - 1) {
-            Place place = visitedPlaces.get(position);
+        if (places != null && position >= 0 && position <= places.size() - 1) {
+            Place place = places.get(position);
             message += "Name: " + place.placeName + "\n";
             message += "Address: " + place.formattedAddress + "\n";
             message += "Location: (" + place.latitude + ", " + place.longitude + ")" + "\n\n";

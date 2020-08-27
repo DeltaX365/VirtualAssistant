@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardViewModel;
 import com.vnsolution.virtualassistant.ui.notifications.NotificationsViewModel;
-import com.vnsolution.virtualassistant.ui.places.VisitedPlacesViewModel;
+import com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesViewModel;
 import com.vnsolution.virtualassistant.viewmodel.VirtualAssistantViewModelFactory;
 
 import dagger.Binds;

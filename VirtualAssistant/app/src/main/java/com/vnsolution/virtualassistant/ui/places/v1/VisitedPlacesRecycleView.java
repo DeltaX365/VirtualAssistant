@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.places;
+package com.vnsolution.virtualassistant.ui.places.v1;
 
 import android.content.Context;
 import android.util.AttributeSet;

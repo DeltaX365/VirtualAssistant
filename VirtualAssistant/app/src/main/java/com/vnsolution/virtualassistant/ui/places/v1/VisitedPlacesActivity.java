@@ -1,7 +1,6 @@
-package com.vnsolution.virtualassistant.ui.places;
+package com.vnsolution.virtualassistant.ui.places.v1;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
@@ -36,9 +34,9 @@ public class VisitedPlacesActivity extends AppCompatActivity implements HasAndro
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private VisitedPlacesAdapter visitedPlaceAdapter;
-    private List<Place> visitedPlaces = new ArrayList<>();
-    private VisitedPlacesViewModel visitedPlaceViewModel;
+    private VisitedPlacesAdapter adapter;
+    private List<Place> places = new ArrayList<>();
+    private VisitedPlacesViewModel vm;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -63,8 +61,8 @@ public class VisitedPlacesActivity extends AppCompatActivity implements HasAndro
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter
-        visitedPlaceAdapter = new VisitedPlacesAdapter(this, visitedPlaces);
-        recyclerView.setAdapter(visitedPlaceAdapter);
+        adapter = new VisitedPlacesAdapter(this, places);
+        recyclerView.setAdapter(adapter);
         recyclerView.setOnItemAction(this);
 
         // retrieve data
@@ -73,12 +71,12 @@ public class VisitedPlacesActivity extends AppCompatActivity implements HasAndro
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        visitedPlaceViewModel = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
-        visitedPlaceViewModel.getVisitedPlaces().observe(this, new Observer<List<Place>>() {
+        vm = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
+        vm.getVisitedPlaces().observe(this, new Observer<List<Place>>() {
             @Override
             public void onChanged(@Nullable List<Place> places) {
-                visitedPlaces = places;
-                visitedPlaceAdapter.setData(places);
+                VisitedPlacesActivity.this.places = places;
+                adapter.setData(places);
 
                 AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
                 outAnimation.setDuration(200);
@@ -91,8 +89,8 @@ public class VisitedPlacesActivity extends AppCompatActivity implements HasAndro
     @Override
     public void onTap(View view, int position) {
         String message = "";
-        if (visitedPlaces != null && position >= 0 && position <= visitedPlaces.size() - 1) {
-            Place place = visitedPlaces.get(position);
+        if (places != null && position >= 0 && position <= places.size() - 1) {
+            Place place = places.get(position);
             message += "Name: " + place.placeName + "\n";
             message += "Address: " + place.formattedAddress + "\n";
             message += "Location: (" + place.latitude + ", " + place.longitude + ")" + "\n\n";

@@ -44,7 +44,7 @@ import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.StopPoint;
-import com.vnsolution.virtualassistant.ui.places.VisitedPlacesViewModel;
+import com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesViewModel;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;

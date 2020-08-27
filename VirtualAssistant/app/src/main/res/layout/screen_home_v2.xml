@@ -21,28 +21,9 @@
         android:text="How can I help you?" />
 
     <Button
-        android:id="@+id/btn_visited_places"
+        android:id="@+id/btn_developer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show visited places" />
+        android:text="Developer" />
 
-    <Button
-        android:id="@+id/btn_installed_applications"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Show installed applications" />
-
-    <Button
-        android:id="@+id/btn_call_logs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Show call logs" />
-
-    <Button
-        android:id="@+id/btn_settings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Show settings"
-        tools:layout_editor_absoluteX="157dp"
-        tools:layout_editor_absoluteY="59dp" />
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.places;
+package com.vnsolution.virtualassistant.ui.places.v1;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;

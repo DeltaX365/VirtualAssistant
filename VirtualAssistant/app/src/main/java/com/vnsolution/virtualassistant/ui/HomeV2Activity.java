@@ -11,19 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTracking;
-import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsActivity;
-import com.vnsolution.virtualassistant.ui.calllogs.CallLogsActivity;
-import com.vnsolution.virtualassistant.ui.places.VisitedPlacesActivity;
-import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
+import com.vnsolution.virtualassistant.ui.developer.DeveloperActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import javax.inject.Inject;
@@ -34,10 +26,7 @@ import dagger.android.HasAndroidInjector;
 
 public class HomeV2Activity extends AppCompatActivity implements HasAndroidInjector {
     private ImageView ivVoiceAssistant;
-    private Button btnShowVisitedPlaces;
-    private Button btnShowInstalledApps;
-    private Button btnShowCallLogs;
-    private Button btnShowSettings;
+    private Button btnShowDeveloperPage;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -50,38 +39,11 @@ public class HomeV2Activity extends AppCompatActivity implements HasAndroidInjec
         ivVoiceAssistant = findViewById(R.id.iv_voice_assistant);
         Glide.with(this).load(R.drawable.voice_assistant_motion_2).into(ivVoiceAssistant);
 
-        btnShowVisitedPlaces = findViewById(R.id.btn_visited_places);
-        btnShowVisitedPlaces.setOnClickListener(new View.OnClickListener() {
+        btnShowDeveloperPage = findViewById(R.id.btn_developer);
+        btnShowDeveloperPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomeV2Activity.this, VisitedPlacesActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        btnShowInstalledApps = findViewById(R.id.btn_installed_applications);
-        btnShowInstalledApps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeV2Activity.this, InstalledApplicationsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        btnShowCallLogs = findViewById(R.id.btn_call_logs);
-        btnShowCallLogs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeV2Activity.this, CallLogsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        btnShowSettings = findViewById(R.id.btn_settings);
-        btnShowSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeV2Activity.this, SettingsActivity.class);
+                Intent intent = new Intent(HomeV2Activity.this, DeveloperActivity.class);
                 startActivity(intent);
             }
         });
