@@ -4,11 +4,13 @@ import com.vnsolution.virtualassistant.ui.HomeActivity;
 import com.vnsolution.virtualassistant.ui.HomeV2Activity;
 import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsActivity;
 import com.vnsolution.virtualassistant.ui.calllogs.CallLogsActivity;
+import com.vnsolution.virtualassistant.ui.contacts.ContactsActivity;
 import com.vnsolution.virtualassistant.ui.developer.DeveloperActivity;
 import com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesActivity;
 import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2Activity;
 import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2ViewPagerAdapter;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
+import com.vnsolution.virtualassistant.ui.sms.SmsActivity;
 
 import javax.inject.Singleton;
 
@@ -41,6 +43,12 @@ public abstract class ActivityBuildersModule {
 
     @ContributesAndroidInjector()
     abstract CallLogsActivity contributeCallLogsActivity();
+
+    @ContributesAndroidInjector()
+    abstract SmsActivity contributeSmsActivity();
+
+    @ContributesAndroidInjector()
+    abstract ContactsActivity contributeContactsActivity();
 
     @ContributesAndroidInjector()
     abstract SettingsActivity contributeSettingsActivity();

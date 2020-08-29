@@ -62,7 +62,7 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
         View root = inflater.inflate(R.layout.screen_call_logs, container, false);
 
         if (mContext != null) {
-            recyclerView = root.findViewById(R.id.list_call_logs);
+            recyclerView = root.findViewById(R.id.list_sms);
             progressOverlay =  root.findViewById(R.id.progress_overlay);
 
             // use this setting to improve performance if you know that changes

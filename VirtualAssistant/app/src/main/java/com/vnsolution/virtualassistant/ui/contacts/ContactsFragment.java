@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.Application;
+import com.vnsolution.virtualassistant.model.Contact;
 import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsRecycleView;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
@@ -30,7 +31,7 @@ public class ContactsFragment extends Fragment implements Injectable, OnItemActi
     private InstalledApplicationsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private ContactsAdapter contactsAdapter;
-    private List<Application> contacts = new ArrayList<>();
+    private List<Contact> contacts = new ArrayList<>();
     private ContactsViewModel contactsViewModel;
     private Context mContext;
 
@@ -70,11 +71,11 @@ public class ContactsFragment extends Fragment implements Injectable, OnItemActi
             recyclerView.setOnItemAction(this);
 
             // retrieve data
-            contactsViewModel.getContacts(false).observe(getViewLifecycleOwner(), new Observer<List<Application>>() {
+            contactsViewModel.getContacts(false).observe(getViewLifecycleOwner(), new Observer<List<Contact>>() {
                 @Override
-                public void onChanged(List<Application> applications) {
-                    contacts = applications;
-                    contactsAdapter.setData(applications);
+                public void onChanged(List<Contact> contacts) {
+                    contacts = contacts;
+                    contactsAdapter.setData(contacts);
                 }
             });
         }

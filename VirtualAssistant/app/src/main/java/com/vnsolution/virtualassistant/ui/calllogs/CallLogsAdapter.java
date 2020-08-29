@@ -1,6 +1,7 @@
 package com.vnsolution.virtualassistant.ui.calllogs;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,8 +62,8 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsViewHolder> {
                     break;
             }
             holder.textPhoneNumber.setText(dataSource.get(position).phoneNumber);
-            holder.textCallDate.setText("Time: " + dataSource.get(position).callDate);
-            holder.textCallDuration.setText("Duration: " + dataSource.get(position).callDuration);
+            holder.textCallDate.setText("Time: " + DateUtils.formatDateTime(context, dataSource.get(position).callDate, DateUtils.FORMAT_ABBREV_ALL));
+            holder.textCallDuration.setText("Duration: " + DateUtils.formatElapsedTime(dataSource.get(position).callDuration));
         }
         catch (Exception e) {
             e.printStackTrace();

@@ -10,8 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsActivity;
 import com.vnsolution.virtualassistant.ui.calllogs.CallLogsActivity;
+import com.vnsolution.virtualassistant.ui.contacts.ContactsActivity;
 import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2Activity;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
+import com.vnsolution.virtualassistant.ui.sms.SmsActivity;
 
 import javax.inject.Inject;
 
@@ -23,6 +25,8 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
     private Button btnShowVisitedPlaces;
     private Button btnShowInstalledApps;
     private Button btnShowCallLogs;
+    private Button btnSms;
+    private Button btnShowContacts;
     private Button btnShowSettings;
 
     @Inject
@@ -56,6 +60,24 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DeveloperActivity.this, CallLogsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnSms = findViewById(R.id.btn_sms);
+        btnSms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DeveloperActivity.this, SmsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnShowContacts = findViewById(R.id.btn_contacts);
+        btnShowContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DeveloperActivity.this, ContactsActivity.class);
                 startActivity(intent);
             }
         });

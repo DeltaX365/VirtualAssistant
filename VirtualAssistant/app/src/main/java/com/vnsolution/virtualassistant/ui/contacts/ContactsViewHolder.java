@@ -12,19 +12,17 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 public class ContactsViewHolder extends RecyclerView.ViewHolder {
-    public ImageView imageAppIcon;
-    public TextView textAppName;
-    public TextView textAppUsage;
-    public TextView textAppLastUsedTime;
+    public ImageView avatar;
+    public TextView name;
+    public TextView phoneNumber;
     public OnItemActionListerner onItemActionListerner;
 
     public ContactsViewHolder(View view) {
         super(view);
 
-        imageAppIcon = view.findViewById(R.id.app_icon);
-        textAppName = view.findViewById(R.id.app_name);
-        textAppUsage = view.findViewById(R.id.app_usage);
-        textAppLastUsedTime = view.findViewById(R.id.app_last_used_time);
+        avatar = view.findViewById(R.id.contact_avatar);
+        name = view.findViewById(R.id.contact_name);
+        phoneNumber = view.findViewById(R.id.contact_phone_number);
 
         view.setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(view.getContext(), new GestureDetector.SimpleOnGestureListener() {

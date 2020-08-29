@@ -27,6 +27,18 @@
         android:text="Show call logs" />
 
     <Button
+        android:id="@+id/btn_sms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show sms" />
+
+    <Button
+        android:id="@+id/btn_contacts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show contacts" />
+
+    <Button
         android:id="@+id/btn_settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

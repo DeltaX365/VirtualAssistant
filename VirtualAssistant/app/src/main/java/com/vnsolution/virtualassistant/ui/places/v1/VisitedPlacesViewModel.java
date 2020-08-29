@@ -70,6 +70,14 @@ public class VisitedPlacesViewModel extends ViewModel {
                     });
                     places = places.subList(0, 10);
                     break;
+                case 5: //All visited places
+                    Collections.sort(places, new Comparator<Place>() {
+                        @Override
+                        public int compare(Place o1, Place o2) {
+                            return (int) (getLastVisitedTime(o2) - getLastVisitedTime(o1));
+                        }
+                    });
+                    break;
             }
             return places;
         });

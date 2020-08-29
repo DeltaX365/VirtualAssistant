@@ -4,20 +4,27 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.util.ArrayMap;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.vnsolution.virtualassistant.model.Application;
 import com.vnsolution.virtualassistant.model.CallLog;
+import com.vnsolution.virtualassistant.model.Contact;
+import com.vnsolution.virtualassistant.model.Sms;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;
@@ -28,11 +35,16 @@ import java.util.List;
 
 public class DeviceManager {
     private static final int DELAY_FETCH_DATA_IN_MILLISECONDS = 1 * 1000; // 1 second
+    private static final String SMS_INBOX = "content://sms/inbox";
+    private static final String SMS_SENT = "content://sms/sent";
+    private static final String SMS_DRAFT = "content://sms/draft";
     private static DeviceManager instance;
 
     private ArrayMap<String, UsageStats> appUsageStats;
     private MutableLiveData<List<Application>> installedApplicationsLiveData;
     private MutableLiveData<List<CallLog>> callLogsLiveData;
+    private MutableLiveData<List<Sms>> smsLiveData;
+    private MutableLiveData<List<Contact>> contactsLiveData;
 
     private DeviceManager() {}
 
@@ -81,6 +93,22 @@ public class DeviceManager {
             getCallLogsAsync(context);
         }
         return callLogsLiveData;
+    }
+
+    public LiveData<List<Sms>> getSms(Context context, boolean forceUpdate) {
+        if (smsLiveData == null || forceUpdate) {
+            smsLiveData = new MutableLiveData<>();
+            getSmsAsync(context);
+        }
+        return smsLiveData;
+    }
+
+    public LiveData<List<Contact>> getContacts(Context context, boolean forceUpdate) {
+        if (contactsLiveData == null || forceUpdate) {
+            contactsLiveData = new MutableLiveData<>();
+            getContactsAsync(context);
+        }
+        return contactsLiveData;
     }
 
     private void getInstalledApplicationsAsync(Context context, boolean shouldGetSystemPackages) {
@@ -155,9 +183,9 @@ public class DeviceManager {
                         String phoneNumber = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.NUMBER));
                         String callType = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.TYPE));
                         int callDirectionCode = Integer.parseInt(callType);
-                        String callDate = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.DATE));
+                        long callDate = cursor.getLong(cursor.getColumnIndex(android.provider.CallLog.Calls.DATE));
                         //Date callDateTime = new Date(Long.valueOf(callDate));
-                        String callDuration = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.DURATION));
+                        long callDuration = cursor.getLong(cursor.getColumnIndex(android.provider.CallLog.Calls.DURATION));
 
                         CallLog callLog = new CallLog();
                         callLog.phoneNumber = phoneNumber;
@@ -169,6 +197,116 @@ public class DeviceManager {
                     }
                     cursor.close();
                 }
+            }
+        }, DELAY_FETCH_DATA_IN_MILLISECONDS);
+    }
+
+    private void getSmsAsync(Context context) {
+        // Do async operation to fetch installed applications
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                List<Sms> smsList = new ArrayList<>();
+                if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_SMS)) {
+                    Cursor cursor = context.getContentResolver().query(Uri.parse(SMS_INBOX), null, null, null, null);
+                    if (cursor.moveToNext()) {
+                        do {
+                            Sms sms = new Sms();
+                            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                                switch (cursor.getColumnName(i)) {
+                                    case "_id":
+                                        sms.id = cursor.getInt(i);
+                                        break;
+                                    case "thread_id":
+                                        sms.threadId = cursor.getInt(i);
+                                        break;
+                                    case "address":
+                                        sms.address = cursor.getString(i);
+                                        break;
+                                    case "date":
+                                        sms.date = cursor.getLong(i);
+                                        break;
+                                    case "date_sent":
+                                        sms.dateSent = cursor.getLong(i);
+                                        break;
+                                    case "read":
+                                        sms.isRead = cursor.getInt(i);
+                                        break;
+                                    case "type":
+                                        sms.type = cursor.getInt(i);
+                                        break;
+                                    case "subject":
+                                        sms.subject = cursor.getString(i);
+                                        break;
+                                    case "body":
+                                        sms.body = cursor.getString(i);
+                                        break;
+                                    case "service_center":
+                                        sms.serviceCenter = cursor.getString(i);
+                                        break;
+                                    case "locked":
+                                        sms.isLocked = cursor.getInt(i);
+                                        break;
+                                    case "sub_id":
+                                        sms.subId = cursor.getInt(i);
+                                        break;
+                                    case "creator":
+                                        sms.creator = cursor.getString(i);
+                                        break;
+                                    case "seen":
+                                        sms.isSeen = cursor.getInt(i);
+                                        break;
+                                    case "deletable":
+                                        sms.isDeletable = cursor.getInt(i);
+                                        break;
+                                }
+                            }
+                            smsList.add(sms);
+                        } while (cursor.moveToNext());
+                    }
+                    cursor.close();
+                }
+                smsLiveData.setValue(smsList);
+            }
+        }, DELAY_FETCH_DATA_IN_MILLISECONDS);
+    }
+
+    private void getContactsAsync(Context context) {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                List<Contact> contacts = new ArrayList<>();
+                if (context != null) {
+                    ContentResolver contentResolver = context.getContentResolver();
+                    Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+                    if (cursor.moveToNext()) {
+                        do {
+                            Contact contact = new Contact();
+                            contact.id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                            contact.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                            contact.mobileNumbers = new ArrayList<>();
+                            if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                                Cursor cursor1 = contentResolver.query(
+                                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                        null,
+                                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{contact.id},
+                                        null);
+                                while (cursor1.moveToNext()) {
+                                    String phoneNo = cursor1.getString(cursor1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                    contact.mobileNumbers.add(phoneNo);
+                                }
+                                cursor1.close();
+                            }
+                            Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, new Long(contact.id));
+                            contact.photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.DISPLAY_PHOTO);
+                            contacts.add(contact);
+                        } while (cursor.moveToNext());
+                    }
+                    cursor.close();
+                }
+                contactsLiveData.setValue(contacts);
             }
         }, DELAY_FETCH_DATA_IN_MILLISECONDS);
     }
