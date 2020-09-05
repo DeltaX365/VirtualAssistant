@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.sms;
+package com.vnsolution.virtualassistant.ui.calllogs.v1;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.model.Sms;
+import com.vnsolution.virtualassistant.model.CallLog;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
@@ -31,15 +31,15 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class SmsActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
+public class CallLogsActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
     private static final int REQUEST_CODE = 1001;
-    private SmsRecycleView recyclerView;
+    private CallLogsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private SmsAdapter smsAdapter;
-    private List<Sms> smsHistory = new ArrayList<>();
-    private SmsViewModel smsViewModel;
+    private CallLogsAdapter callLogsAdapter;
+    private List<CallLog> callHistory = new ArrayList<>();
+    private CallLogsViewModel callLogsViewModel;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -50,9 +50,9 @@ public class SmsActivity extends AppCompatActivity implements HasAndroidInjector
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_sms);
+        setContentView(R.layout.screen_call_logs);
 
-        recyclerView = findViewById(R.id.list_sms);
+        recyclerView = findViewById(R.id.list_call_logs);
         progressOverlay =  findViewById(R.id.progress_overlay);
 
         // use this setting to improve performance if you know that changes
@@ -64,19 +64,19 @@ public class SmsActivity extends AppCompatActivity implements HasAndroidInjector
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter
-        smsAdapter = new SmsAdapter(this, smsHistory);
-        recyclerView.setAdapter(smsAdapter);
+        callLogsAdapter = new CallLogsAdapter(this, callHistory);
+        recyclerView.setAdapter(callLogsAdapter);
         recyclerView.setOnItemAction(this);
 
         // retrieve data
-        smsViewModel = new SmsViewModel(this);
-        getSms();
+        callLogsViewModel = new CallLogsViewModel(this);
+        getCallLogs();
     }
 
-    private void getSms() {
+    private void getCallLogs() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[] { Manifest.permission.READ_SMS }, REQUEST_CODE);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] { Manifest.permission.READ_CALL_LOG }, REQUEST_CODE);
                 return;
             }
         }
@@ -87,11 +87,11 @@ public class SmsActivity extends AppCompatActivity implements HasAndroidInjector
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        smsViewModel.getSms(false).observe(this, new Observer<List<Sms>>() {
+        callLogsViewModel.getCallLogs(false).observe(this, new Observer<List<CallLog>>() {
             @Override
-            public void onChanged(List<Sms> smsList) {
-                smsHistory = smsList;
-                smsAdapter.setData(smsList);
+            public void onChanged(List<CallLog> callLogs) {
+                callHistory = callLogs;
+                callLogsAdapter.setData(callLogs);
 
                 AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
                 outAnimation.setDuration(200);
@@ -105,7 +105,7 @@ public class SmsActivity extends AppCompatActivity implements HasAndroidInjector
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE) {
-            getSms();
+            getCallLogs();
         }
     }
 

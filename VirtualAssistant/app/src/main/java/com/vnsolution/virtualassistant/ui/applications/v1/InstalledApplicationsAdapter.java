@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.applications;
+package com.vnsolution.virtualassistant.ui.applications.v1;
 
 import android.content.Context;
 import android.icu.text.DateFormat;

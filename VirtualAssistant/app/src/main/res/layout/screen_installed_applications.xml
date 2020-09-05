@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.applications.InstalledApplicationsFragment">
+    tools:context=".ui.applications.v1.InstalledApplicationsFragment">
 
-    <com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsRecycleView
+    <com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsRecycleView
         android:id="@+id/list_applications"
         android:layout_width="0dp"
         android:layout_height="0dp"

@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.calllogs;
+package com.vnsolution.virtualassistant.ui.calllogs.v1;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsAdapter;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 public class CallLogsRecycleView extends RecyclerView {

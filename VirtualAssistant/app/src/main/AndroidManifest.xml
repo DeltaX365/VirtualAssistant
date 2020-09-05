@@ -44,11 +44,15 @@
         <activity android:name=".ui.places.v1.VisitedPlacesActivity" />
         <activity
             android:name=".ui.places.v2.VisitedPlacesV2Activity"
-            android:label="@string/title_activity_visited_places2"
+            android:label="@string/title_places"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ui.applications.InstalledApplicationsActivity" />
-        <activity android:name=".ui.calllogs.CallLogsActivity" />
-        <activity android:name=".ui.sms.SmsActivity" />
+        <activity android:name=".ui.applications.v1.InstalledApplicationsActivity" />
+        <activity
+            android:name=".ui.applications.v2.InstalledApplicationsV2Activity"
+            android:label="@string/title_applications"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".ui.calllogs.v1.CallLogsActivity" />
+        <activity android:name=".ui.sms.v1.SmsActivity" />
         <activity android:name=".ui.contacts.ContactsActivity" />
         <activity android:name=".ui.settings.SettingsActivity" />
 

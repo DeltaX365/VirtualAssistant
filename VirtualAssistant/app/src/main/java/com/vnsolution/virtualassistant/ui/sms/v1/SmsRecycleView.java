@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.sms;
+package com.vnsolution.virtualassistant.ui.sms.v1;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.vnsolution.virtualassistant.model.Sms;
-import com.vnsolution.virtualassistant.ui.calllogs.CallLogsAdapter;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 public class SmsRecycleView extends RecyclerView {

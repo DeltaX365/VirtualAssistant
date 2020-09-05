@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant.di;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsViewModel;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardViewModel;
 import com.vnsolution.virtualassistant.ui.notifications.NotificationsViewModel;
 import com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesViewModel;
@@ -23,6 +24,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(VisitedPlacesViewModel.class)
     abstract ViewModel bindVisitedPlaceViewModel(VisitedPlacesViewModel visitedPlaceViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(InstalledApplicationsViewModel.class)
+    abstract ViewModel bindInstalledApplicationsViewModel(InstalledApplicationsViewModel installedApplicationsViewModel);
 
     @Binds
     @IntoMap

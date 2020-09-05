@@ -1,27 +1,25 @@
-package com.vnsolution.virtualassistant.ui.applications;
+package com.vnsolution.virtualassistant.ui.sms.v1;
 
+import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.di.Injectable;
-import com.vnsolution.virtualassistant.model.Application;
+import com.vnsolution.virtualassistant.model.Sms;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
@@ -33,14 +31,15 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class InstalledApplicationsActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
-    private InstalledApplicationsRecycleView recyclerView;
+public class SmsActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
+    private static final int REQUEST_CODE = 1001;
+    private SmsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private InstalledApplicationsAdapter installedApplicationAdapter;
-    private List<Application> installedApplications = new ArrayList<>();
-    private InstalledApplicationsViewModel applicationViewModel;
+    private SmsAdapter smsAdapter;
+    private List<Sms> smsHistory = new ArrayList<>();
+    private SmsViewModel smsViewModel;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -51,9 +50,9 @@ public class InstalledApplicationsActivity extends AppCompatActivity implements 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_installed_applications);
+        setContentView(R.layout.screen_sms);
 
-        recyclerView = findViewById(R.id.list_applications);
+        recyclerView = findViewById(R.id.list_sms);
         progressOverlay =  findViewById(R.id.progress_overlay);
 
         // use this setting to improve performance if you know that changes
@@ -65,9 +64,22 @@ public class InstalledApplicationsActivity extends AppCompatActivity implements 
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter
-        installedApplicationAdapter = new InstalledApplicationsAdapter(this, installedApplications);
-        recyclerView.setAdapter(installedApplicationAdapter);
+        smsAdapter = new SmsAdapter(this, smsHistory);
+        recyclerView.setAdapter(smsAdapter);
         recyclerView.setOnItemAction(this);
+
+        // retrieve data
+        smsViewModel = new SmsViewModel(this);
+        getSms();
+    }
+
+    private void getSms() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] { Manifest.permission.READ_SMS }, REQUEST_CODE);
+                return;
+            }
+        }
 
         // retrieve data
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
@@ -75,12 +87,11 @@ public class InstalledApplicationsActivity extends AppCompatActivity implements 
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        applicationViewModel = new InstalledApplicationsViewModel(this);
-        applicationViewModel.getInstalledApplications(false, false).observe(this, new Observer<List<Application>>() {
+        smsViewModel.getSms(false).observe(this, new Observer<List<Sms>>() {
             @Override
-            public void onChanged(List<Application> applications) {
-                installedApplications = applications;
-                installedApplicationAdapter.setData(applications);
+            public void onChanged(List<Sms> smsList) {
+                smsHistory = smsList;
+                smsAdapter.setData(smsList);
 
                 AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
                 outAnimation.setDuration(200);
@@ -88,6 +99,14 @@ public class InstalledApplicationsActivity extends AppCompatActivity implements 
                 progressOverlay.setVisibility(View.INVISIBLE);
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            getSms();
+        }
     }
 
     @Override

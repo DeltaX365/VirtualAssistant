@@ -1,10 +1,9 @@
 package com.vnsolution.virtualassistant.di;
 
-import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsFragment;
-import com.vnsolution.virtualassistant.ui.calllogs.CallLogsFragment;
+import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsFragment;
+import com.vnsolution.virtualassistant.ui.calllogs.v1.CallLogsFragment;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardFragment;
 import com.vnsolution.virtualassistant.ui.notifications.NotificationsFragment;
-import com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesFragment;
 import com.vnsolution.virtualassistant.ui.settings.SettingsFragment;
 
 import dagger.Module;

@@ -53,7 +53,7 @@ public class VisitedPlacesViewModel extends ViewModel {
                     Collections.sort(places, new Comparator<Place>() {
                         @Override
                         public int compare(Place o1, Place o2) {
-                            return (int) (calculateTotalVisitedTime(o1) - calculateTotalVisitedTime(o2));
+                            return (int) (calculateTotalVisitedTime(o2) - calculateTotalVisitedTime(o1));
                         }
                     });
                     places = places.subList(0, 10);
@@ -129,10 +129,11 @@ public class VisitedPlacesViewModel extends ViewModel {
     }
 
     private long calculateTotalVisitedTime(Place place) {
-        long total = 0;
-        for (PlaceHistory placeHistory: place.placeHistories) {
-            total += (placeHistory.enterTime.getTime() - placeHistory.existTime.getTime());
-        }
-        return total;
+//        long total = 0;
+//        for (PlaceHistory placeHistory: place.placeHistories) {
+//            total += (placeHistory.enterTime.getTime() - placeHistory.existTime.getTime());
+//        }
+//        return total;
+        return place.placeHistories.size();
     }
 }

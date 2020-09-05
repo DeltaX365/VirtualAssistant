@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.applications;
+package com.vnsolution.virtualassistant.ui.calllogs.v1;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -11,20 +11,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
-public class InstalledApplicationsViewHolder extends RecyclerView.ViewHolder {
-    public ImageView imageAppIcon;
-    public TextView textAppName;
-    public TextView textAppUsage;
-    public TextView textAppLastUsedTime;
+public class CallLogsViewHolder extends RecyclerView.ViewHolder {
+    public ImageView imageCallIcon;
+    public TextView textPhoneNumber;
+    public TextView textCallDate;
+    public TextView textCallDuration;
     public OnItemActionListerner onItemActionListerner;
 
-    public InstalledApplicationsViewHolder(View view) {
+    public CallLogsViewHolder(View view) {
         super(view);
 
-        imageAppIcon = view.findViewById(R.id.app_icon);
-        textAppName = view.findViewById(R.id.app_name);
-        textAppUsage = view.findViewById(R.id.app_usage);
-        textAppLastUsedTime = view.findViewById(R.id.app_last_used_time);
+        imageCallIcon = view.findViewById(R.id.call_icon);
+        textPhoneNumber = view.findViewById(R.id.phone_number);
+        textCallDate = view.findViewById(R.id.call_date);
+        textCallDuration = view.findViewById(R.id.call_duration);
 
         view.setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(view.getContext(), new GestureDetector.SimpleOnGestureListener() {

@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.sms;
+package com.vnsolution.virtualassistant.ui.sms.v1;
 
 import android.content.Context;
 

@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsAdapter;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 public class ContactsRecycleView extends RecyclerView {

@@ -1,25 +1,21 @@
-package com.vnsolution.virtualassistant.ui.calllogs;
+package com.vnsolution.virtualassistant.ui.applications.v1;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.model.CallLog;
+import com.vnsolution.virtualassistant.model.Application;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
@@ -31,15 +27,14 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class CallLogsActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
-    private static final int REQUEST_CODE = 1001;
-    private CallLogsRecycleView recyclerView;
+public class InstalledApplicationsActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
+    private InstalledApplicationsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private CallLogsAdapter callLogsAdapter;
-    private List<CallLog> callHistory = new ArrayList<>();
-    private CallLogsViewModel callLogsViewModel;
+    private InstalledApplicationsAdapter installedApplicationAdapter;
+    private List<Application> installedApplications = new ArrayList<>();
+    private InstalledApplicationsViewModel vm;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -50,9 +45,9 @@ public class CallLogsActivity extends AppCompatActivity implements HasAndroidInj
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_call_logs);
+        setContentView(R.layout.screen_installed_applications);
 
-        recyclerView = findViewById(R.id.list_call_logs);
+        recyclerView = findViewById(R.id.list_applications);
         progressOverlay =  findViewById(R.id.progress_overlay);
 
         // use this setting to improve performance if you know that changes
@@ -64,22 +59,9 @@ public class CallLogsActivity extends AppCompatActivity implements HasAndroidInj
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter
-        callLogsAdapter = new CallLogsAdapter(this, callHistory);
-        recyclerView.setAdapter(callLogsAdapter);
+        installedApplicationAdapter = new InstalledApplicationsAdapter(this, installedApplications);
+        recyclerView.setAdapter(installedApplicationAdapter);
         recyclerView.setOnItemAction(this);
-
-        // retrieve data
-        callLogsViewModel = new CallLogsViewModel(this);
-        getCallLogs();
-    }
-
-    private void getCallLogs() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[] { Manifest.permission.READ_CALL_LOG }, REQUEST_CODE);
-                return;
-            }
-        }
 
         // retrieve data
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
@@ -87,11 +69,12 @@ public class CallLogsActivity extends AppCompatActivity implements HasAndroidInj
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        callLogsViewModel.getCallLogs(false).observe(this, new Observer<List<CallLog>>() {
+        vm = ViewModelProviders.of(this, viewModelFactory).get(InstalledApplicationsViewModel.class);
+        vm.getInstalledApplications(this, false, false).observe(this, new Observer<List<Application>>() {
             @Override
-            public void onChanged(List<CallLog> callLogs) {
-                callHistory = callLogs;
-                callLogsAdapter.setData(callLogs);
+            public void onChanged(List<Application> applications) {
+                installedApplications = applications;
+                installedApplicationAdapter.setData(applications);
 
                 AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
                 outAnimation.setDuration(200);
@@ -99,14 +82,6 @@ public class CallLogsActivity extends AppCompatActivity implements HasAndroidInj
                 progressOverlay.setVisibility(View.INVISIBLE);
             }
         });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE) {
-            getCallLogs();
-        }
     }
 
     @Override

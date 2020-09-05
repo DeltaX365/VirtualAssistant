@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.calllogs;
+package com.vnsolution.virtualassistant.ui.calllogs.v1;
 
 import android.Manifest;
 import android.content.Context;

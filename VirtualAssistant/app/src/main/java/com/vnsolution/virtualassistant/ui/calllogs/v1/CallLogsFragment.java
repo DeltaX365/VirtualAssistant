@@ -1,8 +1,11 @@
-package com.vnsolution.virtualassistant.ui.applications;
+package com.vnsolution.virtualassistant.ui.calllogs.v1;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +14,7 @@ import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.di.Injectable;
-import com.vnsolution.virtualassistant.model.Application;
+import com.vnsolution.virtualassistant.model.CallLog;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
@@ -27,14 +31,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class InstalledApplicationsFragment extends Fragment implements Injectable, OnItemActionListerner {
-    private InstalledApplicationsRecycleView recyclerView;
+public class CallLogsFragment extends Fragment implements Injectable, OnItemActionListerner {
+    private static final int REQUEST_CODE = 1001;
+    private CallLogsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private InstalledApplicationsAdapter installedApplicationAdapter;
-    private List<Application> installedApplications = new ArrayList<>();
-    private InstalledApplicationsViewModel applicationViewModel;
+    private CallLogsAdapter callLogsAdapter;
+    private List<CallLog> callHistory = new ArrayList<>();
+    private CallLogsViewModel callLogsViewModel;
     private Context mContext;
 
     @Inject
@@ -53,11 +58,11 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        applicationViewModel = new InstalledApplicationsViewModel(getContext());
-        View root = inflater.inflate(R.layout.screen_installed_applications, container, false);
+        callLogsViewModel = new CallLogsViewModel(getContext());
+        View root = inflater.inflate(R.layout.screen_call_logs, container, false);
 
         if (mContext != null) {
-            recyclerView = root.findViewById(R.id.list_applications);
+            recyclerView = root.findViewById(R.id.list_sms);
             progressOverlay =  root.findViewById(R.id.progress_overlay);
 
             // use this setting to improve performance if you know that changes
@@ -69,31 +74,51 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
             recyclerView.setLayoutManager(layoutManager);
 
             // specify an adapter
-            installedApplicationAdapter = new InstalledApplicationsAdapter(mContext, installedApplications);
-            recyclerView.setAdapter(installedApplicationAdapter);
+            callLogsAdapter = new CallLogsAdapter(mContext, callHistory);
+            recyclerView.setAdapter(callLogsAdapter);
             recyclerView.setOnItemAction(this);
 
             // retrieve data
-            AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-            inAnimation.setDuration(200);
-            progressOverlay.setAnimation(inAnimation);
-            progressOverlay.setVisibility(View.VISIBLE);
-
-            applicationViewModel.getInstalledApplications(false, false).observe(getViewLifecycleOwner(), new Observer<List<Application>>() {
-                @Override
-                public void onChanged(List<Application> applications) {
-                    installedApplications = applications;
-                    installedApplicationAdapter.setData(applications);
-
-                    AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                    outAnimation.setDuration(200);
-                    progressOverlay.setAnimation(outAnimation);
-                    progressOverlay.setVisibility(View.INVISIBLE);
-                }
-            });
+            getCallLogs();
         }
 
         return root;
+    }
+
+    private void getCallLogs() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] { Manifest.permission.READ_CALL_LOG }, REQUEST_CODE);
+                return;
+            }
+        }
+
+        // retrieve data
+        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+        inAnimation.setDuration(200);
+        progressOverlay.setAnimation(inAnimation);
+        progressOverlay.setVisibility(View.VISIBLE);
+
+        callLogsViewModel.getCallLogs(false).observe(getViewLifecycleOwner(), new Observer<List<CallLog>>() {
+            @Override
+            public void onChanged(List<CallLog> callLogs) {
+                callHistory = callLogs;
+                callLogsAdapter.setData(callLogs);
+
+                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+                outAnimation.setDuration(200);
+                progressOverlay.setAnimation(outAnimation);
+                progressOverlay.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            getCallLogs();
+        }
     }
 
     @Override

@@ -8,12 +8,13 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsActivity;
-import com.vnsolution.virtualassistant.ui.calllogs.CallLogsActivity;
+import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsActivity;
+import com.vnsolution.virtualassistant.ui.applications.v2.InstalledApplicationsV2Activity;
+import com.vnsolution.virtualassistant.ui.calllogs.v1.CallLogsActivity;
 import com.vnsolution.virtualassistant.ui.contacts.ContactsActivity;
 import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2Activity;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
-import com.vnsolution.virtualassistant.ui.sms.SmsActivity;
+import com.vnsolution.virtualassistant.ui.sms.v1.SmsActivity;
 
 import javax.inject.Inject;
 
@@ -50,7 +51,7 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
         btnShowInstalledApps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DeveloperActivity.this, InstalledApplicationsActivity.class);
+                Intent intent = new Intent(DeveloperActivity.this, InstalledApplicationsV2Activity.class);
                 startActivity(intent);
             }
         });

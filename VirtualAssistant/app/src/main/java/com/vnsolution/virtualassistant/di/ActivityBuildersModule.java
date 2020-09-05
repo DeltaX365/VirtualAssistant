@@ -2,20 +2,17 @@ package com.vnsolution.virtualassistant.di;
 
 import com.vnsolution.virtualassistant.ui.HomeActivity;
 import com.vnsolution.virtualassistant.ui.HomeV2Activity;
-import com.vnsolution.virtualassistant.ui.applications.InstalledApplicationsActivity;
-import com.vnsolution.virtualassistant.ui.calllogs.CallLogsActivity;
+import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsActivity;
+import com.vnsolution.virtualassistant.ui.applications.v2.InstalledApplicationsV2Activity;
+import com.vnsolution.virtualassistant.ui.calllogs.v1.CallLogsActivity;
 import com.vnsolution.virtualassistant.ui.contacts.ContactsActivity;
 import com.vnsolution.virtualassistant.ui.developer.DeveloperActivity;
 import com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesActivity;
 import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2Activity;
-import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2ViewPagerAdapter;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
-import com.vnsolution.virtualassistant.ui.sms.SmsActivity;
-
-import javax.inject.Singleton;
+import com.vnsolution.virtualassistant.ui.sms.v1.SmsActivity;
 
 import dagger.Module;
-import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 
 @Module
@@ -40,6 +37,9 @@ public abstract class ActivityBuildersModule {
 
     @ContributesAndroidInjector()
     abstract InstalledApplicationsActivity contributeInstalledApplicationsActivity();
+
+    @ContributesAndroidInjector(modules = InstalledApplicationsFragmentBuildersModule.class)
+    abstract InstalledApplicationsV2Activity contributeInstalledApplicationsV2Activity();
 
     @ContributesAndroidInjector()
     abstract CallLogsActivity contributeCallLogsActivity();
