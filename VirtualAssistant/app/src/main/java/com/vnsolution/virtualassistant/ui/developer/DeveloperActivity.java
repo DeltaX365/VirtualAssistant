@@ -6,8 +6,11 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
 import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsActivity;
 import com.vnsolution.virtualassistant.ui.applications.v2.InstalledApplicationsV2Activity;
 import com.vnsolution.virtualassistant.ui.calllogs.v1.CallLogsActivity;
@@ -24,6 +27,7 @@ import dagger.android.HasAndroidInjector;
 
 public class DeveloperActivity extends AppCompatActivity implements HasAndroidInjector {
     private Button btnShowVisitedPlaces;
+    private Button btnManualCheckIn;
     private Button btnShowInstalledApps;
     private Button btnShowCallLogs;
     private Button btnSms;
@@ -44,6 +48,16 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
             public void onClick(View v) {
                 Intent intent = new Intent(DeveloperActivity.this, VisitedPlacesV2Activity.class);
                 startActivity(intent);
+            }
+        });
+
+        btnManualCheckIn = findViewById(R.id.btn_manual_check_in);
+        btnManualCheckIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent serviceIntent = new Intent(DeveloperActivity.this, StopTrackingService.class);
+                serviceIntent.setAction(StopTracking.INTENT_ACTION_CHECK_OUT);
+                ContextCompat.startForegroundService(DeveloperActivity.this, serviceIntent);
             }
         });
 

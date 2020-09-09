@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant.api;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
+import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceSearchDto;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -14,6 +15,9 @@ public interface GoogleApi {
 
     @GET("maps/api/place/details/json")
     Call<GoogleMapPlaceDetailDto> getPlaceDetail(@Query("place_id") String placeId);
+
+    @GET("maps/api/place/findplacefromtext/json")
+    Call<GoogleMapPlaceSearchDto> searchPlaceByAddress(@Query("input") String search, @Query("inputtype") String type, @Query("fields") String fields);
 
     @GET("maps/api/place/nearbysearch/json")
     Call<GoogleMapNearByDto> searchNearByLocation(@Query(value = "location", encoded = false) String location, @Query("rankby") String rankby);

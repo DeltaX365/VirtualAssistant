@@ -50,6 +50,7 @@ import com.vnsolution.virtualassistant.api.GoogleApi;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDto;
+import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceSearchDto;
 import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
@@ -109,7 +110,9 @@ public class StopTrackingService extends Service {
                 if (address != null) {
                     detectedPlace = convertToPlaceEntityFrom(address);
                 }
-                GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint); // Address address = getAddressFromLocation(stopPoint);
+                // Address address = getAddressFromLocation(stopPoint);
+                // GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint);
+                GoogleMapPlaceSearchDto.PlaceSearch placeDetail = searchPlaceByAddress(stopPoint);
                 if (placeDetail != null) {
                     detectedPlace = convertToPlaceEntityFrom(placeDetail);
                 }
@@ -495,9 +498,9 @@ public class StopTrackingService extends Service {
         StopPoint stopPoint = getStopPointFromCache();
         if (stopPoint != null) {
             stopPoint.exist = new Date();
-            if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= StopTracking.CONFIG_STOP_DETECTION_IN_MILLISECONDS) {
+            //if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= StopTracking.CONFIG_STOP_DETECTION_IN_MILLISECONDS) {
                 new SaveToDBTask().execute(stopPoint);
-            }
+            //}
         }
         removeStopPointFromCache();
     }
@@ -674,6 +677,64 @@ public class StopTrackingService extends Service {
         placeEntity.longitude = longitude;
         placeEntity.createdDate = new Date();
         return placeEntity;
+    }
+
+    private GoogleMapPlaceSearchDto.PlaceSearch searchPlaceByAddress(StopPoint stopPoint) {
+        Address address = getAddressFromLocation(stopPoint);
+        if (address != null && address.getAddressLine(0) != null && address.getAddressLine(0) != "") {
+            String search = "point_of_interest, " + address.getAddressLine(0);
+            GoogleMapPlaceSearchDto.PlaceSearch candidate = searchPlaceByText(search);
+            return candidate;
+        }
+        return null;
+    }
+
+    private PlaceEntity convertToPlaceEntityFrom(GoogleMapPlaceSearchDto.PlaceSearch candidate) {
+        PlaceEntity placeEntity = new PlaceEntity();
+        placeEntity.id = UUID.randomUUID().toString();
+        placeEntity.ggPlaceId = candidate.placeId;
+        placeEntity.placeName = candidate.name;
+        placeEntity.formattedAddress = candidate.formattedAddress;
+        double latitude = (candidate.geometry != null && candidate.geometry.location != null)? candidate.geometry.location.lat : 0;
+        double longitude = (candidate.geometry != null && candidate.geometry.location != null)? candidate.geometry.location.lng : 0;
+        latitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        longitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        placeEntity.latitude = latitude;
+        placeEntity.longitude = longitude;
+        placeEntity.plusCodeCompound = (candidate.plusCode != null)? candidate.plusCode.compoundCode : "";
+        placeEntity.plusCodeGlobal = (candidate.plusCode != null)? candidate.plusCode.globalCode : "";
+        placeEntity.types = join(", ", candidate.types);
+        placeEntity.icon = candidate.icon;
+        placeEntity.rating = candidate.rating;
+        placeEntity.createdDate = new Date();
+        return placeEntity;
+    }
+
+    private GoogleMapPlaceSearchDto.PlaceSearch searchPlaceByText(String search) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<GoogleMapPlaceSearchDto.PlaceSearch>> placeSearchListFuture = executor.submit(new Callable<List<GoogleMapPlaceSearchDto.PlaceSearch>>() {
+            @Override
+            public List<GoogleMapPlaceSearchDto.PlaceSearch> call() throws Exception {
+                Response<GoogleMapPlaceSearchDto> placeSearchResponse = googleService.searchPlaceByAddress(search, "textquery", "business_status,formatted_address,geometry,icon,name,photos,place_id,plus_code,types").execute();
+                if (placeSearchResponse.isSuccessful()) {
+                    GoogleMapPlaceSearchDto placeSearch = placeSearchResponse.body();
+                    return placeSearch.candidates;
+                }
+                return new ArrayList<>();
+            }
+        });
+        GoogleMapPlaceSearchDto.PlaceSearch candidate = null;
+        try {
+            List<GoogleMapPlaceSearchDto.PlaceSearch> candidates = placeSearchListFuture.get();
+            if (candidates != null && !candidates.isEmpty()) {
+                candidate = candidates.get(0);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return candidate;
     }
 
     private GoogleMapNearByDto.NearBy searchNearByFromLocation(StopPoint stopPoint) {
