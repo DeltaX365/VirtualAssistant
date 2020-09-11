@@ -39,7 +39,9 @@ public class SmsActivity extends AppCompatActivity implements HasAndroidInjector
 
     private SmsAdapter smsAdapter;
     private List<Sms> smsHistory = new ArrayList<>();
-    private SmsViewModel smsViewModel;
+
+    @Inject
+    public SmsViewModel smsViewModel;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -69,7 +71,6 @@ public class SmsActivity extends AppCompatActivity implements HasAndroidInjector
         recyclerView.setOnItemAction(this);
 
         // retrieve data
-        smsViewModel = new SmsViewModel(this);
         getSms();
     }
 
@@ -87,7 +88,7 @@ public class SmsActivity extends AppCompatActivity implements HasAndroidInjector
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        smsViewModel.getSms(false).observe(this, new Observer<List<Sms>>() {
+        smsViewModel.getSms(this,false).observe(this, new Observer<List<Sms>>() {
             @Override
             public void onChanged(List<Sms> smsList) {
                 smsHistory = smsList;

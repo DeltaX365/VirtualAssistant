@@ -39,8 +39,10 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
 
     private CallLogsAdapter callLogsAdapter;
     private List<CallLog> callHistory = new ArrayList<>();
-    private CallLogsViewModel callLogsViewModel;
     private Context mContext;
+
+    @Inject
+    public CallLogsViewModel callLogsViewModel;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
@@ -58,7 +60,6 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        callLogsViewModel = new CallLogsViewModel(getContext());
         View root = inflater.inflate(R.layout.screen_call_logs, container, false);
 
         if (mContext != null) {
@@ -99,7 +100,7 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        callLogsViewModel.getCallLogs(false).observe(getViewLifecycleOwner(), new Observer<List<CallLog>>() {
+        callLogsViewModel.getCallLogs(mContext,false).observe(getViewLifecycleOwner(), new Observer<List<CallLog>>() {
             @Override
             public void onChanged(List<CallLog> callLogs) {
                 callHistory = callLogs;

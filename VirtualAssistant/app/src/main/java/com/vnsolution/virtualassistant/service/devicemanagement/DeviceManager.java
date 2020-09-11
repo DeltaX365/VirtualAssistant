@@ -21,6 +21,10 @@ import android.util.ArrayMap;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.vnsolution.virtualassistant.db.dao.CallHistoryDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
+import com.vnsolution.virtualassistant.db.dao.SmsHistoryDao;
 import com.vnsolution.virtualassistant.model.Application;
 import com.vnsolution.virtualassistant.model.CallLog;
 import com.vnsolution.virtualassistant.model.Contact;
@@ -32,6 +36,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class DeviceManager {
     private static final int DELAY_FETCH_DATA_IN_MILLISECONDS = 1 * 1000; // 1 second
@@ -46,7 +52,20 @@ public class DeviceManager {
     private MutableLiveData<List<Sms>> smsLiveData;
     private MutableLiveData<List<Contact>> contactsLiveData;
 
-    private DeviceManager() {}
+    @Inject
+    public CallHistoryDao callHistoryDao;
+
+    @Inject
+    public SmsHistoryDao smsHistoryDao;
+
+    @Inject
+    public PhoneContactDao phoneContactDao;
+
+    @Inject
+    public PhoneAppDao phoneAppDao;
+
+    @Inject
+    public DeviceManager() {}
 
     public static synchronized DeviceManager getInstance() {
         if (instance == null) {
@@ -179,7 +198,11 @@ public class DeviceManager {
                 List<CallLog> callLogs = new ArrayList<>();
                 if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_CALL_LOG)) {
                     @SuppressLint("MissingPermission") Cursor cursor = context.getContentResolver().query(android.provider.CallLog.Calls.CONTENT_URI, null, null, null, android.provider.CallLog.Calls.DATE + " DESC");
+                    String output = "";
                     while (cursor.moveToNext()) {
+                        for (int i = 0; i < cursor.getColumnCount(); i++) {
+                            output += cursor.getColumnName(i) + ": " + cursor.getString(i) + "; ";
+                        }
                         String phoneNumber = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.NUMBER));
                         String callType = cursor.getString(cursor.getColumnIndex(android.provider.CallLog.Calls.TYPE));
                         int callDirectionCode = Integer.parseInt(callType);
@@ -196,6 +219,7 @@ public class DeviceManager {
                         callLogsLiveData.setValue(callLogs);
                     }
                     cursor.close();
+                    System.out.println(output);
                 }
             }
         }, DELAY_FETCH_DATA_IN_MILLISECONDS);
@@ -209,11 +233,13 @@ public class DeviceManager {
             public void run() {
                 List<Sms> smsList = new ArrayList<>();
                 if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_SMS)) {
+                    String output = "";
                     Cursor cursor = context.getContentResolver().query(Uri.parse(SMS_INBOX), null, null, null, null);
                     if (cursor.moveToNext()) {
                         do {
                             Sms sms = new Sms();
                             for (int i = 0; i < cursor.getColumnCount(); i++) {
+                                output += cursor.getColumnName(i) + ": " + cursor.getString(i) + "; ";
                                 switch (cursor.getColumnName(i)) {
                                     case "_id":
                                         sms.id = cursor.getInt(i);
@@ -266,6 +292,7 @@ public class DeviceManager {
                         } while (cursor.moveToNext());
                     }
                     cursor.close();
+                    System.out.println(output);
                 }
                 smsLiveData.setValue(smsList);
             }
@@ -279,10 +306,14 @@ public class DeviceManager {
             public void run() {
                 List<Contact> contacts = new ArrayList<>();
                 if (context != null) {
+                    String output = "";
                     ContentResolver contentResolver = context.getContentResolver();
                     Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
                     if (cursor.moveToNext()) {
                         do {
+                            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                                output += cursor.getColumnName(i) + ": " + cursor.getString(i) + "; ";
+                            }
                             Contact contact = new Contact();
                             contact.id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                             contact.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
@@ -305,6 +336,7 @@ public class DeviceManager {
                         } while (cursor.moveToNext());
                     }
                     cursor.close();
+                    System.out.println(output);
                 }
                 contactsLiveData.setValue(contacts);
             }

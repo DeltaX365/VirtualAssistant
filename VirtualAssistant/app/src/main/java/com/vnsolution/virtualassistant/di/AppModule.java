@@ -10,9 +10,13 @@ import com.vnsolution.virtualassistant.api.adapter.LiveDataCallAdapter;
 import com.vnsolution.virtualassistant.api.adapter.LiveDataCallAdapterFactory;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.db.VirtualAssistantDb;
+import com.vnsolution.virtualassistant.db.dao.CallHistoryDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.db.dao.SettingDao;
+import com.vnsolution.virtualassistant.db.dao.SmsHistoryDao;
 import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2Activity;
 import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2ViewPagerAdapter;
 
@@ -149,6 +153,22 @@ public class AppModule {
     @Singleton
     @Provides
     public PlaceHistoryDao providePlaceHistoryDao(VirtualAssistantDb db) { return db.placeHistoryDao(); }
+
+    @Singleton
+    @Provides
+    public CallHistoryDao provideCallHistoryDao(VirtualAssistantDb db) { return db.callHistoryDao(); }
+
+    @Singleton
+    @Provides
+    public SmsHistoryDao provideSmsHistoryDao(VirtualAssistantDb db) { return db.smsHistoryDao(); }
+
+    @Singleton
+    @Provides
+    public PhoneContactDao providePhoneContactDao(VirtualAssistantDb db) { return db.phoneContactDao(); }
+
+    @Singleton
+    @Provides
+    public PhoneAppDao providePhoneAppDao(VirtualAssistantDb db) { return db.phoneAppDao(); }
 
     @Singleton
     @Provides

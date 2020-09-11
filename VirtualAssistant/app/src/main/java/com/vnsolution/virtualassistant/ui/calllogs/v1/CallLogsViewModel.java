@@ -17,14 +17,16 @@ import com.vnsolution.virtualassistant.service.devicemanagement.DeviceManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class CallLogsViewModel extends ViewModel {
-    private Context context;
+    @Inject
+    public DeviceManager deviceManager;
 
-    public CallLogsViewModel(Context context) {
-        this.context = context;
-    }
+    @Inject
+    public CallLogsViewModel() {}
 
-    public MutableLiveData<List<CallLog>> getCallLogs(boolean forceUpdate) {
-        return (DeviceManager.getInstance().getCallLogs(context, forceUpdate));
+    public MutableLiveData<List<CallLog>> getCallLogs(Context context, boolean forceUpdate) {
+        return deviceManager.getCallLogs(context, forceUpdate);
     }
 }

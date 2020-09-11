@@ -39,13 +39,15 @@ public class CallLogsActivity extends AppCompatActivity implements HasAndroidInj
 
     private CallLogsAdapter callLogsAdapter;
     private List<CallLog> callHistory = new ArrayList<>();
-    private CallLogsViewModel callLogsViewModel;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    public CallLogsViewModel callLogsViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +71,6 @@ public class CallLogsActivity extends AppCompatActivity implements HasAndroidInj
         recyclerView.setOnItemAction(this);
 
         // retrieve data
-        callLogsViewModel = new CallLogsViewModel(this);
         getCallLogs();
     }
 
@@ -87,7 +88,7 @@ public class CallLogsActivity extends AppCompatActivity implements HasAndroidInj
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        callLogsViewModel.getCallLogs(false).observe(this, new Observer<List<CallLog>>() {
+        callLogsViewModel.getCallLogs(this,false).observe(this, new Observer<List<CallLog>>() {
             @Override
             public void onChanged(List<CallLog> callLogs) {
                 callHistory = callLogs;

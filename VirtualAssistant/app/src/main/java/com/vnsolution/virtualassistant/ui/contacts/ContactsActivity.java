@@ -39,7 +39,9 @@ public class ContactsActivity extends AppCompatActivity implements HasAndroidInj
 
     private ContactsAdapter contactsAdapter;
     private List<Contact> contactList = new ArrayList<>();
-    private ContactsViewModel contactsViewModel;
+
+    @Inject
+    public ContactsViewModel contactsViewModel;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -69,7 +71,6 @@ public class ContactsActivity extends AppCompatActivity implements HasAndroidInj
         recyclerView.setOnItemAction(this);
 
         // retrieve data
-        contactsViewModel = new ContactsViewModel(this);
         getContacts();
     }
 
@@ -87,7 +88,7 @@ public class ContactsActivity extends AppCompatActivity implements HasAndroidInj
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        contactsViewModel.getContacts(false).observe(this, new Observer<List<Contact>>() {
+        contactsViewModel.getContacts(this,false).observe(this, new Observer<List<Contact>>() {
             @Override
             public void onChanged(List<Contact> contacts) {
                 contactList = contacts;

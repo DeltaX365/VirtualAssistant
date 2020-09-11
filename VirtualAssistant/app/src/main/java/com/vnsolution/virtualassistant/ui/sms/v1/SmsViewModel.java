@@ -12,14 +12,16 @@ import com.vnsolution.virtualassistant.service.devicemanagement.DeviceManager;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class SmsViewModel extends ViewModel {
-    private Context context;
+    @Inject
+    public DeviceManager deviceManager;
 
-    public SmsViewModel(Context context) {
-        this.context = context;
-    }
+    @Inject
+    public SmsViewModel() {}
 
-    public LiveData<List<Sms>> getSms(boolean forceUpdate) {
-        return (DeviceManager.getInstance().getSms(context, forceUpdate));
+    public LiveData<List<Sms>> getSms(Context context, boolean forceUpdate) {
+        return deviceManager.getSms(context, forceUpdate);
     }
 }

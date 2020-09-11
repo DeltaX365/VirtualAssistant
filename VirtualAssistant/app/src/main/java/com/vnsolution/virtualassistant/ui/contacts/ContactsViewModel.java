@@ -14,14 +14,16 @@ import com.vnsolution.virtualassistant.service.devicemanagement.DeviceManager;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class ContactsViewModel extends ViewModel {
-    private Context context;
+    @Inject
+    public DeviceManager deviceManager;
 
-    public ContactsViewModel(Context context) {
-        this.context = context;
-    }
+    @Inject
+    public ContactsViewModel() {}
 
-    public LiveData<List<Contact>> getContacts(boolean forceUpdate) {
-        return ((DeviceManager.getInstance()).getContacts(context, forceUpdate));
+    public LiveData<List<Contact>> getContacts(Context context, boolean forceUpdate) {
+        return deviceManager.getContacts(context, forceUpdate);
     }
 }

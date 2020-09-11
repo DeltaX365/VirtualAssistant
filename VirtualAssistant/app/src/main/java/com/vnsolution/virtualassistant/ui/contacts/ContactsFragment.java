@@ -31,8 +31,10 @@ public class ContactsFragment extends Fragment implements Injectable, OnItemActi
     private RecyclerView.LayoutManager layoutManager;
     private ContactsAdapter contactsAdapter;
     private List<Contact> contacts = new ArrayList<>();
-    private ContactsViewModel contactsViewModel;
     private Context mContext;
+
+    @Inject
+    public ContactsViewModel contactsViewModel;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
@@ -50,7 +52,6 @@ public class ContactsFragment extends Fragment implements Injectable, OnItemActi
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        contactsViewModel = new ContactsViewModel(getContext());
         View root = inflater.inflate(R.layout.screen_installed_applications, container, false);
 
         if (mContext != null) {
@@ -70,7 +71,7 @@ public class ContactsFragment extends Fragment implements Injectable, OnItemActi
             recyclerView.setOnItemAction(this);
 
             // retrieve data
-            contactsViewModel.getContacts(false).observe(getViewLifecycleOwner(), new Observer<List<Contact>>() {
+            contactsViewModel.getContacts(mContext,false).observe(getViewLifecycleOwner(), new Observer<List<Contact>>() {
                 @Override
                 public void onChanged(List<Contact> contacts) {
                     contacts = contacts;
