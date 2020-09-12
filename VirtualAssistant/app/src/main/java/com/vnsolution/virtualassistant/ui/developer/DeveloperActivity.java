@@ -11,13 +11,12 @@ import androidx.core.content.ContextCompat;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
-import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsActivity;
 import com.vnsolution.virtualassistant.ui.applications.v2.InstalledApplicationsV2Activity;
-import com.vnsolution.virtualassistant.ui.calllogs.v1.CallLogsActivity;
-import com.vnsolution.virtualassistant.ui.contacts.ContactsActivity;
+import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
+import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
 import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2Activity;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
-import com.vnsolution.virtualassistant.ui.sms.v1.SmsActivity;
+import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
 
 import javax.inject.Inject;
 
@@ -74,7 +73,7 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
         btnShowCallLogs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DeveloperActivity.this, CallLogsActivity.class);
+                Intent intent = new Intent(DeveloperActivity.this, PhoneCallsActivity.class);
                 startActivity(intent);
             }
         });
@@ -83,7 +82,7 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
         btnSms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DeveloperActivity.this, SmsActivity.class);
+                Intent intent = new Intent(DeveloperActivity.this, PhoneSmsActivity.class);
                 startActivity(intent);
             }
         });
@@ -92,7 +91,7 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
         btnShowContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DeveloperActivity.this, ContactsActivity.class);
+                Intent intent = new Intent(DeveloperActivity.this, PhoneContactsActivity.class);
                 startActivity(intent);
             }
         });

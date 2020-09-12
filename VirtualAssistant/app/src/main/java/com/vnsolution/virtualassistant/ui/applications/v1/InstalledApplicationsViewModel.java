@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.vnsolution.virtualassistant.model.Application;
-import com.vnsolution.virtualassistant.model.Place;
+import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.service.devicemanagement.DeviceManager;
 
 import java.util.ArrayList;
@@ -30,15 +28,15 @@ public class InstalledApplicationsViewModel extends ViewModel {
         this.index = index;
     }
 
-    public LiveData<List<Application>> getInstalledApplications(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
-        LiveData<List<Application>> applicationsLiveData = (DeviceManager.getInstance().getInstalledApplications(context, shouldGetSystemPackages, forceUpdate));
+    public LiveData<List<PhoneApp>> getInstalledApplications(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
+        LiveData<List<PhoneApp>> applicationsLiveData = (DeviceManager.getInstance().getPhoneApps(context, shouldGetSystemPackages, forceUpdate));
         return Transformations.map(applicationsLiveData, applicationEntities -> {
-            List<Application> applications = copy(applicationEntities);
+            List<PhoneApp> applications = copy(applicationEntities);
             switch (index) {
                 case 1: //Top 10 recent visited places
-                    Collections.sort(applications, new Comparator<Application>() {
+                    Collections.sort(applications, new Comparator<PhoneApp>() {
                         @Override
-                        public int compare(Application o1, Application o2) {
+                        public int compare(PhoneApp o1, PhoneApp o2) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 long lastTimeUsed1 = (o1 != null && o1.usageStats != null)? o1.usageStats.getLastTimeUsed() : 0;
                                 long lastTimeUsed2 = (o2 != null && o2.usageStats != null)? o2.usageStats.getLastTimeUsed() : 0;
@@ -50,9 +48,9 @@ public class InstalledApplicationsViewModel extends ViewModel {
                     applications = applications.subList(0, 10);
                     break;
                 case 2: //Top 10 most visited places
-                    Collections.sort(applications, new Comparator<Application>() {
+                    Collections.sort(applications, new Comparator<PhoneApp>() {
                         @Override
-                        public int compare(Application o1, Application o2) {
+                        public int compare(PhoneApp o1, PhoneApp o2) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 long totalTimeInForeground1 = (o1 != null && o1.usageStats != null)? o1.usageStats.getTotalTimeInForeground() : 0;
                                 long totalTimeInForeground2 = (o2 != null && o2.usageStats != null)? o2.usageStats.getTotalTimeInForeground() : 0;
@@ -67,9 +65,9 @@ public class InstalledApplicationsViewModel extends ViewModel {
                     applications = new ArrayList<>();
                     break;
                 case 4: //Top 10 unvisited places
-                    Collections.sort(applications, new Comparator<Application>() {
+                    Collections.sort(applications, new Comparator<PhoneApp>() {
                         @Override
-                        public int compare(Application o1, Application o2) {
+                        public int compare(PhoneApp o1, PhoneApp o2) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 long totalTimeInForeground1 = (o1 != null && o1.usageStats != null)? o1.usageStats.getTotalTimeInForeground() : 0;
                                 long totalTimeInForeground2 = (o2 != null && o2.usageStats != null)? o2.usageStats.getTotalTimeInForeground() : 0;
@@ -81,9 +79,9 @@ public class InstalledApplicationsViewModel extends ViewModel {
                     applications = applications.subList(0, 10);
                     break;
                 case 5: //All visited places
-                    Collections.sort(applications, new Comparator<Application>() {
+                    Collections.sort(applications, new Comparator<PhoneApp>() {
                         @Override
-                        public int compare(Application o1, Application o2) {
+                        public int compare(PhoneApp o1, PhoneApp o2) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 long lastTimeUsed1 = (o1 != null && o1.usageStats != null)? o1.usageStats.getLastTimeUsed() : 0;
                                 long lastTimeUsed2 = (o2 != null && o2.usageStats != null)? o2.usageStats.getLastTimeUsed() : 0;
@@ -98,16 +96,16 @@ public class InstalledApplicationsViewModel extends ViewModel {
         });
     }
 
-    public void launchApplication(Context context, Application application) {
+    public void launchApplication(Context context, PhoneApp application) {
         if (context != null && application != null && !application.packageName.isEmpty()) {
             Intent launchAppIntent = context.getPackageManager().getLaunchIntentForPackage(application.packageName);
             context.startActivity(launchAppIntent);
         }
     }
 
-    private List<Application> copy(List<Application> applications) {
-        List<Application> cloned = new ArrayList<>();
-        for (Application application: applications) {
+    private List<PhoneApp> copy(List<PhoneApp> applications) {
+        List<PhoneApp> cloned = new ArrayList<>();
+        for (PhoneApp application: applications) {
             cloned.add(application);
         }
         return cloned;

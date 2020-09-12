@@ -12,22 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.model.Application;
+import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.List;
 
 public class InstalledApplicationsAdapter extends RecyclerView.Adapter<InstalledApplicationsViewHolder> {
     private Context context;
-    private List<Application> dataSource;
+    private List<PhoneApp> dataSource;
     private OnItemActionListerner onItemActionListerner;
 
-    public InstalledApplicationsAdapter(Context context, List<Application> dataSource) {
+    public InstalledApplicationsAdapter(Context context, List<PhoneApp> dataSource) {
         this.context = context;
         this.dataSource = dataSource;
     }
 
-    public void setData(List<Application> applications) {
+    public void setData(List<PhoneApp> applications) {
         this.dataSource = applications;
         notifyDataSetChanged();
     }

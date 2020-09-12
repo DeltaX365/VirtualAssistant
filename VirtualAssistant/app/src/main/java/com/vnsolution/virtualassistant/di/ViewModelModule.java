@@ -3,14 +3,13 @@ package com.vnsolution.virtualassistant.di;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.vnsolution.virtualassistant.db.dao.SmsHistoryDao;
 import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsViewModel;
-import com.vnsolution.virtualassistant.ui.calllogs.v1.CallLogsViewModel;
-import com.vnsolution.virtualassistant.ui.contacts.ContactsViewModel;
+import com.vnsolution.virtualassistant.ui.phonecalls.v1.CallLogsViewModel;
+import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsViewModel;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardViewModel;
 import com.vnsolution.virtualassistant.ui.notifications.NotificationsViewModel;
 import com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesViewModel;
-import com.vnsolution.virtualassistant.ui.sms.v1.SmsViewModel;
+import com.vnsolution.virtualassistant.ui.phonesms.v1.SmsViewModel;
 import com.vnsolution.virtualassistant.viewmodel.VirtualAssistantViewModelFactory;
 
 import dagger.Binds;
@@ -46,8 +45,8 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ContactsViewModel.class)
-    abstract ViewModel bindContactsViewModel(ContactsViewModel contactsViewModel);
+    @ViewModelKey(PhoneContactsViewModel.class)
+    abstract ViewModel bindContactsViewModel(PhoneContactsViewModel phoneContactsViewModel);
 
     @Binds
     @IntoMap

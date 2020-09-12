@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.di.Injectable;
-import com.vnsolution.virtualassistant.model.Application;
+import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
     private FrameLayout progressOverlay;
 
     private InstalledApplicationsAdapter adapter;
-    private List<Application> installedApplications = new ArrayList<>();
+    private List<PhoneApp> installedApplications = new ArrayList<>();
     private InstalledApplicationsViewModel vm;
     private Context mContext;
 
@@ -105,9 +105,9 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
             progressOverlay.setAnimation(inAnimation);
             progressOverlay.setVisibility(View.VISIBLE);
 
-            vm.getInstalledApplications(mContext,false, false).observe(getViewLifecycleOwner(), new Observer<List<Application>>() {
+            vm.getInstalledApplications(mContext,false, false).observe(getViewLifecycleOwner(), new Observer<List<PhoneApp>>() {
                 @Override
-                public void onChanged(List<Application> applications) {
+                public void onChanged(List<PhoneApp> applications) {
                     installedApplications = applications;
                     adapter.setData(applications);
 

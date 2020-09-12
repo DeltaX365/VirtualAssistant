@@ -7,26 +7,29 @@ import dagger.Component;
 
 @Entity(tableName = "PhoneContact")
 public class PhoneContactEntity extends AuditEntity {
+    @ColumnInfo(name = "ContactId")
+    public int contactId;
+
     @ColumnInfo(name = "DisplayName")
     public String displayName;
-
-    @ColumnInfo(name = "LastTimeContacted")
-    public long lastTimeContacted;
 
     @ColumnInfo(name = "PhoneticName")
     public String phoneticName;
 
-    @ColumnInfo(name = "IsPrivate")
-    public boolean isPrivate;
+    @ColumnInfo(name = "PhoneNumber")
+    public String phoneNumbers;
 
-    @ColumnInfo(name = "IsPinned")
-    public boolean isPinned;
+//    @ColumnInfo(name = "IsPrivate")
+//    public int isPrivate;
 
-    @ColumnInfo(name = "LinkCount")
-    public int linkCount;
+    @ColumnInfo(name = "Pinned")
+    public int pinned;
 
-    @ColumnInfo(name = "Link")
-    public String link;
+//    @ColumnInfo(name = "LinkCount")
+//    public int linkCount;
+//
+//    @ColumnInfo(name = "Link")
+//    public String link;
 
     @ColumnInfo(name = "DisplayNameAlt")
     public String displayNameAlt;
@@ -43,20 +46,20 @@ public class PhoneContactEntity extends AuditEntity {
     @ColumnInfo(name = "ContactStatusLabel")
     public String contactStatusLabel;
 
-    @ColumnInfo(name = "PhonebookLabel")
-    public String phonebookLabel;
+//    @ColumnInfo(name = "PhonebookLabel")
+//    public String phonebookLabel;
 
     @ColumnInfo(name = "IsUserProfile")
-    public boolean isUserProfile;
+    public int isUserProfile;
 
     @ColumnInfo(name = "HasPhoneNumber")
-    public boolean hasPhoneNumber;
+    public int hasPhoneNumber;
 
     @ColumnInfo(name = "DisplayNameSource")
     public int displayNameSource;
 
-    @ColumnInfo(name = "HasEmail")
-    public boolean hasEmail;
+//    @ColumnInfo(name = "HasEmail")
+//    public int hasEmail;
 
     @ColumnInfo(name = "PhoneticNameStyle")
     public int phoneticNameStyle;
@@ -64,8 +67,8 @@ public class PhoneContactEntity extends AuditEntity {
     @ColumnInfo(name = "Lookup")
     public String lookup;
 
-    @ColumnInfo(name = "PhonebookLabelAlt")
-    public String phonebookLabelAlt;
+//    @ColumnInfo(name = "PhonebookLabelAlt")
+//    public String phonebookLabelAlt;
 
     @ColumnInfo(name = "ContactLastUpdatedTimestamp")
     public long contactLastUpdatedTimestamp;
@@ -73,27 +76,27 @@ public class PhoneContactEntity extends AuditEntity {
     @ColumnInfo(name = "PhotoUri")
     public String photoUri;
 
-    @ColumnInfo(name = "PhonebookBucket")
-    public int phonebookBucket;
+//    @ColumnInfo(name = "PhonebookBucket")
+//    public int phonebookBucket;
 
     @ColumnInfo(name = "SortKey")
     public String sortKey;
 
-    @ColumnInfo(name = "DisplayNameReverse")
-    public String displayNameReverse;
+//    @ColumnInfo(name = "DisplayNameReverse")
+//    public String displayNameReverse;
 
     @ColumnInfo(name = "InDefaultDirectory")
     public int inDefaultDirectory;
 
-    @ColumnInfo(name = "TimesContacted")
-    public int timesContacted;
+//    @ColumnInfo(name = "TimesContacted")
+//    public int timesContacted;
 
-    @ColumnInfo(name = "DirtyContact")
-    public int dirtyContact;
+//    @ColumnInfo(name = "DirtyContact")
+//    public int dirtyContact;
 
     @ColumnInfo(name = "NameRawContactId")
     public int nameRawContactId;
 
-    @ColumnInfo(name = "PhonebookBucketAlt")
-    public int phonebookBucketAlt;
+//    @ColumnInfo(name = "PhonebookBucketAlt")
+//    public int phonebookBucketAlt;
 }

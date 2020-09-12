@@ -36,13 +36,13 @@
         android:id="@+id/btn_sms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show sms" />
+        android:text="Show phoneSms" />
 
     <Button
         android:id="@+id/btn_contacts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show contacts" />
+        android:text="Show phoneContacts" />
 
     <Button
         android:id="@+id/btn_settings"

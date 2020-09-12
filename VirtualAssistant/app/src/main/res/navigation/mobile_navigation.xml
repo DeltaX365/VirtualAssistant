@@ -25,9 +25,9 @@
 
     <fragment
         android:id="@+id/navigation_call_logs"
-        android:name="com.vnsolution.virtualassistant.ui.calllogs.v1.CallLogsFragment"
+        android:name="com.vnsolution.virtualassistant.ui.phonecalls.v1.CallLogsFragment"
         android:label="@string/title_call_logs"
-        tools:layout="@layout/screen_call_logs" />
+        tools:layout="@layout/screen_phone_calls" />
 
     <fragment
         android:id="@+id/navigation_settings"

@@ -8,6 +8,9 @@ import androidx.room.Entity;
 
 @Entity(tableName = "PhoneApp")
 public class PhoneAppEntity extends AuditEntity {
+    @ColumnInfo(name = "AppId")
+    public int appId;
+
     @ColumnInfo(name = "AppName")
     public String appName;
 
@@ -22,16 +25,4 @@ public class PhoneAppEntity extends AuditEntity {
 
     @ColumnInfo(name = "AppIcon")
     public String appIcon;
-
-    @ColumnInfo(name = "AppLastUsedTime")
-    public long appLastUsedTime;
-
-    @ColumnInfo(name = "AppUsageTime")
-    public long appUsageTime;
-
-    @ColumnInfo(name = "QueryBeginTime")
-    public long queryBeginTime;
-
-    @ColumnInfo(name = "QueryEndTime")
-    public long queryEndTime;
 }

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.model.Application;
+import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class InstalledApplicationsActivity extends AppCompatActivity implements 
     private FrameLayout progressOverlay;
 
     private InstalledApplicationsAdapter installedApplicationAdapter;
-    private List<Application> installedApplications = new ArrayList<>();
+    private List<PhoneApp> installedApplications = new ArrayList<>();
     private InstalledApplicationsViewModel vm;
 
     @Inject
@@ -70,9 +70,9 @@ public class InstalledApplicationsActivity extends AppCompatActivity implements 
         progressOverlay.setVisibility(View.VISIBLE);
 
         vm = ViewModelProviders.of(this, viewModelFactory).get(InstalledApplicationsViewModel.class);
-        vm.getInstalledApplications(this, false, false).observe(this, new Observer<List<Application>>() {
+        vm.getInstalledApplications(this, false, false).observe(this, new Observer<List<PhoneApp>>() {
             @Override
-            public void onChanged(List<Application> applications) {
+            public void onChanged(List<PhoneApp> applications) {
                 installedApplications = applications;
                 installedApplicationAdapter.setData(applications);
 

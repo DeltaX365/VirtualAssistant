@@ -51,9 +51,9 @@
             android:name=".ui.applications.v2.InstalledApplicationsV2Activity"
             android:label="@string/title_applications"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ui.calllogs.v1.CallLogsActivity" />
-        <activity android:name=".ui.sms.v1.SmsActivity" />
-        <activity android:name=".ui.contacts.ContactsActivity" />
+        <activity android:name=".ui.phonecalls.v1.PhoneCallsActivity" />
+        <activity android:name=".ui.phonesms.v1.PhoneSmsActivity" />
+        <activity android:name=".ui.phonecontacts.PhoneContactsActivity" />
         <activity android:name=".ui.settings.SettingsActivity" />
 
         <service

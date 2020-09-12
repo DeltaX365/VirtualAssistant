@@ -6,19 +6,17 @@ import androidx.room.Room;
 
 import com.vnsolution.virtualassistant.api.GoogleApi;
 import com.vnsolution.virtualassistant.api.WeatherApi;
-import com.vnsolution.virtualassistant.api.adapter.LiveDataCallAdapter;
-import com.vnsolution.virtualassistant.api.adapter.LiveDataCallAdapterFactory;
 import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.db.DbMigration;
 import com.vnsolution.virtualassistant.db.VirtualAssistantDb;
-import com.vnsolution.virtualassistant.db.dao.CallHistoryDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneCallDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneAppUsageDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.db.dao.SettingDao;
-import com.vnsolution.virtualassistant.db.dao.SmsHistoryDao;
-import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2Activity;
-import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2ViewPagerAdapter;
+import com.vnsolution.virtualassistant.db.dao.PhoneSmsDao;
 
 import java.io.IOException;
 
@@ -134,6 +132,7 @@ public class AppModule {
         return Room
                 .databaseBuilder(app, VirtualAssistantDb.class, "virtual_assistant.db")
                 .createFromAsset("database/virtual_assistant.db")
+                .addMigrations(DbMigration.MIGRATION_2_3)
                 // https://medium.com/androiddevelopers/understanding-migrations-with-room-f01e04b07929
                 // If you don’t want to provide migrations and you specifically want your database to be cleared when you upgrade the version, call fallbackToDestructiveMigration in the database builder
 //                .fallbackToDestructiveMigration()
@@ -156,11 +155,11 @@ public class AppModule {
 
     @Singleton
     @Provides
-    public CallHistoryDao provideCallHistoryDao(VirtualAssistantDb db) { return db.callHistoryDao(); }
+    public PhoneCallDao providePhoneCallDao(VirtualAssistantDb db) { return db.phoneCallDao(); }
 
     @Singleton
     @Provides
-    public SmsHistoryDao provideSmsHistoryDao(VirtualAssistantDb db) { return db.smsHistoryDao(); }
+    public PhoneSmsDao providePhoneSmsDao(VirtualAssistantDb db) { return db.phoneSmsDao(); }
 
     @Singleton
     @Provides
@@ -169,6 +168,10 @@ public class AppModule {
     @Singleton
     @Provides
     public PhoneAppDao providePhoneAppDao(VirtualAssistantDb db) { return db.phoneAppDao(); }
+
+    @Singleton
+    @Provides
+    public PhoneAppUsageDao providePhoneAppUsageDao(VirtualAssistantDb db) { return db.phoneAppUsageDao(); }
 
     @Singleton
     @Provides
