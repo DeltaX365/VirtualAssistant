@@ -12,4 +12,7 @@ import java.util.List;
 public interface DeviceDao extends BaseDao<DeviceEntity> {
     @Query("SELECT * FROM Device")
     LiveData<List<DeviceEntity>> getAll();
+
+    @Query("DELETE FROM Device")
+    void reset();
 }

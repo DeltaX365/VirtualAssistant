@@ -46,9 +46,9 @@
             android:name=".ui.places.v2.VisitedPlacesV2Activity"
             android:label="@string/title_places"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ui.applications.v1.InstalledApplicationsActivity" />
+        <activity android:name=".ui.phoneapps.v1.PhoneAppsActivity" />
         <activity
-            android:name=".ui.applications.v2.InstalledApplicationsV2Activity"
+            android:name=".ui.phoneapps.v2.PhoneAppsV2Activity"
             android:label="@string/title_applications"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".ui.phonecalls.v1.PhoneCallsActivity" />

@@ -144,4 +144,41 @@ public class DbMigration {
 //            database.endTransaction();
         }
     };
+
+    public static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Unique index PhoneContact
+            String phoneContactDataReset = "DELETE FROM \"PhoneContact\"";
+            String phoneContactUniqueIndex = "CREATE UNIQUE INDEX \"index_PhoneContact_ContactId\" ON \"PhoneContact\" (\n" +
+                    "\t\"ContactId\"\tASC\n" +
+                    ");";
+            database.execSQL(phoneContactDataReset);
+            database.execSQL(phoneContactUniqueIndex);
+
+            // Unique index PhoneCall
+            String phoneCallDataReset = "DELETE FROM PhoneCall";
+            String phoneCallUniqueIndex = "CREATE UNIQUE INDEX \"index_PhoneCall_CallId\" ON \"PhoneCall\" (\n" +
+                    "\t\"CallId\"\tASC\n" +
+                    ");";
+            database.execSQL(phoneCallDataReset);
+            database.execSQL(phoneCallUniqueIndex);
+
+            // Unique index PhoneSms
+            String phoneSmsDataReset = "DELETE FROM PhoneSms";
+            String phoneSmsUniqueIndex = "CREATE UNIQUE INDEX \"index_PhoneSms_SmsId\" ON \"PhoneSms\" (\n" +
+                    "\t\"SmsId\"\tASC\n" +
+                    ");";
+            database.execSQL(phoneSmsDataReset);
+            database.execSQL(phoneSmsUniqueIndex);
+
+            // Unique index PhoneApp
+            String phoneAppDataReset = "DELETE FROM PhoneApp";
+            String phoneAppUniqueIndex = "CREATE UNIQUE INDEX \"index_PhoneApp_AppId\" ON \"PhoneApp\" (\n" +
+                    "\t\"AppId\"\tASC\n" +
+                    ");";
+            database.execSQL(phoneAppDataReset);
+            database.execSQL(phoneAppUniqueIndex);
+        }
+    };
 }

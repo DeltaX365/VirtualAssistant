@@ -11,4 +11,7 @@ import java.util.List;
 public interface PhoneSmsDao extends BaseDao<PhoneSmsEntity> {
     @Query("SELECT * FROM PhoneSms")
     List<PhoneSmsEntity> getAll();
+
+    @Query("DELETE FROM PhoneSms")
+    void reset();
 }

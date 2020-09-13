@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.applications.v1;
+package com.vnsolution.virtualassistant.ui.phoneapps.v1;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -27,14 +27,14 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class InstalledApplicationsActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
-    private InstalledApplicationsRecycleView recyclerView;
+public class PhoneAppsActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
+    private PhoneAppsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private InstalledApplicationsAdapter installedApplicationAdapter;
+    private PhoneAppsAdapter installedApplicationAdapter;
     private List<PhoneApp> installedApplications = new ArrayList<>();
-    private InstalledApplicationsViewModel vm;
+    private PhoneAppsViewModel vm;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -45,7 +45,7 @@ public class InstalledApplicationsActivity extends AppCompatActivity implements 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_installed_applications);
+        setContentView(R.layout.screen_phone_apps);
 
         recyclerView = findViewById(R.id.list_applications);
         progressOverlay =  findViewById(R.id.progress_overlay);
@@ -59,7 +59,7 @@ public class InstalledApplicationsActivity extends AppCompatActivity implements 
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter
-        installedApplicationAdapter = new InstalledApplicationsAdapter(this, installedApplications);
+        installedApplicationAdapter = new PhoneAppsAdapter(this, installedApplications);
         recyclerView.setAdapter(installedApplicationAdapter);
         recyclerView.setOnItemAction(this);
 
@@ -69,7 +69,7 @@ public class InstalledApplicationsActivity extends AppCompatActivity implements 
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        vm = ViewModelProviders.of(this, viewModelFactory).get(InstalledApplicationsViewModel.class);
+        vm = ViewModelProviders.of(this, viewModelFactory).get(PhoneAppsViewModel.class);
         vm.getInstalledApplications(this, false, false).observe(this, new Observer<List<PhoneApp>>() {
             @Override
             public void onChanged(List<PhoneApp> applications) {

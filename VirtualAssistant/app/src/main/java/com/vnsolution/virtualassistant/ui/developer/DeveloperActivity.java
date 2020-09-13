@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
-import com.vnsolution.virtualassistant.ui.applications.v2.InstalledApplicationsV2Activity;
+import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
 import com.vnsolution.virtualassistant.ui.places.v2.VisitedPlacesV2Activity;
@@ -64,7 +64,7 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
         btnShowInstalledApps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DeveloperActivity.this, InstalledApplicationsV2Activity.class);
+                Intent intent = new Intent(DeveloperActivity.this, PhoneAppsV2Activity.class);
                 startActivity(intent);
             }
         });

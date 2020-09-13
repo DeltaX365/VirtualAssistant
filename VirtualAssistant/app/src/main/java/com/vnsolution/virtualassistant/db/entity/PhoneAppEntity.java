@@ -5,8 +5,12 @@ import android.graphics.drawable.Drawable;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 
-@Entity(tableName = "PhoneApp")
+@Entity(
+    tableName = "PhoneApp",
+    indices = {@Index(value = "AppId", unique = true)}
+)
 public class PhoneAppEntity extends AuditEntity {
     @ColumnInfo(name = "AppId")
     public int appId;

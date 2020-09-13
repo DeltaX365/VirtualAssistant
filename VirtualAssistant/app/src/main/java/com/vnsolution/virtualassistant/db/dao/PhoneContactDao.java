@@ -12,4 +12,7 @@ import java.util.List;
 public interface PhoneContactDao extends BaseDao<PhoneContactEntity> {
     @Query("SELECT * FROM PhoneContact")
     List<PhoneContactEntity> getAll();
+
+    @Query("DELETE FROM PhoneContact")
+    void reset();
 }

@@ -20,9 +20,15 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneAppUsageDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneCallDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
+import com.vnsolution.virtualassistant.db.dao.PhoneSmsDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.di.Injectable;
+import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import javax.inject.Inject;
@@ -46,6 +52,21 @@ public class SettingsActivity extends AppCompatActivity implements HasAndroidInj
 
     @Inject
     public PlaceDao placeDao;
+
+    @Inject
+    public PhoneContactDao phoneContactDao;
+
+    @Inject
+    public PhoneCallDao phoneCallDao;
+
+    @Inject
+    public PhoneSmsDao phoneSmsDao;
+
+    @Inject
+    public PhoneAppDao phoneAppDao;
+
+    @Inject
+    public PhoneAppUsageDao phoneAppUsageDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +129,11 @@ public class SettingsActivity extends AppCompatActivity implements HasAndroidInj
             public void run() {
                 placeHistoryDao.reset();
                 placeDao.reset();
+                phoneCallDao.reset();
+                phoneSmsDao.reset();
+                phoneContactDao.reset();
+                phoneAppUsageDao.reset();
+                phoneAppDao.reset();
             }
         }).start();
     }

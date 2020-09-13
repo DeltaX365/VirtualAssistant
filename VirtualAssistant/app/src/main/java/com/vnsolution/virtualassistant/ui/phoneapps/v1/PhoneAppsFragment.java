@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.applications.v1;
+package com.vnsolution.virtualassistant.ui.phoneapps.v1;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -28,23 +28,23 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class InstalledApplicationsFragment extends Fragment implements Injectable, OnItemActionListerner {
+public class PhoneAppsFragment extends Fragment implements Injectable, OnItemActionListerner {
     public static final String ARG_SECTION_NUMBER = "section_number";
 
-    private InstalledApplicationsRecycleView recyclerView;
+    private PhoneAppsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private InstalledApplicationsAdapter adapter;
+    private PhoneAppsAdapter adapter;
     private List<PhoneApp> installedApplications = new ArrayList<>();
-    private InstalledApplicationsViewModel vm;
+    private PhoneAppsViewModel vm;
     private Context mContext;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
 
     @Inject
-    public InstalledApplicationsFragment() {
+    public PhoneAppsFragment() {
         super();
     }
 
@@ -60,8 +60,8 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
         mContext = null;
     }
 
-    public static InstalledApplicationsFragment newInstance(int index) {
-        InstalledApplicationsFragment fragment = new InstalledApplicationsFragment();
+    public static PhoneAppsFragment newInstance(int index) {
+        PhoneAppsFragment fragment = new PhoneAppsFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_SECTION_NUMBER, index);
         fragment.setArguments(bundle);
@@ -71,7 +71,7 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vm = ViewModelProviders.of(this, viewModelFactory).get(InstalledApplicationsViewModel.class);
+        vm = ViewModelProviders.of(this, viewModelFactory).get(PhoneAppsViewModel.class);
         int index = 1;
         if (getArguments() != null) {
             index = getArguments().getInt(ARG_SECTION_NUMBER);
@@ -80,7 +80,7 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.screen_installed_applications, container, false);
+        View root = inflater.inflate(R.layout.screen_phone_apps, container, false);
 
         if (mContext != null) {
             recyclerView = root.findViewById(R.id.list_applications);
@@ -95,7 +95,7 @@ public class InstalledApplicationsFragment extends Fragment implements Injectabl
             recyclerView.setLayoutManager(layoutManager);
 
             // specify an adapter
-            adapter = new InstalledApplicationsAdapter(mContext, installedApplications);
+            adapter = new PhoneAppsAdapter(mContext, installedApplications);
             recyclerView.setAdapter(adapter);
             recyclerView.setOnItemAction(this);
 

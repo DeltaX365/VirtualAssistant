@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.applications.v1;
+package com.vnsolution.virtualassistant.ui.phoneapps.v1;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
-public class InstalledApplicationsViewHolder extends RecyclerView.ViewHolder {
+public class PhoneAppsViewHolder extends RecyclerView.ViewHolder {
     public ImageView imageAppIcon;
     public TextView textAppName;
     public TextView textAppUsage;
     public TextView textAppLastUsedTime;
     public OnItemActionListerner onItemActionListerner;
 
-    public InstalledApplicationsViewHolder(View view) {
+    public PhoneAppsViewHolder(View view) {
         super(view);
 
         imageAppIcon = view.findViewById(R.id.app_icon);

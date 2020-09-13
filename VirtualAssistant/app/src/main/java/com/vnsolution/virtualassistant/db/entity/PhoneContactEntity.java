@@ -2,10 +2,14 @@ package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 
 import dagger.Component;
 
-@Entity(tableName = "PhoneContact")
+@Entity(
+    tableName = "PhoneContact",
+    indices = {@Index(value = "ContactId", unique = true)}
+)
 public class PhoneContactEntity extends AuditEntity {
     @ColumnInfo(name = "ContactId")
     public int contactId;

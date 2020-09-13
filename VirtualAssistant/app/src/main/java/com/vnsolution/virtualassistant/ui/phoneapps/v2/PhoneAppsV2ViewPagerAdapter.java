@@ -1,11 +1,10 @@
-package com.vnsolution.virtualassistant.ui.applications.v2;
+package com.vnsolution.virtualassistant.ui.phoneapps.v2;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsFragment;
-import com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesFragment;
+import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,21 +13,21 @@ import java.util.List;
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-public class InstalledApplicationsV2ViewPagerAdapter extends FragmentPagerAdapter {
+public class PhoneAppsV2ViewPagerAdapter extends FragmentPagerAdapter {
     private List<String> titles = new ArrayList<>();
-    private List<InstalledApplicationsFragment> listFragment = new ArrayList<>();
+    private List<PhoneAppsFragment> listFragment = new ArrayList<>();
 
-    public InstalledApplicationsV2ViewPagerAdapter(FragmentManager fm) {
+    public PhoneAppsV2ViewPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
-    public void addItem(String title, InstalledApplicationsFragment fragment) {
+    public void addItem(String title, PhoneAppsFragment fragment) {
         titles.add(title);
         listFragment.add(fragment);
     }
 
     @Override
-    public InstalledApplicationsFragment getItem(int position) {
+    public PhoneAppsFragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
         return listFragment.get(position);

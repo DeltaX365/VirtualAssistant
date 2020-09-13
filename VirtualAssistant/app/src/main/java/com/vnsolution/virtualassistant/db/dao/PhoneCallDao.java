@@ -11,4 +11,7 @@ import java.util.List;
 public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
     @Query("SELECT * FROM PhoneCall")
     List<PhoneCallEntity> getAll();
+
+    @Query("DELETE FROM PhoneCall")
+    void reset();
 }

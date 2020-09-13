@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.PhoneContact;
-import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsRecycleView;
+import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsRecycleView;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class PhoneContactsFragment extends Fragment implements Injectable, OnItemActionListerner {
-    private InstalledApplicationsRecycleView recyclerView;
+    private PhoneAppsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private PhoneContactsAdapter phoneContactsAdapter;
     private List<PhoneContact> phoneContacts = new ArrayList<>();
@@ -52,7 +52,7 @@ public class PhoneContactsFragment extends Fragment implements Injectable, OnIte
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.screen_installed_applications, container, false);
+        View root = inflater.inflate(R.layout.screen_phone_apps, container, false);
 
         if (mContext != null) {
             recyclerView = root.findViewById(R.id.list_applications);

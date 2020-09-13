@@ -1,6 +1,6 @@
 package com.vnsolution.virtualassistant.di;
 
-import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsFragment;
+import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsFragment;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.CallLogsFragment;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardFragment;
 import com.vnsolution.virtualassistant.ui.notifications.NotificationsFragment;
@@ -24,7 +24,7 @@ public abstract class HomeFragmentBuildersModule {
     abstract NotificationsFragment contributeNotificationsFragment();
 
     @ContributesAndroidInjector
-    abstract InstalledApplicationsFragment contributeInstalledApplicationsFragment();
+    abstract PhoneAppsFragment contributeInstalledApplicationsFragment();
 
     @ContributesAndroidInjector
     abstract CallLogsFragment contributeCallLogsFragment();

@@ -47,7 +47,7 @@ public class VisitedPlacesViewModel extends ViewModel {
                             return (int) (getLastVisitedTime(o2) - getLastVisitedTime(o1));
                         }
                     });
-                    places = places.subList(0, 10);
+                    places = places.subList(0, Math.min(places.size(), 10));
                     break;
                 case 2: //Top 10 most visited places
                     Collections.sort(places, new Comparator<Place>() {
@@ -56,7 +56,7 @@ public class VisitedPlacesViewModel extends ViewModel {
                             return (int) (calculateTotalVisitedTime(o2) - calculateTotalVisitedTime(o1));
                         }
                     });
-                    places = places.subList(0, 10);
+                    places = places.subList(0, Math.min(places.size(), 10));
                     break;
                 case 3: //Top 10 favourite visited places
                     places = new ArrayList<>();
@@ -68,7 +68,7 @@ public class VisitedPlacesViewModel extends ViewModel {
                             return (int) (getLastVisitedTime(o1) - getLastVisitedTime(o2));
                         }
                     });
-                    places = places.subList(0, 10);
+                    places = places.subList(0, Math.min(places.size(), 10));
                     break;
                 case 5: //All visited places
                     Collections.sort(places, new Comparator<Place>() {

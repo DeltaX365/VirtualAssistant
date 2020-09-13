@@ -2,8 +2,8 @@ package com.vnsolution.virtualassistant.di;
 
 import com.vnsolution.virtualassistant.ui.HomeActivity;
 import com.vnsolution.virtualassistant.ui.HomeV2Activity;
-import com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsActivity;
-import com.vnsolution.virtualassistant.ui.applications.v2.InstalledApplicationsV2Activity;
+import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsActivity;
+import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
 import com.vnsolution.virtualassistant.ui.developer.DeveloperActivity;
@@ -36,10 +36,10 @@ public abstract class ActivityBuildersModule {
     abstract VisitedPlacesV2Activity contributeVisitedPlacesV2Activity();
 
     @ContributesAndroidInjector()
-    abstract InstalledApplicationsActivity contributeInstalledApplicationsActivity();
+    abstract PhoneAppsActivity contributeInstalledApplicationsActivity();
 
-    @ContributesAndroidInjector(modules = InstalledApplicationsFragmentBuildersModule.class)
-    abstract InstalledApplicationsV2Activity contributeInstalledApplicationsV2Activity();
+    @ContributesAndroidInjector(modules = PhoneAppsFragmentBuildersModule.class)
+    abstract PhoneAppsV2Activity contributeInstalledApplicationsV2Activity();
 
     @ContributesAndroidInjector()
     abstract PhoneCallsActivity contributeCallLogsActivity();

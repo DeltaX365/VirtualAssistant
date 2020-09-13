@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.applications.v1;
+package com.vnsolution.virtualassistant.ui.phoneapps.v1;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,11 +18,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class InstalledApplicationsViewModel extends ViewModel {
+public class PhoneAppsViewModel extends ViewModel {
     private Integer index = 1;
 
     @Inject
-    public InstalledApplicationsViewModel() {}
+    public PhoneAppsViewModel() {}
 
     public void setIndex(int index) {
         this.index = index;

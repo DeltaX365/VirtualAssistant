@@ -2,8 +2,12 @@ package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 
-@Entity(tableName = "PhoneSms")
+@Entity(
+    tableName = "PhoneSms",
+    indices = {@Index(value = "SmsId", unique = true)}
+)
 public class PhoneSmsEntity extends AuditEntity {
     @ColumnInfo(name = "SmsId")
     public int smsId;

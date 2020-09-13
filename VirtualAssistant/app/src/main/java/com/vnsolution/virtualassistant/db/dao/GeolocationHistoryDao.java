@@ -12,4 +12,7 @@ import java.util.List;
 public interface GeolocationHistoryDao extends BaseDao<GeolocationHistoryEntity> {
     @Query("SELECT * FROM GeolocationHistory")
     LiveData<List<GeolocationHistoryEntity>> getAll();
+
+    @Query("DELETE FROM GeolocationHistory")
+    void reset();
 }

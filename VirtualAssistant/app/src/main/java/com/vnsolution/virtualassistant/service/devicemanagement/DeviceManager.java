@@ -12,7 +12,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Looper;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.provider.Settings;
@@ -22,7 +21,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceSearchDto;
 import com.vnsolution.virtualassistant.db.dao.PhoneCallDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
@@ -45,7 +43,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Handler;
 
 import javax.inject.Inject;
 
@@ -116,37 +113,37 @@ public class DeviceManager {
     }
 
     public MutableLiveData<List<PhoneCall>> getPhoneCalls(Context context, boolean forceUpdate) {
-        if (phoneCallsLiveData == null || forceUpdate) {
+        if (phoneCallsLiveData == null) {
             phoneCallsLiveData = new MutableLiveData<>();
-            getPhoneCallsAsync(context);
+            getPhoneCallsAsync(context, forceUpdate);
         }
         return phoneCallsLiveData;
     }
 
     public LiveData<List<PhoneSms>> getPhoneSms(Context context, boolean forceUpdate) {
-        if (phoneSmsLiveData == null || forceUpdate) {
+        if (phoneSmsLiveData == null) {
             phoneSmsLiveData = new MutableLiveData<>();
-            getPhoneSmsAsync(context);
+            getPhoneSmsAsync(context, forceUpdate);
         }
         return phoneSmsLiveData;
     }
 
     public LiveData<List<PhoneContact>> getPhoneContacts(Context context, boolean forceUpdate) {
-        if (phoneContactsLiveData == null || forceUpdate) {
+        if (phoneContactsLiveData == null) {
             phoneContactsLiveData = new MutableLiveData<>();
-            getPhoneContactsAsync(context);
+            getPhoneContactsAsync(context, forceUpdate);
         }
         return phoneContactsLiveData;
     }
 
     private void getPhoneAppsAsync(Context context, boolean shouldGetSystemPackages) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
+        Future<List<PhoneApp>> phoneAppListFuture = executor.submit(new Callable<List<PhoneApp>>() {
             @Override
-            public void run() {
-                List<PhoneApp> applications = new ArrayList<>();
+            public List<PhoneApp> call() throws Exception {
+                List<PhoneApp> phoneApps = new ArrayList<>();
                 if (context != null) {
-                    getUsageStats(context);
+                    getPhoneAppUsageStats(context);
                     List<PackageInfo> packageInfos = context.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA);
 //                    Collections.sort(packageInfos, new Comparator<PackageInfo>() {
 //                        @Override
@@ -165,15 +162,24 @@ public class DeviceManager {
                         application.versionName = packageInfo.versionName;
                         application.appIcon = packageInfo.applicationInfo.loadIcon(context.getPackageManager());
                         application.usageStats = appUsageStats.get(application.packageName);
-                        applications.add(application);
+                        phoneApps.add(application);
                     }
                 }
-                phoneAppsLiveData.setValue(applications);
+                return phoneApps;
             }
         });
+        List<PhoneApp> phoneApps = new ArrayList<>();
+        try {
+            phoneApps = phoneAppListFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        phoneAppsLiveData.setValue(phoneApps);
     }
 
-    private void getUsageStats(Context context) {
+    private void getPhoneAppUsageStats(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP
                 && context != null && (appUsageStats == null || appUsageStats.isEmpty())) {
 
@@ -197,21 +203,14 @@ public class DeviceManager {
         }
     }
 
-    private void getPhoneCallsAsync(Context context) {
+    private void getPhoneCallsAsync(Context context, boolean forceUpdate) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneCall>> phoneCallListFuture =  executor.submit(new Callable<List<PhoneCall>>() {
             @Override
             public List<PhoneCall> call() throws Exception {
-                List<PhoneCallEntity> phoneCalls = new ArrayList<>();
-                if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_CALL_LOG)) {
-                    @SuppressLint("MissingPermission") Cursor cursor = context.getContentResolver().query(android.provider.CallLog.Calls.CONTENT_URI, null, null, null, android.provider.CallLog.Calls.DATE + " DESC");
-                    while (cursor.moveToNext()) {
-                        PhoneCallEntity phoneCallEntity = getPhoneCallEntity(cursor);
-                        phoneCalls.add(phoneCallEntity);
-                    }
-                    cursor.close();
+                if (forceUpdate) {
+                    syncPhoneCalls(context);
                 }
-                phoneCallDao.insert(phoneCalls);
                 List<PhoneCallEntity> phoneCallEntities = phoneCallDao.getAll();
                 return transformToPhoneCall(phoneCallEntities);
             }
@@ -227,23 +226,27 @@ public class DeviceManager {
         phoneCallsLiveData.setValue(phoneCalls);
     }
 
-    private void getPhoneSmsAsync(Context context) {
+    private void syncPhoneCalls(Context context) {
+        List<PhoneCallEntity> phoneCalls = new ArrayList<>();
+        if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_CALL_LOG)) {
+            @SuppressLint("MissingPermission") Cursor cursor = context.getContentResolver().query(android.provider.CallLog.Calls.CONTENT_URI, null, null, null, android.provider.CallLog.Calls.DATE + " DESC");
+            while (cursor.moveToNext()) {
+                PhoneCallEntity phoneCallEntity = getPhoneCallEntity(cursor);
+                phoneCalls.add(phoneCallEntity);
+            }
+            cursor.close();
+        }
+        phoneCallDao.insert(phoneCalls);
+    }
+
+    private void getPhoneSmsAsync(Context context, boolean forceUpdate) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneSms>> phoneSmsListFuture = executor.submit(new Callable<List<PhoneSms>>() {
             @Override
             public List<PhoneSms> call() throws Exception {
-                List<PhoneSmsEntity> phoneSmsList = new ArrayList<>();
-                if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_SMS)) {
-                    Cursor cursor = context.getContentResolver().query(Uri.parse(SMS_INBOX), null, null, null, null);
-                    if (cursor.moveToNext()) {
-                        do {
-                            PhoneSmsEntity phoneSmsEntity = getSmsHistoryEntity(cursor);
-                            phoneSmsList.add(phoneSmsEntity);
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
+                if (forceUpdate) {
+                    syncPhoneSms(context);
                 }
-                phoneSmsDao.insert(phoneSmsList);
                 List<PhoneSmsEntity> phoneSmsEntities = phoneSmsDao.getAll();
                 return transformToPhoneSms(phoneSmsEntities);
             }
@@ -259,37 +262,29 @@ public class DeviceManager {
         phoneSmsLiveData.setValue(phoneSmsList);
     }
 
-    private void getPhoneContactsAsync(Context context) {
+    private void syncPhoneSms(Context context) {
+        List<PhoneSmsEntity> phoneSmsList = new ArrayList<>();
+        if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_SMS)) {
+            Cursor cursor = context.getContentResolver().query(Uri.parse(SMS_INBOX), null, null, null, null);
+            if (cursor.moveToNext()) {
+                do {
+                    PhoneSmsEntity phoneSmsEntity = getSmsHistoryEntity(cursor);
+                    phoneSmsList.add(phoneSmsEntity);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        phoneSmsDao.insert(phoneSmsList);
+    }
+
+    private void getPhoneContactsAsync(Context context, boolean forceUpdate) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneContact>> phoneContactListFuture = executor.submit(new Callable<List<PhoneContact>>() {
             @Override
             public List<PhoneContact> call() throws Exception {
-                List<PhoneContactEntity> phoneContacts = new ArrayList<>();
-                if (context != null) {
-                    ContentResolver contentResolver = context.getContentResolver();
-                    Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-                    if (cursor.moveToNext()) {
-                        do {
-                            PhoneContactEntity phoneContact = getPhoneContactEntity(cursor);
-                            if (phoneContact.hasPhoneNumber > 0) {
-                                phoneContact.phoneNumbers = "";
-                                Cursor cursor1 = contentResolver.query(
-                                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                                        null,
-                                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{ String.valueOf(phoneContact.contactId) },
-                                        null);
-                                while (cursor1.moveToNext()) {
-                                    String phoneNo = cursor1.getString(cursor1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                                    phoneContact.phoneNumbers += phoneNo + ", ";
-                                }
-                                cursor1.close();
-                            }
-                            phoneContacts.add(phoneContact);
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
+                if (forceUpdate) {
+                    syncPhoneContacts(context);
                 }
-                phoneContactDao.insert(phoneContacts);
                 List<PhoneContactEntity> phoneContactEntities = phoneContactDao.getAll();
                 return transformToPhoneContacts(phoneContactEntities);
             }
@@ -303,6 +298,35 @@ public class DeviceManager {
         }
         executor.shutdown();
         phoneContactsLiveData.setValue(phoneContactList);
+    }
+
+    private void syncPhoneContacts(Context context) {
+        List<PhoneContactEntity> phoneContacts = new ArrayList<>();
+        if (context != null) {
+            ContentResolver contentResolver = context.getContentResolver();
+            Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+            if (cursor.moveToNext()) {
+                do {
+                    PhoneContactEntity phoneContact = getPhoneContactEntity(cursor);
+                    if (phoneContact.hasPhoneNumber > 0) {
+                        phoneContact.phoneNumbers = "";
+                        Cursor cursor1 = contentResolver.query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{ String.valueOf(phoneContact.contactId) },
+                                null);
+                        while (cursor1.moveToNext()) {
+                            String phoneNo = cursor1.getString(cursor1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            phoneContact.phoneNumbers += phoneNo + ", ";
+                        }
+                        cursor1.close();
+                    }
+                    phoneContacts.add(phoneContact);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        phoneContactDao.insert(phoneContacts);
     }
 
     private PhoneCallEntity getPhoneCallEntity(Cursor cursor) {

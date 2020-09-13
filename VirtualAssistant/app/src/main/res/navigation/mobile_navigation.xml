@@ -19,9 +19,9 @@
 
     <fragment
         android:id="@+id/navigation_apps"
-        android:name="com.vnsolution.virtualassistant.ui.applications.v1.InstalledApplicationsFragment"
+        android:name="com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsFragment"
         android:label="@string/title_applications"
-        tools:layout="@layout/screen_installed_applications" />
+        tools:layout="@layout/screen_phone_apps" />
 
     <fragment
         android:id="@+id/navigation_call_logs"

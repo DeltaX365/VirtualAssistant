@@ -11,4 +11,7 @@ import java.util.List;
 public interface WeatherDao extends BaseDao<WeatherEntity> {
     @Query("SELECT * FROM Weather")
     List<WeatherEntity> getAll();
+
+    @Query("DELETE FROM Weather")
+    void reset();
 }
