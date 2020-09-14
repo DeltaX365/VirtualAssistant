@@ -70,7 +70,7 @@ public class PhoneAppsActivity extends AppCompatActivity implements HasAndroidIn
         progressOverlay.setVisibility(View.VISIBLE);
 
         vm = ViewModelProviders.of(this, viewModelFactory).get(PhoneAppsViewModel.class);
-        vm.getInstalledApplications(this, false, false).observe(this, new Observer<List<PhoneApp>>() {
+        vm.getPhoneApps(this, false, false).observe(this, new Observer<List<PhoneApp>>() {
             @Override
             public void onChanged(List<PhoneApp> applications) {
                 installedApplications = applications;

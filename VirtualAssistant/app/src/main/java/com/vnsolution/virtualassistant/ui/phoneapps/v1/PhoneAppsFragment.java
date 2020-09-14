@@ -105,7 +105,7 @@ public class PhoneAppsFragment extends Fragment implements Injectable, OnItemAct
             progressOverlay.setAnimation(inAnimation);
             progressOverlay.setVisibility(View.VISIBLE);
 
-            vm.getInstalledApplications(mContext,false, false).observe(getViewLifecycleOwner(), new Observer<List<PhoneApp>>() {
+            vm.getPhoneApps(mContext,false, false).observe(getViewLifecycleOwner(), new Observer<List<PhoneApp>>() {
                 @Override
                 public void onChanged(List<PhoneApp> applications) {
                     installedApplications = applications;

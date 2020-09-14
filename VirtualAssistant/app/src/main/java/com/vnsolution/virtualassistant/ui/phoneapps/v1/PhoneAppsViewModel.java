@@ -28,7 +28,7 @@ public class PhoneAppsViewModel extends ViewModel {
         this.index = index;
     }
 
-    public LiveData<List<PhoneApp>> getInstalledApplications(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
+    public LiveData<List<PhoneApp>> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
         LiveData<List<PhoneApp>> applicationsLiveData = (DeviceManager.getInstance().getPhoneApps(context, shouldGetSystemPackages, forceUpdate));
         return Transformations.map(applicationsLiveData, applicationEntities -> {
             List<PhoneApp> applications = copy(applicationEntities);
@@ -45,7 +45,7 @@ public class PhoneAppsViewModel extends ViewModel {
                             return 0;
                         }
                     });
-                    applications = applications.subList(0, 10);
+                    applications = applications.subList(0, Math.min(applications.size(), 10));
                     break;
                 case 2: //Top 10 most visited places
                     Collections.sort(applications, new Comparator<PhoneApp>() {
@@ -59,7 +59,7 @@ public class PhoneAppsViewModel extends ViewModel {
                             return 0;
                         }
                     });
-                    applications = applications.subList(0, 10);
+                    applications = applications.subList(0, Math.min(applications.size(), 10));
                     break;
                 case 3: //Top 10 favourite visited places
                     applications = new ArrayList<>();
@@ -76,7 +76,7 @@ public class PhoneAppsViewModel extends ViewModel {
                             return 0;
                         }
                     });
-                    applications = applications.subList(0, 10);
+                    applications = applications.subList(0, Math.min(applications.size(), 10));
                     break;
                 case 5: //All visited places
                     Collections.sort(applications, new Comparator<PhoneApp>() {
