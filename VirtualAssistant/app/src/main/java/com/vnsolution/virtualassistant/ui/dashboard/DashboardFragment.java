@@ -44,7 +44,7 @@ import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.StopPoint;
-import com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesViewModel;
+import com.vnsolution.virtualassistant.ui.travel.v1.TravelViewModel;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ import javax.inject.Inject;
 
 public class DashboardFragment extends Fragment implements Injectable {
     private DashboardViewModel dashboardViewModel;
-    private VisitedPlacesViewModel visitedPlaceViewModel;
+    private TravelViewModel travelViewModel;
 
     private List<Place> visitedPlaces = new ArrayList<>();
     private boolean isFirstRunning = true;
@@ -143,8 +143,8 @@ public class DashboardFragment extends Fragment implements Injectable {
             startWatchingPermissions();
         }
 
-        visitedPlaceViewModel = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
-        visitedPlaceViewModel.getVisitedPlaces().observe(getViewLifecycleOwner(), new Observer<List<Place>>() {
+        travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
+        travelViewModel.getVisitedPlaces().observe(getViewLifecycleOwner(), new Observer<List<Place>>() {
             @Override
             public void onChanged(@Nullable List<Place> places) {
                 visitedPlaces = places;

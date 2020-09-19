@@ -1,14 +1,11 @@
-package com.vnsolution.virtualassistant.ui.places.v1;
+package com.vnsolution.virtualassistant.ui.travel.v1;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
-import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
-import com.vnsolution.virtualassistant.db.entity.PlaceHistoryWithDetailEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
@@ -20,14 +17,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjection;
-
-public class VisitedPlacesViewModel extends ViewModel {
+public class TravelViewModel extends ViewModel {
     private PlaceDao placeDao;
     private Integer index = 1;
 
     @Inject
-    public VisitedPlacesViewModel(PlaceDao placeDao) {
+    public TravelViewModel(PlaceDao placeDao) {
         this.placeDao = placeDao;
     }
 

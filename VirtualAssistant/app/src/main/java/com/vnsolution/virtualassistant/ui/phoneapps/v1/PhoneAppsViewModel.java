@@ -22,6 +22,9 @@ public class PhoneAppsViewModel extends ViewModel {
     private Integer index = 1;
 
     @Inject
+    public DeviceManager deviceManager;
+
+    @Inject
     public PhoneAppsViewModel() {}
 
     public void setIndex(int index) {
@@ -29,7 +32,7 @@ public class PhoneAppsViewModel extends ViewModel {
     }
 
     public LiveData<List<PhoneApp>> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
-        LiveData<List<PhoneApp>> applicationsLiveData = (DeviceManager.getInstance().getPhoneApps(context, shouldGetSystemPackages, forceUpdate));
+        LiveData<List<PhoneApp>> applicationsLiveData = deviceManager.getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
         return Transformations.map(applicationsLiveData, applicationEntities -> {
             List<PhoneApp> applications = copy(applicationEntities);
             switch (index) {

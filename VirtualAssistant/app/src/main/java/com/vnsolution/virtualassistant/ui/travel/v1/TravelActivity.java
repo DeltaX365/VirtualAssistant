@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.places.v1;
+package com.vnsolution.virtualassistant.ui.travel.v1;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -29,14 +29,14 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class VisitedPlacesActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
-    private VisitedPlacesRecycleView recyclerView;
+public class TravelActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
+    private TravelRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private VisitedPlacesAdapter adapter;
+    private TravelAdapter adapter;
     private List<Place> places = new ArrayList<>();
-    private VisitedPlacesViewModel vm;
+    private TravelViewModel vm;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -47,7 +47,7 @@ public class VisitedPlacesActivity extends AppCompatActivity implements HasAndro
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_visited_places);
+        setContentView(R.layout.screen_travel);
 
         recyclerView = findViewById(R.id.list_visited_places);
         progressOverlay =  findViewById(R.id.progress_overlay);
@@ -61,7 +61,7 @@ public class VisitedPlacesActivity extends AppCompatActivity implements HasAndro
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter
-        adapter = new VisitedPlacesAdapter(this, places);
+        adapter = new TravelAdapter(this, places);
         recyclerView.setAdapter(adapter);
         recyclerView.setOnItemAction(this);
 
@@ -71,11 +71,11 @@ public class VisitedPlacesActivity extends AppCompatActivity implements HasAndro
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        vm = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
+        vm = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
         vm.getVisitedPlaces().observe(this, new Observer<List<Place>>() {
             @Override
             public void onChanged(@Nullable List<Place> places) {
-                VisitedPlacesActivity.this.places = places;
+                TravelActivity.this.places = places;
                 adapter.setData(places);
 
                 AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);

@@ -105,9 +105,9 @@ public class DeviceManager {
     public void getTop10MostCalls() {}
 
     public MutableLiveData<List<PhoneApp>> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
-        if (phoneAppsLiveData == null || forceUpdate) {
+        if (phoneAppsLiveData == null) {
             phoneAppsLiveData = new MutableLiveData<>();
-            getPhoneAppsAsync(context, shouldGetSystemPackages);
+            getPhoneAppsAsync(context, shouldGetSystemPackages, forceUpdate);
         }
         return phoneAppsLiveData;
     }
@@ -136,7 +136,7 @@ public class DeviceManager {
         return phoneContactsLiveData;
     }
 
-    private void getPhoneAppsAsync(Context context, boolean shouldGetSystemPackages) {
+    private void getPhoneAppsAsync(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneApp>> phoneAppListFuture = executor.submit(new Callable<List<PhoneApp>>() {
             @Override

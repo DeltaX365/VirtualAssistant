@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.places.v1.VisitedPlacesFragment">
+    tools:context=".ui.travel.v1.TravelFragment">
 
-    <com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesRecycleView
+    <com.vnsolution.virtualassistant.ui.travel.v1.TravelRecycleView
         android:id="@+id/list_visited_places"
         android:layout_width="0dp"
         android:layout_height="0dp"

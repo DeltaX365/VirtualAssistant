@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.places.v1;
+package com.vnsolution.virtualassistant.ui.travel.v1;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -30,23 +30,23 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class VisitedPlacesFragment extends Fragment implements Injectable, OnItemActionListerner {
+public class TravelFragment extends Fragment implements Injectable, OnItemActionListerner {
     public static final String ARG_SECTION_NUMBER = "section_number";
 
-    private VisitedPlacesRecycleView recyclerView;
+    private TravelRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private VisitedPlacesAdapter adapter;
+    private TravelAdapter adapter;
     private List<Place> places = new ArrayList<>();
-    private VisitedPlacesViewModel vm;
+    private TravelViewModel vm;
     private Context mContext;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
 
     @Inject
-    public VisitedPlacesFragment() {
+    public TravelFragment() {
         super();
     }
 
@@ -62,8 +62,8 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
         mContext = null;
     }
 
-    public static VisitedPlacesFragment newInstance(int index) {
-        VisitedPlacesFragment fragment = new VisitedPlacesFragment();
+    public static TravelFragment newInstance(int index) {
+        TravelFragment fragment = new TravelFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_SECTION_NUMBER, index);
         fragment.setArguments(bundle);
@@ -73,7 +73,7 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vm = ViewModelProviders.of(this, viewModelFactory).get(VisitedPlacesViewModel.class);
+        vm = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
         int index = 1;
         if (getArguments() != null) {
             index = getArguments().getInt(ARG_SECTION_NUMBER);
@@ -82,7 +82,7 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.screen_visited_places, container, false);
+        View root = inflater.inflate(R.layout.screen_travel, container, false);
 
         if (mContext != null) {
             recyclerView = root.findViewById(R.id.list_visited_places);
@@ -97,7 +97,7 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
             recyclerView.setLayoutManager(layoutManager);
 
             // specify an adapter
-            adapter = new VisitedPlacesAdapter(mContext, places);
+            adapter = new TravelAdapter(mContext, places);
             recyclerView.setAdapter(adapter);
             recyclerView.setOnItemAction(this);
 
@@ -110,7 +110,7 @@ public class VisitedPlacesFragment extends Fragment implements Injectable, OnIte
             vm.getVisitedPlaces().observe(getViewLifecycleOwner(), new Observer<List<Place>>() {
                 @Override
                 public void onChanged(@Nullable List<Place> places) {
-                    VisitedPlacesFragment.this.places = places;
+                    TravelFragment.this.places = places;
                     adapter.setData(places);
 
                     AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);

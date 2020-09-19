@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/navigation_places"
-        android:name="com.vnsolution.virtualassistant.ui.places.v1.VisitedPlacesFragment"
+        android:name="com.vnsolution.virtualassistant.ui.travel.v1.TravelFragment"
         android:label="@string/title_places"
-        tools:layout="@layout/screen_visited_places" />
+        tools:layout="@layout/screen_travel" />
 
     <fragment
         android:id="@+id/navigation_apps"

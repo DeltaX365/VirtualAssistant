@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.places.v1;
+package com.vnsolution.virtualassistant.ui.travel.v1;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,12 +15,12 @@ import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.List;
 
-public class VisitedPlacesAdapter extends RecyclerView.Adapter<VisitedPlacesViewHolder> {
+public class TravelAdapter extends RecyclerView.Adapter<TravelViewHolder> {
     private Context context;
     private List<Place> dataSource;
     private OnItemActionListerner onItemActionListerner;
 
-    public VisitedPlacesAdapter(Context context, List<Place> dataSource) {
+    public TravelAdapter(Context context, List<Place> dataSource) {
         this.context = context;
         this.dataSource = dataSource;
     }
@@ -37,16 +37,16 @@ public class VisitedPlacesAdapter extends RecyclerView.Adapter<VisitedPlacesView
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
-    public VisitedPlacesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TravelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.item_visited_place, parent, false);
-        VisitedPlacesViewHolder viewHolder = new VisitedPlacesViewHolder(view);
+        TravelViewHolder viewHolder = new TravelViewHolder(view);
         return viewHolder;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(@NonNull VisitedPlacesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TravelViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         Place place = dataSource.get(position);

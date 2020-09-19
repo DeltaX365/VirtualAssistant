@@ -41,9 +41,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.developer.DeveloperActivity" />
-        <activity android:name=".ui.places.v1.VisitedPlacesActivity" />
+        <activity android:name=".ui.travel.v1.TravelActivity" />
         <activity
-            android:name=".ui.places.v2.VisitedPlacesV2Activity"
+            android:name=".ui.travel.v2.TravelV2Activity"
             android:label="@string/title_places"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".ui.phoneapps.v1.PhoneAppsActivity" />
