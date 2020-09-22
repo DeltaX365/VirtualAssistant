@@ -1,0 +1,62 @@
+package com.vnsolution.virtual_assistant.ui.phone_apps.v1;
+
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.vnsolution.virtual_assistant.R;
+import com.vnsolution.virtual_assistant.ui.common.OnItemActionListerner;
+
+public class PhoneAppsViewHolder extends RecyclerView.ViewHolder {
+    public ImageView imageAppIcon;
+    public TextView textAppName;
+    public TextView textAppUsage;
+    public TextView textAppLastUsedTime;
+    public OnItemActionListerner onItemActionListerner;
+
+    public PhoneAppsViewHolder(View view) {
+        super(view);
+
+        imageAppIcon = view.findViewById(R.id.app_icon);
+        textAppName = view.findViewById(R.id.app_name);
+        textAppUsage = view.findViewById(R.id.app_usage);
+        textAppLastUsedTime = view.findViewById(R.id.app_last_used_time);
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            private GestureDetector gestureDetector = new GestureDetector(view.getContext(), new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    if (onItemActionListerner != null) {
+                        onItemActionListerner.onDoubleTap(view, getAdapterPosition());
+                    }
+                    return true;
+                }
+
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent e) {
+                    if (onItemActionListerner != null) {
+                        onItemActionListerner.onTap(view, getAdapterPosition());
+                    }
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    if (onItemActionListerner != null) {
+                        onItemActionListerner.onLongTap(view, getAdapterPosition());
+                    }
+                }
+            });
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return true;
+            }
+        });
+    }
+}

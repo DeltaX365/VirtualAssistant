@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.phonecalls.v1.CallLogsFragment">
+    tools:context=".ui.phone_calls.v1.CallLogsFragment">
 
-    <com.vnsolution.virtualassistant.ui.phonecalls.v1.CallLogsRecycleView
+    <com.vnsolution.virtual_assistant.ui.phone_calls.v1.CallLogsRecycleView
         android:id="@+id/list_call_logs"
         android:layout_width="0dp"
         android:layout_height="0dp"

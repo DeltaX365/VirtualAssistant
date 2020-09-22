@@ -1,20 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.travel.v1.TravelFragment">
+    tools:context=".ui.travel.TravelFragment">
 
-    <com.vnsolution.virtualassistant.ui.travel.v1.TravelRecycleView
-        android:id="@+id/list_visited_places"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <include layout="@layout/progress_overlay" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:text="Recently visited"
+            android:layout_margin="8dp"
+            />
+        <com.vnsolution.virtual_assistant.ui.travel.travel_recently_visited_places.TravelRecentlyVisitedPlacesRecycleView
+            android:id="@+id/list_recently_visited_places"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:text="Most visited"
+            android:layout_margin="8dp"
+            />
+        <com.vnsolution.virtual_assistant.ui.travel.travel_most_visited_places.TravelMostVisitedPlacesRecycleView
+            android:id="@+id/list_most_visited_places"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:text="Visited"
+            android:layout_margin="8dp"
+            />
+        <com.vnsolution.virtual_assistant.ui.travel.travel_categorized_visited_places.TravelCategorizedVisitedPlacesRecycleView
+            android:id="@+id/list_categorized_visited_places"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+        <include layout="@layout/progress_overlay" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+</ScrollView>
