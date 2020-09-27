@@ -1,0 +1,17 @@
+package com.vnsolution.virtualassistant.db.dao;
+
+import androidx.room.Dao;
+import androidx.room.Query;
+
+import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
+
+import java.util.List;
+
+@Dao
+public interface PhoneContactDao extends BaseDao<PhoneContactEntity> {
+    @Query("SELECT * FROM PhoneContact")
+    List<PhoneContactEntity> getAll();
+
+    @Query("DELETE FROM PhoneContact")
+    void reset();
+}

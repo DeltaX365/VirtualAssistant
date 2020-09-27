@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.vnsolution.virtual_assistant.ui.phone_contacts.PhoneContactsRecycleView
+    <com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsRecycleView
         android:id="@+id/list_contacts"
         android:layout_width="0dp"
         android:layout_height="0dp"

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.travel.TravelFragment">
+    tools:context="com.vnsolution.virtualassistant.ui.travel.TravelFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:text="Recently visited"
             android:layout_margin="8dp"
             />
-        <com.vnsolution.virtual_assistant.ui.travel.travel_recently_visited_places.TravelRecentlyVisitedPlacesRecycleView
+        <com.vnsolution.virtualassistant.ui.travel.components.travelrecentlyvisitedplaces.TravelRecentlyVisitedPlacesRecycleView
             android:id="@+id/list_recently_visited_places"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             android:text="Most visited"
             android:layout_margin="8dp"
             />
-        <com.vnsolution.virtual_assistant.ui.travel.travel_most_visited_places.TravelMostVisitedPlacesRecycleView
+        <com.vnsolution.virtualassistant.ui.travel.components.travelmostvisitedplaces.TravelMostVisitedPlacesRecycleView
             android:id="@+id/list_most_visited_places"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             android:text="Visited"
             android:layout_margin="8dp"
             />
-        <com.vnsolution.virtual_assistant.ui.travel.travel_categorized_visited_places.TravelCategorizedVisitedPlacesRecycleView
+        <com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesRecycleView
             android:id="@+id/list_categorized_visited_places"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
