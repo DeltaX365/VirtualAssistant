@@ -59,6 +59,9 @@ public class PlaceEntity extends AuditEntity {
     @ColumnInfo(name = "PhotoReference")
     public String photoReference;
 
+    @ColumnInfo(name = "Synced")
+    public int synced;
+
     @ColumnInfo(name = "StreetNumber")
     public String streetNumber;
 

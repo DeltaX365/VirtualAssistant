@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant.di;
 import android.app.Application;
 
 import com.vnsolution.virtualassistant.VirtualAssistantApp;
+import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingWorker;
 
 import javax.inject.Singleton;
 
@@ -28,4 +29,5 @@ public interface AppComponent {
         AppComponent build();
     }
     void inject(VirtualAssistantApp virtualAssistantApp);
+    void inject(StopTrackingWorker stopTrackingWorker);
 }

@@ -2,8 +2,10 @@ package com.vnsolution.virtualassistant;
 
 import android.app.Application;
 
+import com.vnsolution.virtualassistant.di.AppComponent;
 import com.vnsolution.virtualassistant.di.AppInjector;
 import com.vnsolution.virtualassistant.service.AppService;
+import com.vnsolution.virtualassistant.service.AppWorkManager;
 
 import javax.inject.Inject;
 
@@ -15,11 +17,14 @@ public class VirtualAssistantApp extends Application implements HasAndroidInject
     @Inject
     DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
+    public AppComponent appComponent;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        AppInjector.init(this);
+        appComponent = AppInjector.init(this);
         new AppService(getApplicationContext()).run();
+        new AppWorkManager(getApplicationContext()).run();
     }
 
     @Override

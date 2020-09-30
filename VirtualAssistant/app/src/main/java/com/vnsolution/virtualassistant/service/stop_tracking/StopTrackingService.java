@@ -214,8 +214,8 @@ public class StopTrackingService extends Service {
                     checkIn(true);
                     break;
                 case StopTracking.INTENT_ACTION_CHECK_IN_SCHEDULE:
-                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Schedule check in.");
-                    checkIn(false);
+//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Schedule check in.");
+//                    checkIn(false);
                     break;
 //                case Constants.INTENT_ACTION_LOCATION_UPDATED:
 //                    AppService.sendNotification(this, "EVENT TRIGGER", "Update location.");
@@ -675,6 +675,7 @@ public class StopTrackingService extends Service {
         double latitude = Math.round(address.getLatitude() * Math.pow(10, 7)) / Math.pow(10, 7);
         placeEntity.latitude = latitude;
         placeEntity.longitude = longitude;
+        placeEntity.synced = 0;
         placeEntity.createdDate = new Date();
         return placeEntity;
     }
@@ -719,6 +720,7 @@ public class StopTrackingService extends Service {
             }
         }
 
+        placeEntity.synced = 1;
         placeEntity.createdDate = new Date();
         return placeEntity;
     }
@@ -934,6 +936,7 @@ public class StopTrackingService extends Service {
         placeEntity.id = UUID.randomUUID().toString();
         placeEntity.latitude = stopPoint.latitude;
         placeEntity.longitude = stopPoint.longitude;
+        placeEntity.synced = 0;
         placeEntity.createdDate = new Date();
         return placeEntity;
     }

@@ -24,6 +24,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
     @Query("SELECT p.* " +
             "FROM Place as p " +
             "LEFT JOIN PlaceHistory as ph on ph.PlaceId = p.Id " +
+            "GROUP BY p.GGPlaceId " +
             "ORDER BY ph.EnterTime DESC " +
             "LIMIT 0, 10")
     LiveData<List<PlaceWithHistoryDetailEntity>> getRecentlyVisitedPlaces();
@@ -39,6 +40,9 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "WHERE ph.PlaceId = p.Id " +
             "ORDER BY ph.TotalVisitedTime DESC")
     LiveData<List<PlaceWithHistoryDetailEntity>> getMostVisitedPlaces();
+
+    @Query("SELECT * FROM Place WHERE Synced = 0")
+    List<PlaceEntity> getUnsyncedPlaces();
 
     @Transaction
     @Query("SELECT count(*) AS TotalPlace, count(DISTINCT AdministrativeAreaLevel1) AS TotalCity, count(DISTINCT Country) AS TotalCountry, " +

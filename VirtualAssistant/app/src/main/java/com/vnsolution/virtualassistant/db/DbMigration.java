@@ -219,4 +219,13 @@ public class DbMigration {
             database.execSQL(addColumnPhotoReferenceToPlaceTableSql);
         }
     };
+
+    public static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Add column Synced to Place table
+            String addColumnSyncedToPlaceTableSql = "ALTER TABLE Place ADD COLUMN Synced INTEGER NOT NULL DEFAULT 0";
+            database.execSQL(addColumnSyncedToPlaceTableSql);
+        }
+    };
 }

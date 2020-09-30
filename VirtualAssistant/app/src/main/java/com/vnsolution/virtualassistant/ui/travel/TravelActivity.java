@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -48,6 +49,7 @@ public class TravelActivity extends AppCompatActivity {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
+    private TextView tvTotalVisitedPlace;
     private TravelRecycleView travelRecyclerView;
     private TravelAdapter travelAdapter;
 
@@ -87,6 +89,8 @@ public class TravelActivity extends AppCompatActivity {
             }
         });
 
+        tvTotalVisitedPlace = findViewById(R.id.total_visited_places);
+
         travelRecyclerView = findViewById(R.id.list_visited_places);
         travelRecyclerView.setHasFixedSize(true);
         travelRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -99,6 +103,8 @@ public class TravelActivity extends AppCompatActivity {
             public void onChanged(@Nullable List<Place> places) {
                 visitedPlaces = places;
                 presentVisitedPlaces(visitedPlaces);
+                String total = visitedPlaces.size() + " " + ((visitedPlaces.size() == 1)? "visited place" : "visited places");
+                tvTotalVisitedPlace.setText(total);
                 travelAdapter.setData(visitedPlaces);
             }
         });

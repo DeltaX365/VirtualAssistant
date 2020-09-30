@@ -17,9 +17,10 @@ import dagger.android.AndroidInjection;
 import dagger.android.support.AndroidSupportInjection;
 
 public class AppInjector {
-    public static void init(VirtualAssistantApp virtualAssistantApp) {
-        DaggerAppComponent.builder().application(virtualAssistantApp)
-                .build().inject(virtualAssistantApp);
+    public static AppComponent init(VirtualAssistantApp virtualAssistantApp) {
+        AppComponent appComponent = DaggerAppComponent.builder().application(virtualAssistantApp)
+                .build();
+        appComponent.inject(virtualAssistantApp);
         virtualAssistantApp.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class AppInjector {
 
             }
         });
+        return appComponent;
     }
 
     private static void handleActivity(Activity activity) {
