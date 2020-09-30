@@ -52,7 +52,7 @@ public class TravelRecentlyVisitedPlacesAdapter extends RecyclerView.Adapter<Tra
         // - replace the contents of the view with that element
         Place place = dataSource.get(position);
         if (place.photoReference != null && !place.photoReference.isEmpty()) {
-            String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=80&photoreference=" + place.photoReference + "&key=" + Constants.GM_API_KEY;
+            String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference=" + place.photoReference + "&key=" + Constants.GM_API_KEY;
             Glide.with(context).load(photoUri).into(holder.ivPlaceIcon);
         }
 
