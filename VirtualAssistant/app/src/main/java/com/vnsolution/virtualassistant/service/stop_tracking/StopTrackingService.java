@@ -706,6 +706,7 @@ public class StopTrackingService extends Service {
         placeEntity.types = join(", ", candidate.types);
         placeEntity.icon = candidate.icon;
         placeEntity.rating = candidate.rating;
+        placeEntity.photoReference = (candidate.photos != null && candidate.photos.size() > 0)? candidate.photos.get(0).photoReference : "";
 
         if (candidate.formattedAddress != null && !candidate.formattedAddress.isEmpty()) {
             String[] splittedAddress = candidate.formattedAddress.split(",");

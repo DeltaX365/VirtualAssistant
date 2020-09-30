@@ -11,6 +11,7 @@ public class Place {
     public String types;
     public double latitude;
     public double longitude;
+    public String photoReference;
     public Date createdDate;
     public List<PlaceHistory> placeHistories;
 }

@@ -21,7 +21,7 @@ import javax.inject.Inject;
 
 public class TravelViewModel extends ViewModel {
     private PlaceDao placeDao;
-    private Integer index = 1;
+    private Integer index = 5; //filter all visited places
 
     @Inject
     public TravelViewModel(PlaceDao placeDao) {
@@ -112,6 +112,7 @@ public class TravelViewModel extends ViewModel {
         place.types = placeEntity.place.types;
         place.latitude = placeEntity.place.latitude;
         place.longitude = placeEntity.place.longitude;
+        place.photoReference = placeEntity.place.photoReference;
         place.createdDate = placeEntity.place.createdDate;
         place.placeHistories = new ArrayList<>();
         for (PlaceHistoryEntity placeHistoryEntity: placeEntity.placeHistories) {

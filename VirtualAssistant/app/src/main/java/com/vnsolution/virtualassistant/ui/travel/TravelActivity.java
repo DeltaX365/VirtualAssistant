@@ -1,60 +1,62 @@
 package com.vnsolution.virtualassistant.ui.travel;
 
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.Location;
 import android.os.Bundle;
-import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.widget.FrameLayout;
+import android.os.Looper;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.model.Place;
+import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelAdapter;
+import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelRecycleView;
+import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.db.entity.PlaceSummary;
-import com.vnsolution.virtualassistant.model.Place;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
-import com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesRecycleView;
-import com.vnsolution.virtualassistant.ui.travel.components.travelmostvisitedplaces.TravelMostVisitedPlacesAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelmostvisitedplaces.TravelMostVisitedPlacesRecycleView;
-import com.vnsolution.virtualassistant.ui.travel.components.travelrecentlyvisitedplaces.TravelRecentlyVisitedPlacesAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelrecentlyvisitedplaces.TravelRecentlyVisitedPlacesRecycleView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasAndroidInjector;
+public class TravelActivity extends AppCompatActivity {
+    private MapView mMapView;
+    private GoogleMap mGoogleMap;
 
-public class TravelActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
-    private TravelRecentlyVisitedPlacesRecycleView recentlyVisitedPlacesRecyclerView;
-    private TravelRecentlyVisitedPlacesAdapter recentlyVisitedPlacesAdapter;
-    private RecyclerView.LayoutManager recentlyVisitedPlacesLayoutManager;
-    private List<Place> recentlyVisitedPlaces = new ArrayList<>();
+    private TravelRecycleView travelRecyclerView;
+    private TravelAdapter travelAdapter;
 
-    private TravelMostVisitedPlacesRecycleView mostVisitedPlacesRecyclerView;
-    private TravelMostVisitedPlacesAdapter mostVisitedPlacesAdapter;
-    private RecyclerView.LayoutManager mostVisitedPlacesLayoutManager;
-    private List<Place> mostVisitedPlaces = new ArrayList<>();
+    private TravelViewModel travelViewModel;
+    private List<Place> visitedPlaces = new ArrayList<>();
 
-    private TravelCategorizedVisitedPlacesRecycleView categorizedVisitedPlacesRecyclerView;
-    private TravelCategorizedVisitedPlacesAdapter categorizedVisitedPlacesAdapter;
-    private RecyclerView.LayoutManager categorizedVisitedPlacesLayoutManager;
-    private PlaceSummary placeSummary;
-
-    private FrameLayout progressOverlay;
-    private TravelViewModel vm;
-
-    @Inject
-    public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
+    private LocationCallback mLocationCallback;
+    private FusedLocationProviderClient fusedLocationClient;
+    private Location mCurrentLocation;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
@@ -62,160 +64,132 @@ public class TravelActivity extends AppCompatActivity implements HasAndroidInjec
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vm = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
-        setupView();
-    }
-
-    private void setupView() {
         setContentView(R.layout.screen_travel);
-        progressOverlay = findViewById(R.id.progress_overlay);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        setupRecentlyVisitedPlacesView();
-        setupMostVisitedPlacesView();
-        setupCategorizedVisitedPlacesView();
-    }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mMapView = (MapView) findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.onResume(); // needed to get the map to display immediately
+        try {
+            MapsInitializer.initialize(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap mMap) {
+                mGoogleMap = mMap;
+                mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+                mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                enableMyLocation();
+            }
+        });
 
-    private void setupRecentlyVisitedPlacesView() {
-        recentlyVisitedPlacesRecyclerView = findViewById(R.id.list_recently_visited_places);
-        recentlyVisitedPlacesRecyclerView.setHasFixedSize(true);
+        travelRecyclerView = findViewById(R.id.list_visited_places);
+        travelRecyclerView.setHasFixedSize(true);
+        travelRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        travelAdapter = new TravelAdapter(this, visitedPlaces);
+        travelRecyclerView.setAdapter(travelAdapter);
 
-        recentlyVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        recentlyVisitedPlacesRecyclerView.setLayoutManager(recentlyVisitedPlacesLayoutManager);
-
-        recentlyVisitedPlacesAdapter = new TravelRecentlyVisitedPlacesAdapter(this, recentlyVisitedPlaces);
-        recentlyVisitedPlacesRecyclerView.setAdapter(recentlyVisitedPlacesAdapter);
-        recentlyVisitedPlacesRecyclerView.setOnItemAction(this);
-
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressOverlay.setAnimation(inAnimation);
-        progressOverlay.setVisibility(View.VISIBLE);
-
-        vm.getRecentlyVisitedPlaces().observe(this, new Observer<List<Place>>() {
+        travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
+        travelViewModel.getPlaces().observe(this, new Observer<List<Place>>() {
             @Override
             public void onChanged(@Nullable List<Place> places) {
-                TravelActivity.this.recentlyVisitedPlaces = places;
-                recentlyVisitedPlacesAdapter.setData(places);
-
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                progressOverlay.setAnimation(outAnimation);
-                progressOverlay.setVisibility(View.INVISIBLE);
+                visitedPlaces = places;
+                presentVisitedPlaces(visitedPlaces);
+                travelAdapter.setData(visitedPlaces);
             }
         });
+
+        startWatchingPermissions();
     }
 
-    private void setupMostVisitedPlacesView() {
-        mostVisitedPlacesRecyclerView = findViewById(R.id.list_most_visited_places);
-        mostVisitedPlacesRecyclerView.setHasFixedSize(true);
+    @SuppressLint("MissingPermission")
+    private void enableMyLocation() {
+        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_LOCATION)) {
+            return;
+        }
+        mGoogleMap.setMyLocationEnabled(true);
+    }
 
-        mostVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mostVisitedPlacesRecyclerView.setLayoutManager(mostVisitedPlacesLayoutManager);
-
-        mostVisitedPlacesAdapter = new TravelMostVisitedPlacesAdapter(this, mostVisitedPlaces);
-        mostVisitedPlacesRecyclerView.setAdapter(mostVisitedPlacesAdapter);
-        mostVisitedPlacesRecyclerView.setOnItemAction(this);
-
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressOverlay.setAnimation(inAnimation);
-        progressOverlay.setVisibility(View.VISIBLE);
-
-        vm.getMostVisitedPlaces().observe(this, new Observer<List<Place>>() {
+    private void startWatchingPermissions() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(StopTracking.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
-            public void onChanged(@Nullable List<Place> places) {
-                TravelActivity.this.mostVisitedPlaces = places;
-                mostVisitedPlacesAdapter.setData(places);
-
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                progressOverlay.setAnimation(outAnimation);
-                progressOverlay.setVisibility(View.INVISIBLE);
+            public void onReceive(Context context, Intent intent) {
+                enableMyLocation();
+                requestLocationUpdates();
             }
-        });
+        }, filter);
     }
 
-    private void setupCategorizedVisitedPlacesView() {
-        categorizedVisitedPlacesRecyclerView = findViewById(R.id.list_categorized_visited_places);
-        categorizedVisitedPlacesRecyclerView.setHasFixedSize(true);
-
-        categorizedVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        categorizedVisitedPlacesRecyclerView.setLayoutManager(categorizedVisitedPlacesLayoutManager);
-
-        categorizedVisitedPlacesAdapter = new TravelCategorizedVisitedPlacesAdapter(this, placeSummary);
-        categorizedVisitedPlacesRecyclerView.setAdapter(categorizedVisitedPlacesAdapter);
-        categorizedVisitedPlacesRecyclerView.setOnItemAction(this);
-
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressOverlay.setAnimation(inAnimation);
-        progressOverlay.setVisibility(View.VISIBLE);
-
-        vm.getPlaceSummary().observe(this, new Observer<PlaceSummary>() {
+    @SuppressLint("MissingPermission")
+    private void requestLocationUpdates() {
+        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_LOCATION)) {
+            return;
+        }
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(StopTracking.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(StopTracking.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationCallback = new LocationCallback() {
             @Override
-            public void onChanged(@Nullable PlaceSummary placeSummary) {
-                TravelActivity.this.placeSummary = placeSummary;
-                categorizedVisitedPlacesAdapter.setData(placeSummary);
-
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                progressOverlay.setAnimation(outAnimation);
-                progressOverlay.setVisibility(View.INVISIBLE);
+            public void onLocationResult(LocationResult locationResult) {
+                mCurrentLocation = locationResult.getLastLocation();
+                updateLocation();
             }
-        });
+        };
+        fusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.getMainLooper());
+    }
+
+    private void updateLocation() {
+        if(mCurrentLocation != null && mGoogleMap != null) {
+            LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f));
+        }
+    }
+
+    private void removeLocationUpdates() {
+        if (mLocationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(mLocationCallback);
+        }
+    }
+
+    private void presentVisitedPlaces(List<Place> places) {
+        if(mGoogleMap != null) {
+            for(Place place: places) {
+                LatLng latLng = new LatLng(place.latitude, place.longitude);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
+                String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
+                markerOptions.title(placeName + " (" + placeAddress + ")");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                mGoogleMap.addMarker(markerOptions);
+            }
+        }
     }
 
     @Override
-    public void onTap(View view, int position) {
-//        String message = "";
-//        if (recentlyVisitedPlaces != null && position >= 0 && position <= recentlyVisitedPlaces.size() - 1) {
-//            Place place = recentlyVisitedPlaces.get(position);
-//            message += "Name: " + place.placeName + "\n";
-//            message += "Address: " + place.formattedAddress + "\n";
-//            message += "Location: (" + place.latitude + ", " + place.longitude + ")" + "\n\n";
-//            message += "History:" + "\n";
-//            int index = 0;
-//            for(PlaceHistory placeHistory: place.placeHistories) {
-//                message += index + ". " + "\n";
-//                message += "Enter: " + placeHistory.enterTime + "\n";
-//                message += "Exist: " + placeHistory.existTime + "\n";
-//                index++;
-//            }
-//        }
-//        if (!message.isEmpty()) {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//            builder.setTitle("Item detail");
-//            builder.setMessage(message);
-//            builder.setCancelable(true);
-//            builder.setNeutralButton("Ok", null);
-//            builder.show();
-//        }
-        Intent intent = new Intent(this, TravelSummaryActivity.class);
-        startActivity(intent);
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+        requestLocationUpdates();
     }
 
     @Override
-    public void onLongTap(View view, int position) {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Are you sure?");
-//        builder.setMessage("Removed item will never be restored. Tap Yes to remove this item.");
-//        builder.setCancelable(false);
-//        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//            }
-//        });
-//        builder.setNegativeButton("No", null);
-//        builder.show();
+    protected void onPause() {
+        super.onPause();
+        mMapView.onPause();
+        removeLocationUpdates();
     }
 
     @Override
-    public void onDoubleTap(View view, int position) {
-    }
-
-    @Override
-    public AndroidInjector<Object> androidInjector() {
-        return dispatchingAndroidInjector;
+    protected void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
     }
 }

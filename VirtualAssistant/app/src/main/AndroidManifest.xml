@@ -44,15 +44,15 @@
             </intent-filter>
         </activity>
         <activity android:name="com.vnsolution.virtualassistant.ui.developer.DeveloperActivity" />
-        <activity android:name="com.vnsolution.virtualassistant.ui.travel.TravelActivity" />
+        <activity android:name="com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity" />
         <activity
             android:name="com.vnsolution.virtualassistant.ui.travel.TravelV2Activity"
             android:label="@string/title_places"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.vnsolution.virtualassistant.ui.travel.TravelSummaryActivity"
-            android:label="@string/title_activity_travel_summary"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name="com.vnsolution.virtualassistant.ui.travel.TravelActivity"
+            android:label="@string/title_activity_travel"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsActivity" />
         <activity
             android:name="com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity"

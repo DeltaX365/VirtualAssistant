@@ -210,4 +210,13 @@ public class DbMigration {
             database.execSQL(addColumnCountryToPlaceTableSql);
         }
     };
+
+    public static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Add column PhotoReference to Place table
+            String addColumnPhotoReferenceToPlaceTableSql = "ALTER TABLE Place ADD COLUMN PhotoReference TEXT";
+            database.execSQL(addColumnPhotoReferenceToPlaceTableSql);
+        }
+    };
 }

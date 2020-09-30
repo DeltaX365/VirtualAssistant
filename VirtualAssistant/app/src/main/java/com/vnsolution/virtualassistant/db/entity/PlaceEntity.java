@@ -56,6 +56,9 @@ public class PlaceEntity extends AuditEntity {
     @ColumnInfo(name = "Vicinity")
     public String vicinity;
 
+    @ColumnInfo(name = "PhotoReference")
+    public String photoReference;
+
     @ColumnInfo(name = "StreetNumber")
     public String streetNumber;
 

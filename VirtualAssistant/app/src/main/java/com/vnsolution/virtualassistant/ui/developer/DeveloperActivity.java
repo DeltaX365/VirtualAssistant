@@ -14,7 +14,7 @@ import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService
 import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
-import com.vnsolution.virtualassistant.ui.travel.TravelActivity;
+import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
 
@@ -45,7 +45,7 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
         btnShowVisitedPlaces.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DeveloperActivity.this, TravelActivity.class);
+                Intent intent = new Intent(DeveloperActivity.this, TravelDashboardActivity.class);
                 startActivity(intent);
             }
         });

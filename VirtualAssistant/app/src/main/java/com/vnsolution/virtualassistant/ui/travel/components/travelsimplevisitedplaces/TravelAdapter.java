@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
@@ -39,7 +40,7 @@ public class TravelAdapter extends RecyclerView.Adapter<TravelViewHolder> {
     @Override
     public TravelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_visited_place, parent, false);
+        View view = inflater.inflate(R.layout.item_place_detail, parent, false);
         TravelViewHolder viewHolder = new TravelViewHolder(view);
         return viewHolder;
     }
@@ -50,7 +51,10 @@ public class TravelAdapter extends RecyclerView.Adapter<TravelViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         Place place = dataSource.get(position);
-        Glide.with(context).load(place.icon).into(holder.ivPlaceIcon);
+        if (place.photoReference != null && !place.photoReference.isEmpty()) {
+            String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=80&photoreference=" + place.photoReference + "&key=" + Constants.GM_API_KEY;
+            Glide.with(context).load(photoUri).into(holder.ivPlaceIcon);
+        }
 
         String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
         holder.textPlaceName.setText(placeName);

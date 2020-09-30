@@ -80,7 +80,7 @@ public class TravelFragment extends Fragment implements Injectable, OnItemAction
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.screen_travel, container, false);
+        View root = inflater.inflate(R.layout.screen_travel_dashboard, container, false);
 
 //        if (mContext != null) {
 //            recyclerView = root.findViewById(R.id.list_categorized_visited_places);
