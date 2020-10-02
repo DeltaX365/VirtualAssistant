@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.db.entity.PlaceSummary;
 import com.vnsolution.virtualassistant.model.Place;
+import com.vnsolution.virtualassistant.model.PlaceType;
+import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 import com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesAdapter;
 import com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesRecycleView;
@@ -52,12 +54,16 @@ public class TravelDashboardActivity extends AppCompatActivity implements HasAnd
 
     private FrameLayout progressOverlay;
     private TravelViewModel vm;
+    private List<PlaceType> placeTypes = new ArrayList<>();
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    public StopTrackingManager stopTrackingManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,7 @@ public class TravelDashboardActivity extends AppCompatActivity implements HasAnd
     private void setupView() {
         setContentView(R.layout.screen_travel_dashboard);
         progressOverlay = findViewById(R.id.progress_overlay);
+        placeTypes = stopTrackingManager.getPlaceTypes();
 
         setupRecentlyVisitedPlacesView();
         setupMostVisitedPlacesView();
@@ -82,7 +89,7 @@ public class TravelDashboardActivity extends AppCompatActivity implements HasAnd
         recentlyVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentlyVisitedPlacesRecyclerView.setLayoutManager(recentlyVisitedPlacesLayoutManager);
 
-        recentlyVisitedPlacesAdapter = new TravelRecentlyVisitedPlacesAdapter(this, recentlyVisitedPlaces);
+        recentlyVisitedPlacesAdapter = new TravelRecentlyVisitedPlacesAdapter(this, recentlyVisitedPlaces, placeTypes);
         recentlyVisitedPlacesRecyclerView.setAdapter(recentlyVisitedPlacesAdapter);
         recentlyVisitedPlacesRecyclerView.setOnItemAction(this);
 
@@ -112,7 +119,7 @@ public class TravelDashboardActivity extends AppCompatActivity implements HasAnd
         mostVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mostVisitedPlacesRecyclerView.setLayoutManager(mostVisitedPlacesLayoutManager);
 
-        mostVisitedPlacesAdapter = new TravelMostVisitedPlacesAdapter(this, mostVisitedPlaces);
+        mostVisitedPlacesAdapter = new TravelMostVisitedPlacesAdapter(this, mostVisitedPlaces, placeTypes);
         mostVisitedPlacesRecyclerView.setAdapter(mostVisitedPlacesAdapter);
         mostVisitedPlacesRecyclerView.setOnItemAction(this);
 

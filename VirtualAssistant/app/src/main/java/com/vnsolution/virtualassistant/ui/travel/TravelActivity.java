@@ -26,6 +26,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.model.Place;
+import com.vnsolution.virtualassistant.model.PlaceType;
+import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
 import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelAdapter;
 import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelRecycleView;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
@@ -55,6 +57,7 @@ public class TravelActivity extends AppCompatActivity {
 
     private TravelViewModel travelViewModel;
     private List<Place> visitedPlaces = new ArrayList<>();
+    private List<PlaceType> placeTypes = new ArrayList<>();
 
     private LocationCallback mLocationCallback;
     private FusedLocationProviderClient fusedLocationClient;
@@ -62,6 +65,9 @@ public class TravelActivity extends AppCompatActivity {
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    public StopTrackingManager stopTrackingManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +100,8 @@ public class TravelActivity extends AppCompatActivity {
         travelRecyclerView = findViewById(R.id.list_visited_places);
         travelRecyclerView.setHasFixedSize(true);
         travelRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        travelAdapter = new TravelAdapter(this, visitedPlaces);
+        placeTypes = stopTrackingManager.getPlaceTypes();
+        travelAdapter = new TravelAdapter(this, visitedPlaces, placeTypes);
         travelRecyclerView.setAdapter(travelAdapter);
 
         travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);

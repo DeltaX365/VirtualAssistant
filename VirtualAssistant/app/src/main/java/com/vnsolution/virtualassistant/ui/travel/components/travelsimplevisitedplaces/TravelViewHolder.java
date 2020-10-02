@@ -12,19 +12,23 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 public class TravelViewHolder extends RecyclerView.ViewHolder {
-    public ImageView ivPlaceIcon;
+    public ImageView ivPlacePhoto;
     public TextView textPlaceName;
     public TextView textPlaceAddress;
-    public TextView textPlaceTypes;
+    public TextView textPlaceType;
+    public TextView textPlaceTotalVisit;
+    public TextView textPlaceEnterDate;
     public OnItemActionListerner onItemActionListerner;
 
     public TravelViewHolder(View view) {
         super(view);
 
-        ivPlaceIcon = view.findViewById(R.id.place_icon);
+        ivPlacePhoto = view.findViewById(R.id.place_photo);
         textPlaceName = view.findViewById(R.id.place_name);
         textPlaceAddress = view.findViewById(R.id.place_address);
-        textPlaceTypes = view.findViewById(R.id.place_types);
+        textPlaceType = view.findViewById(R.id.place_type);
+        textPlaceTotalVisit = view.findViewById(R.id.place_total_visit);
+        textPlaceEnterDate = view.findViewById(R.id.place_enter_date);
 
         view.setOnTouchListener(new View.OnTouchListener() {
 

@@ -8,43 +8,46 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="20dp"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceHeadline6"
             android:text="Recently visited"
-            android:layout_margin="8dp"
+            android:textStyle="bold"
             />
         <com.vnsolution.virtualassistant.ui.travel.components.travelrecentlyvisitedplaces.TravelRecentlyVisitedPlacesRecycleView
             android:id="@+id/list_recently_visited_places"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceHeadline6"
             android:text="Most visited"
-            android:layout_margin="8dp"
+            android:textStyle="bold"
+            android:layout_marginTop="40dp"
             />
         <com.vnsolution.virtualassistant.ui.travel.components.travelmostvisitedplaces.TravelMostVisitedPlacesRecycleView
             android:id="@+id/list_most_visited_places"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceHeadline6"
             android:text="Visited"
-            android:layout_margin="8dp"
+            android:textStyle="bold"
+            android:layout_marginTop="40dp"
             />
         <com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesRecycleView
             android:id="@+id/list_categorized_visited_places"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             />
         <include layout="@layout/progress_overlay" />
 

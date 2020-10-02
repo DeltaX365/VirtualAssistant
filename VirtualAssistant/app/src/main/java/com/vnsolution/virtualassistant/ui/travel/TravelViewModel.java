@@ -21,7 +21,7 @@ import javax.inject.Inject;
 
 public class TravelViewModel extends ViewModel {
     private PlaceDao placeDao;
-    private Integer index = 5; //filter all visited places
+    private Integer index = 0; //filter all visited places
 
     @Inject
     public TravelViewModel(PlaceDao placeDao) {

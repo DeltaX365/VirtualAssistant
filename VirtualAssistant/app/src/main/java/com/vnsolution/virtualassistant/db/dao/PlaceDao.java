@@ -17,7 +17,10 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
     LiveData<List<PlaceEntity>> getAll();
 
     @Transaction
-    @Query("SELECT * FROM Place")
+    @Query("SELECT p.* " +
+            "FROM Place as p " +
+            "LEFT JOIN PlaceHistory as ph on ph.PlaceId = p.Id " +
+            "ORDER BY ph.EnterTime DESC")
     LiveData<List<PlaceWithHistoryDetailEntity>> getPlaceWithHistories();
 
     @Transaction

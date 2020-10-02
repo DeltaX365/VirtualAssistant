@@ -214,8 +214,8 @@ public class StopTrackingService extends Service {
                     checkIn(true);
                     break;
                 case StopTracking.INTENT_ACTION_CHECK_IN_SCHEDULE:
-//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Schedule check in.");
-//                    checkIn(false);
+                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Schedule check in.");
+                    checkIn(false);
                     break;
 //                case Constants.INTENT_ACTION_LOCATION_UPDATED:
 //                    AppService.sendNotification(this, "EVENT TRIGGER", "Update location.");

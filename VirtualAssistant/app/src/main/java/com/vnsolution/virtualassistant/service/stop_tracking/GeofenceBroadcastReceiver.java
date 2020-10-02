@@ -45,10 +45,10 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             geofencingStatus = "Enter geofence.";
             action = StopTracking.INTENT_ACTION_CHECK_IN;
         }
-        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ) { //Check-in again
-            geofencingStatus = "Dwell geofence.";
-            action = StopTracking.INTENT_ACTION_CHECK_IN_SCHEDULE;
-        }
+//        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ) { //Check-in again
+//            geofencingStatus = "Dwell geofence.";
+//            action = StopTracking.INTENT_ACTION_CHECK_IN_SCHEDULE;
+//        }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) { //Check-out
             geofencingStatus = "Exist geofence.";
             action = StopTracking.INTENT_ACTION_CHECK_OUT;
