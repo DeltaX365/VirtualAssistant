@@ -3,12 +3,16 @@ package com.vnsolution.virtualassistant.util;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
+import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
 
 public class NotificationUtils {
     private static final String NOTIFICATION_CHANNEL_ID = "com.vnsolution.virtualassistant.notification";
@@ -17,7 +21,7 @@ public class NotificationUtils {
      * Posts a notification in the notification bar when a transition is detected.
      * If the user clicks the notification, control goes to the MainActivity.
      */
-    public static void sendNotification(Context context, String title, String message) {
+    public static void sendNotification(Context context, String title, String message, PlaceEntity visitedPlace) {
         // Get an instance of the Notification manager
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -68,6 +72,15 @@ public class NotificationUtils {
 
         // Dismiss notification once the user touches it.
         builder.setAutoCancel(true);
+
+        // Test for notification actions.
+        if (visitedPlace != null) {
+            Intent travelEditIntent = new Intent(context, TravelEditActivity.class);
+            travelEditIntent.putExtra("longitude", visitedPlace.longitude);
+            travelEditIntent.putExtra("latitude", visitedPlace.latitude);
+            PendingIntent travelEditPendingIntent = PendingIntent.getActivity(context, 0, travelEditIntent, 0);
+            builder.addAction(android.R.drawable.ic_menu_view, "VIEW", travelEditPendingIntent);
+        }
 
         // Issue the notification
         mNotificationManager.notify((int) (Math.random() * 999999), builder.build());

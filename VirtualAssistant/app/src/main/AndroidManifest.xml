@@ -50,8 +50,12 @@
             android:label="@string/title_places"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.vnsolution.virtualassistant.ui.travel.TravelActivity"
+            android:name="com.vnsolution.virtualassistant.ui.travel.TravelHistoryActivity"
             android:label="@string/title_activity_travel"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.vnsolution.virtualassistant.ui.travel.TravelEditActivity"
+            android:label="@string/title_activity_travel_edit"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsActivity" />
         <activity

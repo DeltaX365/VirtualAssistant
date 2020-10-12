@@ -197,7 +197,7 @@ public class TravelDashboardActivity extends AppCompatActivity implements HasAnd
 //            builder.setNeutralButton("Ok", null);
 //            builder.show();
 //        }
-        Intent intent = new Intent(this, TravelActivity.class);
+        Intent intent = new Intent(this, TravelHistoryActivity.class);
         startActivity(intent);
     }
 

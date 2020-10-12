@@ -23,14 +23,14 @@ public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
             LocationResult result = LocationResult.extractResult(intent);
             if (result != null) {
                 Location location = result.getLastLocation();
-                Intent serviceIntent = new Intent(context, StopTrackingService.class);
-
-                serviceIntent.setAction(StopTracking.INTENT_ACTION_LOCATION_UPDATED);
-                serviceIntent.putExtra("Provider", location.getProvider());
-                serviceIntent.putExtra("Longitude", location.getLongitude());
-                serviceIntent.putExtra("Latitude", location.getLatitude());
-
-                ContextCompat.startForegroundService(context, serviceIntent);
+//                Intent serviceIntent = new Intent(context, StopTrackingService.class);
+//
+//                serviceIntent.setAction(StopTracking.INTENT_ACTION_LOCATION_UPDATED);
+//                serviceIntent.putExtra("Provider", location.getProvider());
+//                serviceIntent.putExtra("Longitude", location.getLongitude());
+//                serviceIntent.putExtra("Latitude", location.getLatitude());
+//
+//                ContextCompat.startForegroundService(context, serviceIntent);
             }
         }
     }

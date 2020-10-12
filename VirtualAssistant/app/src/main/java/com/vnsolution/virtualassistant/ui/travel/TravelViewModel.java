@@ -1,9 +1,13 @@
 package com.vnsolution.virtualassistant.ui.travel;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.vnsolution.virtualassistant.api.GoogleApi;
+import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
@@ -11,31 +15,45 @@ import com.vnsolution.virtualassistant.db.entity.PlaceSummary;
 import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
+import com.vnsolution.virtualassistant.model.StopPoint;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
+import retrofit2.Response;
+
 public class TravelViewModel extends ViewModel {
     private PlaceDao placeDao;
+    private GoogleApi googleService;
+
     private Integer index = 0; //filter all visited places
+    private MutableLiveData<List<Place>> nearByPlacesLiveData;
 
     @Inject
-    public TravelViewModel(PlaceDao placeDao) {
+    public TravelViewModel(PlaceDao placeDao, GoogleApi googleService) {
         this.placeDao = placeDao;
+        this.googleService = googleService;
     }
 
     public LiveData<List<Place>> getRecentlyVisitedPlaces() {
         LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getRecentlyVisitedPlaces();
-        return Transformations.map(placesLiveData, placeEntities -> transform(placeEntities));
+        return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
     }
 
     public LiveData<List<Place>> getMostVisitedPlaces() {
         LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getMostVisitedPlaces();
-        return Transformations.map(placesLiveData, placeEntities -> transform(placeEntities));
+        return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
     }
 
     public LiveData<PlaceSummary> getPlaceSummary() {
@@ -49,7 +67,7 @@ public class TravelViewModel extends ViewModel {
     public LiveData<List<Place>> getPlaces() {
         LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getPlaceWithHistories();
         return Transformations.map(placesLiveData, placeEntities -> {
-            List<Place> places = transform(placeEntities);
+            List<Place> places = transformFromPlaceEntity(placeEntities);
             switch (index) {
                 case 1: //Top 10 recent visited places
                     Collections.sort(places, new Comparator<Place>() {
@@ -94,13 +112,86 @@ public class TravelViewModel extends ViewModel {
         });
     }
 
-    private List<Place> transform(List<PlaceWithHistoryDetailEntity> placeEntities) {
+    public LiveData<List<Place>> searchNearBy(StopPoint stopPoint) {
+        if (nearByPlacesLiveData == null) {
+            nearByPlacesLiveData = new MutableLiveData<>();
+            searchNearByFromLocation(stopPoint);
+        }
+        return nearByPlacesLiveData;
+    }
+
+    private void searchNearByFromLocation(StopPoint stopPoint) {
+        List<Place> placeList = new ArrayList<>();
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<GoogleMapNearByDto.NearBy>> nearByListFuture = executor.submit(new Callable<List<GoogleMapNearByDto.NearBy>>() {
+            @Override
+            public List<GoogleMapNearByDto.NearBy> call() throws Exception {
+                String location = stopPoint.latitude + "," + stopPoint.longitude;
+                Response<GoogleMapNearByDto> searchNearByLocationResponse = googleService.searchNearByLocation(location, "distance").execute();
+                if (searchNearByLocationResponse.isSuccessful()) {
+                    GoogleMapNearByDto nearByPlace = searchNearByLocationResponse.body();
+                    return nearByPlace.results;
+                }
+                return new ArrayList<>();
+            }
+        });
+        try {
+            List<GoogleMapNearByDto.NearBy> nearByList = nearByListFuture.get();
+            placeList = transformFromNearByDto(nearByList);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+
+        nearByPlacesLiveData.setValue(placeList);
+    }
+
+    private List<Place> transformFromNearByDto(List<GoogleMapNearByDto.NearBy> nearByList) {
+        List<Place> places = new ArrayList<>();
+        for (GoogleMapNearByDto.NearBy nearBy: nearByList) {
+            Place place = toPlace(nearBy);
+            places.add(place);
+        }
+        return places;
+    }
+
+    private List<Place> transformFromPlaceEntity(List<PlaceWithHistoryDetailEntity> placeEntities) {
         List<Place> places = new ArrayList<>();
         for (PlaceWithHistoryDetailEntity placeEntity: placeEntities) {
             Place place = toPlace(placeEntity);
             places.add(place);
         }
         return places;
+    }
+
+    private Place toPlace(GoogleMapNearByDto.NearBy nearBy) {
+        Place place = new Place();
+        place.id = UUID.randomUUID().toString();
+        place.placeName = nearBy.name;
+        place.formattedAddress = nearBy.vicinity;
+        double latitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lat : 0;
+        double longitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lng : 0;
+        latitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        longitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        place.latitude = latitude;
+        place.longitude = longitude;
+        place.types = join(", ", nearBy.types);
+        place.icon = nearBy.icon;
+        place.createdDate = new Date();
+        return place;
+    }
+
+    private String join(String delimiter, List<String> types) {
+        StringBuffer sb = new StringBuffer();
+        if (types != null) {
+            for (String type : types) {
+                sb.append(type);
+                sb.append(delimiter);
+            }
+        }
+        return sb.toString();
     }
 
     private Place toPlace(PlaceWithHistoryDetailEntity placeEntity) {

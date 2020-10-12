@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.vnsolution.virtualassistant.ui.travel.TravelActivity">
+    tools:context="com.vnsolution.virtualassistant.ui.travel.TravelEditActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -25,6 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include layout="@layout/bottomsheet_place_list" />
+    <include layout="@layout/bottomsheet_place_search" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

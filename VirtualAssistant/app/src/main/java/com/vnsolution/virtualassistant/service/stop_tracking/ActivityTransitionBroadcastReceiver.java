@@ -77,9 +77,9 @@ public class ActivityTransitionBroadcastReceiver extends BroadcastReceiver {
                     activityStatus += "Exist in vehicle." + "\n";
                 }
             }
-            if (!activityStatus.isEmpty()) {
-                NotificationUtils.sendNotification(context, "ACTIVITY TRANSITIONS BROADCAST", activityStatus);
-            }
+//            if (!activityStatus.isEmpty()) {
+//                NotificationUtils.sendNotification(context, "ACTIVITY TRANSITIONS BROADCAST", activityStatus);
+//            }
         }
     }
 }

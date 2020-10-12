@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -28,6 +29,7 @@ import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
+import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelAdapter;
 import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelRecycleView;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
@@ -40,14 +42,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class TravelActivity extends AppCompatActivity {
+public class TravelHistoryActivity extends AppCompatActivity implements OnItemActionListerner {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
@@ -72,7 +73,7 @@ public class TravelActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_travel);
+        setContentView(R.layout.screen_travel_history);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -95,7 +96,7 @@ public class TravelActivity extends AppCompatActivity {
             }
         });
 
-        tvTotalVisitedPlace = findViewById(R.id.total_visited_places);
+        tvTotalVisitedPlace = findViewById(R.id.total_matched_places);
 
         travelRecyclerView = findViewById(R.id.list_visited_places);
         travelRecyclerView.setHasFixedSize(true);
@@ -103,6 +104,7 @@ public class TravelActivity extends AppCompatActivity {
         placeTypes = stopTrackingManager.getPlaceTypes();
         travelAdapter = new TravelAdapter(this, visitedPlaces, placeTypes);
         travelRecyclerView.setAdapter(travelAdapter);
+        travelRecyclerView.setOnItemAction(this);
 
         travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
         travelViewModel.getPlaces().observe(this, new Observer<List<Place>>() {
@@ -204,5 +206,27 @@ public class TravelActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+    }
+
+    @Override
+    public void onTap(View view, int position) {
+        if (visitedPlaces != null && visitedPlaces.size() > 0
+            && position >= 0 && position < visitedPlaces.size()) {
+            Place place = visitedPlaces.get(position);
+            Intent travelEditIntent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
+            travelEditIntent.putExtra("longitude", place.longitude);
+            travelEditIntent.putExtra("latitude", place.latitude);
+            startActivity(travelEditIntent);
+        }
+    }
+
+    @Override
+    public void onLongTap(View view, int position) {
+
+    }
+
+    @Override
+    public void onDoubleTap(View view, int position) {
+
     }
 }

@@ -26,7 +26,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = getErrorString(geofencingEvent.getErrorCode());
-            NotificationUtils.sendNotification(context, "GEOFENCE BROADCAST", errorMessage);
+            NotificationUtils.sendNotification(context, "GEOFENCE BROADCAST", errorMessage, null);
             return;
         }
         handleEvent(context, geofencingEvent);
@@ -45,18 +45,18 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             geofencingStatus = "Enter geofence.";
             action = StopTracking.INTENT_ACTION_CHECK_IN;
         }
-//        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ) { //Check-in again
-//            geofencingStatus = "Dwell geofence.";
-//            action = StopTracking.INTENT_ACTION_CHECK_IN_SCHEDULE;
-//        }
+        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ) { //Mark as visited
+            geofencingStatus = "Dwell geofence.";
+            action = StopTracking.INTENT_ACTION_MARK_AS_VISITED;
+        }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) { //Check-out
             geofencingStatus = "Exist geofence.";
             action = StopTracking.INTENT_ACTION_CHECK_OUT;
         }
 
-        if (!geofencingStatus.isEmpty()) {
-            NotificationUtils.sendNotification(context, "GEOFENCE BROADCAST", geofencingStatus);
-        }
+//        if (!geofencingStatus.isEmpty()) {
+//            NotificationUtils.sendNotification(context, "GEOFENCE BROADCAST", geofencingStatus);
+//        }
 
         if (!action.isEmpty()) {
             Intent serviceIntent = new Intent(context, StopTrackingService.class);

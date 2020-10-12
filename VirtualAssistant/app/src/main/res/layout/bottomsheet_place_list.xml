@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:padding="20dp">
         <TextView
-            android:id="@+id/total_visited_places"
+            android:id="@+id/total_matched_places"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"

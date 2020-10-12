@@ -96,72 +96,68 @@ public class StopTrackingService extends Service {
     @Inject
     public GoogleApi googleService;
 
-    public class SaveToDBTask extends AsyncTask<StopPoint, Void, PlaceEntity> {
+    public class MarkAsVisitedTask extends AsyncTask<Void, Void, PlaceEntity> {
+        private boolean newDetectedPlace = false;
 
         @Override
-        protected PlaceEntity doInBackground(StopPoint... stopPoints) {
-            StopPoint stopPoint = stopPoints[0];
-
-            // Place
-            PlaceEntity placeEntity = placeDao.getByLocation(stopPoint.latitude, stopPoint.longitude);
-            PlaceEntity detectedPlace = null;
-            if (placeEntity == null) {
-                Address address = getAddressFromLocation(stopPoint);
-                if (address != null) {
-                    detectedPlace = convertToPlaceEntityFrom(address);
+        protected PlaceEntity doInBackground(Void... params) {
+            PlaceEntity visitedPlace = null;
+            StopPoint stopPoint = getStopPointFromCache();
+            if (stopPoint != null && !stopPoint.isCheckedIn) {
+                stopPoint.exist = new Date();
+                if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= StopTracking.CONFIG_STOP_DETECTION_IN_MILLISECONDS) {
+                    visitedPlace = saveStopPointToDb(stopPoint);
+                    stopPoint.placeId = visitedPlace.id;
+                    stopPoint.isCheckedIn = true;
+                    newDetectedPlace = true;
                 }
-                // Address address = getAddressFromLocation(stopPoint);
-                // GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint);
-                GoogleMapPlaceSearchDto.PlaceSearch placeDetail = searchPlaceByAddress(stopPoint);
-                if (placeDetail != null) {
-                    detectedPlace = convertToPlaceEntityFrom(placeDetail);
-                }
-                if (detectedPlace != null) {
-                    placeEntity = placeDao.getByName(detectedPlace.placeName);
-                    if (placeEntity == null) {
-                        placeEntity = placeDao.getByGGPlaceId(detectedPlace.ggPlaceId);
-                    }
-                    if (placeEntity == null) {
-                        placeEntity = placeDao.getByAddress(detectedPlace.formattedAddress);
-                    }
-                }
+                saveStopPointInCache(stopPoint);
             }
-            if (placeEntity == null) {
-                placeEntity = (detectedPlace != null) ? detectedPlace : convertToPlaceEntityFrom(stopPoint);
-                placeDao.insert(placeEntity);
-            } else {
-                if (((placeEntity.ggPlaceId == null) || (placeEntity.ggPlaceId == "")
-                        || (placeEntity.placeName == null) || (placeEntity.placeName == "")) && detectedPlace != null) {
-                    detectedPlace.id = placeEntity.id;
-                    placeEntity = detectedPlace;
-                    placeDao.update(placeEntity);
-                }
-            }
-
-            // Place History
-            if (placeEntity != null) {
-                PlaceHistoryEntity placeHistoryEntity = new PlaceHistoryEntity();
-                placeHistoryEntity.id = UUID.randomUUID().toString();
-                placeHistoryEntity.placeId = placeEntity.id;
-                placeHistoryEntity.enterTime = stopPoint.enter;
-                placeHistoryEntity.existTime = stopPoint.exist;
-                placeHistoryDao.insert(placeHistoryEntity);
-            }
-
-            return placeEntity;
+            return visitedPlace;
         }
 
         @Override
-        protected void onPostExecute(PlaceEntity placeEntity) {
-            String message = "Can't detect a place.";
-            if (placeEntity != null) {
-                message = "(" + placeEntity.latitude + "," + placeEntity.longitude + ")";
-                if ((placeEntity.placeName != null) && (placeEntity.placeName != "")
-                        && (placeEntity.formattedAddress != null) && (placeEntity.formattedAddress != "")) {
-                    message = placeEntity.placeName + "\n" + placeEntity.formattedAddress;
+        protected void onPostExecute(PlaceEntity visitedPlace) {
+            if (newDetectedPlace && visitedPlace != null) {
+                String placeFormatted = "Unknown Address (" + visitedPlace.latitude + "," + visitedPlace.longitude + ")";
+                if ((visitedPlace.placeName != null) && (visitedPlace.placeName != "")
+                        && (visitedPlace.formattedAddress != null) && (visitedPlace.formattedAddress != "")) {
+                    placeFormatted = visitedPlace.placeName + "\n" + visitedPlace.formattedAddress;
                 }
+                NotificationUtils.sendNotification(StopTrackingService.this, "ARE YOU VISITING HERE?", placeFormatted, visitedPlace);
             }
-            NotificationUtils.sendNotification(StopTrackingService.this, "CHECK OUT", message);
+        }
+    }
+
+    public class CheckOutTask extends AsyncTask<Void, Void, PlaceEntity> {
+        private boolean newDetectedPlace = false;
+
+        @Override
+        protected PlaceEntity doInBackground(Void... params) {
+            PlaceEntity visitedPlace = null;
+            StopPoint stopPoint = getStopPointFromCache();
+            if (stopPoint != null) {
+                stopPoint.exist = new Date();
+                //if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= StopTracking.CONFIG_STOP_DETECTION_IN_MILLISECONDS) {
+                    visitedPlace = (stopPoint.isCheckedIn)? getStopPointFromDb(stopPoint) : saveStopPointToDb(stopPoint);
+                    visitPlace(visitedPlace, stopPoint.enter, stopPoint.exist);
+                    newDetectedPlace = (stopPoint.isCheckedIn)? false : true;
+                //}
+                removeStopPointFromCache();
+            }
+            return visitedPlace;
+        }
+
+        @Override
+        protected void onPostExecute(PlaceEntity visitedPlace) {
+            if (newDetectedPlace && visitedPlace != null) {
+                String placeFormatted = "Unknown Address (" + visitedPlace.latitude + "," + visitedPlace.longitude + ")";
+                if ((visitedPlace.placeName != null) && (visitedPlace.placeName != "")
+                        && (visitedPlace.formattedAddress != null) && (visitedPlace.formattedAddress != "")) {
+                    placeFormatted = visitedPlace.placeName + "\n" + visitedPlace.formattedAddress;
+                }
+                NotificationUtils.sendNotification(StopTrackingService.this, "CHECK OUT", placeFormatted, visitedPlace);
+            }
         }
     }
 
@@ -206,24 +202,20 @@ public class StopTrackingService extends Service {
         if (intent != null) {
             switch (intent.getAction()) {
                 case StopTracking.INTENT_ACTION_INITIAL:
-                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Initial service.");
-                    runInit();
+//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Initial service.");
+                    processInitialRequest();
                     break;
                 case StopTracking.INTENT_ACTION_CHECK_IN:
-                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check in.");
+//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check in.");
                     checkIn(true);
                     break;
-                case StopTracking.INTENT_ACTION_CHECK_IN_SCHEDULE:
-                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Schedule check in.");
-                    checkIn(false);
+                case StopTracking.INTENT_ACTION_MARK_AS_VISITED:
+//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Mark as visited.");
+                    processMarkAsVisitedRequest();
                     break;
-//                case Constants.INTENT_ACTION_LOCATION_UPDATED:
-//                    AppService.sendNotification(this, "EVENT TRIGGER", "Update location.");
-//                    updatePosition(intent);
-//                    break;
                 case StopTracking.INTENT_ACTION_CHECK_OUT:
-                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check out.");
-                    checkOut();
+//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check out.");
+                    processCheckOutRequest();
                     break;
             }
             //stopSelf();
@@ -270,14 +262,20 @@ public class StopTrackingService extends Service {
             case StopTracking.REQUEST_STOP_LOCATION_UPDATES:
                 runningTask = stopLocationUpdates();
                 break;
-            case StopTracking.REQUEST_START_GEOFENCE_MONITOR:
-                runningTask = startGeofenceMonitor();
+            case StopTracking.REQUEST_START_GEOFENCE_CHECK_IN_MONITOR:
+                runningTask = startGeofenceMonitor(StopTracking.ACTION_CHECK_IN_MONITOR);
+                break;
+            case StopTracking.REQUEST_START_GEOFENCE_CHECK_OUT_MONITOR:
+                runningTask = startGeofenceMonitor(StopTracking.ACTION_CHECK_OUT_MONITOR);
                 break;
             case StopTracking.REQUEST_STOP_GEOFENCE_MONITOR:
                 runningTask = stopGeofenceMonitor();
                 break;
             case StopTracking.REQUEST_MARK_AS_VISITED:
-                markAsVisited();
+                new MarkAsVisitedTask().execute();
+                break;
+            case StopTracking.REQUEST_CHECK_OUT:
+                new CheckOutTask().execute();
                 break;
             case StopTracking.REQUEST_STOP_FOREGROUND_SERVICE:
                 stopSelf();
@@ -329,7 +327,7 @@ public class StopTrackingService extends Service {
         }
     }
 
-    private void runInit() {
+    private void processInitialRequest() {
         List<String> chainTasks = new ArrayList<>();
 
         chainTasks.add(StopTracking.REQUEST_START_ACTIVITY_TRANSACTION_MONITOR);
@@ -372,7 +370,7 @@ public class StopTrackingService extends Service {
 
                         List<String> taskQueue = new ArrayList<>();
                         if (isFirstCheckedIn) {
-                            taskQueue.add(StopTracking.REQUEST_START_GEOFENCE_MONITOR);
+                            taskQueue.add(StopTracking.REQUEST_START_GEOFENCE_CHECK_IN_MONITOR);
                             taskQueue.add(StopTracking.REQUEST_STOP_ACTIVITY_TRANSACTION_MONITOR);
                         }
                         taskQueue.add(StopTracking.REQUEST_STOP_FOREGROUND_SERVICE);
@@ -386,31 +384,26 @@ public class StopTrackingService extends Service {
         return requestLocationUpdates;
     }
 
-//    private void updatePosition(Intent intent) {
-//        Location location = extractLocationResult(intent);
-//        StopPoint stopPoint = getStopPointFromCache();
-//        if (location != null && stopPoint != null) {
-//            stopPoint.longitude = location.getLongitude();
-//            stopPoint.latitude = location.getLatitude();
-//            stopPoint.exist = new Date();
-//            saveStopPointInCache(stopPoint);
-//            notifyPosition(stopPoint);
-//        }
-//        List<String> chainTasks = new ArrayList<>();
-//        chainTasks.add(Constants.STOP_REQUEST_LOCATION_UPDATES);
-//        chainTasks.add(Constants.STOP_FOREGROUND_SERVICE);
-//        processChainTasks(chainTasks);
-//    }
+    private void processMarkAsVisitedRequest() {
+        List<String> taskQueue = new ArrayList<>();
 
-    private void checkOut() {
-        List<String> chainTasks = new ArrayList<>();
+        taskQueue.add(StopTracking.REQUEST_MARK_AS_VISITED);
+        taskQueue.add(StopTracking.REQUEST_STOP_GEOFENCE_MONITOR);
+        taskQueue.add(StopTracking.REQUEST_START_GEOFENCE_CHECK_OUT_MONITOR);
+        taskQueue.add(StopTracking.REQUEST_STOP_FOREGROUND_SERVICE);
 
-        chainTasks.add(StopTracking.REQUEST_MARK_AS_VISITED);
-        chainTasks.add(StopTracking.REQUEST_STOP_GEOFENCE_MONITOR);
-        chainTasks.add(StopTracking.REQUEST_START_ACTIVITY_TRANSACTION_MONITOR);
-        chainTasks.add(StopTracking.REQUEST_STOP_FOREGROUND_SERVICE);
+        processChainTasks(taskQueue);
+    }
 
-        processChainTasks(chainTasks);
+    private void processCheckOutRequest() {
+        List<String> taskQueue = new ArrayList<>();
+
+        taskQueue.add(StopTracking.REQUEST_CHECK_OUT);
+        taskQueue.add(StopTracking.REQUEST_STOP_GEOFENCE_MONITOR);
+        taskQueue.add(StopTracking.REQUEST_START_ACTIVITY_TRANSACTION_MONITOR);
+        taskQueue.add(StopTracking.REQUEST_STOP_FOREGROUND_SERVICE);
+
+        processChainTasks(taskQueue);
     }
 
     private Task<Void> startActivityTransitionMonitor() {
@@ -455,7 +448,7 @@ public class StopTrackingService extends Service {
         return removeLocationUpdatesTask;
     }
 
-    private Task<Void> startGeofenceMonitor() {
+    private Task<Void> startGeofenceMonitor(String... actions) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -467,7 +460,7 @@ public class StopTrackingService extends Service {
             return null;
         }
         StopPoint stopPoint = getStopPointFromCache();
-        GeofencingRequest geofencingRequest = buildGeofencingRequest(stopPoint);
+        GeofencingRequest geofencingRequest = buildGeofencingRequest(stopPoint, actions);
         Task<Void> geofenceTrackingTask = geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent());
         return geofenceTrackingTask;
     }
@@ -494,17 +487,6 @@ public class StopTrackingService extends Service {
 //        return location;
 //    }
 
-    private void markAsVisited() {
-        StopPoint stopPoint = getStopPointFromCache();
-        if (stopPoint != null) {
-            stopPoint.exist = new Date();
-            //if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= StopTracking.CONFIG_STOP_DETECTION_IN_MILLISECONDS) {
-                new SaveToDBTask().execute(stopPoint);
-            //}
-        }
-        removeStopPointFromCache();
-    }
-
     private void notifyPosition(StopPoint stopPoint) {
         if (stopPoint != null) {
 //            GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint); //Address address = getAddressFromLocation(stopPoint);
@@ -520,15 +502,15 @@ public class StopTrackingService extends Service {
             Address place = getAddressFromLocation(stopPoint);
             if (place != null) {
                 String address = place.getFeatureName() + "\n" + place.getAddressLine(0);
-                NotificationUtils.sendNotification(StopTrackingService.this, "ADDRESS", address);
+                NotificationUtils.sendNotification(StopTrackingService.this, "DETECTED PLACE", address, null);
             } else {
-                NotificationUtils.sendNotification(StopTrackingService.this, "NOTICE", "Can not get address of stop position.");
+                NotificationUtils.sendNotification(StopTrackingService.this, "DETECTED PLACE", "Unknown Place", null);
             }
 //            if (placeDetail == null && nearBy == null && place == null) {
 //                AppService.sendNotification(StopTrackingService.this, "NOTICE", "Can not get address of stop position.");
 //            }
         } else {
-            NotificationUtils.sendNotification(StopTrackingService.this, "NOTICE", "Stop position is not available.");
+            NotificationUtils.sendNotification(StopTrackingService.this, "NOTICE", "Stop position is not available.", null);
         }
     }
 
@@ -601,23 +583,32 @@ public class StopTrackingService extends Service {
         return new ActivityTransitionRequest(transitions);
     }
 
-    private GeofencingRequest buildGeofencingRequest(StopPoint stopPoint) {
-        ArrayList<Geofence> geofences = new ArrayList<>();
+    private GeofencingRequest buildGeofencingRequest(StopPoint stopPoint, String... actions) {
+        GeofencingRequest.Builder geofencingRequestbuilder = new GeofencingRequest.Builder();
 
-        geofences.add(new Geofence.Builder()
-                .setRequestId(stopPoint.id)
-                .setCircularRegion(stopPoint.latitude, stopPoint.longitude, StopTracking.CONFIG_GEOFENCE_RADIUS_IN_METERS)
-                .setExpirationDuration(Geofence.NEVER_EXPIRE) //.setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
-                .setLoiteringDelay(StopTracking.CONFIG_GEOFENCE_DWELLING_IN_MILLISECONDS)
-                .build());
+        String action = (actions.length > 0) ? actions[0] : "";
+        if (action != null && !action.isEmpty()) {
+            Geofence.Builder geofenceBuilder = new Geofence.Builder()
+                    .setRequestId(stopPoint.id)
+                    .setCircularRegion(stopPoint.latitude, stopPoint.longitude, StopTracking.CONFIG_GEOFENCE_RADIUS_IN_METERS)
+                    .setExpirationDuration(Geofence.NEVER_EXPIRE); //.setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
 
-        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+            if (action.equals(StopTracking.ACTION_CHECK_IN_MONITOR)) {
+                geofenceBuilder
+                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
+                        .setLoiteringDelay(StopTracking.CONFIG_STOP_DETECTION_IN_MILLISECONDS); //CONFIG_GEOFENCE_DWELLING_IN_MILLISECONDS;
+                geofencingRequestbuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL);
+            } else if (action.equals(StopTracking.ACTION_CHECK_OUT_MONITOR)) {
+                geofenceBuilder
+                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT);
+                geofencingRequestbuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_EXIT);
+            }
 
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL | GeofencingRequest.INITIAL_TRIGGER_EXIT);
-        builder.addGeofences(geofences);
+            Geofence geofence = geofenceBuilder.build();
+            geofencingRequestbuilder.addGeofence(geofence);
+        }
 
-        return builder.build();
+        return geofencingRequestbuilder.build();
     }
 
     private LocationRequest buildLocationUpdatesRequest() {
@@ -649,6 +640,59 @@ public class StopTrackingService extends Service {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.remove("StopPoint");
         editor.commit();
+    }
+
+    private PlaceEntity getStopPointFromDb(StopPoint stopPoint) {
+        return placeDao.getById(stopPoint.placeId);
+    }
+
+    private PlaceEntity saveStopPointToDb(StopPoint stopPoint) {
+        PlaceEntity placeEntity = placeDao.getByLocation(stopPoint.latitude, stopPoint.longitude);
+        PlaceEntity detectedPlace = null;
+        if (placeEntity == null) {
+            Address address = getAddressFromLocation(stopPoint);
+            if (address != null) {
+                detectedPlace = convertToPlaceEntityFrom(address);
+            }
+            // Address address = getAddressFromLocation(stopPoint);
+            // GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint);
+            GoogleMapPlaceSearchDto.PlaceSearch placeDetail = searchPlaceByAddress(stopPoint);
+            if (placeDetail != null) {
+                detectedPlace = convertToPlaceEntityFrom(placeDetail);
+            }
+            if (detectedPlace != null) {
+                placeEntity = placeDao.getByName(detectedPlace.placeName);
+                if (placeEntity == null) {
+                    placeEntity = placeDao.getByGGPlaceId(detectedPlace.ggPlaceId);
+                }
+                if (placeEntity == null) {
+                    placeEntity = placeDao.getByAddress(detectedPlace.formattedAddress);
+                }
+            }
+        }
+        if (placeEntity == null) {
+            placeEntity = (detectedPlace != null) ? detectedPlace : convertToPlaceEntityFrom(stopPoint);
+            placeDao.insert(placeEntity);
+        } else {
+            if (((placeEntity.ggPlaceId == null) || (placeEntity.ggPlaceId == "")
+                    || (placeEntity.placeName == null) || (placeEntity.placeName == "")) && detectedPlace != null) {
+                detectedPlace.id = placeEntity.id;
+                placeEntity = detectedPlace;
+                placeDao.update(placeEntity);
+            }
+        }
+        return placeEntity;
+    }
+
+    private void visitPlace(PlaceEntity placeEntity, Date enter, Date exist) {
+        if (placeEntity != null) {
+            PlaceHistoryEntity placeHistoryEntity = new PlaceHistoryEntity();
+            placeHistoryEntity.id = UUID.randomUUID().toString();
+            placeHistoryEntity.placeId = placeEntity.id;
+            placeHistoryEntity.enterTime = enter;
+            placeHistoryEntity.existTime = exist;
+            placeHistoryDao.insert(placeHistoryEntity);
+        }
     }
 
     private Address getAddressFromLocation(StopPoint stopPoint) {

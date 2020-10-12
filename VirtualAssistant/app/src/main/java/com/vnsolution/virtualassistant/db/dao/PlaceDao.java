@@ -59,7 +59,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
     LiveData<PlaceSummary> getPlaceSummary();
 
     @Query("SELECT * FROM Place WHERE Id=:id")
-    LiveData<PlaceEntity> getById(String id);
+    PlaceEntity getById(String id);
 
     @Query("SELECT * FROM Place WHERE Latitude=:latitude AND Longitude=:longitude")
     PlaceEntity getByLocation(double latitude, double longitude);
