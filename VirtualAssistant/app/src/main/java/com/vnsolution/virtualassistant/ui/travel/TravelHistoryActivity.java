@@ -29,6 +29,7 @@ import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
+import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceAdapter;
 import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceRecycleView;
@@ -48,7 +49,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class TravelHistoryActivity extends AppCompatActivity implements OnItemActionListerner {
+public class TravelHistoryActivity extends BaseAppActivity implements OnItemActionListerner {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
@@ -74,8 +75,7 @@ public class TravelHistoryActivity extends AppCompatActivity implements OnItemAc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_travel_history);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setupActionBar();
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mMapView = (MapView) findViewById(R.id.mapView);

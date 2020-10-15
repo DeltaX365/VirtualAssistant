@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -19,6 +21,7 @@ import com.vnsolution.virtualassistant.db.entity.PlaceSummary;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
+import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 import com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesAdapter;
 import com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesRecycleView;
@@ -34,9 +37,8 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasAndroidInjector;
 
-public class TravelDashboardActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
+public class TravelDashboardActivity extends BaseAppActivity implements OnItemActionListerner {
     private TravelRecentlyVisitedPlacesRecycleView recentlyVisitedPlacesRecyclerView;
     private TravelRecentlyVisitedPlacesAdapter recentlyVisitedPlacesAdapter;
     private RecyclerView.LayoutManager recentlyVisitedPlacesLayoutManager;
@@ -57,9 +59,6 @@ public class TravelDashboardActivity extends AppCompatActivity implements HasAnd
     private List<PlaceType> placeTypes = new ArrayList<>();
 
     @Inject
-    public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
-
-    @Inject
     public ViewModelProvider.Factory viewModelFactory;
 
     @Inject
@@ -74,6 +73,8 @@ public class TravelDashboardActivity extends AppCompatActivity implements HasAnd
 
     private void setupView() {
         setContentView(R.layout.screen_travel_dashboard);
+        setupActionBar();
+
         progressOverlay = findViewById(R.id.progress_overlay);
         placeTypes = stopTrackingManager.getPlaceTypes();
 
@@ -219,10 +220,5 @@ public class TravelDashboardActivity extends AppCompatActivity implements HasAnd
 
     @Override
     public void onDoubleTap(View view, int position) {
-    }
-
-    @Override
-    public AndroidInjector<Object> androidInjector() {
-        return dispatchingAndroidInjector;
     }
 }

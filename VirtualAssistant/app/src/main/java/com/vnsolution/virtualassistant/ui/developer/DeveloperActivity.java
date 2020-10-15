@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService;
+import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
 import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
@@ -24,7 +25,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class DeveloperActivity extends AppCompatActivity implements HasAndroidInjector {
+public class DeveloperActivity extends BaseAppActivity {
     private Button btnShowVisitedPlaces;
     private Button btnManualCheckIn;
     private Button btnManualCheckOut;
@@ -34,13 +35,11 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
     private Button btnShowContacts;
     private Button btnShowSettings;
 
-    @Inject
-    public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_developer);
+        setupActionBar();
 
         btnShowVisitedPlaces = findViewById(R.id.btn_visited_places);
         btnShowVisitedPlaces.setOnClickListener(new View.OnClickListener() {
@@ -115,10 +114,5 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
                 startActivity(intent);
             }
         });
-    }
-
-    @Override
-    public AndroidInjector<Object> androidInjector() {
-        return dispatchingAndroidInjector;
     }
 }

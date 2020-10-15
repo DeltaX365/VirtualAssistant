@@ -14,9 +14,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission
-        android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
 
     <application
         android:name="com.vnsolution.virtualassistant.VirtualAssistantApp"
@@ -25,8 +23,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.NoActionBar">
 
+        <!-- Meta Data -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -34,39 +33,36 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBQr8YzGqe0PWQiEMx9JbsnXmbpRZvQURo" />
 
+        <!-- Screens -->
         <activity
             android:name="com.vnsolution.virtualassistant.ui.HomeV2Activity"
-            android:label="@string/title_activity_home">
+            android:label="@string/title_screen_home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name="com.vnsolution.virtualassistant.ui.developer.DeveloperActivity" />
-        <activity android:name="com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity" />
         <activity
             android:name="com.vnsolution.virtualassistant.ui.travel.TravelV2Activity"
-            android:label="@string/title_places"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_screen_travel_dashboard" />
+        <activity
+            android:name="com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity"
+            android:label="@string/title_screen_travel_dashboard"/>
         <activity
             android:name="com.vnsolution.virtualassistant.ui.travel.TravelHistoryActivity"
-            android:label="@string/title_activity_travel"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_activity_travel_history" />
         <activity
             android:name="com.vnsolution.virtualassistant.ui.travel.TravelEditActivity"
-            android:label="@string/title_activity_travel_edit"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_activity_travel_edit" />
         <activity android:name="com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsActivity" />
-        <activity
-            android:name="com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity"
-            android:label="@string/title_applications"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name="com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity" />
         <activity android:name="com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity" />
         <activity android:name="com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity" />
         <activity android:name="com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity" />
         <activity android:name="com.vnsolution.virtualassistant.ui.settings.SettingsActivity" />
 
+        <!-- Services -->
         <service
             android:name="com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService"
             android:exported="true" />
@@ -79,6 +75,7 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
+        <!-- Broadcast Receivers -->
         <receiver
             android:name="com.vnsolution.virtualassistant.startup.StartupBroadcastReceiver"
             android:exported="true">

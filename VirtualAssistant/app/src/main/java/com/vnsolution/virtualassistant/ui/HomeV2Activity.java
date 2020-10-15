@@ -6,15 +6,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
 import com.vnsolution.virtualassistant.ui.developer.DeveloperActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
@@ -24,20 +27,18 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class HomeV2Activity extends AppCompatActivity implements HasAndroidInjector {
+public class HomeV2Activity extends BaseAppActivity {
     private ImageView ivVoiceAssistant;
     private Button btnShowDeveloperPage;
-
-    @Inject
-    public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_home_v2);
+        setupActionBar();
 
-        ivVoiceAssistant = findViewById(R.id.iv_voice_assistant);
-        Glide.with(this).load(R.drawable.voice_assistant_motion_2).into(ivVoiceAssistant);
+//        ivVoiceAssistant = findViewById(R.id.iv_voice_assistant);
+//        Glide.with(this).load(R.drawable.voice_assistant_motion_2).into(ivVoiceAssistant);
 
         btnShowDeveloperPage = findViewById(R.id.btn_developer);
         btnShowDeveloperPage.setOnClickListener(new View.OnClickListener() {
@@ -80,10 +81,5 @@ public class HomeV2Activity extends AppCompatActivity implements HasAndroidInjec
         if (requestCode == StopTracking.PERMISSIONS_REQUEST_CODE) {
             requestPermissions();
         }
-    }
-
-    @Override
-    public AndroidInjector<Object> androidInjector() {
-        return dispatchingAndroidInjector;
     }
 }

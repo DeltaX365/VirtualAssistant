@@ -38,6 +38,7 @@ import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
+import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
 import com.vnsolution.virtualassistant.ui.travel.components.travelmatchedplaces.TravelMatchedPlacesAdapter;
 import com.vnsolution.virtualassistant.ui.travel.components.travelmatchedplaces.TravelMatchedPlacesRecycleView;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
@@ -47,7 +48,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class TravelEditActivity extends AppCompatActivity {
+public class TravelEditActivity extends BaseAppActivity {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
@@ -73,8 +74,7 @@ public class TravelEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_travel_edit);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setupActionBar();
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mMapView = (MapView) findViewById(R.id.mapView);
