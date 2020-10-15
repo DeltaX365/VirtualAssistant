@@ -20,8 +20,8 @@ import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
-import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelRecycleView;
+import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceAdapter;
+import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceRecycleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +31,11 @@ import javax.inject.Inject;
 public class TravelFragment extends Fragment implements Injectable, OnItemActionListerner {
     public static final String ARG_SECTION_NUMBER = "section_number";
 
-    private TravelRecycleView recyclerView;
+    private TravelVisitedPlaceRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private TravelAdapter adapter;
+    private TravelVisitedPlaceAdapter adapter;
     private List<Place> places = new ArrayList<>();
     private TravelViewModel vm;
     private Context mContext;
@@ -72,11 +72,6 @@ public class TravelFragment extends Fragment implements Injectable, OnItemAction
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         vm = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
-        int index = 1;
-        if (getArguments() != null) {
-            index = getArguments().getInt(ARG_SECTION_NUMBER);
-        }
-        vm.setIndex(index);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

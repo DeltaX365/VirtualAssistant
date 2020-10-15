@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces;
+package com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
-public class TravelViewHolder extends RecyclerView.ViewHolder {
+public class TravelVisitedPlaceViewHolder extends RecyclerView.ViewHolder {
     public ImageView ivPlacePhoto;
     public TextView textPlaceName;
     public TextView textPlaceAddress;
@@ -20,7 +20,7 @@ public class TravelViewHolder extends RecyclerView.ViewHolder {
     public TextView textPlaceEnterDate;
     public OnItemActionListerner onItemActionListerner;
 
-    public TravelViewHolder(View view) {
+    public TravelVisitedPlaceViewHolder(View view) {
         super(view);
 
         ivPlacePhoto = view.findViewById(R.id.place_photo);

@@ -30,8 +30,8 @@ import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
-import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelRecycleView;
+import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceAdapter;
+import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceRecycleView;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import androidx.annotation.Nullable;
@@ -53,8 +53,8 @@ public class TravelHistoryActivity extends AppCompatActivity implements OnItemAc
     private GoogleMap mGoogleMap;
 
     private TextView tvTotalVisitedPlace;
-    private TravelRecycleView travelRecyclerView;
-    private TravelAdapter travelAdapter;
+    private TravelVisitedPlaceRecycleView travelRecyclerView;
+    private TravelVisitedPlaceAdapter travelAdapter;
 
     private TravelViewModel travelViewModel;
     private List<Place> visitedPlaces = new ArrayList<>();
@@ -102,7 +102,7 @@ public class TravelHistoryActivity extends AppCompatActivity implements OnItemAc
         travelRecyclerView.setHasFixedSize(true);
         travelRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         placeTypes = stopTrackingManager.getPlaceTypes();
-        travelAdapter = new TravelAdapter(this, visitedPlaces, placeTypes);
+        travelAdapter = new TravelVisitedPlaceAdapter(this, visitedPlaces, placeTypes);
         travelRecyclerView.setAdapter(travelAdapter);
         travelRecyclerView.setOnItemAction(this);
 

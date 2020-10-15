@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
-import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelAdapter;
+import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceAdapter;
 
 public class TravelMatchedPlacesRecycleView extends RecyclerView {
     public TravelMatchedPlacesRecycleView(@NonNull Context context) {
@@ -24,8 +24,8 @@ public class TravelMatchedPlacesRecycleView extends RecyclerView {
     }
 
     public void setOnItemAction(OnItemActionListerner onItemActionListerner) {
-        if (this.getAdapter() != null && this.getAdapter() instanceof TravelAdapter) {
-            TravelAdapter adapter = (TravelAdapter) this.getAdapter();
+        if (this.getAdapter() != null && this.getAdapter() instanceof TravelVisitedPlaceAdapter) {
+            TravelVisitedPlaceAdapter adapter = (TravelVisitedPlaceAdapter) this.getAdapter();
             adapter.setHandler(onItemActionListerner);
         }
     }

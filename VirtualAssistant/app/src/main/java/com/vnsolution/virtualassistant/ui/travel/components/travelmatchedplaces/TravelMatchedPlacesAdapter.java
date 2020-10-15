@@ -15,11 +15,11 @@ import com.vnsolution.virtualassistant.db.convertor.DateConverter;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
-import com.vnsolution.virtualassistant.ui.travel.components.travelsimplevisitedplaces.TravelViewHolder;
+import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceViewHolder;
 
 import java.util.List;
 
-public class TravelMatchedPlacesAdapter extends RecyclerView.Adapter<TravelViewHolder> {
+public class TravelMatchedPlacesAdapter extends RecyclerView.Adapter<TravelVisitedPlaceViewHolder> {
     private Context context;
     private List<Place> dataSource;
     private List<PlaceType> placeTypes;
@@ -43,23 +43,23 @@ public class TravelMatchedPlacesAdapter extends RecyclerView.Adapter<TravelViewH
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
-    public TravelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TravelVisitedPlaceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.item_matched_place, parent, false);
-        TravelViewHolder viewHolder = new TravelViewHolder(view);
+        TravelVisitedPlaceViewHolder viewHolder = new TravelVisitedPlaceViewHolder(view);
         return viewHolder;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(@NonNull TravelViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TravelVisitedPlaceViewHolder holder, int position) {
         Place place = dataSource.get(position);
 
         if (place.photoReference != null && !place.photoReference.isEmpty()) {
-            String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=80&photoreference=" + place.photoReference + "&key=" + Constants.GM_API_KEY;
+            String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + Constants.GM_API_KEY;
             Glide.with(context).load(photoUri).into(holder.ivPlacePhoto);
         }
-        String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
+        String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
         holder.textPlaceName.setText(placeName);
 
         String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;

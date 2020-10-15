@@ -47,6 +47,9 @@ public class GoogleMapNearByDto {
         @SerializedName("vicinity")
         public String vicinity;
 
+        @SerializedName("photos")
+        public List<Photo> photos;
+
         public class Geometry {
             @SerializedName("location")
             public Location location;
@@ -93,6 +96,20 @@ public class GoogleMapNearByDto {
 
             @SerializedName("global_code")
             public String globalCode;
+        }
+
+        public class Photo {
+            @SerializedName("photo_reference")
+            public String photoReference;
+
+            @SerializedName("width")
+            public int width;
+
+            @SerializedName("height")
+            public int height;
+
+            @SerializedName("html_attributions")
+            public List<String> htmlAttributions;
         }
     }
 }

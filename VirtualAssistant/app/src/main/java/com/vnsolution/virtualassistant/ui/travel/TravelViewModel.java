@@ -60,63 +60,14 @@ public class TravelViewModel extends ViewModel {
         return placeDao.getPlaceSummary();
     }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
     public LiveData<List<Place>> getPlaces() {
         LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getPlaceWithHistories();
-        return Transformations.map(placesLiveData, placeEntities -> {
-            List<Place> places = transformFromPlaceEntity(placeEntities);
-            switch (index) {
-                case 1: //Top 10 recent visited places
-                    Collections.sort(places, new Comparator<Place>() {
-                        @Override
-                        public int compare(Place o1, Place o2) {
-                            return (int) (getLastVisitedTime(o2) - getLastVisitedTime(o1));
-                        }
-                    });
-                    places = places.subList(0, Math.min(places.size(), 10));
-                    break;
-                case 2: //Top 10 most visited places
-                    Collections.sort(places, new Comparator<Place>() {
-                        @Override
-                        public int compare(Place o1, Place o2) {
-                            return (int) (calculateTotalVisitedTime(o2) - calculateTotalVisitedTime(o1));
-                        }
-                    });
-                    places = places.subList(0, Math.min(places.size(), 10));
-                    break;
-                case 3: //Top 10 favourite visited places
-                    places = new ArrayList<>();
-                    break;
-                case 4: //Top 10 unvisited places
-                    Collections.sort(places, new Comparator<Place>() {
-                        @Override
-                        public int compare(Place o1, Place o2) {
-                            return (int) (getLastVisitedTime(o1) - getLastVisitedTime(o2));
-                        }
-                    });
-                    places = places.subList(0, Math.min(places.size(), 10));
-                    break;
-                case 5: //All visited places
-                    Collections.sort(places, new Comparator<Place>() {
-                        @Override
-                        public int compare(Place o1, Place o2) {
-                            return (int) (getLastVisitedTime(o2) - getLastVisitedTime(o1));
-                        }
-                    });
-                    break;
-            }
-            return places;
-        });
+        return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
     }
 
     public LiveData<List<Place>> searchNearBy(StopPoint stopPoint) {
-        if (nearByPlacesLiveData == null) {
-            nearByPlacesLiveData = new MutableLiveData<>();
-            searchNearByFromLocation(stopPoint);
-        }
+        nearByPlacesLiveData = new MutableLiveData<>();
+        searchNearByFromLocation(stopPoint);
         return nearByPlacesLiveData;
     }
 
@@ -179,6 +130,7 @@ public class TravelViewModel extends ViewModel {
         place.longitude = longitude;
         place.types = join(", ", nearBy.types);
         place.icon = nearBy.icon;
+        place.photoReference = (nearBy.photos != null && nearBy.photos.size() > 0)? nearBy.photos.get(0).photoReference : "";
         place.createdDate = new Date();
         return place;
     }

@@ -27,6 +27,7 @@ import dagger.android.HasAndroidInjector;
 public class DeveloperActivity extends AppCompatActivity implements HasAndroidInjector {
     private Button btnShowVisitedPlaces;
     private Button btnManualCheckIn;
+    private Button btnManualCheckOut;
     private Button btnShowInstalledApps;
     private Button btnShowCallLogs;
     private Button btnSms;
@@ -52,6 +53,16 @@ public class DeveloperActivity extends AppCompatActivity implements HasAndroidIn
 
         btnManualCheckIn = findViewById(R.id.btn_manual_check_in);
         btnManualCheckIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent serviceIntent = new Intent(DeveloperActivity.this, StopTrackingService.class);
+                serviceIntent.setAction(StopTracking.INTENT_ACTION_INITIAL);
+                ContextCompat.startForegroundService(DeveloperActivity.this, serviceIntent);
+            }
+        });
+
+        btnManualCheckOut = findViewById(R.id.btn_manual_check_out);
+        btnManualCheckOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent serviceIntent = new Intent(DeveloperActivity.this, StopTrackingService.class);

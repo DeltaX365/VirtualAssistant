@@ -16,14 +16,13 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
     @Query("SELECT * FROM Place")
     LiveData<List<PlaceEntity>> getAll();
 
-    @Transaction
     @Query("SELECT p.* " +
             "FROM Place as p " +
             "LEFT JOIN PlaceHistory as ph on ph.PlaceId = p.Id " +
+            "GROUP BY p.GGPlaceId " +
             "ORDER BY ph.EnterTime DESC")
     LiveData<List<PlaceWithHistoryDetailEntity>> getPlaceWithHistories();
 
-    @Transaction
     @Query("SELECT p.* " +
             "FROM Place as p " +
             "LEFT JOIN PlaceHistory as ph on ph.PlaceId = p.Id " +
@@ -32,7 +31,6 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "LIMIT 0, 10")
     LiveData<List<PlaceWithHistoryDetailEntity>> getRecentlyVisitedPlaces();
 
-    @Transaction
     @Query("SELECT p.* " +
             "FROM Place as p, " +
             "(" +
@@ -41,13 +39,13 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "GROUP BY PlaceId " +
             ") AS ph " +
             "WHERE ph.PlaceId = p.Id " +
-            "ORDER BY ph.TotalVisitedTime DESC")
+            "ORDER BY ph.TotalVisitedTime DESC " +
+            "LIMIT 0, 10")
     LiveData<List<PlaceWithHistoryDetailEntity>> getMostVisitedPlaces();
 
     @Query("SELECT * FROM Place WHERE Synced = 0")
     List<PlaceEntity> getUnsyncedPlaces();
 
-    @Transaction
     @Query("SELECT count(*) AS TotalPlace, count(DISTINCT AdministrativeAreaLevel1) AS TotalCity, count(DISTINCT Country) AS TotalCountry, " +
             "( " +
             "SELECT count(*) " +

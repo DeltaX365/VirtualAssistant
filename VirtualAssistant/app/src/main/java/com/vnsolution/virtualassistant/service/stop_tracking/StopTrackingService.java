@@ -138,11 +138,11 @@ public class StopTrackingService extends Service {
             StopPoint stopPoint = getStopPointFromCache();
             if (stopPoint != null) {
                 stopPoint.exist = new Date();
-                //if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= StopTracking.CONFIG_STOP_DETECTION_IN_MILLISECONDS) {
+                if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= StopTracking.CONFIG_STOP_DETECTION_IN_MILLISECONDS) {
                     visitedPlace = (stopPoint.isCheckedIn)? getStopPointFromDb(stopPoint) : saveStopPointToDb(stopPoint);
                     visitPlace(visitedPlace, stopPoint.enter, stopPoint.exist);
                     newDetectedPlace = (stopPoint.isCheckedIn)? false : true;
-                //}
+                }
                 removeStopPointFromCache();
             }
             return visitedPlace;
@@ -203,7 +203,12 @@ public class StopTrackingService extends Service {
             switch (intent.getAction()) {
                 case StopTracking.INTENT_ACTION_INITIAL:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Initial service.");
-                    processInitialRequest();
+                    StopPoint stopPoint = getStopPointFromCache();
+                    if (stopPoint == null) {
+                        processInitialRequest();
+                    } else {
+                        processMarkAsVisitedRequest();
+                    }
                     break;
                 case StopTracking.INTENT_ACTION_CHECK_IN:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check in.");
