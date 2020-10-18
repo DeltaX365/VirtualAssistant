@@ -14,7 +14,7 @@ import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.db.convertor.DateConverter;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
+import com.vnsolution.virtualassistant.ui.travel.events.OnTravelActionListerner;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class TravelVisitedPlaceAdapter extends RecyclerView.Adapter<TravelVisite
     private Context context;
     private List<Place> dataSource;
     private List<PlaceType> placeTypes;
-    private OnItemActionListerner onItemActionListerner;
+    private OnTravelActionListerner onTravelActionListerner;
 
     public TravelVisitedPlaceAdapter(Context context, List<Place> dataSource, List<PlaceType> placeTypes) {
         this.context = context;
@@ -35,8 +35,8 @@ public class TravelVisitedPlaceAdapter extends RecyclerView.Adapter<TravelVisite
         notifyDataSetChanged();
     }
 
-    public void setHandler(OnItemActionListerner onItemActionListerner) {
-        this.onItemActionListerner = onItemActionListerner;
+    public void setHandler(OnTravelActionListerner onTravelActionListerner) {
+        this.onTravelActionListerner = onTravelActionListerner;
     }
 
     // Create new views (invoked by the layout manager)
@@ -52,18 +52,34 @@ public class TravelVisitedPlaceAdapter extends RecyclerView.Adapter<TravelVisite
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(@NonNull TravelVisitedPlaceViewHolder holder, int position) {
+        populateData(holder, position);
+        registerEvents(holder, position);
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataSource.size();
+    }
+
+    private void populateData(TravelVisitedPlaceViewHolder holder, int position) {
+        if (holder == null || dataSource == null || dataSource.size() < 0 || position >= dataSource.size()) return;
         Place place = dataSource.get(position);
 
+        // Place photo
         if (place.photoReference != null && !place.photoReference.isEmpty()) {
             String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + Constants.GM_API_KEY;
             Glide.with(context).load(photoUri).into(holder.ivPlacePhoto);
         }
-        String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
+
+        // Place name
+        String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
         holder.textPlaceName.setText(placeName);
 
+        // Place address
         String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
         holder.textPlaceAddress.setText(placeAddress);
 
+        // Place category
         PlaceType placeType = searchPlaceType(placeTypes, place.types);
         if (placeType != null) {
             holder.textPlaceType.setText(placeType.name);
@@ -72,6 +88,7 @@ public class TravelVisitedPlaceAdapter extends RecyclerView.Adapter<TravelVisite
             holder.textPlaceType.setVisibility(View.GONE);
         }
 
+        // Place history
         if (place.placeHistories != null && place.placeHistories.size() > 0) {
             String totalVisit = place.placeHistories.size() + " " + ((place.placeHistories.size() == 1)? "visit" : "visits");
             holder.textPlaceTotalVisit.setText(totalVisit);
@@ -86,12 +103,36 @@ public class TravelVisitedPlaceAdapter extends RecyclerView.Adapter<TravelVisite
             holder.textPlaceEnterDate.setVisibility(View.GONE);
         }
 
-        holder.onItemActionListerner = onItemActionListerner;
+        // Place confirm
+        if (place.confirmed == 1) {
+            holder.textPlaceConfirm.setVisibility(View.GONE);
+            holder.viewPlaceActionGroup.setVisibility(View.GONE);
+        } else {
+            holder.textPlaceConfirm.setVisibility(View.VISIBLE);
+            holder.viewPlaceActionGroup.setVisibility(View.VISIBLE);
+        }
     }
 
-    @Override
-    public int getItemCount() {
-        return dataSource.size();
+    private void registerEvents(TravelVisitedPlaceViewHolder holder, int position) {
+        if (holder == null || dataSource == null || dataSource.size() < 0 || position >= dataSource.size()) return;
+        Place place = dataSource.get(position);
+
+        holder.btnConfirmPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onTravelActionListerner != null) {
+                    onTravelActionListerner.onPlaceConfirmed(place.id);
+                }
+            }
+        });
+        holder.btnEditPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onTravelActionListerner != null) {
+                    onTravelActionListerner.onPlaceEdited(place.id);
+                }
+            }
+        });
     }
 
     private PlaceType searchPlaceType(List<PlaceType> placeTypes, String tags) {

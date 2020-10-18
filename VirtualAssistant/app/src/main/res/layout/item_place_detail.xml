@@ -21,6 +21,14 @@
         android:layout_weight="1"
         android:paddingHorizontal="20dp">
         <TextView
+            android:id="@+id/place_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="WERE YOU HERE?"
+            android:textSize="14sp"
+            />
+        <TextView
             android:id="@+id/place_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,21 +73,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_horizontal">
+            android:id="@+id/place_action_group">
             <Button
+                android:id="@+id/confirm_place"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 app:icon="@drawable/ic_baseline_check_circle_outline_24"
-                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:iconTint="@color/colorBlack"
                 android:text="Yes"
+                android:textColor="@color/colorBlack"
                 />
             <Button
+                android:id="@+id/edit_place"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 app:icon="@drawable/ic_baseline_edit_24"
-                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:iconTint="@color/colorBlack"
                 android:text="Edit"
+                android:textColor="@color/colorBlack"
                 />
         </LinearLayout>
     </LinearLayout>

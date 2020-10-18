@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
@@ -26,18 +27,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.db.dao.PlaceDao;
+import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
 import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
+import com.vnsolution.virtualassistant.ui.travel.events.OnTravelActionListerner;
 import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceAdapter;
 import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceRecycleView;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -49,7 +50,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class TravelHistoryActivity extends BaseAppActivity implements OnItemActionListerner {
+public class TravelHistoryActivity extends BaseAppActivity implements OnTravelActionListerner {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
@@ -70,6 +71,37 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnItemActi
 
     @Inject
     public StopTrackingManager stopTrackingManager;
+
+    @Inject
+    public PlaceDao placeDao;
+
+    private class ConfirmVisitedPlaceTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String placeId = params.length > 0 ? params[0] : "";
+            PlaceEntity placeEntity = placeDao.getById(placeId);
+            if (placeEntity != null) {
+                placeEntity.confirmed = 1;
+                placeDao.update(placeEntity);
+            }
+            return placeId;
+        }
+
+        @Override
+        protected void onPostExecute(String placeId) {
+            super.onPostExecute(placeId);
+            if (visitedPlaces != null) {
+                for(Place place : visitedPlaces) {
+                    if (place.id == placeId) {
+                        place.confirmed = 1;
+                        break;
+                    }
+                }
+                travelAdapter.setData(visitedPlaces);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,14 +242,7 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnItemActi
 
     @Override
     public void onTap(View view, int position) {
-        if (visitedPlaces != null && visitedPlaces.size() > 0
-            && position >= 0 && position < visitedPlaces.size()) {
-            Place place = visitedPlaces.get(position);
-            Intent travelEditIntent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
-            travelEditIntent.putExtra("longitude", place.longitude);
-            travelEditIntent.putExtra("latitude", place.latitude);
-            startActivity(travelEditIntent);
-        }
+
     }
 
     @Override
@@ -228,5 +253,17 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnItemActi
     @Override
     public void onDoubleTap(View view, int position) {
 
+    }
+
+    @Override
+    public void onPlaceConfirmed(String placeId) {
+        new ConfirmVisitedPlaceTask().execute(placeId);
+    }
+
+    @Override
+    public void onPlaceEdited(String placeId) {
+        Intent travelEditIntent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
+        travelEditIntent.putExtra("PlaceId", placeId);
+        startActivity(travelEditIntent);
     }
 }

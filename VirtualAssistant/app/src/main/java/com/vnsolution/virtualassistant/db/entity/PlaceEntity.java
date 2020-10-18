@@ -79,4 +79,7 @@ public class PlaceEntity extends AuditEntity {
 
     @ColumnInfo(name = "Country")
     public String country;
+
+    @ColumnInfo(name = "Confirmed")
+    public int confirmed;
 }

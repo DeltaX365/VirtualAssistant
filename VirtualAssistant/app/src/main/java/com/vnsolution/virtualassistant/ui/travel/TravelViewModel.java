@@ -15,11 +15,8 @@ import com.vnsolution.virtualassistant.db.entity.PlaceSummary;
 import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
-import com.vnsolution.virtualassistant.model.StopPoint;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -65,20 +62,25 @@ public class TravelViewModel extends ViewModel {
         return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
     }
 
-    public LiveData<List<Place>> searchNearBy(StopPoint stopPoint) {
+    public LiveData<Place> getPlaceById(String placeId) {
+        LiveData<PlaceWithHistoryDetailEntity> placeLiveData = placeDao.getPlaceWithHistoriesByIdASync(placeId);
+        return Transformations.map(placeLiveData, placeEntity -> toPlace(placeEntity));
+    }
+
+    public LiveData<List<Place>> searchNearBy(Place place) {
         nearByPlacesLiveData = new MutableLiveData<>();
-        searchNearByFromLocation(stopPoint);
+        startSearchingNearBy(place);
         return nearByPlacesLiveData;
     }
 
-    private void searchNearByFromLocation(StopPoint stopPoint) {
+    private void startSearchingNearBy(Place place) {
         List<Place> placeList = new ArrayList<>();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<GoogleMapNearByDto.NearBy>> nearByListFuture = executor.submit(new Callable<List<GoogleMapNearByDto.NearBy>>() {
             @Override
             public List<GoogleMapNearByDto.NearBy> call() throws Exception {
-                String location = stopPoint.latitude + "," + stopPoint.longitude;
+                String location = place.latitude + "," + place.longitude;
                 Response<GoogleMapNearByDto> searchNearByLocationResponse = googleService.searchNearByLocation(location, "distance").execute();
                 if (searchNearByLocationResponse.isSuccessful()) {
                     GoogleMapNearByDto nearByPlace = searchNearByLocationResponse.body();

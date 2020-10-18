@@ -8,11 +8,10 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -34,29 +33,38 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.db.dao.PlaceDao;
+import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
+import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
+import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 import com.vnsolution.virtualassistant.model.Place;
+import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
 import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
 import com.vnsolution.virtualassistant.ui.travel.components.travelmatchedplaces.TravelMatchedPlacesAdapter;
 import com.vnsolution.virtualassistant.ui.travel.components.travelmatchedplaces.TravelMatchedPlacesRecycleView;
+import com.vnsolution.virtualassistant.ui.travel.events.OnTravelActionListerner;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class TravelEditActivity extends BaseAppActivity {
+public class TravelEditActivity extends BaseAppActivity implements OnTravelActionListerner {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
-    private TextView tvTotalMatchedPlace;
+    private TextView textPlaceName;
+    private TextView textPlaceAddress;
     private TravelMatchedPlacesRecycleView matchedPlacesRecyclerView;
     private TravelMatchedPlacesAdapter matchedPlacesAdapter;
 
     private TravelViewModel travelViewModel;
+    private Place visitedPlace;
     private List<Place> matchedPlaces = new ArrayList<>();
     private List<PlaceType> placeTypes = new ArrayList<>();
 
@@ -69,6 +77,9 @@ public class TravelEditActivity extends BaseAppActivity {
 
     @Inject
     public StopTrackingManager stopTrackingManager;
+
+    @Inject
+    public PlaceDao placeDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +106,8 @@ public class TravelEditActivity extends BaseAppActivity {
             }
         });
 
-        tvTotalMatchedPlace = findViewById(R.id.total_matched_places);
+        textPlaceName = findViewById(R.id.place_name);
+        textPlaceAddress = findViewById(R.id.place_address);
 
         matchedPlacesRecyclerView = findViewById(R.id.list_matched_places);
         matchedPlacesRecyclerView.setHasFixedSize(true);
@@ -103,30 +115,28 @@ public class TravelEditActivity extends BaseAppActivity {
         placeTypes = stopTrackingManager.getPlaceTypes();
         matchedPlacesAdapter = new TravelMatchedPlacesAdapter(this, matchedPlaces, placeTypes);
         matchedPlacesRecyclerView.setAdapter(matchedPlacesAdapter);
+        matchedPlacesRecyclerView.setOnItemAction(this);
 
-        StopPoint stopPoint = null;
+        travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
+
         Intent intent = getIntent();
         if (intent != null) {
-            double longitude = intent.getDoubleExtra("longitude", 0);
-            double latitude = intent.getDoubleExtra("latitude", 0);
-            if (longitude > 0 && latitude > 0) {
-                stopPoint = new StopPoint(longitude, latitude, null, null);
-            }
-        }
-        if (stopPoint != null) {
-            travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
-            travelViewModel.searchNearBy(stopPoint).observe(this, new Observer<List<Place>>() {
+            String placeId = intent.getStringExtra("PlaceId");
+            travelViewModel.getPlaceById(placeId).observe(this, new Observer<Place>() {
                 @Override
-                public void onChanged(@Nullable List<Place> places) {
-                    matchedPlaces = places;
-                    presentVisitedPlaces(matchedPlaces);
-                    String total = matchedPlaces.size() + " " + ((matchedPlaces.size() == 1) ? "matched place" : "matched places");
-                    tvTotalMatchedPlace.setText(total);
-                    matchedPlacesAdapter.setData(matchedPlaces);
+                public void onChanged(Place place) {
+                    visitedPlace = place;
+                    presentVisitedPlace(visitedPlace);
+                    travelViewModel.searchNearBy(place).observe(TravelEditActivity.this, new Observer<List<Place>>() {
+                        @Override
+                        public void onChanged(@Nullable List<Place> places) {
+                            matchedPlaces = places;
+                            presentMatchedPlaces(matchedPlaces);
+                        }
+                    });
                 }
             });
         }
-
         startWatchingPermissions();
     }
 
@@ -182,18 +192,36 @@ public class TravelEditActivity extends BaseAppActivity {
         }
     }
 
-    private void presentVisitedPlaces(List<Place> places) {
-        if(mGoogleMap != null) {
-            for(Place place: places) {
+    private void presentVisitedPlace(Place place) {
+        if (place != null) {
+            if (mGoogleMap != null) {
                 LatLng latLng = new LatLng(place.latitude, place.longitude);
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
-                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
+                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
                 String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
                 markerOptions.title(placeName + " (" + placeAddress + ")");
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 mGoogleMap.addMarker(markerOptions);
             }
+            textPlaceName.setText(place.placeName);
+            textPlaceAddress.setText(place.formattedAddress);
+        }
+    }
+
+    private void presentMatchedPlaces(List<Place> places) {
+        if(mGoogleMap != null && places != null) {
+            for(Place place: places) {
+                LatLng latLng = new LatLng(place.latitude, place.longitude);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
+                String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
+                markerOptions.title(placeName + " (" + placeAddress + ")");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                mGoogleMap.addMarker(markerOptions);
+            }
+            matchedPlacesAdapter.setData(places);
         }
     }
 
@@ -215,5 +243,48 @@ public class TravelEditActivity extends BaseAppActivity {
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+    }
+
+    @Override
+    public void onPlaceConfirmed(String placeId) {
+
+    }
+
+    @Override
+    public void onPlaceEdited(String placeId) {
+
+    }
+
+    @Override
+    public void onTap(View view, int position) {
+        Place place = matchedPlaces.get(position);
+        PlaceEntity placeEntity = toPlaceEntity(place);
+        placeDao.update(placeEntity);
+        finish();
+    }
+
+    private PlaceEntity toPlaceEntity(Place place) {
+        PlaceEntity placeEntity = new PlaceEntity();
+        placeEntity.id = visitedPlace.id;
+        placeEntity.icon = place.icon;
+        placeEntity.placeName = place.placeName;
+        placeEntity.formattedAddress = place.formattedAddress;
+        placeEntity.types = place.types;
+        placeEntity.latitude = place.latitude;
+        placeEntity.longitude = place.longitude;
+        placeEntity.photoReference = place.photoReference;
+        placeEntity.confirmed = 1;
+        placeEntity.updatedDate = new Date();
+        return placeEntity;
+    }
+
+    @Override
+    public void onLongTap(View view, int position) {
+
+    }
+
+    @Override
+    public void onDoubleTap(View view, int position) {
+
     }
 }

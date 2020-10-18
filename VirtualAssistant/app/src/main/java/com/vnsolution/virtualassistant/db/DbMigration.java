@@ -228,4 +228,13 @@ public class DbMigration {
             database.execSQL(addColumnSyncedToPlaceTableSql);
         }
     };
+
+    public static final Migration MIGRATION_7_8 = new Migration(7, 8) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Add column Synced to Place table
+            String addColumnConfirmedToPlaceTableSql = "ALTER TABLE Place ADD COLUMN Confirmed INTEGER NOT NULL DEFAULT 0";
+            database.execSQL(addColumnConfirmedToPlaceTableSql);
+        }
+    };
 }

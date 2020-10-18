@@ -44,7 +44,7 @@ import com.vnsolution.virtualassistant.db.entity.WeatherEntity;
         PhoneAppUsageEntity.class,
         SettingEntity.class
     },
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters({
