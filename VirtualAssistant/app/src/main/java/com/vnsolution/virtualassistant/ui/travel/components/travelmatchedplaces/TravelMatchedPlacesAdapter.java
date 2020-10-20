@@ -11,27 +11,29 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceViewHolder;
 import com.vnsolution.virtualassistant.ui.travel.events.OnTravelActionListerner;
+import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.List;
 
 public class TravelMatchedPlacesAdapter extends RecyclerView.Adapter<TravelMatchedPlacesViewHolder> {
     private Context context;
-    private List<Place> dataSource;
+    private List<GoogleMapNearByDto.NearBy> dataSource;
     private List<PlaceType> placeTypes;
     private OnTravelActionListerner onTravelActionListerner;
 
-    public TravelMatchedPlacesAdapter(Context context, List<Place> dataSource, List<PlaceType> placeTypes) {
+    public TravelMatchedPlacesAdapter(Context context, List<GoogleMapNearByDto.NearBy> dataSource, List<PlaceType> placeTypes) {
         this.context = context;
         this.dataSource = dataSource;
         this.placeTypes = placeTypes;
     }
 
-    public void setData(List<Place> places) {
-        this.dataSource = places;
+    public void setData(List<GoogleMapNearByDto.NearBy> nearByList) {
+        this.dataSource = nearByList;
         notifyDataSetChanged();
     }
 
@@ -63,15 +65,22 @@ public class TravelMatchedPlacesAdapter extends RecyclerView.Adapter<TravelMatch
 
     private void populateData(TravelMatchedPlacesViewHolder holder, int position) {
         if (holder == null || dataSource == null || dataSource.size() < 0 || position >= dataSource.size()) return;
-        Place place = dataSource.get(position);
+        GoogleMapNearByDto.NearBy nearBy = dataSource.get(position);
 
-        String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
+        // Place name
+        String placeName = (nearBy.name == null || nearBy.name == "") ? "Unknown Address" : nearBy.name;
         holder.textPlaceName.setText(placeName);
 
-        String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
+        // Place address
+        double latitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lat : 0;
+        double longitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lng : 0;
+        latitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        longitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
+        String placeAddress = (nearBy.vicinity == null || nearBy.vicinity == "") ? (latitude + "," + longitude) : nearBy.vicinity;
         holder.textPlaceAddress.setText(placeAddress);
 
-        PlaceType placeType = searchPlaceType(placeTypes, place.types);
+        // Place category
+        PlaceType placeType = searchPlaceType(placeTypes, StringUtils.join(", ", nearBy.types));
         if (placeType != null) {
             holder.textPlaceType.setText(placeType.name);
             holder.textPlaceType.setVisibility(View.VISIBLE);

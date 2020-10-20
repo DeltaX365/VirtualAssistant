@@ -57,6 +57,7 @@ import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
+import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.NotificationUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
@@ -657,13 +658,13 @@ public class StopTrackingService extends Service {
         if (placeEntity == null) {
             Address address = getAddressFromLocation(stopPoint);
             if (address != null) {
-                detectedPlace = convertToPlaceEntityFrom(address);
+                detectedPlace = MappingUtils.convertAddressToPlaceEntity(address);
             }
             // Address address = getAddressFromLocation(stopPoint);
             // GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailByLocation(stopPoint);
             GoogleMapPlaceSearchDto.PlaceSearch placeDetail = searchPlaceByAddress(stopPoint);
             if (placeDetail != null) {
-                detectedPlace = convertToPlaceEntityFrom(placeDetail);
+                detectedPlace = MappingUtils.convertPlaceSearchDtoToPlaceEntity(placeDetail);
             }
             if (detectedPlace != null) {
                 placeEntity = placeDao.getByName(detectedPlace.placeName);
@@ -676,7 +677,7 @@ public class StopTrackingService extends Service {
             }
         }
         if (placeEntity == null) {
-            placeEntity = (detectedPlace != null) ? detectedPlace : convertToPlaceEntityFrom(stopPoint);
+            placeEntity = (detectedPlace != null) ? detectedPlace : MappingUtils.convertStopPointToPlaceEntity(stopPoint);
             placeDao.insert(placeEntity);
         } else {
             if (((placeEntity.ggPlaceId == null) || (placeEntity.ggPlaceId == "")
@@ -715,20 +716,6 @@ public class StopTrackingService extends Service {
         return null;
     }
 
-    private PlaceEntity convertToPlaceEntityFrom(Address address) {
-        PlaceEntity placeEntity = new PlaceEntity();
-        placeEntity.id = UUID.randomUUID().toString();
-        placeEntity.placeName = address.getFeatureName();
-        placeEntity.formattedAddress = address.getAddressLine(0);
-        double longitude = Math.round(address.getLongitude() * Math.pow(10, 7)) / Math.pow(10, 7);
-        double latitude = Math.round(address.getLatitude() * Math.pow(10, 7)) / Math.pow(10, 7);
-        placeEntity.latitude = latitude;
-        placeEntity.longitude = longitude;
-        placeEntity.synced = 0;
-        placeEntity.createdDate = new Date();
-        return placeEntity;
-    }
-
     private GoogleMapPlaceSearchDto.PlaceSearch searchPlaceByAddress(StopPoint stopPoint) {
         Address address = getAddressFromLocation(stopPoint);
         if (address != null && address.getAddressLine(0) != null && address.getAddressLine(0) != "") {
@@ -737,41 +724,6 @@ public class StopTrackingService extends Service {
             return candidate;
         }
         return null;
-    }
-
-    private PlaceEntity convertToPlaceEntityFrom(GoogleMapPlaceSearchDto.PlaceSearch candidate) {
-        PlaceEntity placeEntity = new PlaceEntity();
-        placeEntity.id = UUID.randomUUID().toString();
-        placeEntity.ggPlaceId = candidate.placeId;
-        placeEntity.placeName = candidate.name;
-        placeEntity.formattedAddress = candidate.formattedAddress;
-        double latitude = (candidate.geometry != null && candidate.geometry.location != null)? candidate.geometry.location.lat : 0;
-        double longitude = (candidate.geometry != null && candidate.geometry.location != null)? candidate.geometry.location.lng : 0;
-        latitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
-        longitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
-        placeEntity.latitude = latitude;
-        placeEntity.longitude = longitude;
-        placeEntity.plusCodeCompound = (candidate.plusCode != null)? candidate.plusCode.compoundCode : "";
-        placeEntity.plusCodeGlobal = (candidate.plusCode != null)? candidate.plusCode.globalCode : "";
-        placeEntity.types = join(", ", candidate.types);
-        placeEntity.icon = candidate.icon;
-        placeEntity.rating = candidate.rating;
-        placeEntity.photoReference = (candidate.photos != null && candidate.photos.size() > 0)? candidate.photos.get(0).photoReference : "";
-
-        if (candidate.formattedAddress != null && !candidate.formattedAddress.isEmpty()) {
-            String[] splittedAddress = candidate.formattedAddress.split(",");
-            if (splittedAddress.length == 5) {
-                placeEntity.route = splittedAddress[0];
-                placeEntity.administrativeAreaLevel3 = splittedAddress[1];
-                placeEntity.administrativeAreaLevel2 = splittedAddress[2];
-                placeEntity.administrativeAreaLevel1 = splittedAddress[3];
-                placeEntity.country = splittedAddress[4];
-            }
-        }
-
-        placeEntity.synced = 1;
-        placeEntity.createdDate = new Date();
-        return placeEntity;
     }
 
     private GoogleMapPlaceSearchDto.PlaceSearch searchPlaceByText(String search) {
@@ -844,42 +796,6 @@ public class StopTrackingService extends Service {
         return nearBy;
     }
 
-    private PlaceEntity convertToPlaceEntityFrom(GoogleMapNearByDto.NearBy nearBy) {
-        PlaceEntity placeEntity = new PlaceEntity();
-        placeEntity.id = UUID.randomUUID().toString();
-        placeEntity.ggPlaceId = nearBy.placeId;
-        placeEntity.placeName = nearBy.name;
-        placeEntity.formattedAddress = nearBy.vicinity;
-        double latitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lat : 0;
-        double longitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lng : 0;
-        latitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
-        longitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
-        placeEntity.latitude = latitude;
-        placeEntity.longitude = longitude;
-        placeEntity.plusCodeCompound = (nearBy.plusCode != null)? nearBy.plusCode.compoundCode : "";
-        placeEntity.plusCodeGlobal = (nearBy.plusCode != null)? nearBy.plusCode.globalCode : "";
-        placeEntity.types = join(", ", nearBy.types);
-        placeEntity.icon = nearBy.icon;
-        placeEntity.reference = nearBy.reference;
-        placeEntity.scope = nearBy.scope;
-        placeEntity.userRatingsTotal = nearBy.userRatingsTotal;
-        placeEntity.vicinity = nearBy.vicinity;
-
-        if (nearBy.vicinity != null && !nearBy.vicinity.isEmpty()) {
-            String[] splittedAddress = nearBy.vicinity.split(",");
-            if (splittedAddress.length == 5) {
-                placeEntity.route = splittedAddress[0];
-                placeEntity.administrativeAreaLevel3 = splittedAddress[1];
-                placeEntity.administrativeAreaLevel2 = splittedAddress[2];
-                placeEntity.administrativeAreaLevel1 = splittedAddress[3];
-                placeEntity.country = splittedAddress[4];
-            }
-        }
-
-        placeEntity.createdDate = new Date();
-        return placeEntity;
-    }
-
     private GoogleMapPlaceDetailDto.PlaceDetail getPlaceDetailByLocation(StopPoint stopPoint) {
         GoogleMapPlaceDto.Place place = getPlaceByLocation(stopPoint);
         if (place != null && place.placeId != null && place.placeId != "") {
@@ -887,45 +803,6 @@ public class StopTrackingService extends Service {
             return placeDetail;
         }
         return null;
-    }
-
-    private PlaceEntity convertToPlaceEntityFrom(GoogleMapPlaceDetailDto.PlaceDetail placeDetail) {
-        PlaceEntity placeEntity = new PlaceEntity();
-        placeEntity.id = UUID.randomUUID().toString();
-        placeEntity.ggPlaceId = placeDetail.placeId;
-        placeEntity.placeName = placeDetail.name;
-        placeEntity.formattedAddress = placeDetail.formattedAddress;
-        double latitude = (placeDetail.geometry != null && placeDetail.geometry.location != null)? placeDetail.geometry.location.lat : 0;
-        double longitude = (placeDetail.geometry != null && placeDetail.geometry.location != null)? placeDetail.geometry.location.lng : 0;
-        latitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
-        longitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
-        placeEntity.latitude = latitude;
-        placeEntity.longitude = longitude;
-        placeEntity.plusCodeCompound = (placeDetail.plusCode != null)? placeDetail.plusCode.compoundCode : "";
-        placeEntity.plusCodeGlobal = (placeDetail.plusCode != null)? placeDetail.plusCode.globalCode : "";
-        placeEntity.types = join(", ", placeDetail.types);
-        placeEntity.icon = placeDetail.icon;
-        placeEntity.rating = placeDetail.rating;
-        placeEntity.reference = placeDetail.reference;
-        placeEntity.scope = placeDetail.scope;
-        placeEntity.url = placeDetail.url;
-        placeEntity.userRatingsTotal = placeDetail.userRatingsTotal;
-        placeEntity.utcOffset = String.valueOf(placeDetail.utcOffset);
-        placeEntity.vicinity = placeDetail.vicinity;
-
-        if (placeDetail.formattedAddress != null && !placeDetail.formattedAddress.isEmpty()) {
-            String[] splittedAddress = placeDetail.formattedAddress.split(",");
-            if (splittedAddress.length == 5) {
-                placeEntity.route = splittedAddress[0];
-                placeEntity.administrativeAreaLevel3 = splittedAddress[1];
-                placeEntity.administrativeAreaLevel2 = splittedAddress[2];
-                placeEntity.administrativeAreaLevel1 = splittedAddress[3];
-                placeEntity.country = splittedAddress[4];
-            }
-        }
-
-        placeEntity.createdDate = new Date();
-        return placeEntity;
     }
 
     private GoogleMapPlaceDto.Place getPlaceByLocation(StopPoint stopPoint) {
@@ -978,27 +855,6 @@ public class StopTrackingService extends Service {
         }
         executor.shutdown();
         return placeDetail;
-    }
-
-    private PlaceEntity convertToPlaceEntityFrom(StopPoint stopPoint) {
-        PlaceEntity placeEntity = new PlaceEntity();
-        placeEntity.id = UUID.randomUUID().toString();
-        placeEntity.latitude = stopPoint.latitude;
-        placeEntity.longitude = stopPoint.longitude;
-        placeEntity.synced = 0;
-        placeEntity.createdDate = new Date();
-        return placeEntity;
-    }
-
-    private String join(String delimiter, List<String> types) {
-        StringBuffer sb = new StringBuffer();
-        if (types != null) {
-            for (String type : types) {
-                sb.append(type);
-                sb.append(delimiter);
-            }
-        }
-        return sb.toString();
     }
 
 //    private BroadcastReceiver registerBroadcastReceiver() {

@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
@@ -17,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.room.util.StringUtil;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -32,6 +35,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.common.StopTracking;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
@@ -46,7 +50,9 @@ import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
 import com.vnsolution.virtualassistant.ui.travel.components.travelmatchedplaces.TravelMatchedPlacesAdapter;
 import com.vnsolution.virtualassistant.ui.travel.components.travelmatchedplaces.TravelMatchedPlacesRecycleView;
 import com.vnsolution.virtualassistant.ui.travel.events.OnTravelActionListerner;
+import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
+import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,7 +71,7 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
 
     private TravelViewModel travelViewModel;
     private Place visitedPlace;
-    private List<Place> matchedPlaces = new ArrayList<>();
+    private List<GoogleMapNearByDto.NearBy> matchedPlaces = new ArrayList<>();
     private List<PlaceType> placeTypes = new ArrayList<>();
 
     private LocationCallback mLocationCallback;
@@ -80,6 +86,29 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
 
     @Inject
     public PlaceDao placeDao;
+
+    private class UpdateVisitedPlaceTask extends AsyncTask<GoogleMapNearByDto.NearBy, Void, String> {
+
+        @Override
+        protected String doInBackground(GoogleMapNearByDto.NearBy... nearByList) {
+            GoogleMapNearByDto.NearBy nearByPlace = nearByList.length > 0 ? nearByList[0] : null;
+            if (nearByPlace != null) {
+                PlaceEntity placeEntity = MappingUtils.convertNearByDtoToPlaceEntity(nearByPlace);
+                placeEntity.id = visitedPlace.id;
+                placeEntity.confirmed = 1;
+                placeEntity.updatedDate = new Date();
+                placeDao.update(placeEntity);
+            }
+            return visitedPlace.id;
+        }
+
+        @Override
+        protected void onPostExecute(String placeId) {
+            super.onPostExecute(placeId);
+            Toast.makeText(TravelEditActivity.this, "The visited place is updated", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,10 +156,10 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
                 public void onChanged(Place place) {
                     visitedPlace = place;
                     presentVisitedPlace(visitedPlace);
-                    travelViewModel.searchNearBy(place).observe(TravelEditActivity.this, new Observer<List<Place>>() {
+                    travelViewModel.searchNearBy(place).observe(TravelEditActivity.this, new Observer<List<GoogleMapNearByDto.NearBy>>() {
                         @Override
-                        public void onChanged(@Nullable List<Place> places) {
-                            matchedPlaces = places;
+                        public void onChanged(@Nullable List<GoogleMapNearByDto.NearBy> nearByList) {
+                            matchedPlaces = nearByList;
                             presentMatchedPlaces(matchedPlaces);
                         }
                     });
@@ -173,7 +202,7 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 mCurrentLocation = locationResult.getLastLocation();
-                updateLocation();
+                //updateLocation();
             }
         };
         fusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.getMainLooper());
@@ -182,7 +211,7 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
     private void updateLocation() {
         if(mCurrentLocation != null && mGoogleMap != null) {
             LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f));
         }
     }
 
@@ -196,6 +225,7 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
         if (place != null) {
             if (mGoogleMap != null) {
                 LatLng latLng = new LatLng(place.latitude, place.longitude);
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f));
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
@@ -209,19 +239,21 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
         }
     }
 
-    private void presentMatchedPlaces(List<Place> places) {
-        if(mGoogleMap != null && places != null) {
-            for(Place place: places) {
-                LatLng latLng = new LatLng(place.latitude, place.longitude);
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
-                String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
-                markerOptions.title(placeName + " (" + placeAddress + ")");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                mGoogleMap.addMarker(markerOptions);
-            }
-            matchedPlacesAdapter.setData(places);
+    private void presentMatchedPlaces(List<GoogleMapNearByDto.NearBy> nearByList) {
+        if (nearByList != null) {
+//            if (mGoogleMap != null) {
+//                for (GoogleMapNearByDto.NearBy nearBy : nearByList) {
+//                    LatLng latLng = new LatLng(nearBy.geometry.location.lat, nearBy.geometry.location.lng);
+//                    MarkerOptions markerOptions = new MarkerOptions();
+//                    markerOptions.position(latLng);
+//                    String placeName = (nearBy.name == null || nearBy.name == "") ? "Unknown Address" : nearBy.name;
+//                    String placeAddress = (nearBy.vicinity == null || nearBy.vicinity == "") ? (nearBy.geometry.location.lat + "," + nearBy.geometry.location.lng) : nearBy.vicinity;
+//                    markerOptions.title(placeName + " (" + placeAddress + ")");
+//                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+//                    mGoogleMap.addMarker(markerOptions);
+//                }
+//            }
+            matchedPlacesAdapter.setData(nearByList);
         }
     }
 
@@ -257,25 +289,8 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
 
     @Override
     public void onTap(View view, int position) {
-        Place place = matchedPlaces.get(position);
-        PlaceEntity placeEntity = toPlaceEntity(place);
-        placeDao.update(placeEntity);
-        finish();
-    }
-
-    private PlaceEntity toPlaceEntity(Place place) {
-        PlaceEntity placeEntity = new PlaceEntity();
-        placeEntity.id = visitedPlace.id;
-        placeEntity.icon = place.icon;
-        placeEntity.placeName = place.placeName;
-        placeEntity.formattedAddress = place.formattedAddress;
-        placeEntity.types = place.types;
-        placeEntity.latitude = place.latitude;
-        placeEntity.longitude = place.longitude;
-        placeEntity.photoReference = place.photoReference;
-        placeEntity.confirmed = 1;
-        placeEntity.updatedDate = new Date();
-        return placeEntity;
+        GoogleMapNearByDto.NearBy nearByPlace = matchedPlaces.get(position);
+        new UpdateVisitedPlaceTask().execute(nearByPlace);
     }
 
     @Override

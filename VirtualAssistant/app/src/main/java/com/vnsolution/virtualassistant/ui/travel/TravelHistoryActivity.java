@@ -81,17 +81,18 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnTravelAc
         protected String doInBackground(String... params) {
             String placeId = params.length > 0 ? params[0] : "";
             PlaceEntity placeEntity = placeDao.getById(placeId);
-            if (placeEntity != null) {
+            if (placeEntity != null && placeEntity.confirmed == 0) {
                 placeEntity.confirmed = 1;
                 placeDao.update(placeEntity);
+                return placeId;
             }
-            return placeId;
+            return null;
         }
 
         @Override
         protected void onPostExecute(String placeId) {
             super.onPostExecute(placeId);
-            if (visitedPlaces != null) {
+            if (visitedPlaces != null && placeId != null) {
                 for(Place place : visitedPlaces) {
                     if (place.id == placeId) {
                         place.confirmed = 1;
@@ -139,17 +140,6 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnTravelAc
         travelRecyclerView.setOnItemAction(this);
 
         travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
-        travelViewModel.getPlaces().observe(this, new Observer<List<Place>>() {
-            @Override
-            public void onChanged(@Nullable List<Place> places) {
-                visitedPlaces = places;
-                presentVisitedPlaces(visitedPlaces);
-                String total = visitedPlaces.size() + " " + ((visitedPlaces.size() == 1)? "visited place" : "visited places");
-                tvTotalVisitedPlace.setText(total);
-                travelAdapter.setData(visitedPlaces);
-            }
-        });
-
         startWatchingPermissions();
     }
 
@@ -224,7 +214,18 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnTravelAc
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+
         requestLocationUpdates();
+        travelViewModel.getPlaces().observe(this, new Observer<List<Place>>() {
+            @Override
+            public void onChanged(@Nullable List<Place> places) {
+                visitedPlaces = places;
+                presentVisitedPlaces(visitedPlaces);
+                String total = visitedPlaces.size() + " " + ((visitedPlaces.size() == 1)? "visited place" : "visited places");
+                tvTotalVisitedPlace.setText(total);
+                travelAdapter.setData(visitedPlaces);
+            }
+        });
     }
 
     @Override

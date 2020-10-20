@@ -15,6 +15,7 @@ import com.vnsolution.virtualassistant.db.entity.PlaceSummary;
 import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
+import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +36,7 @@ public class TravelViewModel extends ViewModel {
     private GoogleApi googleService;
 
     private Integer index = 0; //filter all visited places
-    private MutableLiveData<List<Place>> nearByPlacesLiveData;
+    private MutableLiveData<List<GoogleMapNearByDto.NearBy>> nearByPlacesLiveData;
 
     @Inject
     public TravelViewModel(PlaceDao placeDao, GoogleApi googleService) {
@@ -67,14 +68,14 @@ public class TravelViewModel extends ViewModel {
         return Transformations.map(placeLiveData, placeEntity -> toPlace(placeEntity));
     }
 
-    public LiveData<List<Place>> searchNearBy(Place place) {
+    public LiveData<List<GoogleMapNearByDto.NearBy>> searchNearBy(Place place) {
         nearByPlacesLiveData = new MutableLiveData<>();
         startSearchingNearBy(place);
         return nearByPlacesLiveData;
     }
 
     private void startSearchingNearBy(Place place) {
-        List<Place> placeList = new ArrayList<>();
+        List<GoogleMapNearByDto.NearBy> nearByList = new ArrayList<>();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<GoogleMapNearByDto.NearBy>> nearByListFuture = executor.submit(new Callable<List<GoogleMapNearByDto.NearBy>>() {
@@ -90,24 +91,14 @@ public class TravelViewModel extends ViewModel {
             }
         });
         try {
-            List<GoogleMapNearByDto.NearBy> nearByList = nearByListFuture.get();
-            placeList = transformFromNearByDto(nearByList);
+            nearByList = nearByListFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
 
-        nearByPlacesLiveData.setValue(placeList);
-    }
-
-    private List<Place> transformFromNearByDto(List<GoogleMapNearByDto.NearBy> nearByList) {
-        List<Place> places = new ArrayList<>();
-        for (GoogleMapNearByDto.NearBy nearBy: nearByList) {
-            Place place = toPlace(nearBy);
-            places.add(place);
-        }
-        return places;
+        nearByPlacesLiveData.setValue(nearByList);
     }
 
     private List<Place> transformFromPlaceEntity(List<PlaceWithHistoryDetailEntity> placeEntities) {
@@ -117,35 +108,6 @@ public class TravelViewModel extends ViewModel {
             places.add(place);
         }
         return places;
-    }
-
-    private Place toPlace(GoogleMapNearByDto.NearBy nearBy) {
-        Place place = new Place();
-        place.id = UUID.randomUUID().toString();
-        place.placeName = nearBy.name;
-        place.formattedAddress = nearBy.vicinity;
-        double latitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lat : 0;
-        double longitude = (nearBy.geometry != null && nearBy.geometry.location != null)? nearBy.geometry.location.lng : 0;
-        latitude = Math.round(latitude * Math.pow(10, 7)) / Math.pow(10, 7);
-        longitude = Math.round(longitude * Math.pow(10, 7)) / Math.pow(10, 7);
-        place.latitude = latitude;
-        place.longitude = longitude;
-        place.types = join(", ", nearBy.types);
-        place.icon = nearBy.icon;
-        place.photoReference = (nearBy.photos != null && nearBy.photos.size() > 0)? nearBy.photos.get(0).photoReference : "";
-        place.createdDate = new Date();
-        return place;
-    }
-
-    private String join(String delimiter, List<String> types) {
-        StringBuffer sb = new StringBuffer();
-        if (types != null) {
-            for (String type : types) {
-                sb.append(type);
-                sb.append(delimiter);
-            }
-        }
-        return sb.toString();
     }
 
     private Place toPlace(PlaceWithHistoryDetailEntity placeEntity) {
@@ -158,6 +120,7 @@ public class TravelViewModel extends ViewModel {
         place.latitude = placeEntity.place.latitude;
         place.longitude = placeEntity.place.longitude;
         place.photoReference = placeEntity.place.photoReference;
+        place.confirmed = placeEntity.place.confirmed;
         place.createdDate = placeEntity.place.createdDate;
         place.placeHistories = new ArrayList<>();
         for (PlaceHistoryEntity placeHistoryEntity: placeEntity.placeHistories) {
@@ -174,48 +137,5 @@ public class TravelViewModel extends ViewModel {
         placeHistory.enterTime = placeHistoryEntity.enterTime;
         placeHistory.existTime =  placeHistoryEntity.existTime;
         return placeHistory;
-    }
-
-    private List<Place> getPlacesYesterday(List<Place> places) {
-        List<Place> placesYesterday = new ArrayList<>();
-        return placesYesterday;
-    }
-
-    private int getTotalCity(List<PlaceEntity> places) {
-        List<String> cities = new ArrayList<>();
-        for (PlaceEntity place : places) {
-            if (!cities.contains(place.administrativeAreaLevel1)) {
-                cities.add(place.administrativeAreaLevel1);
-            }
-        }
-        return cities.size();
-    }
-
-    private int getTotalCountry(List<PlaceEntity> places) {
-        List<String> countries = new ArrayList<>();
-        for (PlaceEntity place : places) {
-            if (!countries.contains(place.country)) {
-                countries.add(place.country);
-            }
-        }
-        return countries.size();
-    }
-
-    private long getLastVisitedTime(Place place) {
-        long lastVisitedTime = 0;
-        if (place != null && place.placeHistories != null && !place.placeHistories.isEmpty()) {
-            int lastIndex = place.placeHistories.size() - 1;
-            lastVisitedTime = place.placeHistories.get(lastIndex).enterTime.getTime();
-        }
-        return lastVisitedTime;
-    }
-
-    private long calculateTotalVisitedTime(Place place) {
-//        return place.placeHistories.size();
-        long total = 0;
-        for (PlaceHistory placeHistory: place.placeHistories) {
-            total += (placeHistory.enterTime.getTime() - placeHistory.existTime.getTime());
-        }
-        return total;
     }
 }
