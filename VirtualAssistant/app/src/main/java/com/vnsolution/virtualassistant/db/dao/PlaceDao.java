@@ -9,6 +9,7 @@ import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceSummaryEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 
+import java.util.Date;
 import java.util.List;
 
 @Dao
@@ -23,6 +24,14 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "GROUP BY p.Id " +
             "ORDER BY ph.EnterTime DESC")
     LiveData<List<PlaceWithHistoryDetailEntity>> getPlaceWithHistories();
+
+    @Transaction
+    @Query("SELECT * " +
+            "FROM Place " +
+            "LEFT JOIN PlaceHistory ON PlaceHistory.PlaceId = Place.Id " +
+            "WHERE PlaceHistory.EnterTime >= :startDate AND PlaceHistory.EnterTime < :endDate " +
+            "ORDER BY PlaceHistory.EnterTime DESC")
+    LiveData<List<PlaceWithHistoryDetailEntity>> getPlacesByDateRange(String startDate, String endDate);
 
     @Transaction
     @Query("SELECT p.* " +
@@ -46,6 +55,16 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "LIMIT 0, 10")
     LiveData<List<PlaceWithHistoryDetailEntity>> getMostVisitedPlaces();
 
+    @Query("SELECT DISTINCT Country " +
+            "FROM Place " +
+            "WHERE Country IS NOT NULL AND Country != ''")
+    LiveData<List<String>> getVisitedCountries();
+
+    @Query("SELECT DISTINCT AdministrativeAreaLevel1 " +
+            "FROM Place " +
+            "WHERE AdministrativeAreaLevel1 IS NOT NULL AND AdministrativeAreaLevel1 != ''")
+    LiveData<List<String>> getVisitedCities();
+
     @Query("SELECT * FROM Place WHERE Synced = 0")
     List<PlaceEntity> getUnsyncedPlaces();
 
@@ -64,7 +83,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
 
     @Transaction
     @Query("SELECT * FROM Place WHERE Id=:id")
-    LiveData<PlaceWithHistoryDetailEntity> getPlaceWithHistoriesByIdASync(String id);
+    LiveData<PlaceWithHistoryDetailEntity> getPlaceWithHistoriesByIdAsync(String id);
 
     @Query("SELECT * FROM Place WHERE Latitude=:latitude AND Longitude=:longitude")
     PlaceEntity getByLocation(double latitude, double longitude);

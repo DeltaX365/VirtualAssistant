@@ -160,6 +160,7 @@ public class TravelDashboardActivity extends BaseActivity {
         categorizedVisitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PlaceSummary>() {
             @Override
             public void onTap(PlaceSummary item) {
+                super.onTap(item);
                 Intent intent = new Intent(TravelDashboardActivity.this, TravelHistoryActivity.class);
                 intent.putExtra("UiOption", item.type);
                 startActivity(intent);

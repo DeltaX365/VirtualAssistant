@@ -35,17 +35,22 @@ import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
+import com.vnsolution.virtualassistant.util.DateTimeUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,13 +59,16 @@ public class TravelHistoryActivity extends BaseActivity {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
-    private TextView tvTotalVisitedPlace;
-    private RecyclerView travelRecyclerView;
-    private RecyclerViewAdapter<Place> travelAdapter;
+    private TextView totalTextView;
+    private RecyclerView travelHistoryRecyclerView;
+    private RecyclerViewAdapter<Place> visitedPlacesAdapter;
+    private RecyclerViewAdapter<String> visitedRegionsAdapter;
 
-    private TravelViewModel travelViewModel;
+    private TravelViewModel vm;
     private List<Place> visitedPlaces = new ArrayList<>();
+    private List<String> visitedRegions = new ArrayList<>();
     private List<PlaceType> placeTypes = new ArrayList<>();
+    private String uiOption;
 
     private LocationCallback mLocationCallback;
     private FusedLocationProviderClient fusedLocationClient;
@@ -99,7 +107,7 @@ public class TravelHistoryActivity extends BaseActivity {
                         break;
                     }
                 }
-                travelAdapter.setData(visitedPlaces);
+                visitedPlacesAdapter.setData(visitedPlaces);
             }
         }
     }
@@ -107,9 +115,25 @@ public class TravelHistoryActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        vm = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
+        setupView(savedInstanceState);
+    }
+
+    private void setupView(Bundle savedInstanceState) {
         setContentView(R.layout.screen_travel_history);
         setupActionBar();
 
+        placeTypes = stopTrackingManager.getPlaceTypes();
+        Intent intent = getIntent();
+        if (intent != null) {
+            uiOption = intent.getStringExtra("UiOption");
+        }
+
+        setupMap(savedInstanceState);
+        setupBottomSheet();
+    }
+
+    private void setupMap(Bundle savedInstanceState) {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mMapView = (MapView) findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
@@ -128,34 +152,46 @@ public class TravelHistoryActivity extends BaseActivity {
                 enableMyLocation();
             }
         });
+        startWatchingPermissions();
+    }
 
-        tvTotalVisitedPlace = findViewById(R.id.total_visited_places);
+    private void setupBottomSheet() {
+        totalTextView = findViewById(R.id.total_visited_places);
+        travelHistoryRecyclerView = findViewById(R.id.list_visited_places);
+        travelHistoryRecyclerView.setHasFixedSize(true);
 
-        travelRecyclerView = findViewById(R.id.list_visited_places);
-        travelRecyclerView.setHasFixedSize(true);
-
-        travelRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        placeTypes = stopTrackingManager.getPlaceTypes();
-
-        travelAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_SUMMARY_ALL, R.layout.item_place);
-        travelAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
-            @Override
-            public void onAction(Place place, String action) {
-                super.onAction(place, action);
-                if (action == UiOptions.PLACE_ACTION_CONFIRM) {
-                    new ConfirmVisitedPlaceTask().execute(place.id);
-                }
-                if (action == UiOptions.PLACE_ACTION_EDIT) {
-                    Intent intent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
+        if (uiOption.equals(UiOptions.PLACE_SUMMARY_YESTERDAY) || uiOption.equals(UiOptions.PLACE_SUMMARY_ALL)) {
+            travelHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            visitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, uiOption, R.layout.item_place);
+            visitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
+                @Override
+                public void onTap(Place place) {
+                    super.onTap(place);
+                    Intent intent = new Intent(TravelHistoryActivity.this, TravelViewActivity.class);
                     intent.putExtra("PlaceId", place.id);
                     startActivity(intent);
                 }
-            }
-        });
-        travelRecyclerView.setAdapter(travelAdapter);
 
-        travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
-        startWatchingPermissions();
+                @Override
+                public void onAction(Place place, String action) {
+                    super.onAction(place, action);
+                    if (action == UiOptions.PLACE_ACTION_CONFIRM) {
+                        new ConfirmVisitedPlaceTask().execute(place.id);
+                    }
+                    if (action == UiOptions.PLACE_ACTION_EDIT) {
+                        Intent intent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
+                        intent.putExtra("PlaceId", place.id);
+                        startActivity(intent);
+                    }
+                }
+            });
+            travelHistoryRecyclerView.setAdapter(visitedPlacesAdapter);
+        }
+        if (uiOption.equals(UiOptions.PLACE_SUMMARY_CITY) || uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY)) {
+            travelHistoryRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+            visitedRegionsAdapter = new RecyclerViewAdapter<String>(this, uiOption, R.layout.card_region);
+            travelHistoryRecyclerView.setAdapter(visitedRegionsAdapter);
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -231,16 +267,36 @@ public class TravelHistoryActivity extends BaseActivity {
         mMapView.onResume();
 
         requestLocationUpdates();
-        travelViewModel.getPlaces().observe(this, new Observer<List<Place>>() {
-            @Override
-            public void onChanged(@Nullable List<Place> places) {
-                visitedPlaces = places;
-                presentVisitedPlaces(visitedPlaces);
-                String total = visitedPlaces.size() + " " + ((visitedPlaces.size() == 1)? "visited place" : "visited places");
-                tvTotalVisitedPlace.setText(total);
-                travelAdapter.setData(visitedPlaces);
-            }
-        });
+        if (uiOption.equals(UiOptions.PLACE_SUMMARY_ALL) || uiOption.equals(UiOptions.PLACE_SUMMARY_YESTERDAY)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE, -1);
+            Date yesterday = calendar.getTime();
+            Date startOfYesterday = DateTimeUtils.getStartOfDay(yesterday);
+            Date endOfYesterday = DateTimeUtils.getEndOfDay(yesterday);
+            LiveData<List<Place>> placesLiveData = (uiOption.equals(UiOptions.PLACE_SUMMARY_ALL)) ? vm.getPlaces() : vm.getPlacesByDateRange(startOfYesterday, endOfYesterday);
+            placesLiveData.observe(this, new Observer<List<Place>>() {
+                @Override
+                public void onChanged(@Nullable List<Place> places) {
+                    visitedPlaces = places;
+                    presentVisitedPlaces(visitedPlaces);
+                    String total = visitedPlaces.size() + " " + ((visitedPlaces.size() == 1) ? "visited place" : "visited places");
+                    totalTextView.setText(total);
+                    visitedPlacesAdapter.setData(visitedPlaces);
+                }
+            });
+        }
+        if (uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY) || uiOption.equals(UiOptions.PLACE_SUMMARY_CITY)) {
+            LiveData<List<String>> regionsLiveData = (uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY)) ? vm.getVisitedCountries() : vm.getVisitedCities();
+            regionsLiveData.observe(this, new Observer<List<String>>() {
+                @Override
+                public void onChanged(@Nullable List<String> regions) {
+                    visitedRegions = regions;
+                    String total = visitedRegions.size() + " " + ((visitedRegions.size() == 1) ? "visited region" : "visited regions");
+                    totalTextView.setText(total);
+                    visitedRegionsAdapter.setData(visitedRegions);
+                }
+            });
+        }
     }
 
     @Override

@@ -17,7 +17,9 @@ import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.model.PlaceSummary;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -62,8 +64,22 @@ public class TravelViewModel extends ViewModel {
         return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
     }
 
+    public LiveData<List<Place>> getPlacesByDateRange(Date startDate, Date endDate) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getPlacesByDateRange(formatter.format(startDate), formatter.format(endDate));
+        return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
+    }
+
+    public LiveData<List<String>> getVisitedCountries() {
+        return placeDao.getVisitedCountries();
+    }
+
+    public LiveData<List<String>> getVisitedCities() {
+        return placeDao.getVisitedCities();
+    }
+
     public LiveData<Place> getPlaceById(String placeId) {
-        LiveData<PlaceWithHistoryDetailEntity> placeLiveData = placeDao.getPlaceWithHistoriesByIdASync(placeId);
+        LiveData<PlaceWithHistoryDetailEntity> placeLiveData = placeDao.getPlaceWithHistoriesByIdAsync(placeId);
         return Transformations.map(placeLiveData, placeEntity -> toPlace(placeEntity));
     }
 
