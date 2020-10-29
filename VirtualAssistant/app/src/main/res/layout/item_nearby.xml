@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.vnsolution.virtualassistant.ui.travel.components.PlaceNearBySimpleRow xmlns:android="http://schemas.android.com/apk/res/android"
+<com.vnsolution.virtualassistant.ui.travel.components.NearBySimpleRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -31,4 +31,4 @@
         android:textSize="14sp"
         />
 
-</com.vnsolution.virtualassistant.ui.travel.components.PlaceNearBySimpleRow>
+</com.vnsolution.virtualassistant.ui.travel.components.NearBySimpleRow>

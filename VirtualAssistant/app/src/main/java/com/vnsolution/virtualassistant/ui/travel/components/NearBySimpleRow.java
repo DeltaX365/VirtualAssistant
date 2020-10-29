@@ -16,7 +16,7 @@ import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.List;
 
-public class PlaceNearBySimpleRow extends LinearLayout implements RecyclerViewRow<GoogleMapNearByDto.NearBy> {
+public class NearBySimpleRow extends LinearLayout implements RecyclerViewRow<GoogleMapNearByDto.NearBy> {
     private TextView mNameTextView;
     private TextView mAddressTextView;
     private TextView mCategoryTextView;
@@ -26,17 +26,17 @@ public class PlaceNearBySimpleRow extends LinearLayout implements RecyclerViewRo
     private List<PlaceType> mPlaceTypes;
     private OnRecyclerViewRowTouchListener<GoogleMapNearByDto.NearBy> mOnRecyclerViewRowTouchListener;
 
-    public PlaceNearBySimpleRow(Context context) {
+    public NearBySimpleRow(Context context) {
         super(context);
         mContext = context;
     }
 
-    public PlaceNearBySimpleRow(Context context, AttributeSet attrs) {
+    public NearBySimpleRow(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
 
-    public PlaceNearBySimpleRow(Context context, AttributeSet attrs, int defStyleAttr) {
+    public NearBySimpleRow(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
     }

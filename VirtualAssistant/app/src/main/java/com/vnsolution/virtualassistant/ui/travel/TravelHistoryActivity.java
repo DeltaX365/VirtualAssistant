@@ -137,7 +137,7 @@ public class TravelHistoryActivity extends BaseActivity {
         travelRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         placeTypes = stopTrackingManager.getPlaceTypes();
 
-        travelAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_SUMMARY_ALL, R.layout.item_place_history);
+        travelAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_SUMMARY_ALL, R.layout.item_place);
         travelAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
             @Override
             public void onAction(Place place, String action) {

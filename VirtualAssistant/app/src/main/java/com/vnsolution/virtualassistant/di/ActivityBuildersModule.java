@@ -13,6 +13,7 @@ import com.vnsolution.virtualassistant.ui.travel.TravelHistoryActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelV2Activity;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
+import com.vnsolution.virtualassistant.ui.travel.TravelViewActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -36,6 +37,9 @@ public abstract class ActivityBuildersModule {
 
     @ContributesAndroidInjector()
     abstract TravelEditActivity contributeTravelEditActivity();
+
+    @ContributesAndroidInjector()
+    abstract TravelViewActivity contributeTravelViewActivity();
 
     @ContributesAndroidInjector()
     abstract TravelHistoryActivity contributeTravelSummaryActivity();

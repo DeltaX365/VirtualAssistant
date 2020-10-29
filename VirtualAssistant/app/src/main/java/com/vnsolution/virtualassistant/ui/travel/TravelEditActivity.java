@@ -142,7 +142,7 @@ public class TravelEditActivity extends BaseActivity {
         matchedPlacesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         placeTypes = stopTrackingManager.getPlaceTypes();
 
-        matchedPlacesAdapter = new RecyclerViewAdapter<GoogleMapNearByDto.NearBy>(this, UiOptions.PLACE_LIST_NEARBY, R.layout.item_place_nearby);
+        matchedPlacesAdapter = new RecyclerViewAdapter<GoogleMapNearByDto.NearBy>(this, UiOptions.PLACE_LIST_NEARBY, R.layout.item_nearby);
         matchedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<GoogleMapNearByDto.NearBy>() {
             @Override
             public void onTap(GoogleMapNearByDto.NearBy nearByPlace) {

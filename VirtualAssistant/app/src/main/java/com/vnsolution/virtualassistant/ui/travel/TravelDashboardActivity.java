@@ -81,6 +81,15 @@ public class TravelDashboardActivity extends BaseActivity {
         recentlyVisitedPlacesRecyclerView.setLayoutManager(recentlyVisitedPlacesLayoutManager);
 
         recentlyVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_LIST_RECENTLY_VISITED, R.layout.card_place);
+        recentlyVisitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
+            @Override
+            public void onTap(Place place) {
+                super.onTap(place);
+                Intent intent = new Intent(TravelDashboardActivity.this, TravelViewActivity.class);
+                intent.putExtra("PlaceId", place.id);
+                startActivity(intent);
+            }
+        });
         recentlyVisitedPlacesRecyclerView.setAdapter(recentlyVisitedPlacesAdapter);
 
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
@@ -110,6 +119,15 @@ public class TravelDashboardActivity extends BaseActivity {
         mostVisitedPlacesRecyclerView.setLayoutManager(mostVisitedPlacesLayoutManager);
 
         mostVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_LIST_MOST_VISITED, R.layout.card_place);
+        mostVisitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
+            @Override
+            public void onTap(Place place) {
+                super.onTap(place);
+                Intent intent = new Intent(TravelDashboardActivity.this, TravelViewActivity.class);
+                intent.putExtra("PlaceId", place.id);
+                startActivity(intent);
+            }
+        });
         mostVisitedPlacesRecyclerView.setAdapter(mostVisitedPlacesAdapter);
 
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);

@@ -12,4 +12,5 @@ public class UiOptions {
     public static final String PLACE_LIST_NEARBY = "PLACE_LIST_NEARBY";
     public static final String PLACE_ACTION_CONFIRM = "PLACE_ACTION_CONFIRM";
     public static final String PLACE_ACTION_EDIT = "PLACE_ACTION_EDIT";
+    public static final String PLACE_LIST_HISTORY = "PLACE_LIST_HISTORY";
 }

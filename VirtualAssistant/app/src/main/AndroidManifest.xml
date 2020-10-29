@@ -53,6 +53,9 @@
             android:name="com.vnsolution.virtualassistant.ui.travel.TravelHistoryActivity"
             android:label="@string/title_activity_travel_history" />
         <activity
+            android:name="com.vnsolution.virtualassistant.ui.travel.TravelViewActivity"
+            android:label="@string/title_activity_travel_view" />
+        <activity
             android:name="com.vnsolution.virtualassistant.ui.travel.TravelEditActivity"
             android:label="@string/title_activity_travel_edit" />
         <activity android:name="com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsActivity" />
