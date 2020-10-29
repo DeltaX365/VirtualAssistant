@@ -2,7 +2,7 @@ package com.vnsolution.virtualassistant.db.entity;
 
 import androidx.room.ColumnInfo;
 
-public class PlaceSummary {
+public class PlaceSummaryEntity {
     @ColumnInfo(name = "TotalPlaceYesterday")
     public int totalPlaceYesterday;
 

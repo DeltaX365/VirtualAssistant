@@ -1,9 +1,7 @@
 package com.vnsolution.virtualassistant.ui.phonecalls.v1;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,14 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.PhoneCall;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class CallLogsFragment extends Fragment implements Injectable, OnItemActionListerner {
+public class CallLogsFragment extends Fragment implements Injectable {
     private static final int REQUEST_CODE = 1001;
     private CallLogsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -77,7 +74,6 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
             // specify an adapter
             callLogsAdapter = new CallLogsAdapter(mContext, callHistory);
             recyclerView.setAdapter(callLogsAdapter);
-            recyclerView.setOnItemAction(this);
 
             // retrieve data
             getCallLogs();
@@ -120,29 +116,5 @@ public class CallLogsFragment extends Fragment implements Injectable, OnItemActi
         if (requestCode == REQUEST_CODE) {
             getCallLogs();
         }
-    }
-
-    @Override
-    public void onTap(View view, int position) {
-    }
-
-    @Override
-    public void onLongTap(View view, int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Are you sure?");
-        builder.setMessage("Removed item will never be restored. Tap Yes to remove this item.");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.setNegativeButton("No", null);
-        builder.show();
-    }
-
-    @Override
-    public void onDoubleTap(View view, int position) {
     }
 }

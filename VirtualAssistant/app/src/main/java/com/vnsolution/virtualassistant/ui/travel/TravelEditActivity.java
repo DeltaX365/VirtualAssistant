@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.room.util.StringUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -34,25 +34,21 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
-import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
+import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
-import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
-import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 import com.vnsolution.virtualassistant.model.Place;
-import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.model.PlaceType;
-import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
-import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
-import com.vnsolution.virtualassistant.ui.travel.components.travelmatchedplaces.TravelMatchedPlacesAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelmatchedplaces.TravelMatchedPlacesRecycleView;
-import com.vnsolution.virtualassistant.ui.travel.events.OnTravelActionListerner;
+import com.vnsolution.virtualassistant.ui.common.BaseActivity;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
-import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,14 +56,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class TravelEditActivity extends BaseAppActivity implements OnTravelActionListerner {
+public class TravelEditActivity extends BaseActivity {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
     private TextView textPlaceName;
     private TextView textPlaceAddress;
-    private TravelMatchedPlacesRecycleView matchedPlacesRecyclerView;
-    private TravelMatchedPlacesAdapter matchedPlacesAdapter;
+    private RecyclerView matchedPlacesRecyclerView;
+    private RecyclerViewAdapter<GoogleMapNearByDto.NearBy> matchedPlacesAdapter;
+    private TextView textSearchPlace;
 
     private TravelViewModel travelViewModel;
     private Place visitedPlace;
@@ -137,14 +134,23 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
 
         textPlaceName = findViewById(R.id.place_name);
         textPlaceAddress = findViewById(R.id.place_address);
+        textSearchPlace = findViewById(R.id.search_place);
 
         matchedPlacesRecyclerView = findViewById(R.id.list_matched_places);
         matchedPlacesRecyclerView.setHasFixedSize(true);
+
         matchedPlacesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         placeTypes = stopTrackingManager.getPlaceTypes();
-        matchedPlacesAdapter = new TravelMatchedPlacesAdapter(this, matchedPlaces, placeTypes);
+
+        matchedPlacesAdapter = new RecyclerViewAdapter<GoogleMapNearByDto.NearBy>(this, UiOptions.PLACE_LIST_NEARBY, R.layout.item_place_nearby);
+        matchedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<GoogleMapNearByDto.NearBy>() {
+            @Override
+            public void onTap(GoogleMapNearByDto.NearBy nearByPlace) {
+                super.onTap(nearByPlace);
+                new UpdateVisitedPlaceTask().execute(nearByPlace);
+            }
+        });
         matchedPlacesRecyclerView.setAdapter(matchedPlacesAdapter);
-        matchedPlacesRecyclerView.setOnItemAction(this);
 
         travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
 
@@ -166,12 +172,19 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
                 }
             });
         }
+
+        textSearchPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+
         startWatchingPermissions();
     }
 
     @SuppressLint("MissingPermission")
     private void enableMyLocation() {
-        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
             return;
         }
         mGoogleMap.setMyLocationEnabled(true);
@@ -179,7 +192,7 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
 
     private void startWatchingPermissions() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(StopTracking.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+        filter.addAction(StopTrackingOptions.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -191,12 +204,12 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
 
     @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
-        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
             return;
         }
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(StopTracking.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(StopTracking.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setInterval(StopTrackingOptions.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(StopTrackingOptions.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationCallback = new LocationCallback() {
             @Override
@@ -275,31 +288,5 @@ public class TravelEditActivity extends BaseAppActivity implements OnTravelActio
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
-    }
-
-    @Override
-    public void onPlaceConfirmed(String placeId) {
-
-    }
-
-    @Override
-    public void onPlaceEdited(String placeId) {
-
-    }
-
-    @Override
-    public void onTap(View view, int position) {
-        GoogleMapNearByDto.NearBy nearByPlace = matchedPlaces.get(position);
-        new UpdateVisitedPlaceTask().execute(nearByPlace);
-    }
-
-    @Override
-    public void onLongTap(View view, int position) {
-
-    }
-
-    @Override
-    public void onDoubleTap(View view, int position) {
-
     }
 }

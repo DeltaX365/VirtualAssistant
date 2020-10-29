@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.PhoneSms;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
+import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 
 import java.util.List;
 
 public class SmsAdapter extends RecyclerView.Adapter<SmsViewHolder> {
     private Context context;
     private List<PhoneSms> dataSource;
-    private OnItemActionListerner onItemActionListerner;
+    private OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener;
 
     public SmsAdapter(Context context, List<PhoneSms> dataSource) {
         this.context = context;
@@ -30,8 +30,8 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void setHandler(OnItemActionListerner onItemActionListerner) {
-        this.onItemActionListerner = onItemActionListerner;
+    public void setHandler(OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener) {
+        this.onRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -58,7 +58,7 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsViewHolder> {
         catch (Exception e) {
             e.printStackTrace();
         }
-        holder.onItemActionListerner = onItemActionListerner;
+        holder.onRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
     }
 
     @Override

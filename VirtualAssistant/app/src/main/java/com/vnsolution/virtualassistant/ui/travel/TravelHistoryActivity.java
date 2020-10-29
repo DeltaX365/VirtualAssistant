@@ -9,7 +9,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
-import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -26,16 +25,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
+import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
-import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
-import com.vnsolution.virtualassistant.ui.travel.events.OnTravelActionListerner;
-import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelvisitedplaces.TravelVisitedPlaceRecycleView;
+import com.vnsolution.virtualassistant.ui.common.BaseActivity;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import androidx.annotation.Nullable;
@@ -44,19 +43,20 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class TravelHistoryActivity extends BaseAppActivity implements OnTravelActionListerner {
+public class TravelHistoryActivity extends BaseActivity {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
     private TextView tvTotalVisitedPlace;
-    private TravelVisitedPlaceRecycleView travelRecyclerView;
-    private TravelVisitedPlaceAdapter travelAdapter;
+    private RecyclerView travelRecyclerView;
+    private RecyclerViewAdapter<Place> travelAdapter;
 
     private TravelViewModel travelViewModel;
     private List<Place> visitedPlaces = new ArrayList<>();
@@ -129,15 +129,30 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnTravelAc
             }
         });
 
-        tvTotalVisitedPlace = findViewById(R.id.total_matched_places);
+        tvTotalVisitedPlace = findViewById(R.id.total_visited_places);
 
         travelRecyclerView = findViewById(R.id.list_visited_places);
         travelRecyclerView.setHasFixedSize(true);
+
         travelRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         placeTypes = stopTrackingManager.getPlaceTypes();
-        travelAdapter = new TravelVisitedPlaceAdapter(this, visitedPlaces, placeTypes);
+
+        travelAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_SUMMARY_ALL, R.layout.item_place_history);
+        travelAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
+            @Override
+            public void onAction(Place place, String action) {
+                super.onAction(place, action);
+                if (action == UiOptions.PLACE_ACTION_CONFIRM) {
+                    new ConfirmVisitedPlaceTask().execute(place.id);
+                }
+                if (action == UiOptions.PLACE_ACTION_EDIT) {
+                    Intent intent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
+                    intent.putExtra("PlaceId", place.id);
+                    startActivity(intent);
+                }
+            }
+        });
         travelRecyclerView.setAdapter(travelAdapter);
-        travelRecyclerView.setOnItemAction(this);
 
         travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
         startWatchingPermissions();
@@ -145,7 +160,7 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnTravelAc
 
     @SuppressLint("MissingPermission")
     private void enableMyLocation() {
-        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
             return;
         }
         mGoogleMap.setMyLocationEnabled(true);
@@ -153,7 +168,7 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnTravelAc
 
     private void startWatchingPermissions() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(StopTracking.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+        filter.addAction(StopTrackingOptions.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -165,12 +180,12 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnTravelAc
 
     @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
-        if (!PermissionUtils.hasPermissions(this, StopTracking.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
             return;
         }
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(StopTracking.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(StopTracking.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setInterval(StopTrackingOptions.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(StopTrackingOptions.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationCallback = new LocationCallback() {
             @Override
@@ -239,32 +254,5 @@ public class TravelHistoryActivity extends BaseAppActivity implements OnTravelAc
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
-    }
-
-    @Override
-    public void onTap(View view, int position) {
-
-    }
-
-    @Override
-    public void onLongTap(View view, int position) {
-
-    }
-
-    @Override
-    public void onDoubleTap(View view, int position) {
-
-    }
-
-    @Override
-    public void onPlaceConfirmed(String placeId) {
-        new ConfirmVisitedPlaceTask().execute(placeId);
-    }
-
-    @Override
-    public void onPlaceEdited(String placeId) {
-        Intent travelEditIntent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
-        travelEditIntent.putExtra("PlaceId", placeId);
-        startActivity(travelEditIntent);
     }
 }

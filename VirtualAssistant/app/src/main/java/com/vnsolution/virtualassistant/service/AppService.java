@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
@@ -22,9 +22,9 @@ public class AppService {
 
     public void run() {
         // Stop tracking foreground service.
-        if (PermissionUtils.hasPermissions(mContext, StopTracking.PERMISSIONS_STOP_TRACKING)) {
+        if (PermissionUtils.hasPermissions(mContext, StopTrackingOptions.PERMISSIONS_STOP_TRACKING)) {
             Intent serviceIntent = new Intent(mContext, StopTrackingService.class);
-            serviceIntent.setAction(StopTracking.INTENT_ACTION_INITIAL);
+            serviceIntent.setAction(StopTrackingOptions.INTENT_ACTION_INITIAL);
             ContextCompat.startForegroundService(mContext, serviceIntent);
         }
         startWatchingPermissions();
@@ -41,7 +41,7 @@ public class AppService {
         }
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mBroadcastReceiver);
         IntentFilter filter = new IntentFilter();
-        filter.addAction(StopTracking.BROADCAST_PERMISSIONS_ALL_GRANTED);
+        filter.addAction(StopTrackingOptions.BROADCAST_PERMISSIONS_ALL_GRANTED);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mBroadcastReceiver, filter);
     }
 

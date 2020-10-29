@@ -2,7 +2,7 @@ package com.vnsolution.virtualassistant.common;
 
 import android.Manifest;
 
-public class StopTracking {
+public class StopTrackingOptions {
     // Stop tracking broadcast.
     public static final String BROADCAST_PERMISSIONS_ALL_GRANTED = "com.vnsolution.virtualassistant.STOP_TRACKING_BROADCAST_PERMISSIONS_ALL_GRANTED";
     public static final String BROADCAST_PERMISSIONS_LOCATION_GRANTED = "com.vnsolution.virtualassistant.STOP_TRACKING_BROADCAST_LOCATION_PERMISSIONS_GRANTED";

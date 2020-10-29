@@ -1,8 +1,6 @@
 package com.vnsolution.virtualassistant.ui.phoneapps.v1;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,14 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.PhoneApp;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class PhoneAppsFragment extends Fragment implements Injectable, OnItemActionListerner {
+public class PhoneAppsFragment extends Fragment implements Injectable {
     public static final String ARG_SECTION_NUMBER = "section_number";
 
     private PhoneAppsRecycleView recyclerView;
@@ -97,7 +94,6 @@ public class PhoneAppsFragment extends Fragment implements Injectable, OnItemAct
             // specify an adapter
             adapter = new PhoneAppsAdapter(mContext, installedApplications);
             recyclerView.setAdapter(adapter);
-            recyclerView.setOnItemAction(this);
 
             // retrieve data
             AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
@@ -120,29 +116,5 @@ public class PhoneAppsFragment extends Fragment implements Injectable, OnItemAct
         }
 
         return root;
-    }
-
-    @Override
-    public void onTap(View view, int position) {
-    }
-
-    @Override
-    public void onLongTap(View view, int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Are you sure?");
-        builder.setMessage("Removed item will never be restored. Tap Yes to remove this item.");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.setNegativeButton("No", null);
-        builder.show();
-    }
-
-    @Override
-    public void onDoubleTap(View view, int position) {
     }
 }

@@ -1,7 +1,5 @@
 package com.vnsolution.virtualassistant.ui.phoneapps.v1;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.PhoneApp;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +24,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class PhoneAppsActivity extends AppCompatActivity implements HasAndroidInjector, OnItemActionListerner {
+public class PhoneAppsActivity extends AppCompatActivity implements HasAndroidInjector {
     private PhoneAppsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
@@ -61,7 +58,6 @@ public class PhoneAppsActivity extends AppCompatActivity implements HasAndroidIn
         // specify an adapter
         installedApplicationAdapter = new PhoneAppsAdapter(this, installedApplications);
         recyclerView.setAdapter(installedApplicationAdapter);
-        recyclerView.setOnItemAction(this);
 
         // retrieve data
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
@@ -82,30 +78,6 @@ public class PhoneAppsActivity extends AppCompatActivity implements HasAndroidIn
                 progressOverlay.setVisibility(View.INVISIBLE);
             }
         });
-    }
-
-    @Override
-    public void onTap(View view, int position) {
-    }
-
-    @Override
-    public void onLongTap(View view, int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Are you sure?");
-        builder.setMessage("Removed item will never be restored. Tap Yes to remove this item.");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.setNegativeButton("No", null);
-        builder.show();
-    }
-
-    @Override
-    public void onDoubleTap(View view, int position) {
     }
 
     @Override

@@ -26,7 +26,7 @@
                 android:text="Recently visited"
                 android:textColor="@color/colorBlack"
                 />
-            <com.vnsolution.virtualassistant.ui.travel.components.travelrecentlyvisitedplaces.TravelRecentlyVisitedPlacesRecycleView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_recently_visited_places"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
                 android:textColor="@color/colorBlack"
                 android:layout_marginTop="40dp"
                 />
-            <com.vnsolution.virtualassistant.ui.travel.components.travelmostvisitedplaces.TravelMostVisitedPlacesRecycleView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_most_visited_places"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
                 android:textColor="@color/colorBlack"
                 android:layout_marginTop="40dp"
                 />
-            <com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesRecycleView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_categorized_visited_places"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

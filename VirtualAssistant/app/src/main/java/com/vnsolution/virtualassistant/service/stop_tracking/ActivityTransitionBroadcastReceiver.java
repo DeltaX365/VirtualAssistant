@@ -10,8 +10,7 @@ import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
-import com.vnsolution.virtualassistant.common.StopTracking;
-import com.vnsolution.virtualassistant.util.NotificationUtils;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class ActivityTransitionBroadcastReceiver extends BroadcastReceiver {
                     activityStatus += "Enter still." + "\n";
                     // Whenever user enters still, then we indicate that they are stopping at a new position, so check-in event will be invoked
                     Intent serviceIntent = new Intent(context, StopTrackingService.class);
-                    serviceIntent.setAction(StopTracking.INTENT_ACTION_CHECK_IN);
+                    serviceIntent.setAction(StopTrackingOptions.INTENT_ACTION_CHECK_IN);
                     ContextCompat.startForegroundService(context, serviceIntent);
                     break;
                 }

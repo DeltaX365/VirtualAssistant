@@ -5,13 +5,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService;
-import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
+import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
@@ -19,13 +18,7 @@ import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
 
-import javax.inject.Inject;
-
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasAndroidInjector;
-
-public class DeveloperActivity extends BaseAppActivity {
+public class DeveloperActivity extends BaseActivity {
     private Button btnShowVisitedPlaces;
     private Button btnManualCheckIn;
     private Button btnManualCheckOut;
@@ -55,7 +48,7 @@ public class DeveloperActivity extends BaseAppActivity {
             @Override
             public void onClick(View v) {
                 Intent serviceIntent = new Intent(DeveloperActivity.this, StopTrackingService.class);
-                serviceIntent.setAction(StopTracking.INTENT_ACTION_INITIAL);
+                serviceIntent.setAction(StopTrackingOptions.INTENT_ACTION_INITIAL);
                 ContextCompat.startForegroundService(DeveloperActivity.this, serviceIntent);
             }
         });
@@ -65,7 +58,7 @@ public class DeveloperActivity extends BaseAppActivity {
             @Override
             public void onClick(View v) {
                 Intent serviceIntent = new Intent(DeveloperActivity.this, StopTrackingService.class);
-                serviceIntent.setAction(StopTracking.INTENT_ACTION_CHECK_OUT);
+                serviceIntent.setAction(StopTrackingOptions.INTENT_ACTION_CHECK_OUT);
                 ContextCompat.startForegroundService(DeveloperActivity.this, serviceIntent);
             }
         });

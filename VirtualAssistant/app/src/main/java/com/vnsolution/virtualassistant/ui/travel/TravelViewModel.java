@@ -8,19 +8,17 @@ import androidx.lifecycle.ViewModel;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.vnsolution.virtualassistant.api.GoogleApi;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
+import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
-import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
-import com.vnsolution.virtualassistant.db.entity.PlaceSummary;
+import com.vnsolution.virtualassistant.db.entity.PlaceSummaryEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
-import com.vnsolution.virtualassistant.util.StringUtils;
+import com.vnsolution.virtualassistant.model.PlaceSummary;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -54,8 +52,9 @@ public class TravelViewModel extends ViewModel {
         return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
     }
 
-    public LiveData<PlaceSummary> getPlaceSummary() {
-        return placeDao.getPlaceSummary();
+    public LiveData<List<PlaceSummary>> getPlaceSummary() {
+        LiveData<PlaceSummaryEntity> placeSummaryEntityLiveData = placeDao.getPlaceSummary();
+        return Transformations.map(placeSummaryEntityLiveData, placeSummaryEntity -> transformFromPlaceSummaryEntity(placeSummaryEntity));
     }
 
     public LiveData<List<Place>> getPlaces() {
@@ -108,6 +107,32 @@ public class TravelViewModel extends ViewModel {
             places.add(place);
         }
         return places;
+    }
+
+    private List<PlaceSummary> transformFromPlaceSummaryEntity(PlaceSummaryEntity placeSummaryEntity) {
+        List<PlaceSummary> placeSummaryList = new ArrayList<>();
+
+        PlaceSummary yesterdaySummary = new PlaceSummary();
+        yesterdaySummary.type = UiOptions.PLACE_SUMMARY_YESTERDAY;
+        yesterdaySummary.total = placeSummaryEntity.totalPlaceYesterday;
+        placeSummaryList.add(yesterdaySummary);
+
+        PlaceSummary allSummary = new PlaceSummary();
+        allSummary.type = UiOptions.PLACE_SUMMARY_ALL;
+        allSummary.total = placeSummaryEntity.totalPlace;
+        placeSummaryList.add(allSummary);
+
+        PlaceSummary citySummary = new PlaceSummary();
+        citySummary.type = UiOptions.PLACE_SUMMARY_CITY;
+        citySummary.total = placeSummaryEntity.totalCity;
+        placeSummaryList.add(citySummary);
+
+        PlaceSummary countrySummary = new PlaceSummary();
+        countrySummary.type = UiOptions.PLACE_SUMMARY_COUNTRY;
+        countrySummary.total = placeSummaryEntity.totalCountry;
+        placeSummaryList.add(countrySummary);
+
+        return placeSummaryList;
     }
 
     private Place toPlace(PlaceWithHistoryDetailEntity placeEntity) {

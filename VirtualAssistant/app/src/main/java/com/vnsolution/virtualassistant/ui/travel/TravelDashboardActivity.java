@@ -5,11 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -17,42 +14,35 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.db.entity.PlaceSummary;
+import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.Place;
+import com.vnsolution.virtualassistant.model.PlaceSummary;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
-import com.vnsolution.virtualassistant.ui.common.BaseAppActivity;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
-import com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelcategorizedplaces.TravelCategorizedVisitedPlacesRecycleView;
-import com.vnsolution.virtualassistant.ui.travel.components.travelmostvisitedplaces.TravelMostVisitedPlacesAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelmostvisitedplaces.TravelMostVisitedPlacesRecycleView;
-import com.vnsolution.virtualassistant.ui.travel.components.travelrecentlyvisitedplaces.TravelRecentlyVisitedPlacesAdapter;
-import com.vnsolution.virtualassistant.ui.travel.components.travelrecentlyvisitedplaces.TravelRecentlyVisitedPlacesRecycleView;
+import com.vnsolution.virtualassistant.ui.common.BaseActivity;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-
-public class TravelDashboardActivity extends BaseAppActivity implements OnItemActionListerner {
-    private TravelRecentlyVisitedPlacesRecycleView recentlyVisitedPlacesRecyclerView;
-    private TravelRecentlyVisitedPlacesAdapter recentlyVisitedPlacesAdapter;
+public class TravelDashboardActivity extends BaseActivity {
+    private RecyclerView recentlyVisitedPlacesRecyclerView;
+    private RecyclerViewAdapter<Place> recentlyVisitedPlacesAdapter;
     private RecyclerView.LayoutManager recentlyVisitedPlacesLayoutManager;
     private List<Place> recentlyVisitedPlaces = new ArrayList<>();
 
-    private TravelMostVisitedPlacesRecycleView mostVisitedPlacesRecyclerView;
-    private TravelMostVisitedPlacesAdapter mostVisitedPlacesAdapter;
+    private RecyclerView mostVisitedPlacesRecyclerView;
+    private RecyclerViewAdapter<Place> mostVisitedPlacesAdapter;
     private RecyclerView.LayoutManager mostVisitedPlacesLayoutManager;
     private List<Place> mostVisitedPlaces = new ArrayList<>();
 
-    private TravelCategorizedVisitedPlacesRecycleView categorizedVisitedPlacesRecyclerView;
-    private TravelCategorizedVisitedPlacesAdapter categorizedVisitedPlacesAdapter;
+    private RecyclerView categorizedVisitedPlacesRecyclerView;
+    private RecyclerViewAdapter<PlaceSummary> categorizedVisitedPlacesAdapter;
     private RecyclerView.LayoutManager categorizedVisitedPlacesLayoutManager;
-    private PlaceSummary placeSummary;
+    private List<PlaceSummary> placeSummaryList;
 
     private FrameLayout progressOverlay;
     private TravelViewModel vm;
@@ -90,9 +80,8 @@ public class TravelDashboardActivity extends BaseAppActivity implements OnItemAc
         recentlyVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentlyVisitedPlacesRecyclerView.setLayoutManager(recentlyVisitedPlacesLayoutManager);
 
-        recentlyVisitedPlacesAdapter = new TravelRecentlyVisitedPlacesAdapter(this, recentlyVisitedPlaces, placeTypes);
+        recentlyVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_LIST_RECENTLY_VISITED, R.layout.card_place);
         recentlyVisitedPlacesRecyclerView.setAdapter(recentlyVisitedPlacesAdapter);
-        recentlyVisitedPlacesRecyclerView.setOnItemAction(this);
 
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
         inAnimation.setDuration(200);
@@ -120,9 +109,8 @@ public class TravelDashboardActivity extends BaseAppActivity implements OnItemAc
         mostVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mostVisitedPlacesRecyclerView.setLayoutManager(mostVisitedPlacesLayoutManager);
 
-        mostVisitedPlacesAdapter = new TravelMostVisitedPlacesAdapter(this, mostVisitedPlaces, placeTypes);
+        mostVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_LIST_MOST_VISITED, R.layout.card_place);
         mostVisitedPlacesRecyclerView.setAdapter(mostVisitedPlacesAdapter);
-        mostVisitedPlacesRecyclerView.setOnItemAction(this);
 
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
         inAnimation.setDuration(200);
@@ -150,20 +138,27 @@ public class TravelDashboardActivity extends BaseAppActivity implements OnItemAc
         categorizedVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         categorizedVisitedPlacesRecyclerView.setLayoutManager(categorizedVisitedPlacesLayoutManager);
 
-        categorizedVisitedPlacesAdapter = new TravelCategorizedVisitedPlacesAdapter(this, placeSummary);
+        categorizedVisitedPlacesAdapter = new RecyclerViewAdapter<PlaceSummary>(this, UiOptions.PLACE_LIST_SUMMARY, R.layout.card_place_category);
+        categorizedVisitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PlaceSummary>() {
+            @Override
+            public void onTap(PlaceSummary item) {
+                Intent intent = new Intent(TravelDashboardActivity.this, TravelHistoryActivity.class);
+                intent.putExtra("UiOption", item.type);
+                startActivity(intent);
+            }
+        });
         categorizedVisitedPlacesRecyclerView.setAdapter(categorizedVisitedPlacesAdapter);
-        categorizedVisitedPlacesRecyclerView.setOnItemAction(this);
 
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
         inAnimation.setDuration(200);
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        vm.getPlaceSummary().observe(this, new Observer<PlaceSummary>() {
+        vm.getPlaceSummary().observe(this, new Observer<List<PlaceSummary>>() {
             @Override
-            public void onChanged(@Nullable PlaceSummary placeSummary) {
-                TravelDashboardActivity.this.placeSummary = placeSummary;
-                categorizedVisitedPlacesAdapter.setData(placeSummary);
+            public void onChanged(@Nullable List<PlaceSummary> placeSummaryList) {
+                TravelDashboardActivity.this.placeSummaryList = placeSummaryList;
+                categorizedVisitedPlacesAdapter.setData(placeSummaryList);
 
                 AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
                 outAnimation.setDuration(200);
@@ -171,54 +166,5 @@ public class TravelDashboardActivity extends BaseAppActivity implements OnItemAc
                 progressOverlay.setVisibility(View.INVISIBLE);
             }
         });
-    }
-
-    @Override
-    public void onTap(View view, int position) {
-//        String message = "";
-//        if (recentlyVisitedPlaces != null && position >= 0 && position <= recentlyVisitedPlaces.size() - 1) {
-//            Place place = recentlyVisitedPlaces.get(position);
-//            message += "Name: " + place.placeName + "\n";
-//            message += "Address: " + place.formattedAddress + "\n";
-//            message += "Location: (" + place.latitude + ", " + place.longitude + ")" + "\n\n";
-//            message += "History:" + "\n";
-//            int index = 0;
-//            for(PlaceHistory placeHistory: place.placeHistories) {
-//                message += index + ". " + "\n";
-//                message += "Enter: " + placeHistory.enterTime + "\n";
-//                message += "Exist: " + placeHistory.existTime + "\n";
-//                index++;
-//            }
-//        }
-//        if (!message.isEmpty()) {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//            builder.setTitle("Item detail");
-//            builder.setMessage(message);
-//            builder.setCancelable(true);
-//            builder.setNeutralButton("Ok", null);
-//            builder.show();
-//        }
-        Intent intent = new Intent(this, TravelHistoryActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onLongTap(View view, int position) {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Are you sure?");
-//        builder.setMessage("Removed item will never be restored. Tap Yes to remove this item.");
-//        builder.setCancelable(false);
-//        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//            }
-//        });
-//        builder.setNegativeButton("No", null);
-//        builder.show();
-    }
-
-    @Override
-    public void onDoubleTap(View view, int position) {
     }
 }

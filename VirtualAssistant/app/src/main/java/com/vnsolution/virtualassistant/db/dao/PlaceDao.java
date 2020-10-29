@@ -6,7 +6,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
-import com.vnsolution.virtualassistant.db.entity.PlaceSummary;
+import com.vnsolution.virtualassistant.db.entity.PlaceSummaryEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 
 import java.util.List;
@@ -57,11 +57,12 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "WHERE PlaceHistory.EnterTime >= strftime('%Y-%m-%d 00:00:00', 'now', '-1 day') AND PlaceHistory.EnterTime < strftime('%Y-%m-%d 00:00:00', 'now') " +
             ") as TotalPlaceYesterday " +
             "FROM Place")
-    LiveData<PlaceSummary> getPlaceSummary();
+    LiveData<PlaceSummaryEntity> getPlaceSummary();
 
     @Query("SELECT * FROM Place WHERE Id=:id")
     PlaceEntity getById(String id);
 
+    @Transaction
     @Query("SELECT * FROM Place WHERE Id=:id")
     LiveData<PlaceWithHistoryDetailEntity> getPlaceWithHistoriesByIdASync(String id);
 

@@ -53,12 +53,13 @@
                     android:padding="10dp"
                     android:text="Choose a different place"
                     />
-                <com.vnsolution.virtualassistant.ui.travel.components.travelmatchedplaces.TravelMatchedPlacesRecycleView
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/list_matched_places"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/list_matched_places"
                     />
                 <TextView
+                    android:id="@+id/search_place"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"

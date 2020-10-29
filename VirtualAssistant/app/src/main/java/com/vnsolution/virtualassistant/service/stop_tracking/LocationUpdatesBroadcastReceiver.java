@@ -5,10 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 
-import androidx.core.content.ContextCompat;
-
 import com.google.android.gms.location.LocationResult;
-import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 
 public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
     public static final String INTENT_ACTION = "com.vnsolution.virtualassistant.ACTION_UPDATE_LOCATIONS";
@@ -17,7 +15,7 @@ public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent != null &&
             intent.getAction().equals(INTENT_ACTION) &&
-            intent.getCategories().contains(StopTracking.INTENT_CATEGORY_ACTIVITY_TRANSITION)) {
+            intent.getCategories().contains(StopTrackingOptions.INTENT_CATEGORY_ACTIVITY_TRANSITION)) {
             // Enqueues a JobIntentService passing the context and intent as parameters
             // ActivityTransitionsJobIntentService.enqueueWork(context, intent);
             LocationResult result = LocationResult.extractResult(intent);

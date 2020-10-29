@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
+import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 
 public class PhoneAppsRecycleView extends RecyclerView {
     public PhoneAppsRecycleView(@NonNull Context context) {
@@ -22,10 +22,10 @@ public class PhoneAppsRecycleView extends RecyclerView {
         super(context, attrs, defStyle);
     }
 
-    public void setOnItemAction(OnItemActionListerner onItemActionListerner) {
+    public void setOnItemAction(OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener) {
         if (this.getAdapter() != null && this.getAdapter() instanceof PhoneAppsAdapter) {
             PhoneAppsAdapter adapter = (PhoneAppsAdapter) this.getAdapter();
-            adapter.setHandler(onItemActionListerner);
+            adapter.setHandler(onRecyclerViewRowTouchListener);
         }
     }
 }

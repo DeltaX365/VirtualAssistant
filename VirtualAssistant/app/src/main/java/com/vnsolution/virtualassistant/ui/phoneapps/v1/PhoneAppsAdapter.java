@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.PhoneApp;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
+import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 
 import java.util.List;
 
 public class PhoneAppsAdapter extends RecyclerView.Adapter<PhoneAppsViewHolder> {
     private Context context;
     private List<PhoneApp> dataSource;
-    private OnItemActionListerner onItemActionListerner;
+    private OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener;
 
     public PhoneAppsAdapter(Context context, List<PhoneApp> dataSource) {
         this.context = context;
@@ -32,8 +32,8 @@ public class PhoneAppsAdapter extends RecyclerView.Adapter<PhoneAppsViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void setHandler(OnItemActionListerner onItemActionListerner) {
-        this.onItemActionListerner = onItemActionListerner;
+    public void setHandler(OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener) {
+        this.onRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -66,7 +66,7 @@ public class PhoneAppsAdapter extends RecyclerView.Adapter<PhoneAppsViewHolder> 
         catch (Exception e) {
             e.printStackTrace();
         }
-        holder.onItemActionListerner = onItemActionListerner;
+        holder.onRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
     }
 
     @Override

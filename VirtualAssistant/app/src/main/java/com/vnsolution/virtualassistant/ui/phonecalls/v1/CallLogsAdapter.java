@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.PhoneCall;
-import com.vnsolution.virtualassistant.ui.common.OnItemActionListerner;
+import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 
 import java.util.List;
 
 public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsViewHolder> {
     private Context context;
     private List<PhoneCall> dataSource;
-    private OnItemActionListerner onItemActionListerner;
+    private OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener;
 
     public CallLogsAdapter(Context context, List<PhoneCall> dataSource) {
         this.context = context;
@@ -30,8 +30,8 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void setHandler(OnItemActionListerner onItemActionListerner) {
-        this.onItemActionListerner = onItemActionListerner;
+    public void setHandler(OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener) {
+        this.onRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -68,7 +68,7 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsViewHolder> {
         catch (Exception e) {
             e.printStackTrace();
         }
-        holder.onItemActionListerner = onItemActionListerner;
+        holder.onRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
     }
 
     @Override

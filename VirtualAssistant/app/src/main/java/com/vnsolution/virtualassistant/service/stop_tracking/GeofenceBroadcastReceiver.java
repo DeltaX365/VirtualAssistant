@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
-import com.vnsolution.virtualassistant.common.StopTracking;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.util.NotificationUtils;
 
 import java.util.ArrayList;
@@ -43,15 +43,15 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ) { //Check-in
             geofencingStatus = "Enter geofence.";
-            action = StopTracking.INTENT_ACTION_CHECK_IN;
+            action = StopTrackingOptions.INTENT_ACTION_CHECK_IN;
         }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ) { //Mark as visited
             geofencingStatus = "Dwell geofence.";
-            action = StopTracking.INTENT_ACTION_MARK_AS_VISITED;
+            action = StopTrackingOptions.INTENT_ACTION_MARK_AS_VISITED;
         }
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) { //Check-out
             geofencingStatus = "Exist geofence.";
-            action = StopTracking.INTENT_ACTION_CHECK_OUT;
+            action = StopTrackingOptions.INTENT_ACTION_CHECK_OUT;
         }
 
 //        if (!geofencingStatus.isEmpty()) {
