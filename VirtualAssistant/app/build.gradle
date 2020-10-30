@@ -87,6 +87,9 @@ dependencies {
     // WorkManager
     implementation "androidx.work:work-runtime:2.4.0"
 
+    // Google Place
+    implementation 'com.google.android.libraries.places:places:2.4.0'
+
     // UI RecyclerView
 //    implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
