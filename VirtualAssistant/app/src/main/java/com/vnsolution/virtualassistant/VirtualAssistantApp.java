@@ -2,6 +2,8 @@ package com.vnsolution.virtualassistant;
 
 import android.app.Application;
 
+import com.google.android.libraries.places.api.Places;
+import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.di.AppComponent;
 import com.vnsolution.virtualassistant.di.AppInjector;
 import com.vnsolution.virtualassistant.service.AppService;
@@ -25,6 +27,7 @@ public class VirtualAssistantApp extends Application implements HasAndroidInject
         appComponent = AppInjector.init(this);
         new AppService(getApplicationContext()).run();
         new AppWorkManager(getApplicationContext()).run();
+        Places.initialize(getApplicationContext(), Constants.GM_API_KEY);
     }
 
     @Override

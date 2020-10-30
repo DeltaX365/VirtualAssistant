@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 import com.vnsolution.virtualassistant.VirtualAssistantApp;
 
 import dagger.android.AndroidInjection;
+import dagger.android.HasAndroidInjector;
 import dagger.android.support.AndroidSupportInjection;
 
 public class AppInjector {
@@ -61,18 +62,19 @@ public class AppInjector {
     }
 
     private static void handleActivity(Activity activity) {
-        AndroidInjection.inject(activity);
-        if (activity instanceof FragmentActivity) {
-            ((FragmentActivity) activity).getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
-                @Override
-                public void onFragmentAttached(@NonNull FragmentManager fm, @NonNull Fragment f, @NonNull Context context) {
+        if (activity instanceof HasAndroidInjector) {
+            AndroidInjection.inject(activity);
+            if (activity instanceof FragmentActivity) {
+                ((FragmentActivity) activity).getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentAttached(@NonNull FragmentManager fm, @NonNull Fragment f, @NonNull Context context) {
 //                        super.onFragmentAttached(fm, f, context);
-                    if (f instanceof Injectable) {
-                         AndroidSupportInjection.inject(f);
+                        if (f instanceof Injectable) {
+                            AndroidSupportInjection.inject(f);
+                        }
                     }
-                }
-            }, true);
-        }
+                }, true);
+            }
 //        if (activity instanceof FragmentActivity) {
 //            ((FragmentActivity) activity).getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
 //                @Override
@@ -82,5 +84,6 @@ public class AppInjector {
 //                }
 //            }, true);
 //        }
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ public class PlaceSimpleRow extends LinearLayout implements RecyclerViewRow<Plac
     private ViewGroup mConfirmViewGroup;
     private Button mConfirmButton;
     private Button mEditButton;
+    private ImageButton mFavouriteButton;
 
     private Context mContext;
     private Place mPlace;
@@ -82,6 +84,7 @@ public class PlaceSimpleRow extends LinearLayout implements RecyclerViewRow<Plac
                 }
             }
         });
+        mFavouriteButton = findViewById(R.id.favourite_place);
     }
 
     @Override

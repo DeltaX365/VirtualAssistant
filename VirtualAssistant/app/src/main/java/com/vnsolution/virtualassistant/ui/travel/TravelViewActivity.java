@@ -1,62 +1,29 @@
 package com.vnsolution.virtualassistant.ui.travel;
 
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.common.Constants;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
-import com.vnsolution.virtualassistant.db.convertor.DateConverter;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
-import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
-import com.vnsolution.virtualassistant.model.PlaceSummary;
 import com.vnsolution.virtualassistant.model.PlaceType;
-import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
+import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
-import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.util.MappingUtils;
-import com.vnsolution.virtualassistant.util.PermissionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -77,12 +44,6 @@ public class TravelViewActivity extends BaseActivity {
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
-
-    @Inject
-    public StopTrackingManager stopTrackingManager;
-
-    @Inject
-    public PlaceDao placeDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +109,7 @@ public class TravelViewActivity extends BaseActivity {
             // Visit total
             if (place.placeHistories != null && place.placeHistories.size() > 0) {
                 String totalVisit = place.placeHistories.size() + " " + ((place.placeHistories.size() == 1)? "visit" : "visits");
-                mTotalVisitTextView.setText(totalVisit);
+                mTotalVisitTextView.setText("History . " + totalVisit);
                 mTotalVisitTextView.setVisibility(View.VISIBLE);
             } else {
                 mTotalVisitTextView.setVisibility(View.GONE);

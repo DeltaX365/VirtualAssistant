@@ -14,7 +14,7 @@ import java.util.UUID;
 public class MappingUtils {
     public static PlaceEntity convertStopPointToPlaceEntity(StopPoint stopPoint) {
         PlaceEntity placeEntity = new PlaceEntity();
-        placeEntity.id = UUID.randomUUID().toString();
+        placeEntity.id = (stopPoint.placeId != null && stopPoint.placeId != "")? stopPoint.placeId : UUID.randomUUID().toString();
         placeEntity.latitude = stopPoint.latitude;
         placeEntity.longitude = stopPoint.longitude;
         placeEntity.synced = 0;

@@ -31,7 +31,7 @@ import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
-import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
+import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
@@ -78,23 +78,15 @@ public class TravelHistoryActivity extends BaseActivity {
     public ViewModelProvider.Factory viewModelFactory;
 
     @Inject
-    public StopTrackingManager stopTrackingManager;
-
-    @Inject
-    public PlaceDao placeDao;
+    public PlaceManager placeManager;
 
     private class ConfirmVisitedPlaceTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
             String placeId = params.length > 0 ? params[0] : "";
-            PlaceEntity placeEntity = placeDao.getById(placeId);
-            if (placeEntity != null && placeEntity.confirmed == 0) {
-                placeEntity.confirmed = 1;
-                placeDao.update(placeEntity);
-                return placeId;
-            }
-            return null;
+            PlaceEntity placeEntity = placeManager.confirmPlace(placeId);
+            return (placeEntity != null && placeEntity.confirmed == 0) ? placeId : null;
         }
 
         @Override
@@ -123,7 +115,7 @@ public class TravelHistoryActivity extends BaseActivity {
         setContentView(R.layout.screen_travel_history);
         setupActionBar();
 
-        placeTypes = stopTrackingManager.getPlaceTypes();
+        placeTypes = placeManager.getPlaceTypes();
         Intent intent = getIntent();
         if (intent != null) {
             uiOption = intent.getStringExtra("UiOption");

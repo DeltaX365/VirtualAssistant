@@ -18,7 +18,7 @@ import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceSummary;
 import com.vnsolution.virtualassistant.model.PlaceType;
-import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingManager;
+import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
@@ -52,7 +52,7 @@ public class TravelDashboardActivity extends BaseActivity {
     public ViewModelProvider.Factory viewModelFactory;
 
     @Inject
-    public StopTrackingManager stopTrackingManager;
+    public PlaceManager placeManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class TravelDashboardActivity extends BaseActivity {
         setupActionBar();
 
         progressOverlay = findViewById(R.id.progress_overlay);
-        placeTypes = stopTrackingManager.getPlaceTypes();
+        placeTypes = placeManager.getPlaceTypes();
 
         setupRecentlyVisitedPlacesView();
         setupMostVisitedPlacesView();
