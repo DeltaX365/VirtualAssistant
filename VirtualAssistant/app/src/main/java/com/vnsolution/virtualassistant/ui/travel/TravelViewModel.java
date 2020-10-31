@@ -153,20 +153,24 @@ public class TravelViewModel extends ViewModel {
 
     private Place toPlace(PlaceWithHistoryDetailEntity placeEntity) {
         Place place = new Place();
-        place.id = placeEntity.place.id;
-        place.icon = placeEntity.place.icon;
-        place.placeName = placeEntity.place.placeName;
-        place.formattedAddress = placeEntity.place.formattedAddress;
-        place.types = placeEntity.place.types;
-        place.latitude = placeEntity.place.latitude;
-        place.longitude = placeEntity.place.longitude;
-        place.photoReference = placeEntity.place.photoReference;
-        place.confirmed = placeEntity.place.confirmed;
-        place.createdDate = placeEntity.place.createdDate;
+        if (placeEntity != null && placeEntity.place != null) {
+            place.id = placeEntity.place.id;
+            place.icon = placeEntity.place.icon;
+            place.placeName = placeEntity.place.placeName;
+            place.formattedAddress = placeEntity.place.formattedAddress;
+            place.types = placeEntity.place.types;
+            place.latitude = placeEntity.place.latitude;
+            place.longitude = placeEntity.place.longitude;
+            place.photoReference = placeEntity.place.photoReference;
+            place.confirmed = placeEntity.place.confirmed;
+            place.createdDate = placeEntity.place.createdDate;
+        }
         place.placeHistories = new ArrayList<>();
-        for (PlaceHistoryEntity placeHistoryEntity: placeEntity.placeHistories) {
-            PlaceHistory placeHistory = toPlaceHistory(placeHistoryEntity);
-            place.placeHistories.add(placeHistory);
+        if (placeEntity != null && placeEntity.placeHistories != null) {
+            for (PlaceHistoryEntity placeHistoryEntity : placeEntity.placeHistories) {
+                PlaceHistory placeHistory = toPlaceHistory(placeHistoryEntity);
+                place.placeHistories.add(placeHistory);
+            }
         }
         return place;
     }

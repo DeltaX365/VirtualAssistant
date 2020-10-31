@@ -19,6 +19,9 @@ public interface PlaceHistoryDao extends BaseDao<PlaceHistoryEntity> {
     @Query("SELECT * FROM PlaceHistory")
     LiveData<List<PlaceHistoryWithDetailEntity>> getPlaceHistoriesWithDetail();
 
+    @Query("UPDATE PlaceHistory SET PlaceId = :toPlaceId WHERE PlaceId = :fromPlaceId")
+    void transfer(String fromPlaceId, String toPlaceId);
+
     @Query("DELETE FROM PlaceHistory")
     void reset();
 }

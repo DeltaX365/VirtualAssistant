@@ -42,7 +42,7 @@ public class GoogleMapNearByDto {
         public List<String> types;
 
         @SerializedName("user_ratings_total")
-        public int userRatingsTotal;
+        public double userRatingsTotal;
 
         @SerializedName("vicinity")
         public String vicinity;

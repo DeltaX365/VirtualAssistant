@@ -37,7 +37,7 @@ public class GoogleMapPlaceSearchDto {
         public List<String> types;
 
         @SerializedName("rating")
-        public int rating;
+        public double rating;
 
         @SerializedName("photos")
         public List<Photo> photos;

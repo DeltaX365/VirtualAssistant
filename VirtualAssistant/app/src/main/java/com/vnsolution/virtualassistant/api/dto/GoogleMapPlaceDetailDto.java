@@ -128,7 +128,7 @@ public class GoogleMapPlaceDetailDto {
         public PlusCode plusCode;
 
         @SerializedName("rating")
-        public int rating;
+        public double rating;
 
         @SerializedName("reference")
         public String reference;
@@ -143,7 +143,7 @@ public class GoogleMapPlaceDetailDto {
         public String url;
 
         @SerializedName("user_ratings_total")
-        public int userRatingsTotal;
+        public double userRatingsTotal;
 
         @SerializedName("utc_offset")
         public int utcOffset;

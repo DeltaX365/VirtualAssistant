@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 
+import com.google.android.libraries.places.api.model.Place;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.vnsolution.virtualassistant.api.GoogleApi;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
@@ -14,9 +15,9 @@ import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
-import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.model.StopPoint;
+import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
 import com.vnsolution.virtualassistant.util.MappingUtils;
 
 import java.io.IOException;
@@ -60,9 +61,16 @@ public class PlaceManager {
                 Address address = getAddressByLocation(context, placeEntity.latitude, placeEntity.longitude);
                 GoogleMapPlaceSearchDto.PlaceSearch placeSearch = searchPlaceByAddress(address);
                 if (placeSearch != null) {
-                    String placeId = placeEntity.id;
-                    placeEntity = MappingUtils.convertPlaceSearchDtoToPlaceEntity(placeSearch);
-                    placeEntity.id = placeId;
+                    PlaceEntity matchedPlaceEntity = placeDao.getByGGPlaceId(placeSearch.placeId);
+                    if (matchedPlaceEntity == null) {
+                        String placeId = placeEntity.id;
+                        placeEntity = MappingUtils.convertPlaceSearchDtoToPlaceEntity(placeSearch);
+                        placeEntity.id = placeId;
+                    } else {
+                        placeHistoryDao.transfer(placeEntity.id, matchedPlaceEntity.id);
+                        placeDao.delete(placeEntity);
+                        continue;
+                    }
                 }
             }
             placeEntity.synced = 1;
@@ -99,8 +107,9 @@ public class PlaceManager {
         } else {
             if (((existingPlaceEntity.ggPlaceId == null) || (existingPlaceEntity.ggPlaceId == "")
                     || (existingPlaceEntity.placeName == null) || (existingPlaceEntity.placeName == "")) && newPlaceEntity != null) {
-                newPlaceEntity.id = existingPlaceEntity.id;
+                String placeId = existingPlaceEntity.id;
                 existingPlaceEntity = newPlaceEntity;
+                existingPlaceEntity.id = placeId;
                 placeDao.update(existingPlaceEntity);
             }
         }
@@ -118,7 +127,7 @@ public class PlaceManager {
         }
     }
 
-    public PlaceEntity confirmPlace(String placeId) {
+    public PlaceEntity confirmDetectedPlace(String placeId) {
         PlaceEntity placeEntity = placeDao.getById(placeId);
         if (placeEntity != null && placeEntity.confirmed == 0) {
             placeEntity.confirmed = 1;
@@ -127,14 +136,38 @@ public class PlaceManager {
         return placeEntity;
     }
 
-    public PlaceEntity updatePlace(String placeId, GoogleMapNearByDto.NearBy nearBy) {
+    public PlaceEntity confirmUpdatedPlace(String placeId, GoogleMapNearByDto.NearBy nearBy) {
         PlaceEntity placeEntity = null;
-        if (nearBy != null) {
-            placeEntity = MappingUtils.convertNearByDtoToPlaceEntity(nearBy);
-            placeEntity.id = placeId;
-            placeEntity.confirmed = 1;
-            placeEntity.updatedDate = new Date();
-            placeDao.update(placeEntity);
+        if (placeId != null && placeId != "" && nearBy != null) {
+            placeEntity = placeDao.getByGGPlaceId(nearBy.placeId);
+            if (placeEntity == null) {
+                placeEntity = MappingUtils.convertNearByDtoToPlaceEntity(nearBy);
+                placeEntity.id = placeId;
+                placeEntity.confirmed = 1;
+                placeEntity.updatedDate = new Date();
+                placeDao.update(placeEntity);
+            } else {
+                placeHistoryDao.transfer(placeId, placeEntity.id);
+                placeDao.delete(placeDao.getById(placeId));
+            }
+        }
+        return placeEntity;
+    }
+
+    public PlaceEntity confirmUpdatedPlace(String placeId, GoogleMapPlaceDetailDto.PlaceDetail placeDetail) {
+        PlaceEntity placeEntity = null;
+        if (placeId != null && placeId != "" && placeDetail != null) {
+            placeEntity = placeDao.getByGGPlaceId(placeDetail.placeId);
+            if (placeEntity == null) {
+                placeEntity = MappingUtils.convertPlaceDetailToPlaceEntity(placeDetail);
+                placeEntity.id = placeId;
+                placeEntity.confirmed = 1;
+                placeEntity.updatedDate = new Date();
+                placeDao.update(placeEntity);
+            } else {
+                placeHistoryDao.transfer(placeId, placeEntity.id);
+                placeDao.delete(placeDao.getById(placeId));
+            }
         }
         return placeEntity;
     }

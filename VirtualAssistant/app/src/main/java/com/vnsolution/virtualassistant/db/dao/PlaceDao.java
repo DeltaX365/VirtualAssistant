@@ -26,7 +26,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
     LiveData<List<PlaceWithHistoryDetailEntity>> getPlaceWithHistories();
 
     @Transaction
-    @Query("SELECT * " +
+    @Query("SELECT Place.* " +
             "FROM Place " +
             "LEFT JOIN PlaceHistory ON PlaceHistory.PlaceId = Place.Id " +
             "WHERE PlaceHistory.EnterTime >= :startDate AND PlaceHistory.EnterTime < :endDate " +

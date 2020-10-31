@@ -27,7 +27,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
-import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
@@ -85,7 +84,7 @@ public class TravelHistoryActivity extends BaseActivity {
         @Override
         protected String doInBackground(String... params) {
             String placeId = params.length > 0 ? params[0] : "";
-            PlaceEntity placeEntity = placeManager.confirmPlace(placeId);
+            PlaceEntity placeEntity = placeManager.confirmDetectedPlace(placeId);
             return (placeEntity != null && placeEntity.confirmed == 0) ? placeId : null;
         }
 

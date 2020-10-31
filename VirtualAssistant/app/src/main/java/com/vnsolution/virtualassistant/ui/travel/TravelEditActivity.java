@@ -9,7 +9,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,20 +42,16 @@ import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
-import com.vnsolution.virtualassistant.db.dao.PlaceDao;
-import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -88,12 +83,34 @@ public class TravelEditActivity extends BaseActivity {
     @Inject
     public PlaceManager placeManager;
 
-    private class UpdateVisitedPlaceTask extends AsyncTask<GoogleMapNearByDto.NearBy, Void, String> {
+    private class UpdatePlaceByNearByTask extends AsyncTask<GoogleMapNearByDto.NearBy, Void, String> {
 
         @Override
         protected String doInBackground(GoogleMapNearByDto.NearBy... nearByList) {
             GoogleMapNearByDto.NearBy nearByPlace = nearByList.length > 0 ? nearByList[0] : null;
-            placeManager.updatePlace(visitedPlace.id, nearByPlace);
+            if (nearByPlace != null) {
+                placeManager.confirmUpdatedPlace(visitedPlace.id, nearByPlace);
+            }
+            return visitedPlace.id;
+        }
+
+        @Override
+        protected void onPostExecute(String placeId) {
+            super.onPostExecute(placeId);
+            Toast.makeText(TravelEditActivity.this, "The visited place is updated", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    private class UpdatePlaceByPlaceDetailTask extends AsyncTask<com.google.android.libraries.places.api.model.Place, Void, String> {
+
+        @Override
+        protected String doInBackground(com.google.android.libraries.places.api.model.Place... places) {
+            com.google.android.libraries.places.api.model.Place googlePlace = places.length > 0 ? places[0] : null;
+            if (googlePlace != null) {
+                GoogleMapPlaceDetailDto.PlaceDetail placeDetail = placeManager.getPlaceDetailById(googlePlace.getId());
+                placeManager.confirmUpdatedPlace(visitedPlace.id, placeDetail);
+            }
             return visitedPlace.id;
         }
 
@@ -145,7 +162,7 @@ public class TravelEditActivity extends BaseActivity {
             @Override
             public void onTap(GoogleMapNearByDto.NearBy nearByPlace) {
                 super.onTap(nearByPlace);
-                new UpdateVisitedPlaceTask().execute(nearByPlace);
+                new UpdatePlaceByNearByTask().execute(nearByPlace);
             }
         });
         matchedPlacesRecyclerView.setAdapter(matchedPlacesAdapter);
@@ -177,14 +194,8 @@ public class TravelEditActivity extends BaseActivity {
                 List<com.google.android.libraries.places.api.model.Place.Field> fields = Arrays.asList(
                         com.google.android.libraries.places.api.model.Place.Field.ADDRESS,
                         com.google.android.libraries.places.api.model.Place.Field.ADDRESS_COMPONENTS,
-                        com.google.android.libraries.places.api.model.Place.Field.BUSINESS_STATUS,
                         com.google.android.libraries.places.api.model.Place.Field.ID,
-                        com.google.android.libraries.places.api.model.Place.Field.LAT_LNG,
-                        com.google.android.libraries.places.api.model.Place.Field.PLUS_CODE,
-                        com.google.android.libraries.places.api.model.Place.Field.RATING,
-                        com.google.android.libraries.places.api.model.Place.Field.TYPES,
-                        com.google.android.libraries.places.api.model.Place.Field.USER_RATINGS_TOTAL,
-                        com.google.android.libraries.places.api.model.Place.Field.UTC_OFFSET
+                        com.google.android.libraries.places.api.model.Place.Field.LAT_LNG
                 );
                 Intent autoCompleteActivityIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields).build(TravelEditActivity.this);
                 startActivityForResult(autoCompleteActivityIntent, AUTOCOMPLETE_REQUEST_CODE);
@@ -198,11 +209,7 @@ public class TravelEditActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE && resultCode == RESULT_OK) {
             com.google.android.libraries.places.api.model.Place place = Autocomplete.getPlaceFromIntent(data);
-            Log.i("TravelEditActivity", "Place: " + place.getName() + ", " + place.getId());
-            GoogleMapPlaceDetailDto.PlaceDetail placeDetail = placeManager.getPlaceDetailById(place.getId());
-            PlaceEntity placeEntity = MappingUtils.convertPlaceDetailToPlaceEntity(placeDetail);
-            placeEntity.id = visitedPlace.id;
-            placeManager.savePlace(this, placeEntity);
+            new UpdatePlaceByPlaceDetailTask().execute(place);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
