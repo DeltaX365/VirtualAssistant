@@ -16,6 +16,7 @@ import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.model.PlaceSummary;
+import com.vnsolution.virtualassistant.model.PlaceType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -62,11 +62,12 @@ public class TravelEditActivity extends BaseActivity {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
-    private TextView textPlaceName;
-    private TextView textPlaceAddress;
+    private TextView placeNameTextView;
+    private TextView placeAddressTextView;
     private RecyclerView matchedPlacesRecyclerView;
     private RecyclerViewAdapter<GoogleMapNearByDto.NearBy> matchedPlacesAdapter;
-    private TextView textSearchPlace;
+    private TextView searchPlaceTextView;
+    private TextView deletePlaceTextView;
 
     private TravelViewModel travelViewModel;
     private Place visitedPlace;
@@ -122,6 +123,25 @@ public class TravelEditActivity extends BaseActivity {
         }
     }
 
+    private class RemovePlaceTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... placeIds) {
+            String placeId = placeIds.length > 0 ? placeIds[0] : null;
+            if (placeId != null && placeId != "") {
+                placeManager.removePlace(placeId);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(TravelEditActivity.this, "The visited place is deleted", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,9 +167,10 @@ public class TravelEditActivity extends BaseActivity {
             }
         });
 
-        textPlaceName = findViewById(R.id.place_name);
-        textPlaceAddress = findViewById(R.id.place_address);
-        textSearchPlace = findViewById(R.id.search_place);
+        placeNameTextView = findViewById(R.id.place_name);
+        placeAddressTextView = findViewById(R.id.place_address);
+        searchPlaceTextView = findViewById(R.id.search_place);
+        deletePlaceTextView = findViewById(R.id.delete_place);
 
         matchedPlacesRecyclerView = findViewById(R.id.list_matched_places);
         matchedPlacesRecyclerView.setHasFixedSize(true);
@@ -188,7 +209,7 @@ public class TravelEditActivity extends BaseActivity {
             });
         }
 
-        textSearchPlace.setOnClickListener(new View.OnClickListener() {
+        searchPlaceTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 List<com.google.android.libraries.places.api.model.Place.Field> fields = Arrays.asList(
@@ -199,6 +220,13 @@ public class TravelEditActivity extends BaseActivity {
                 );
                 Intent autoCompleteActivityIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields).build(TravelEditActivity.this);
                 startActivityForResult(autoCompleteActivityIntent, AUTOCOMPLETE_REQUEST_CODE);
+            }
+        });
+
+        deletePlaceTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new RemovePlaceTask().execute(visitedPlace.id);
             }
         });
 
@@ -279,8 +307,8 @@ public class TravelEditActivity extends BaseActivity {
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 mGoogleMap.addMarker(markerOptions);
             }
-            textPlaceName.setText(place.placeName);
-            textPlaceAddress.setText(place.formattedAddress);
+            placeNameTextView.setText(place.placeName);
+            placeAddressTextView.setText(place.formattedAddress);
         }
     }
 

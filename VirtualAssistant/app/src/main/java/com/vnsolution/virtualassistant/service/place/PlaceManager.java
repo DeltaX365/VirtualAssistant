@@ -172,6 +172,16 @@ public class PlaceManager {
         return placeEntity;
     }
 
+    public void removePlace(String placeId) {
+        if (placeId != null && placeId != "") {
+            PlaceEntity placeEntity = placeDao.getById(placeId);
+            if (placeEntity != null) {
+                placeHistoryDao.delete(placeId);
+                placeDao.delete(placeEntity);
+            }
+        }
+    }
+
     public GoogleMapPlaceSearchDto.PlaceSearch searchPlaceByAddress(Address address) {
         if (address != null && address.getAddressLine(0) != null && address.getAddressLine(0) != "") {
             String search = "point_of_interest, " + address.getAddressLine(0);

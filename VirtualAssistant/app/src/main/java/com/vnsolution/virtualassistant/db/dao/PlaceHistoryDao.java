@@ -22,6 +22,9 @@ public interface PlaceHistoryDao extends BaseDao<PlaceHistoryEntity> {
     @Query("UPDATE PlaceHistory SET PlaceId = :toPlaceId WHERE PlaceId = :fromPlaceId")
     void transfer(String fromPlaceId, String toPlaceId);
 
+    @Query("DELETE FROM PlaceHistory WHERE PlaceId = :placeId")
+    void delete(String placeId);
+
     @Query("DELETE FROM PlaceHistory")
     void reset();
 }

@@ -1,10 +1,12 @@
 package com.vnsolution.virtualassistant.ui.travel;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
@@ -13,11 +15,14 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.db.convertor.DateConverter;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceSummary;
 import com.vnsolution.virtualassistant.model.PlaceType;
+import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
@@ -29,6 +34,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class TravelDashboardActivity extends BaseActivity {
+    private TextView visitingPlaceTextView;
+
     private RecyclerView recentlyVisitedPlacesRecyclerView;
     private RecyclerViewAdapter<Place> recentlyVisitedPlacesAdapter;
     private RecyclerView.LayoutManager recentlyVisitedPlacesLayoutManager;
@@ -68,9 +75,34 @@ public class TravelDashboardActivity extends BaseActivity {
         progressOverlay = findViewById(R.id.progress_overlay);
         placeTypes = placeManager.getPlaceTypes();
 
+        setupVisitingPlaceView();
         setupRecentlyVisitedPlacesView();
         setupMostVisitedPlacesView();
         setupCategorizedVisitedPlacesView();
+    }
+
+    private void setupVisitingPlaceView() {
+        visitingPlaceTextView = findViewById(R.id.visiting_place);
+
+        StopPoint stopPoint = getStopPointFromCache(); //this should be called via StopTrackingManager - to be changed
+        if (stopPoint != null && stopPoint.placeId != null && stopPoint.placeId != "") {
+            vm.getPlaceById(stopPoint.placeId).observe(this, new Observer<Place>() {
+                @Override
+                public void onChanged(Place place) {
+                    if (place != null) {
+                        String detail = place.placeName + "\n" + place.formattedAddress + "\n\n" + "Since " + DateConverter.toString(stopPoint.enter);
+                        visitingPlaceTextView.setText(detail);
+                    }
+                }
+            });
+        }
+    }
+
+    private StopPoint getStopPointFromCache() {
+        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        String stopPointString = sharedPref.getString("StopPoint", "");
+        Gson gson = new Gson();
+        return !stopPointString.isEmpty()? gson.fromJson(stopPointString, StopPoint.class) : null;
     }
 
     private void setupRecentlyVisitedPlacesView() {
