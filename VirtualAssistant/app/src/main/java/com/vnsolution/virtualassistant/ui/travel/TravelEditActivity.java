@@ -48,6 +48,7 @@ import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
+import com.vnsolution.virtualassistant.util.GoogleMapUtil;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;
@@ -296,19 +297,12 @@ public class TravelEditActivity extends BaseActivity {
 
     private void presentVisitedPlace(Place place) {
         if (place != null) {
-            if (mGoogleMap != null) {
-                LatLng latLng = new LatLng(place.latitude, place.longitude);
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f));
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
-                String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
-                markerOptions.title(placeName + " (" + placeAddress + ")");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                mGoogleMap.addMarker(markerOptions);
-            }
-            placeNameTextView.setText(place.placeName);
-            placeAddressTextView.setText(place.formattedAddress);
+            LatLng latLng = new LatLng(place.latitude, place.longitude);
+            String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
+            String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
+            GoogleMapUtil.drawMarker(mGoogleMap, latLng, placeName + " (" + placeAddress + ")",true, 15f);
+            placeNameTextView.setText(placeName);
+            placeAddressTextView.setText(placeAddress);
         }
     }
 

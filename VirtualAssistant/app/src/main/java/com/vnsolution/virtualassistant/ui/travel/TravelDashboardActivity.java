@@ -90,7 +90,14 @@ public class TravelDashboardActivity extends BaseActivity {
                 @Override
                 public void onChanged(Place place) {
                     if (place != null) {
-                        String detail = place.placeName + "\n" + place.formattedAddress + "\n\n" + "Since " + DateConverter.toString(stopPoint.enter);
+                        String detail = "";
+                        if (place.placeName != null && place.placeName != "" &&
+                            place.formattedAddress != null && place.formattedAddress != "") {
+                            detail += place.placeName + "\n" + place.formattedAddress;
+                        } else {
+                            detail += place.latitude + ", " + place.longitude;
+                        }
+                        detail += "\n\n Since " + DateConverter.toString(stopPoint.enter);
                         visitingPlaceTextView.setText(detail);
                     }
                 }

@@ -18,12 +18,12 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
@@ -35,6 +35,7 @@ import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.DateTimeUtils;
+import com.vnsolution.virtualassistant.util.GoogleMapUtil;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import androidx.annotation.Nullable;
@@ -238,16 +239,11 @@ public class TravelHistoryActivity extends BaseActivity {
     }
 
     private void presentVisitedPlaces(List<Place> places) {
-        if(mGoogleMap != null) {
+        if(places != null) {
             for(Place place: places) {
                 LatLng latLng = new LatLng(place.latitude, place.longitude);
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
-                String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
-                markerOptions.title(placeName + " (" + placeAddress + ")");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                mGoogleMap.addMarker(markerOptions);
+                String placeName = (place.placeName != null && place.placeName != "")? place.placeName : (place.latitude + ", " + place.longitude);
+                GoogleMapUtil.drawMarker(mGoogleMap, latLng, placeName, R.drawable.ic_red_dot_10);
             }
         }
     }
