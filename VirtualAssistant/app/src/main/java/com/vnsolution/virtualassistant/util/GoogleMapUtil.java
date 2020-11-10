@@ -1,6 +1,8 @@
 package com.vnsolution.virtualassistant.util;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.util.DisplayMetrics;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -63,6 +65,11 @@ public class GoogleMapUtil {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
             }
         }
+    }
+
+    public static int dpToPx(Context context, int dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
     private static double calculateCircleRadiusMeterForMapCircle(final int targetRadiusDip, final double circleCenterLatitude, final float currentMapZoom) {

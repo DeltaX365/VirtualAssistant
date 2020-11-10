@@ -162,6 +162,7 @@ public class TravelEditActivity extends BaseActivity {
             @Override
             public void onMapReady(GoogleMap mMap) {
                 mGoogleMap = mMap;
+                mGoogleMap.setPadding(0, 0, 0, GoogleMapUtil.dpToPx(TravelEditActivity.this, 350));
                 mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
                 mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
                 enableMyLocation();

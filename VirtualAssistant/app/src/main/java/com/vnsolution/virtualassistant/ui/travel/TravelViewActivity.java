@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant.ui.travel;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,14 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.common.UiOptions;
-import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.model.PlaceType;
-import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 
@@ -37,6 +37,7 @@ public class TravelViewActivity extends BaseActivity {
     private RecyclerView mPlaceHistoryRecyclerView;
     private RecyclerViewAdapter<PlaceHistory> mPlaceHistoryAdapter;
     private RecyclerView.LayoutManager mPlaceHistoryLayoutManager;
+    private FloatingActionButton mEditPlaceBtn;
 
     private TravelViewModel travelViewModel;
     private Place visitedPlace;
@@ -48,6 +49,11 @@ public class TravelViewActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
+        setupView();
+    }
+
+    private void setupView() {
         setContentView(R.layout.screen_travel_view);
         setupActionBar();
 
@@ -56,16 +62,23 @@ public class TravelViewActivity extends BaseActivity {
         mAddressTextView = findViewById(R.id.place_address);
         mTypeTextView = findViewById(R.id.place_type);
         mTotalVisitTextView = findViewById(R.id.place_total_visit);
+
         mPlaceHistoryRecyclerView = findViewById(R.id.place_history);
         mPlaceHistoryRecyclerView.setHasFixedSize(true);
-
         mPlaceHistoryLayoutManager = new LinearLayoutManager(this);
         mPlaceHistoryRecyclerView.setLayoutManager(mPlaceHistoryLayoutManager);
-
         mPlaceHistoryAdapter = new RecyclerViewAdapter<PlaceHistory>(this, UiOptions.PLACE_LIST_HISTORY, R.layout.item_place_history);
         mPlaceHistoryRecyclerView.setAdapter(mPlaceHistoryAdapter);
 
-        travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
+        mEditPlaceBtn = findViewById(R.id.edit_place);
+        mEditPlaceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TravelViewActivity.this, TravelEditActivity.class);
+                intent.putExtra("PlaceId", visitedPlace.id);
+                startActivity(intent);
+            }
+        });
 
         Intent intent = getIntent();
         if (intent != null) {

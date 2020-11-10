@@ -9,6 +9,12 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -22,8 +28,12 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
@@ -36,8 +46,10 @@ import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.DateTimeUtils;
 import com.vnsolution.virtualassistant.util.GoogleMapUtil;
+import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -59,6 +71,7 @@ public class TravelHistoryActivity extends BaseActivity {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
+    private LinearLayout visitedPlaceBottomSheet;
     private TextView totalTextView;
     private RecyclerView travelHistoryRecyclerView;
     private RecyclerViewAdapter<Place> visitedPlacesAdapter;
@@ -111,6 +124,25 @@ public class TravelHistoryActivity extends BaseActivity {
         setupView(savedInstanceState);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_travel_history, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_calendar:
+                MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+                MaterialDatePicker<Long> picker = builder.build();
+                picker.show(getSupportFragmentManager(), picker.toString());
+                break;
+        }
+        return true;
+    }
+
     private void setupView(Bundle savedInstanceState) {
         setContentView(R.layout.screen_travel_history);
         setupActionBar();
@@ -139,15 +171,18 @@ public class TravelHistoryActivity extends BaseActivity {
             @Override
             public void onMapReady(GoogleMap mMap) {
                 mGoogleMap = mMap;
+                mGoogleMap.setPadding(0, 0, 0, GoogleMapUtil.dpToPx(TravelHistoryActivity.this, 350));
                 mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
                 mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
                 enableMyLocation();
+                adjustMyLocation();
             }
         });
         startWatchingPermissions();
     }
 
     private void setupBottomSheet() {
+        visitedPlaceBottomSheet = findViewById(R.id.bottomsheet_visited_places);
         totalTextView = findViewById(R.id.total_visited_places);
         travelHistoryRecyclerView = findViewById(R.id.list_visited_places);
         travelHistoryRecyclerView.setHasFixedSize(true);
@@ -184,6 +219,31 @@ public class TravelHistoryActivity extends BaseActivity {
             visitedRegionsAdapter = new RecyclerViewAdapter<String>(this, uiOption, R.layout.card_region);
             travelHistoryRecyclerView.setAdapter(visitedRegionsAdapter);
         }
+
+        adjustMyLocation();
+    }
+
+    private void adjustMyLocation() {
+//        if (visitedPlaceBottomSheet != null) {
+//            BottomSheetBehavior sheetBehavior = BottomSheetBehavior.from(visitedPlaceBottomSheet);
+//            sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+//                @Override
+//                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+//                    if (mGoogleMap != null) {
+//                        int paddingBottom = GoogleMapUtil.dpToPx(TravelHistoryActivity.this, bottomSheet.getHeight());
+//                        mGoogleMap.setPadding(0, 0, 0, paddingBottom);
+//                    }
+//                }
+//
+//                @Override
+//                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+//                    if (mGoogleMap != null) {
+//                        int paddingBottom = GoogleMapUtil.dpToPx(TravelHistoryActivity.this, bottomSheet.getHeight());
+//                        mGoogleMap.setPadding(0, 0, 0, paddingBottom);
+//                    }
+//                }
+//            });
+//        }
     }
 
     @SuppressLint("MissingPermission")
@@ -192,6 +252,27 @@ public class TravelHistoryActivity extends BaseActivity {
             return;
         }
         mGoogleMap.setMyLocationEnabled(true);
+    }
+
+    private void startWatchingCameraMove() {
+        if (mGoogleMap != null) {
+            mGoogleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                @Override
+                public void onCameraMove() {
+                    // Set bottom padding for map
+                    // Offseting the center of the MapFragment for an animation moving both the target lat/lng and the zoom level
+                    // https://stackoverflow.com/questions/15625970/offseting-the-center-of-the-mapfragment-for-an-animation-moving-both-the-target
+                    // https://stackoverflow.com/questions/13739075/how-to-get-latitude-longitude-span-in-google-map-v2-for-android
+                    VisibleRegion visibleRegion = mGoogleMap.getProjection().getVisibleRegion();
+                    double left = visibleRegion.latLngBounds.southwest.longitude;
+                    double top = visibleRegion.latLngBounds.northeast.latitude;
+                    double right = visibleRegion.latLngBounds.northeast.longitude;
+                    double bottom = visibleRegion.latLngBounds.southwest.latitude;
+                    double bottomPadding = 350;
+                    mGoogleMap.setPadding((int) left, (int) top, (int) right, (int) (bottom - bottomPadding));
+                }
+            });
+        }
     }
 
     private void startWatchingPermissions() {
