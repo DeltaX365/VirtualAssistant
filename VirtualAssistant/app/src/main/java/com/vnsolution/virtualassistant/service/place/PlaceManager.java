@@ -87,9 +87,9 @@ public class PlaceManager {
         if (existingPlaceEntity == null) {
             Address address = getAddressByLocation(context, placeEntity.latitude, placeEntity.longitude);
             newPlaceEntity = MappingUtils.convertAddressToPlaceEntity(address);
-            GoogleMapPlaceSearchDto.PlaceSearch placeDetail = searchPlaceByAddress(address);
-            if (placeDetail != null) {
-                newPlaceEntity = MappingUtils.convertPlaceSearchDtoToPlaceEntity(placeDetail);
+            GoogleMapPlaceSearchDto.PlaceSearch placeSearch = searchPlaceByAddress(address);
+            if (placeSearch != null) {
+                newPlaceEntity = MappingUtils.convertPlaceSearchDtoToPlaceEntity(placeSearch);
             }
             if (newPlaceEntity != null) {
                 existingPlaceEntity = placeDao.getByName(newPlaceEntity.placeName);

@@ -28,19 +28,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.model.Place;
-import com.vnsolution.virtualassistant.model.PlaceSummary;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.DateTimeUtils;
-import com.vnsolution.virtualassistant.util.GoogleMapUtil;
+import com.vnsolution.virtualassistant.util.GoogleMapUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import androidx.annotation.NonNull;
@@ -142,6 +142,18 @@ public class TravelHistoryActivity extends BaseActivity {
                 }
                 MaterialDatePicker<Long> picker = builder.build();
                 picker.show(getSupportFragmentManager(), picker.toString());
+                picker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Long>() {
+                    @Override
+                    public void onPositiveButtonClick(Long selection) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(selection);
+                        selectedDate = calendar.getTime();
+                        refreshView();
+                    }
+                });
+                break;
+            case android.R.id.home:
+                finish();
                 break;
         }
         return true;
@@ -178,7 +190,7 @@ public class TravelHistoryActivity extends BaseActivity {
             @Override
             public void onMapReady(GoogleMap mMap) {
                 mGoogleMap = mMap;
-                mGoogleMap.setPadding(0, 0, 0, GoogleMapUtil.dpToPx(TravelHistoryActivity.this, 350));
+                mGoogleMap.setPadding(0, 0, 0, GoogleMapUtils.dpToPx(TravelHistoryActivity.this, 350));
                 mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
                 mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
                 enableMyLocation();
@@ -209,10 +221,10 @@ public class TravelHistoryActivity extends BaseActivity {
                 @Override
                 public void onAction(Place place, String action) {
                     super.onAction(place, action);
-                    if (action == UiOptions.PLACE_ACTION_CONFIRM) {
+                    if (action.equals(UiOptions.PLACE_ACTION_CONFIRM)) {
                         new ConfirmVisitedPlaceTask().execute(place.id);
                     }
-                    if (action == UiOptions.PLACE_ACTION_EDIT) {
+                    if (action.equals(UiOptions.PLACE_ACTION_EDIT)) {
                         Intent intent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
                         intent.putExtra("PlaceId", place.id);
                         startActivity(intent);
@@ -342,11 +354,12 @@ public class TravelHistoryActivity extends BaseActivity {
     }
 
     private void presentVisitedPlaces(List<Place> places) {
-        if(places != null) {
+        if(places != null && mGoogleMap != null) {
+            mGoogleMap.clear();
             for(Place place: places) {
                 LatLng latLng = new LatLng(place.latitude, place.longitude);
                 String placeName = (place.placeName != null && place.placeName != "")? place.placeName : (place.latitude + ", " + place.longitude);
-                GoogleMapUtil.drawMarker(mGoogleMap, latLng, placeName, R.drawable.ic_red_dot_10);
+                GoogleMapUtils.drawMarker(mGoogleMap, latLng, placeName, R.drawable.ic_red_dot_10);
             }
         }
     }
@@ -357,6 +370,10 @@ public class TravelHistoryActivity extends BaseActivity {
         mMapView.onResume();
 
         requestLocationUpdates();
+        refreshView();
+    }
+
+    private void refreshView() {
         if (uiOption.equals(UiOptions.PLACE_SUMMARY_ALL) || uiOption.equals(UiOptions.PLACE_SUMMARY_YESTERDAY)) {
             LiveData<List<Place>> placesLiveData;
             if (uiOption.equals(UiOptions.PLACE_SUMMARY_ALL)) {

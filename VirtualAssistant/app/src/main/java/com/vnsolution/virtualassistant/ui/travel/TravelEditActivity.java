@@ -31,9 +31,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
@@ -48,7 +46,7 @@ import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.util.GoogleMapUtil;
+import com.vnsolution.virtualassistant.util.GoogleMapUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;
@@ -162,7 +160,7 @@ public class TravelEditActivity extends BaseActivity {
             @Override
             public void onMapReady(GoogleMap mMap) {
                 mGoogleMap = mMap;
-                mGoogleMap.setPadding(0, 0, 0, GoogleMapUtil.dpToPx(TravelEditActivity.this, 350));
+                mGoogleMap.setPadding(0, 0, 0, GoogleMapUtils.dpToPx(TravelEditActivity.this, 350));
                 mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
                 mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
                 enableMyLocation();
@@ -301,7 +299,7 @@ public class TravelEditActivity extends BaseActivity {
             LatLng latLng = new LatLng(place.latitude, place.longitude);
             String placeName = (place.placeName == null || place.placeName == "") ? "Unknown Address" : place.placeName;
             String placeAddress = (place.formattedAddress == null || place.formattedAddress == "") ? (place.latitude + "," + place.longitude) : place.formattedAddress;
-            GoogleMapUtil.drawMarker(mGoogleMap, latLng, placeName + " (" + placeAddress + ")",true, 15f);
+            GoogleMapUtils.drawMarker(mGoogleMap, latLng, placeName + " (" + placeAddress + ")",true, 15f);
             placeNameTextView.setText(placeName);
             placeAddressTextView.setText(placeAddress);
         }

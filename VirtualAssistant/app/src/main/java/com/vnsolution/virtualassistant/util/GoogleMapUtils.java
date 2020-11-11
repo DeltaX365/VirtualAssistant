@@ -14,7 +14,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.vnsolution.virtualassistant.R;
 
-public class GoogleMapUtil {
+public class GoogleMapUtils {
     public static void drawCircle(GoogleMap googleMap, LatLng latLng, float zoom) {
         if (googleMap != null) {
             final CircleOptions circleOptions = new CircleOptions();

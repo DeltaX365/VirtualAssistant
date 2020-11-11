@@ -30,6 +30,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "FROM Place " +
             "LEFT JOIN PlaceHistory ON PlaceHistory.PlaceId = Place.Id " +
             "WHERE PlaceHistory.EnterTime >= :startDate AND PlaceHistory.EnterTime < :endDate " +
+            "GROUP BY Place.Id " +
             "ORDER BY PlaceHistory.EnterTime DESC")
     LiveData<List<PlaceWithHistoryDetailEntity>> getPlacesByDateRange(String startDate, String endDate);
 
