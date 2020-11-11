@@ -146,7 +146,7 @@ public class PlaceManager {
                 placeEntity.confirmed = 1;
                 placeEntity.updatedDate = new Date();
                 placeDao.update(placeEntity);
-            } else {
+            } else if (placeEntity.id != placeId) {
                 placeHistoryDao.transfer(placeId, placeEntity.id);
                 placeDao.delete(placeDao.getById(placeId));
             }
@@ -164,7 +164,7 @@ public class PlaceManager {
                 placeEntity.confirmed = 1;
                 placeEntity.updatedDate = new Date();
                 placeDao.update(placeEntity);
-            } else {
+            } else if (placeEntity.id != placeId) {
                 placeHistoryDao.transfer(placeId, placeEntity.id);
                 placeDao.delete(placeDao.getById(placeId));
             }

@@ -151,6 +151,9 @@ public class GoogleMapPlaceDetailDto {
         @SerializedName("vicinity")
         public String vicinity;
 
+        @SerializedName("photos")
+        public List<Photo> photos;
+
         public class AddressComponent {
             @SerializedName("long_name")
             public String longName;
@@ -208,6 +211,20 @@ public class GoogleMapPlaceDetailDto {
 
             @SerializedName("global_code")
             public String globalCode;
+        }
+
+        public class Photo {
+            @SerializedName("photo_reference")
+            public String photoReference;
+
+            @SerializedName("width")
+            public int width;
+
+            @SerializedName("height")
+            public int height;
+
+            @SerializedName("html_attributions")
+            public List<String> htmlAttributions;
         }
     }
 }

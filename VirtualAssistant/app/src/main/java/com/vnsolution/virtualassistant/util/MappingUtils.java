@@ -98,6 +98,7 @@ public class MappingUtils {
             placeEntity.scope = nearBy.scope;
             placeEntity.userRatingsTotal = (int) nearBy.userRatingsTotal;
             placeEntity.vicinity = nearBy.vicinity;
+            placeEntity.photoReference = (nearBy.photos != null && nearBy.photos.size() > 0) ? nearBy.photos.get(0).photoReference : "";
 
             if (nearBy.vicinity != null && !nearBy.vicinity.isEmpty()) {
                 String[] splittedAddress = nearBy.vicinity.split(",");
@@ -139,6 +140,7 @@ public class MappingUtils {
             placeEntity.userRatingsTotal = (int) placeDetail.userRatingsTotal;
             placeEntity.utcOffset = String.valueOf(placeDetail.utcOffset);
             placeEntity.vicinity = placeDetail.vicinity;
+            placeEntity.photoReference = (placeDetail.photos != null && placeDetail.photos.size() > 0) ? placeDetail.photos.get(0).photoReference : "";
 
             if (placeDetail.formattedAddress != null && !placeDetail.formattedAddress.isEmpty()) {
                 String[] splittedAddress = placeDetail.formattedAddress.split(",");
