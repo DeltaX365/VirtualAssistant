@@ -16,7 +16,6 @@ import com.vnsolution.virtualassistant.db.entity.PlaceWithHistoryDetailEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.model.PlaceSummary;
-import com.vnsolution.virtualassistant.model.PlaceType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,18 +64,32 @@ public class TravelViewModel extends ViewModel {
         return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
     }
 
+    public LiveData<List<Place>> getPlacesByCategory(String category) {
+        LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getPlacesByCategory(category);
+        return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
+    }
+
+    public LiveData<List<Place>> getPlacesByCity(String city) {
+        LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getPlacesByCity(city);
+        return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
+    }
+
     public LiveData<List<Place>> getPlacesByDateRange(Date startDate, Date endDate) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getPlacesByDateRange(formatter.format(startDate), formatter.format(endDate));
         return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
     }
 
-    public LiveData<List<String>> getVisitedCountries() {
-        return placeDao.getVisitedCountries();
-    }
-
     public LiveData<List<String>> getVisitedCities() {
         return placeDao.getVisitedCities();
+    }
+
+    public LiveData<List<String>> getVisitedCitiesByCountry(String country) {
+        return placeDao.getVisitedCitiesByCountry(country);
+    }
+
+    public LiveData<List<String>> getVisitedCountries() {
+        return placeDao.getVisitedCountries();
     }
 
     public LiveData<Place> getPlaceById(String placeId) {

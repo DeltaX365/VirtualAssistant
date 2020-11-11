@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <!-- https://stackoverflow.com/questions/22192291/how-to-change-the-status-bar-color-in-android -->
         <item name="colorPrimary">@color/colorPrimary</item>

@@ -12,8 +12,6 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -24,21 +22,18 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.model.Place;
+import com.vnsolution.virtualassistant.model.PlaceSummary;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
@@ -46,7 +41,6 @@ import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.DateTimeUtils;
 import com.vnsolution.virtualassistant.util.GoogleMapUtil;
-import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import androidx.annotation.NonNull;
@@ -82,6 +76,10 @@ public class TravelHistoryActivity extends BaseActivity {
     private List<String> visitedRegions = new ArrayList<>();
     private List<PlaceType> placeTypes = new ArrayList<>();
     private String uiOption;
+    private Date selectedDate;
+    private String selectedCategory;
+    private String selectedCity;
+    private String selectedCountry;
 
     private LocationCallback mLocationCallback;
     private FusedLocationProviderClient fusedLocationClient;
@@ -126,9 +124,12 @@ public class TravelHistoryActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_travel_history, menu);
-        return super.onCreateOptionsMenu(menu);
+        if (uiOption.equals(UiOptions.PLACE_SUMMARY_YESTERDAY)) {
+            MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.menu_travel_history, menu);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -136,6 +137,9 @@ public class TravelHistoryActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.menu_item_calendar:
                 MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+                if (selectedDate != null) {
+                    builder.setSelection(selectedDate.getTime());
+                }
                 MaterialDatePicker<Long> picker = builder.build();
                 picker.show(getSupportFragmentManager(), picker.toString());
                 break;
@@ -147,11 +151,14 @@ public class TravelHistoryActivity extends BaseActivity {
         setContentView(R.layout.screen_travel_history);
         setupActionBar();
 
-        placeTypes = placeManager.getPlaceTypes();
         Intent intent = getIntent();
         if (intent != null) {
             uiOption = intent.getStringExtra("UiOption");
+            selectedCategory = intent.getStringExtra("Category");
+            selectedCity = intent.getStringExtra("City");
+            selectedCountry = intent.getStringExtra("Country");
         }
+        placeTypes = placeManager.getPlaceTypes();
 
         setupMap(savedInstanceState);
         setupBottomSheet();
@@ -217,6 +224,21 @@ public class TravelHistoryActivity extends BaseActivity {
         if (uiOption.equals(UiOptions.PLACE_SUMMARY_CITY) || uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY)) {
             travelHistoryRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
             visitedRegionsAdapter = new RecyclerViewAdapter<String>(this, uiOption, R.layout.card_region);
+            visitedRegionsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<String>() {
+                @Override
+                public void onTap(String region) {
+                    super.onTap(region);
+                    Intent intent = new Intent(TravelHistoryActivity.this, TravelHistoryActivity.class);
+                    if (uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY)) {
+                        intent.putExtra("UiOption", UiOptions.PLACE_SUMMARY_CITY);
+                        intent.putExtra("Country", region);
+                    } else {
+                        intent.putExtra("UiOption", UiOptions.PLACE_SUMMARY_ALL);
+                        intent.putExtra("City", region);
+                    }
+                    startActivity(intent);
+                }
+            });
             travelHistoryRecyclerView.setAdapter(visitedRegionsAdapter);
         }
 
@@ -336,12 +358,23 @@ public class TravelHistoryActivity extends BaseActivity {
 
         requestLocationUpdates();
         if (uiOption.equals(UiOptions.PLACE_SUMMARY_ALL) || uiOption.equals(UiOptions.PLACE_SUMMARY_YESTERDAY)) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DATE, -1);
-            Date yesterday = calendar.getTime();
-            Date startOfYesterday = DateTimeUtils.getStartOfDay(yesterday);
-            Date endOfYesterday = DateTimeUtils.getEndOfDay(yesterday);
-            LiveData<List<Place>> placesLiveData = (uiOption.equals(UiOptions.PLACE_SUMMARY_ALL)) ? vm.getPlaces() : vm.getPlacesByDateRange(startOfYesterday, endOfYesterday);
+            LiveData<List<Place>> placesLiveData;
+            if (uiOption.equals(UiOptions.PLACE_SUMMARY_ALL)) {
+                if ((selectedCity != null && selectedCity != "")) {
+                    placesLiveData = vm.getPlacesByCity(selectedCity);
+                } else if ((selectedCategory != null && selectedCategory != "")) {
+                    placesLiveData = vm.getPlacesByCategory(selectedCategory);
+                } else {
+                    placesLiveData = vm.getPlaces();
+                }
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, -1);
+                selectedDate = (selectedDate != null)? selectedDate : calendar.getTime();
+                Date startOfYesterday = DateTimeUtils.getStartOfDay(selectedDate);
+                Date endOfYesterday = DateTimeUtils.getEndOfDay(selectedDate);
+                placesLiveData = vm.getPlacesByDateRange(startOfYesterday, endOfYesterday);
+            }
             placesLiveData.observe(this, new Observer<List<Place>>() {
                 @Override
                 public void onChanged(@Nullable List<Place> places) {
@@ -354,7 +387,16 @@ public class TravelHistoryActivity extends BaseActivity {
             });
         }
         if (uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY) || uiOption.equals(UiOptions.PLACE_SUMMARY_CITY)) {
-            LiveData<List<String>> regionsLiveData = (uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY)) ? vm.getVisitedCountries() : vm.getVisitedCities();
+            LiveData<List<String>> regionsLiveData;
+            if (uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY)) {
+                regionsLiveData = vm.getVisitedCountries();
+            } else {
+                if (selectedCountry != null && selectedCountry != "") {
+                    regionsLiveData = vm.getVisitedCitiesByCountry(selectedCountry);
+                } else {
+                    regionsLiveData = vm.getVisitedCities();
+                }
+            }
             regionsLiveData.observe(this, new Observer<List<String>>() {
                 @Override
                 public void onChanged(@Nullable List<String> regions) {

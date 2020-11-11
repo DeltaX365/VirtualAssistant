@@ -6,6 +6,7 @@
     android:id="@+id/bottomsheet_visited_places"
     android:background="#fff"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     app:behavior_peekHeight="350dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 

@@ -34,6 +34,18 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
     LiveData<List<PlaceWithHistoryDetailEntity>> getPlacesByDateRange(String startDate, String endDate);
 
     @Transaction
+    @Query("SELECT * " +
+            "FROM Place " +
+            "WHERE Types LIKE '%' + :category + '%'")
+    LiveData<List<PlaceWithHistoryDetailEntity>> getPlacesByCategory(String category);
+
+    @Transaction
+    @Query("SELECT * " +
+            "FROM Place " +
+            "WHERE AdministrativeAreaLevel1 == :city")
+    LiveData<List<PlaceWithHistoryDetailEntity>> getPlacesByCity(String city);
+
+    @Transaction
     @Query("SELECT p.* " +
             "FROM Place as p " +
             "LEFT JOIN PlaceHistory as ph on ph.PlaceId = p.Id " +
@@ -55,15 +67,20 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "LIMIT 0, 10")
     LiveData<List<PlaceWithHistoryDetailEntity>> getMostVisitedPlaces();
 
-    @Query("SELECT DISTINCT Country " +
-            "FROM Place " +
-            "WHERE Country IS NOT NULL AND Country != ''")
-    LiveData<List<String>> getVisitedCountries();
-
     @Query("SELECT DISTINCT AdministrativeAreaLevel1 " +
             "FROM Place " +
             "WHERE AdministrativeAreaLevel1 IS NOT NULL AND AdministrativeAreaLevel1 != ''")
     LiveData<List<String>> getVisitedCities();
+
+    @Query("SELECT DISTINCT AdministrativeAreaLevel1 " +
+            "FROM Place " +
+            "WHERE Country == :country")
+    LiveData<List<String>> getVisitedCitiesByCountry(String country);
+
+    @Query("SELECT DISTINCT Country " +
+            "FROM Place " +
+            "WHERE Country IS NOT NULL AND Country != ''")
+    LiveData<List<String>> getVisitedCountries();
 
     @Query("SELECT * FROM Place WHERE Synced = 0")
     List<PlaceEntity> getUnsyncedPlaces();
