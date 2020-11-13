@@ -10,8 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.ui.HomeActivity;
-import com.vnsolution.virtualassistant.ui.HomeV2Activity;
+import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
 
 import javax.inject.Inject;
 

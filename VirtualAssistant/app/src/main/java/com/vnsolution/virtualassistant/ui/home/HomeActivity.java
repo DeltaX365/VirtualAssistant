@@ -1,44 +1,52 @@
-package com.vnsolution.virtualassistant.ui;
+package com.vnsolution.virtualassistant.ui.home;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
-import com.vnsolution.virtualassistant.ui.common.BaseActivity;
-import com.vnsolution.virtualassistant.ui.developer.DeveloperActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
-public class HomeV2Activity extends BaseActivity {
-    private ImageView ivVoiceAssistant;
-    private Button btnShowDeveloperPage;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasAndroidInjector;
+
+public class HomeActivity extends AppCompatActivity implements HasAndroidInjector {
+    @Inject
+    DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_home_v2);
-        setupActionBar();
+        setContentView(R.layout.screen_home);
 
-//        ivVoiceAssistant = findViewById(R.id.iv_voice_assistant);
-//        Glide.with(this).load(R.drawable.voice_assistant_motion_2).into(ivVoiceAssistant);
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.navigation_dashboard, R.id.navigation_places, R.id.navigation_apps, R.id.navigation_call_logs, R.id.navigation_settings)
+                .build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(navView, navController);
+    }
 
-        btnShowDeveloperPage = findViewById(R.id.btn_developer);
-        btnShowDeveloperPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeV2Activity.this, DeveloperActivity.class);
-                startActivity(intent);
-            }
-        });
-
+    @Override
+    protected void onResume() {
+        super.onResume();
         requestPermissions();
     }
 
@@ -71,5 +79,10 @@ public class HomeV2Activity extends BaseActivity {
         if (requestCode == StopTrackingOptions.PERMISSIONS_REQUEST_CODE) {
             requestPermissions();
         }
+    }
+
+    @Override
+    public AndroidInjector<Object> androidInjector() {
+        return dispatchingAndroidInjector;
     }
 }

@@ -1,12 +1,12 @@
 package com.vnsolution.virtualassistant.di;
 
-import com.vnsolution.virtualassistant.ui.HomeActivity;
-import com.vnsolution.virtualassistant.ui.HomeV2Activity;
+import com.vnsolution.virtualassistant.ui.StartupActivity;
+import com.vnsolution.virtualassistant.ui.home.HomeActivity;
+import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
 import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsActivity;
 import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
-import com.vnsolution.virtualassistant.ui.developer.DeveloperActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelHistoryActivity;
@@ -23,14 +23,14 @@ public abstract class ActivityBuildersModule {
     //To use Dagger in Android, should add all activity modules right here. Wait for the next version of Dagger for this fixing
     //https://dagger.dev/android
 
+    @ContributesAndroidInjector()
+    abstract StartupActivity contributeStartupActivity();
+
     @ContributesAndroidInjector(modules = HomeFragmentBuildersModule.class)
     abstract HomeActivity contributeHomeActivity();
 
     @ContributesAndroidInjector()
     abstract HomeV2Activity contributeHomeV2Activity();
-
-    @ContributesAndroidInjector()
-    abstract DeveloperActivity contributeDeveloperActivity();
 
     @ContributesAndroidInjector()
     abstract TravelDashboardActivity contributeTravelActivity();

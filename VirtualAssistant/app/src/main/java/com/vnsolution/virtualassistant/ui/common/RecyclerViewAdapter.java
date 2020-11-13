@@ -30,7 +30,7 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
         notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener) {
+    public void setOnItemClickListener(OnRecyclerViewRowTouchListener<T> onRecyclerViewRowTouchListener) {
         mOnRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
     }
 
@@ -38,7 +38,7 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        RecyclerViewRow<T> row = (RecyclerViewRow<T>) inflater.inflate(mLayoutId, parent, false);
+        IRecyclerViewRow<T> row = (IRecyclerViewRow<T>) inflater.inflate(mLayoutId, parent, false);
         ViewHolder vh = new ViewHolder(row);
         return vh;
     }
@@ -87,9 +87,9 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public RecyclerViewRow itemView;
+        public IRecyclerViewRow itemView;
 
-        public ViewHolder(RecyclerViewRow itemView) {
+        public ViewHolder(IRecyclerViewRow itemView) {
             super((View) itemView);
             this.itemView = itemView;
         }

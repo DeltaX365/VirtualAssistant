@@ -2,22 +2,17 @@ package com.vnsolution.virtualassistant.ui.travel.components;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
-import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.common.RecyclerViewRow;
-import com.vnsolution.virtualassistant.util.StringUtils;
+import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 
-public class PlaceHistorySimpleRow extends LinearLayout implements RecyclerViewRow<PlaceHistory> {
+public class PlaceHistorySimpleRow extends LinearLayout implements IRecyclerViewRow<PlaceHistory> {
     private TextView mHistoryTextView;
 
     private Context mContext;

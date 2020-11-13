@@ -18,11 +18,11 @@ import com.vnsolution.virtualassistant.db.convertor.DateConverter;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.common.RecyclerViewRow;
+import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 
 import java.util.List;
 
-public class PlaceSimpleRow extends LinearLayout implements RecyclerViewRow<Place> {
+public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Place> {
     private ImageView mPhotoImageView;
     private TextView mConfirmTextView;
     private TextView mNameTextView;

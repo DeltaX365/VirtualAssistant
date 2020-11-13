@@ -10,9 +10,9 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PlaceSummary;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.common.RecyclerViewRow;
+import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 
-public class PlaceCategoryCardRow extends MaterialCardView implements RecyclerViewRow<PlaceSummary> {
+public class PlaceCategoryCardRow extends MaterialCardView implements IRecyclerViewRow<PlaceSummary> {
     private ImageView mBackgroundImageView;
     private TextView mTypeTextView;
     private TextView mTotalTextView;

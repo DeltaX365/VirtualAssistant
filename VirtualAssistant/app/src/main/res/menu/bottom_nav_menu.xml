@@ -19,7 +19,7 @@
     <item
         android:id="@+id/navigation_call_logs"
         android:icon="@drawable/ic_call_black_24dp"
-        android:title="@string/title_screen__call_logs" />
+        android:title="@string/title_screen_call_logs" />
 
     <item
         android:id="@+id/navigation_settings"

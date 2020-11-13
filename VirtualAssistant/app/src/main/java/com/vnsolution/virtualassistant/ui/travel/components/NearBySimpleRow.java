@@ -8,15 +8,14 @@ import android.widget.TextView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
-import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.common.RecyclerViewRow;
+import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.List;
 
-public class NearBySimpleRow extends LinearLayout implements RecyclerViewRow<GoogleMapNearByDto.NearBy> {
+public class NearBySimpleRow extends LinearLayout implements IRecyclerViewRow<GoogleMapNearByDto.NearBy> {
     private TextView mNameTextView;
     private TextView mAddressTextView;
     private TextView mCategoryTextView;
