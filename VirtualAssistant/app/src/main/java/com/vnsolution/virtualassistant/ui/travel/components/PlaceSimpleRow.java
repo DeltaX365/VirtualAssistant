@@ -1,6 +1,7 @@
 package com.vnsolution.virtualassistant.ui.travel.components;
 
 import android.content.Context;
+import android.opengl.Visibility;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
     private Context mContext;
     private Place mPlace;
     private List<PlaceType> mPlaceTypes;
+    private String mViewType;
     private OnRecyclerViewRowTouchListener<Place> mOnRecyclerViewRowTouchListener;
 
     public PlaceSimpleRow(Context context) {
@@ -58,6 +60,7 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mConfirmTextView = findViewById(R.id.place_confirm);
         mPhotoImageView = findViewById(R.id.place_photo);
         mConfirmTextView = findViewById(R.id.place_confirm);
         mNameTextView = findViewById(R.id.place_name);
@@ -88,8 +91,9 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
     }
 
     @Override
-    public void showData(Place place) {
+    public void showData(Place place, String viewType) {
         mPlace = place;
+        mViewType = viewType;
 
         // Place photo
         if (place.photoReference != null && !place.photoReference.isEmpty()) {
@@ -130,12 +134,15 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
         }
 
         // Place confirm
-        if (place.confirmed == 1) {
+        if (mViewType != null && mViewType != "" && mViewType.equals(UiOptions.PLACE_SUMMARY_YESTERDAY)) {
+            int visibility = (place.confirmed == 1) ? View.GONE : View.VISIBLE;
+            mConfirmTextView.setVisibility(visibility);
+            mConfirmViewGroup.setVisibility(visibility);
+            mTotalVisitTextView.setVisibility(View.GONE);
+        } else {
             mConfirmTextView.setVisibility(View.GONE);
             mConfirmViewGroup.setVisibility(View.GONE);
-        } else {
-            mConfirmTextView.setVisibility(View.VISIBLE);
-            mConfirmViewGroup.setVisibility(View.VISIBLE);
+            mTotalVisitTextView.setVisibility(View.VISIBLE);
         }
     }
 

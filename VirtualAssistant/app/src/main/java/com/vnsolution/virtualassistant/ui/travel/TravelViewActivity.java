@@ -1,11 +1,13 @@
 package com.vnsolution.virtualassistant.ui.travel;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,6 +23,7 @@ import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.model.PlaceType;
+import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 
@@ -38,6 +41,7 @@ public class TravelViewActivity extends BaseActivity {
     private RecyclerViewAdapter<PlaceHistory> mPlaceHistoryAdapter;
     private RecyclerView.LayoutManager mPlaceHistoryLayoutManager;
     private FloatingActionButton mEditPlaceBtn;
+    private FloatingActionButton mDeletePlaceBtn;
 
     private TravelViewModel travelViewModel;
     private Place visitedPlace;
@@ -45,6 +49,28 @@ public class TravelViewActivity extends BaseActivity {
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    public PlaceManager placeManager;
+
+    private class RemovePlaceTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... placeIds) {
+            String placeId = placeIds.length > 0 ? placeIds[0] : null;
+            if (placeId != null && placeId != "") {
+                placeManager.removePlace(placeId);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(TravelViewActivity.this, "The visited place is deleted", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +103,13 @@ public class TravelViewActivity extends BaseActivity {
                 Intent intent = new Intent(TravelViewActivity.this, TravelEditActivity.class);
                 intent.putExtra("PlaceId", visitedPlace.id);
                 startActivity(intent);
+            }
+        });
+        mDeletePlaceBtn = findViewById(R.id.delete_place);
+        mDeletePlaceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new RemovePlaceTask().execute(visitedPlace.id);
             }
         });
 

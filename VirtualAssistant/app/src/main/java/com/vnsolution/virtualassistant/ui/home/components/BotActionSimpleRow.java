@@ -46,7 +46,7 @@ public class BotActionSimpleRow extends LinearLayout implements IRecyclerViewRow
     }
 
     @Override
-    public void showData(String action) {
+    public void showData(String action, String viewType) {
         mBotActionChip.setText(action);
     }
 

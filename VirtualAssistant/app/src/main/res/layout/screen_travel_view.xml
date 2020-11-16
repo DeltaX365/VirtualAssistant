@@ -83,6 +83,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:src="@drawable/ic_baseline_edit_24"
+        android:layout_marginBottom="86dp"
+        android:layout_marginRight="16dp"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/delete_place"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/ic_baseline_delete_outline_24"
         android:layout_margin="16dp"
         />
 

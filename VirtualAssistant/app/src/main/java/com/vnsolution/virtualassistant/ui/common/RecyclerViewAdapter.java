@@ -14,14 +14,14 @@ import java.util.List;
 
 public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private Context mContext;
-    private String mAdapterName;
+    private String mViewType;
     private List<T> mDataSource;
     private OnRecyclerViewRowTouchListener<T> mOnRecyclerViewRowTouchListener;
     private int mLayoutId;
 
-    public RecyclerViewAdapter(Context context, String adapterName, int layoutId) {
+    public RecyclerViewAdapter(Context context, String viewType, int layoutId) {
         mContext = context;
-        mAdapterName = adapterName;
+        mViewType = viewType;
         mLayoutId = layoutId;
     }
 
@@ -45,7 +45,7 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.itemView.showData(mDataSource.get(position));
+        holder.itemView.showData(mDataSource.get(position), mViewType);
         ((View) holder.itemView).setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
                 @Override

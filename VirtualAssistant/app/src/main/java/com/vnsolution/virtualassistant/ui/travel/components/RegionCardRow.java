@@ -42,7 +42,7 @@ public class RegionCardRow extends MaterialCardView implements IRecyclerViewRow<
     }
 
     @Override
-    public void showData(String regionName) {
+    public void showData(String regionName, String viewType) {
         mNameTextView.setText(regionName.trim());
         mTotalVisitTextView.setText("0 visits");
     }

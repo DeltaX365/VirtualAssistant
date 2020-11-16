@@ -49,7 +49,7 @@ public class NearBySimpleRow extends LinearLayout implements IRecyclerViewRow<Go
     }
 
     @Override
-    public void showData(GoogleMapNearByDto.NearBy nearBy) {
+    public void showData(GoogleMapNearByDto.NearBy nearBy, String viewType) {
         mNearBy = nearBy;
 
         // Place name

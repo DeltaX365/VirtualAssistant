@@ -41,7 +41,7 @@ public class PlaceHistorySimpleRow extends LinearLayout implements IRecyclerView
     }
 
     @Override
-    public void showData(PlaceHistory placeHistory) {
+    public void showData(PlaceHistory placeHistory, String viewType) {
         mPlaceHistory = placeHistory;
 
         // Place history

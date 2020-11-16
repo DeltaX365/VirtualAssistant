@@ -44,7 +44,7 @@ public class PlaceCategoryCardRow extends MaterialCardView implements IRecyclerV
     }
 
     @Override
-    public void showData(PlaceSummary placeSummary) {
+    public void showData(PlaceSummary placeSummary, String viewType) {
         int total = (placeSummary != null) ? placeSummary.total : 0;
         String type = (placeSummary != null) ? placeSummary.type : "";
         switch (type) {
