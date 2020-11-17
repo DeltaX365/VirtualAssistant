@@ -24,6 +24,7 @@ import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneSmsDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
+import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import javax.inject.Inject;
@@ -32,7 +33,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class SettingsActivity extends AppCompatActivity implements HasAndroidInjector {
+public class SettingsActivity extends BaseActivity implements HasAndroidInjector {
     private Context mContext;
     private String[] settings = { "Grant stop tracking permissions", "Reset factory" };
 
@@ -66,7 +67,12 @@ public class SettingsActivity extends AppCompatActivity implements HasAndroidInj
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupView();
+    }
+
+    private void setupView() {
         setContentView(R.layout.screen_settings);
+        setupActionBar();
 
         ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.item_setting, settings);
         ListView listSettings = (ListView) findViewById(R.id.list_settings);

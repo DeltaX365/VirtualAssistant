@@ -7,10 +7,16 @@ import android.content.IntentFilter;
 
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService;
+import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingWorker;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
+
+import java.util.concurrent.TimeUnit;
 
 public class AppService {
     private Context mContext;
@@ -21,16 +27,21 @@ public class AppService {
     }
 
     public void run() {
-        // Stop tracking foreground service.
+        runStopTrackingService();
+        startWatchingPermissionsChanged();
+    }
+
+    private void runStopTrackingService() {
         if (PermissionUtils.hasPermissions(mContext, StopTrackingOptions.PERMISSIONS_STOP_TRACKING)) {
             Intent serviceIntent = new Intent(mContext, StopTrackingService.class);
             serviceIntent.setAction(StopTrackingOptions.INTENT_ACTION_INITIAL);
             ContextCompat.startForegroundService(mContext, serviceIntent);
         }
-        startWatchingPermissions();
+        final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(StopTrackingWorker.class, 24, TimeUnit.HOURS).build();
+        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("StopTrackingWorker", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
     }
 
-    private void startWatchingPermissions() {
+    private void startWatchingPermissionsChanged() {
         if (mBroadcastReceiver == null) {
             mBroadcastReceiver = new BroadcastReceiver() {
                 @Override
@@ -45,7 +56,7 @@ public class AppService {
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mBroadcastReceiver, filter);
     }
 
-    private void stopWatchingPermissions() {
+    private void stopWatchingPermissionsChanged() {
         if (mBroadcastReceiver != null) {
             LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mBroadcastReceiver);
         }

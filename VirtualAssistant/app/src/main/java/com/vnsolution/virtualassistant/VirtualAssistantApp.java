@@ -7,7 +7,6 @@ import com.vnsolution.virtualassistant.common.Constants;
 import com.vnsolution.virtualassistant.di.AppComponent;
 import com.vnsolution.virtualassistant.di.AppInjector;
 import com.vnsolution.virtualassistant.service.AppService;
-import com.vnsolution.virtualassistant.service.AppWorkManager;
 
 import javax.inject.Inject;
 
@@ -26,7 +25,6 @@ public class VirtualAssistantApp extends Application implements HasAndroidInject
         super.onCreate();
         appComponent = AppInjector.init(this);
         new AppService(getApplicationContext()).run();
-        new AppWorkManager(getApplicationContext()).run();
         Places.initialize(getApplicationContext(), Constants.GM_API_KEY);
     }
 

@@ -41,7 +41,7 @@ public class PhoneAppsAdapter extends RecyclerView.Adapter<PhoneAppsViewHolder> 
     @Override
     public PhoneAppsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_phone_app, parent, false);
+        View view = inflater.inflate(R.layout.item_app, parent, false);
         PhoneAppsViewHolder viewHolder = new PhoneAppsViewHolder(view);
         return viewHolder;
     }
@@ -60,7 +60,7 @@ public class PhoneAppsAdapter extends RecyclerView.Adapter<PhoneAppsViewHolder> 
                 appLastUsedTime += DateUtils.formatSameDayTime(dataSource.get(position).usageStats.getLastTimeUsed(), System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM);
                 appUsageTime += DateUtils.formatElapsedTime(dataSource.get(position).usageStats.getTotalTimeInForeground() / 1000);
             }
-            holder.textAppLastUsedTime.setText("Last time used: " + appLastUsedTime);
+//            holder.textAppLastUsedTime.setText("Last time used: " + appLastUsedTime);
             holder.textAppUsage.setText("App usage: " + appUsageTime);
         }
         catch (Exception e) {

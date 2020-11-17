@@ -607,13 +607,13 @@ public class StopTrackingService extends Service {
         SharedPreferences.Editor editor = sharedPref.edit();
         Gson gson = new Gson();
         String stopPointString = gson.toJson(stopPoint);
-        editor.putString("StopPoint", stopPointString);
+        editor.putString("StopTrackingService.StopPoint", stopPointString);
         editor.commit();
     }
 
     private StopPoint getStopPointFromCache() {
         SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
-        String stopPointString = sharedPref.getString("StopPoint", "");
+        String stopPointString = sharedPref.getString("StopTrackingService.StopPoint", "");
         Gson gson = new Gson();
         return !stopPointString.isEmpty()? gson.fromJson(stopPointString, StopPoint.class) : null;
     }
@@ -621,7 +621,7 @@ public class StopTrackingService extends Service {
     private void removeStopPointFromCache() {
         SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.remove("StopPoint");
+        editor.remove("StopTrackingService.StopPoint");
         editor.commit();
     }
 

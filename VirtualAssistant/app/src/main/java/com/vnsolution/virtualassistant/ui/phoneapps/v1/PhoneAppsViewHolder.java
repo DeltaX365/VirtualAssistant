@@ -15,7 +15,6 @@ public class PhoneAppsViewHolder extends RecyclerView.ViewHolder {
     public ImageView imageAppIcon;
     public TextView textAppName;
     public TextView textAppUsage;
-    public TextView textAppLastUsedTime;
     public OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener;
 
     public PhoneAppsViewHolder(View view) {
@@ -24,6 +23,5 @@ public class PhoneAppsViewHolder extends RecyclerView.ViewHolder {
         imageAppIcon = view.findViewById(R.id.app_icon);
         textAppName = view.findViewById(R.id.app_name);
         textAppUsage = view.findViewById(R.id.app_usage);
-        textAppLastUsedTime = view.findViewById(R.id.app_last_used_time);
     }
 }

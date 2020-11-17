@@ -63,12 +63,17 @@
         <activity
             android:name=".ui.travel.TravelEditActivity"
             android:label="@string/title_screen_travel_edit" />
+        <activity
+            android:name=".ui.phoneapps.PhoneAppsDashboardActivity"
+            android:label="@string/title_screen_applications" />
         <activity android:name=".ui.phoneapps.v1.PhoneAppsActivity" />
         <activity android:name=".ui.phoneapps.v2.PhoneAppsV2Activity" />
         <activity android:name=".ui.phonecalls.v1.PhoneCallsActivity" />
         <activity android:name=".ui.phonesms.v1.PhoneSmsActivity" />
         <activity android:name=".ui.phonecontacts.PhoneContactsActivity" />
-        <activity android:name=".ui.settings.SettingsActivity" />
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:label="@string/title_screen_settings" />
 
         <!-- Services -->
         <service

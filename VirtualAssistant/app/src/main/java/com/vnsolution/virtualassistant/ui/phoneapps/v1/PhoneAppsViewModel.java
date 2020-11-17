@@ -32,18 +32,22 @@ public class PhoneAppsViewModel extends ViewModel {
     }
 
     public LiveData<List<PhoneApp>> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
+        return deviceManager.getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
+    }
+
+    public LiveData<List<PhoneApp>> getPhoneApps(Context context, int filter, boolean shouldGetSystemPackages, boolean forceUpdate) {
         LiveData<List<PhoneApp>> applicationsLiveData = deviceManager.getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
         return Transformations.map(applicationsLiveData, applicationEntities -> {
             List<PhoneApp> applications = copy(applicationEntities);
-            switch (index) {
+            switch (filter) {
                 case 1: //Top 10 recent visited places
                     Collections.sort(applications, new Comparator<PhoneApp>() {
                         @Override
                         public int compare(PhoneApp o1, PhoneApp o2) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                long lastTimeUsed1 = (o1 != null && o1.usageStats != null)? o1.usageStats.getLastTimeUsed() : 0;
-                                long lastTimeUsed2 = (o2 != null && o2.usageStats != null)? o2.usageStats.getLastTimeUsed() : 0;
-                                return (int) (lastTimeUsed2 - lastTimeUsed1);
+                                int lastTimeUsed1 = (o1 != null && o1.usageStats != null)? (int)(o1.usageStats.getLastTimeUsed() / 1000) : 0;
+                                int lastTimeUsed2 = (o2 != null && o2.usageStats != null)? (int)(o2.usageStats.getLastTimeUsed() / 1000) : 0;
+                                return (lastTimeUsed2 - lastTimeUsed1);
                             }
                             return 0;
                         }
@@ -55,9 +59,9 @@ public class PhoneAppsViewModel extends ViewModel {
                         @Override
                         public int compare(PhoneApp o1, PhoneApp o2) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                long totalTimeInForeground1 = (o1 != null && o1.usageStats != null)? o1.usageStats.getTotalTimeInForeground() : 0;
-                                long totalTimeInForeground2 = (o2 != null && o2.usageStats != null)? o2.usageStats.getTotalTimeInForeground() : 0;
-                                return (int) (totalTimeInForeground2 - totalTimeInForeground1);
+                                int totalTimeInForeground1 = (o1 != null && o1.usageStats != null)? (int)(o1.usageStats.getTotalTimeInForeground() / 1000) : 0;
+                                int totalTimeInForeground2 = (o2 != null && o2.usageStats != null)? (int)(o2.usageStats.getTotalTimeInForeground() / 1000) : 0;
+                                return (totalTimeInForeground2 - totalTimeInForeground1);
                             }
                             return 0;
                         }
@@ -72,9 +76,9 @@ public class PhoneAppsViewModel extends ViewModel {
                         @Override
                         public int compare(PhoneApp o1, PhoneApp o2) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                long totalTimeInForeground1 = (o1 != null && o1.usageStats != null)? o1.usageStats.getTotalTimeInForeground() : 0;
-                                long totalTimeInForeground2 = (o2 != null && o2.usageStats != null)? o2.usageStats.getTotalTimeInForeground() : 0;
-                                return (int) (totalTimeInForeground1 - totalTimeInForeground2);
+                                int totalTimeInForeground1 = (o1 != null && o1.usageStats != null)? (int)(o1.usageStats.getTotalTimeInForeground() / 1000) : 0;
+                                int totalTimeInForeground2 = (o2 != null && o2.usageStats != null)? (int)(o2.usageStats.getTotalTimeInForeground() / 1000) : 0;
+                                return (totalTimeInForeground1 - totalTimeInForeground2);
                             }
                             return 0;
                         }
@@ -86,9 +90,9 @@ public class PhoneAppsViewModel extends ViewModel {
                         @Override
                         public int compare(PhoneApp o1, PhoneApp o2) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                long lastTimeUsed1 = (o1 != null && o1.usageStats != null)? o1.usageStats.getLastTimeUsed() : 0;
-                                long lastTimeUsed2 = (o2 != null && o2.usageStats != null)? o2.usageStats.getLastTimeUsed() : 0;
-                                return (int) (lastTimeUsed2 - lastTimeUsed1);
+                                int lastTimeUsed1 = (o1 != null && o1.usageStats != null)? (int)(o1.usageStats.getLastTimeUsed() / 1000) : 0;
+                                int lastTimeUsed2 = (o2 != null && o2.usageStats != null)? (int)(o2.usageStats.getLastTimeUsed() / 1000) : 0;
+                                return (lastTimeUsed2 - lastTimeUsed1);
                             }
                             return 0;
                         }

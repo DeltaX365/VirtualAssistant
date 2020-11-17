@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant.di;
 import com.vnsolution.virtualassistant.ui.StartupActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
+import com.vnsolution.virtualassistant.ui.phoneapps.PhoneAppsDashboardActivity;
 import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsActivity;
 import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
@@ -46,6 +47,9 @@ public abstract class ActivityBuildersModule {
 
     @ContributesAndroidInjector(modules = TravelFragmentBuildersModule.class)
     abstract TravelV2Activity contributeTravelV2Activity();
+
+    @ContributesAndroidInjector()
+    abstract PhoneAppsDashboardActivity contributePhoneAppsDashboardActivity();
 
     @ContributesAndroidInjector()
     abstract PhoneAppsActivity contributePhoneAppsActivity();

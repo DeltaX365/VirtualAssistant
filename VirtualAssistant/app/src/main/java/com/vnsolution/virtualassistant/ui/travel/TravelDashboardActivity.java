@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class TravelDashboardActivity extends BaseActivity {
+    private ViewGroup visitingPlaceViewGroup;
     private TextView visitingPlaceTextView;
 
     private RecyclerView recentlyVisitedPlacesRecyclerView;
@@ -86,6 +88,7 @@ public class TravelDashboardActivity extends BaseActivity {
     }
 
     private void setupVisitingPlaceView() {
+        visitingPlaceViewGroup = findViewById(R.id.visiting_place_group);
         visitingPlaceTextView = findViewById(R.id.visiting_place);
 
         StopPoint stopPoint = getStopPointFromCache(); //this should be called via StopTrackingManager - to be changed
@@ -93,17 +96,19 @@ public class TravelDashboardActivity extends BaseActivity {
             vm.getPlaceById(stopPoint.placeId).observe(this, new Observer<Place>() {
                 @Override
                 public void onChanged(Place place) {
+                    String detail = "";
                     if (place != null) {
-                        String detail = "";
                         if (place.placeName != null && place.placeName != "" &&
                             place.formattedAddress != null && place.formattedAddress != "") {
                             detail += place.placeName + "\n" + place.formattedAddress;
-                        } else {
+                        } else if (place.latitude > 0 && place.longitude > 0) {
                             detail += place.latitude + ", " + place.longitude;
                         }
                         detail += "\n\n Since " + DateConverter.toString(stopPoint.enter);
                         visitingPlaceTextView.setText(detail);
                     }
+                    int visibility = (detail != null && detail != "") ? View.VISIBLE : View.GONE;
+                    visitingPlaceViewGroup.setVisibility(visibility);
                 }
             });
         }
@@ -111,7 +116,7 @@ public class TravelDashboardActivity extends BaseActivity {
 
     private StopPoint getStopPointFromCache() {
         SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
-        String stopPointString = sharedPref.getString("StopPoint", "");
+        String stopPointString = sharedPref.getString("StopTrackingService.StopPoint", "");
         Gson gson = new Gson();
         return !stopPointString.isEmpty()? gson.fromJson(stopPointString, StopPoint.class) : null;
     }

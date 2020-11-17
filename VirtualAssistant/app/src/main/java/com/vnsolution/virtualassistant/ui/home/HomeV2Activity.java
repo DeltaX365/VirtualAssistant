@@ -3,9 +3,6 @@ package com.vnsolution.virtualassistant.ui.home;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,17 +14,15 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.BotOptions;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
-import com.vnsolution.virtualassistant.model.Place;
-import com.vnsolution.virtualassistant.model.PlaceSummary;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
+import com.vnsolution.virtualassistant.ui.phoneapps.PhoneAppsDashboardActivity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
+import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
-import com.vnsolution.virtualassistant.ui.travel.TravelHistoryActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;
@@ -60,11 +55,11 @@ public class HomeV2Activity extends BaseActivity {
             public void onTap(String action) {
                 Intent intent = null;
                 switch (action) {
-                    case BotOptions.SHOW_VISITED_PLACES:
+                    case BotOptions.SHOW_TRAVEL_HISTORY:
                         intent = new Intent(HomeV2Activity.this, TravelDashboardActivity.class);
                         break;
-                    case BotOptions.SHOW_INSTALLED_APPS:
-                        intent = new Intent(HomeV2Activity.this, PhoneAppsV2Activity.class);
+                    case BotOptions.MANAGE_YOUR_APPS:
+                        intent = new Intent(HomeV2Activity.this, PhoneAppsDashboardActivity.class);
                         break;
                     case BotOptions.SHOW_PHONE_CONTACTS:
                         intent = new Intent(HomeV2Activity.this, PhoneContactsActivity.class);
@@ -74,6 +69,9 @@ public class HomeV2Activity extends BaseActivity {
                         break;
                     case BotOptions.SHOW_SENT_RECEIVED_SMS:
                         intent = new Intent(HomeV2Activity.this, PhoneSmsActivity.class);
+                        break;
+                    case BotOptions.SHOW_SETTINGS:
+                        intent = new Intent(HomeV2Activity.this, SettingsActivity.class);
                         break;
                 }
                 if (intent != null) {
@@ -87,11 +85,12 @@ public class HomeV2Activity extends BaseActivity {
 
     private void refreshView() {
         List<String> availableActions = new ArrayList<String>();
-        availableActions.add(BotOptions.SHOW_VISITED_PLACES);
-        availableActions.add(BotOptions.SHOW_INSTALLED_APPS);
+        availableActions.add(BotOptions.SHOW_TRAVEL_HISTORY);
+        availableActions.add(BotOptions.MANAGE_YOUR_APPS);
         availableActions.add(BotOptions.SHOW_PHONE_CONTACTS);
         availableActions.add(BotOptions.SHOW_CALL_LOGS);
         availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
+        availableActions.add(BotOptions.SHOW_SETTINGS);
         availableActionsAdapter.setData(availableActions);
     }
 
