@@ -9,7 +9,6 @@ import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.PhoneContact;
+import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +28,9 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class PhoneContactsActivity extends AppCompatActivity implements HasAndroidInjector {
+public class PhoneContactsActivity extends BaseActivity implements HasAndroidInjector {
     private static final int REQUEST_CODE = 1001;
-    private PhoneContactsRecycleView recyclerView;
+    private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
@@ -41,15 +41,18 @@ public class PhoneContactsActivity extends AppCompatActivity implements HasAndro
     public PhoneContactsViewModel phoneContactsViewModel;
 
     @Inject
-    public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
-
-    @Inject
     public ViewModelProvider.Factory viewModelFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupView();
+        refreshView();
+    }
+
+    private void setupView() {
         setContentView(R.layout.screen_phone_contacts);
+        setupActionBar();
 
         recyclerView = findViewById(R.id.list_contacts);
         progressOverlay =  findViewById(R.id.progress_overlay);
@@ -65,12 +68,9 @@ public class PhoneContactsActivity extends AppCompatActivity implements HasAndro
         // specify an adapter
         phoneContactsAdapter = new PhoneContactsAdapter(this, phoneContactList);
         recyclerView.setAdapter(phoneContactsAdapter);
-
-        // retrieve data
-        getContacts();
     }
 
-    private void getContacts() {
+    private void refreshView() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[] { Manifest.permission.READ_CONTACTS }, REQUEST_CODE);
@@ -78,22 +78,11 @@ public class PhoneContactsActivity extends AppCompatActivity implements HasAndro
             }
         }
 
-        // retrieve data
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressOverlay.setAnimation(inAnimation);
-        progressOverlay.setVisibility(View.VISIBLE);
-
         phoneContactsViewModel.getContacts(this,false).observe(this, new Observer<List<PhoneContact>>() {
             @Override
             public void onChanged(List<PhoneContact> phoneContacts) {
                 phoneContactList = phoneContacts;
                 phoneContactsAdapter.setData(phoneContacts);
-
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                progressOverlay.setAnimation(outAnimation);
-                progressOverlay.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -102,12 +91,7 @@ public class PhoneContactsActivity extends AppCompatActivity implements HasAndro
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE) {
-            getContacts();
+            refreshView();
         }
-    }
-
-    @Override
-    public AndroidInjector<Object> androidInjector() {
-        return dispatchingAndroidInjector;
     }
 }

@@ -9,7 +9,6 @@ import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -18,27 +17,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.PhoneCall;
+import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class PhoneCallsActivity extends AppCompatActivity implements HasAndroidInjector {
+public class PhoneCallsActivity extends BaseActivity implements HasAndroidInjector {
     private static final int REQUEST_CODE = 1001;
-    private CallLogsRecycleView recyclerView;
+    private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
     private CallLogsAdapter callLogsAdapter;
     private List<PhoneCall> callHistory = new ArrayList<>();
-
-    @Inject
-    public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
@@ -49,7 +44,13 @@ public class PhoneCallsActivity extends AppCompatActivity implements HasAndroidI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupView();
+        refreshView();
+    }
+
+    private void setupView() {
         setContentView(R.layout.screen_phone_calls);
+        setupActionBar();
 
         recyclerView = findViewById(R.id.list_call_logs);
         progressOverlay =  findViewById(R.id.progress_overlay);
@@ -65,35 +66,20 @@ public class PhoneCallsActivity extends AppCompatActivity implements HasAndroidI
         // specify an adapter
         callLogsAdapter = new CallLogsAdapter(this, callHistory);
         recyclerView.setAdapter(callLogsAdapter);
-
-        // retrieve data
-        getCallLogs();
     }
 
-    private void getCallLogs() {
+    private void refreshView() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[] { Manifest.permission.READ_CALL_LOG }, REQUEST_CODE);
                 return;
             }
         }
-
-        // retrieve data
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressOverlay.setAnimation(inAnimation);
-        progressOverlay.setVisibility(View.VISIBLE);
-
         callLogsViewModel.getCallLogs(this,false).observe(this, new Observer<List<PhoneCall>>() {
             @Override
             public void onChanged(List<PhoneCall> phoneCalls) {
                 callHistory = phoneCalls;
                 callLogsAdapter.setData(phoneCalls);
-
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                progressOverlay.setAnimation(outAnimation);
-                progressOverlay.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -102,12 +88,7 @@ public class PhoneCallsActivity extends AppCompatActivity implements HasAndroidI
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE) {
-            getCallLogs();
+            refreshView();
         }
-    }
-
-    @Override
-    public AndroidInjector<Object> androidInjector() {
-        return dispatchingAndroidInjector;
     }
 }

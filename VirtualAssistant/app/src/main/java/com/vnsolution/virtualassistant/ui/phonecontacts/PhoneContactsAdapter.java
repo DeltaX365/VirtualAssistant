@@ -50,7 +50,7 @@ public class PhoneContactsAdapter extends RecyclerView.Adapter<PhoneContactsView
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         try {
-            Glide.with(context).load(dataSource.get(position).photoUri).into(holder.avatar);
+//            Glide.with(context).load(dataSource.get(position).photoUri).into(holder.avatar);
             holder.name.setText(dataSource.get(position).name);
             holder.phoneNumbers.setText("Number: " + dataSource.get(position).phoneNumbers);
         }
