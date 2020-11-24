@@ -1,5 +1,7 @@
 package com.vnsolution.virtualassistant.ui.phoneapps;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -17,7 +19,7 @@ import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
-import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsViewModel;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,16 +151,23 @@ public class PhoneAppsDashboardActivity extends BaseActivity {
         categorizedAppsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         categorizedAppsRecyclerView.setLayoutManager(categorizedAppsLayoutManager);
 
-        categorizedAppsAdapter = new RecyclerViewAdapter<PhoneApp>(this, UiOptions.APP_LIST_CATEGORY, R.layout.item_app);
-//        categorizedAppsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneApp>() {
-//            @Override
-//            public void onTap(PhoneApp item) {
-//                super.onTap(item);
-//                Intent intent = new Intent(PhoneAppsDashboardActivity.this, TravelHistoryActivity.class);
-//                intent.putExtra("UiOption", item.type);
-//                startActivity(intent);
-//            }
-//        });
+        categorizedAppsAdapter = new RecyclerViewAdapter<PhoneApp>(this, UiOptions.APP_LIST_CATEGORY, R.layout.card_app_full_width);
+        categorizedAppsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneApp>() {
+            @Override
+            public void onAction(PhoneApp item, String action) {
+                super.onAction(item, action);
+                switch (action) {
+                    case UiOptions.APP_ACTION_LAUNCH:
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(item.packageName);
+                        startActivity(launchIntent);
+                        break;
+                    case UiOptions.APP_ACTION_UNINSTALL:
+                        Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + item.packageName));
+                        startActivity(uninstallIntent);
+                        break;
+                }
+            }
+        });
         categorizedAppsRecyclerView.setAdapter(categorizedAppsAdapter);
 
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);

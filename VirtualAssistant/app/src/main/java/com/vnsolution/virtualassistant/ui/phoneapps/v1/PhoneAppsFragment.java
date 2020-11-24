@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.PhoneApp;
+import com.vnsolution.virtualassistant.ui.phoneapps.PhoneAppsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

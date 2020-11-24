@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingHorizontal="10dp"
     android:paddingVertical="40dp">
@@ -9,7 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="15dp">
 
         <ImageView
             android:layout_width="32dp"
@@ -18,6 +20,7 @@
             android:src="@drawable/ic_baseline_hearing_24"
             />
         <TextView
+            android:id="@+id/bot_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
@@ -28,13 +31,20 @@
 
     </LinearLayout>
 
+<!--    <ImageView-->
+<!--        android:id="@+id/bot_processing"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="20dp"-->
+<!--        android:paddingHorizontal="20dp"-->
+<!--        android:visibility="gone"-->
+<!--        />-->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_available_actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="20dp"
         android:clipToPadding="false"
-        android:layout_marginTop="15dp"
         />
 
 </LinearLayout>

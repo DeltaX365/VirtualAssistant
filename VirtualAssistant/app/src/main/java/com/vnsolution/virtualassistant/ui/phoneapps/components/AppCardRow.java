@@ -45,7 +45,7 @@ public class AppCardRow extends MaterialCardView implements IRecyclerViewRow<Pho
         mAppIconImageView = findViewById(R.id.app_icon);
         mAppNameTextView = findViewById(R.id.app_name);
         mAppVersionTextView = findViewById(R.id.app_version);
-        mAppUsageTextView = findViewById(R.id.app_usage);
+        mAppUsageTextView = findViewById(R.id.app_last_usage);
     }
 
     @Override

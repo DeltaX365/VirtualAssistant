@@ -126,7 +126,7 @@ public class TravelHistoryActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         if (uiOption.equals(UiOptions.PLACE_SUMMARY_YESTERDAY)) {
             MenuInflater menuInflater = getMenuInflater();
-            menuInflater.inflate(R.menu.menu_travel_history, menu);
+            menuInflater.inflate(R.menu.menu_travel_history_options, menu);
             return true;
         }
         return false;

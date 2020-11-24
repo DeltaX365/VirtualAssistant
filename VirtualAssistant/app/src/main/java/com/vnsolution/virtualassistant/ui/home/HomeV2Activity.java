@@ -3,6 +3,9 @@ package com.vnsolution.virtualassistant.ui.home;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -10,6 +13,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.progressindicator.ProgressIndicator;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.BotOptions;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
@@ -29,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeV2Activity extends BaseActivity {
+    private TextView botActionTextView;
+//    private ImageView botProcessingImageView;
     private RecyclerView availableActionsRecyclerView;
     private RecyclerViewAdapter<String> availableActionsAdapter;
     private RecyclerView.LayoutManager availableActionsLayoutManager;
@@ -40,8 +47,20 @@ public class HomeV2Activity extends BaseActivity {
         refreshView();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        botActionTextView.setText("hi man, how can I help you?");
+        availableActionsRecyclerView.setVisibility(View.VISIBLE);
+//        botProcessingImageView.setVisibility(View.INVISIBLE);
+    }
+
     private void setupView() {
         setContentView(R.layout.screen_home_v2);
+
+        botActionTextView = findViewById(R.id.bot_action);
+//        botProcessingImageView = findViewById(R.id.bot_processing);
+//        Glide.with(this).load(R.drawable.loading).into(botProcessingImageView);
 
         availableActionsRecyclerView = findViewById(R.id.list_available_actions);
         availableActionsRecyclerView.setHasFixedSize(true);
@@ -75,6 +94,9 @@ public class HomeV2Activity extends BaseActivity {
                         break;
                 }
                 if (intent != null) {
+                    botActionTextView.setText(action + " ...");
+                    availableActionsRecyclerView.setVisibility(View.INVISIBLE);
+//                    botProcessingImageView.setVisibility(View.VISIBLE);
                     startActivity(intent);
                 }
             }

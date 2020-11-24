@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.phoneapps.v1;
+package com.vnsolution.virtualassistant.ui.phoneapps;
 
 import android.content.Context;
 import android.content.Intent;

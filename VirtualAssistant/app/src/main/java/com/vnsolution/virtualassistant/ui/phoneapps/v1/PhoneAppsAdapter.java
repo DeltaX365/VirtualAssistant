@@ -41,7 +41,7 @@ public class PhoneAppsAdapter extends RecyclerView.Adapter<PhoneAppsViewHolder> 
     @Override
     public PhoneAppsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_app, parent, false);
+        View view = inflater.inflate(R.layout.card_app_full_width, parent, false);
         PhoneAppsViewHolder viewHolder = new PhoneAppsViewHolder(view);
         return viewHolder;
     }

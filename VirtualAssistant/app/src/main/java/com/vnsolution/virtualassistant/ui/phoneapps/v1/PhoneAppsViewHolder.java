@@ -1,7 +1,5 @@
 package com.vnsolution.virtualassistant.ui.phoneapps.v1;
 
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,6 +20,6 @@ public class PhoneAppsViewHolder extends RecyclerView.ViewHolder {
 
         imageAppIcon = view.findViewById(R.id.app_icon);
         textAppName = view.findViewById(R.id.app_name);
-        textAppUsage = view.findViewById(R.id.app_usage);
+        textAppUsage = view.findViewById(R.id.app_last_usage);
     }
 }

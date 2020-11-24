@@ -18,6 +18,9 @@ public class UiOptions {
     public static final String APP_LIST_RECENTLY_USAGE = "APP_LIST_RECENTLY_USAGE";
     public static final String APP_LIST_MOST_USAGE = "APP_LIST_MOST_USAGE";
     public static final String APP_LIST_CATEGORY = "APP_LIST_CATEGORY";
+    public static final String APP_ACTION_LAUNCH = "APP_ACTION_LAUNCH";
+    public static final String APP_ACTION_LOCK = "APP_ACTION_LOCK";
+    public static final String APP_ACTION_UNINSTALL = "APP_ACTION_UNINSTALL";
 
     // Bot UI
     public static final String BOT_AVAILABLE_ACTIONS = "BOT_AVAILABLE_ACTIONS";
