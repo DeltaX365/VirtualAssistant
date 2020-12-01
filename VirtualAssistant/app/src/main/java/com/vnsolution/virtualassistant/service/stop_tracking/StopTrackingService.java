@@ -168,8 +168,12 @@ public class StopTrackingService extends Service {
         }
 
         //notification channel
-        createNotificationChannel();
-        Notification notification = new NotificationCompat.Builder(this, StopTrackingOptions.NOTIFY_CHANNEL_ID)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+        Notification notification = new NotificationCompat.Builder(this, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID)
                 .setContentTitle(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_TITLE)
                 .setContentText(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_TEXT)
                 .setSmallIcon(R.drawable.ic_unknown)
@@ -494,14 +498,6 @@ public class StopTrackingService extends Service {
 //            }
         } else {
             NotificationUtils.sendNotification(StopTrackingService.this, "NOTICE", "Stop position is not available.", null);
-        }
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(StopTrackingOptions.NOTIFY_CHANNEL_ID, StopTrackingOptions.NOTIFY_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(serviceChannel);
         }
     }
 

@@ -6,9 +6,11 @@ public class StringUtils {
     public static String join(String delimiter, List<String> list) {
         StringBuffer sb = new StringBuffer();
         if (list != null) {
-            for (String type : list) {
-                sb.append(type);
-                sb.append(delimiter);
+            for (int i = 0; i < list.size(); i++) {
+                sb.append(list.get(i));
+                if (i < list.size() - 1) {
+                    sb.append(delimiter);
+                }
             }
         }
         return sb.toString();

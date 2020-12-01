@@ -4,19 +4,16 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.google.android.material.progressindicator.ProgressIndicator;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.BotOptions;
+import com.vnsolution.virtualassistant.common.DeviceOptions;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
@@ -26,6 +23,7 @@ import com.vnsolution.virtualassistant.ui.phoneapps.PhoneAppsDashboardActivity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
+import com.vnsolution.virtualassistant.ui.reminders.RemindersActivity;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
@@ -80,7 +78,7 @@ public class HomeV2Activity extends BaseActivity {
                     case BotOptions.MANAGE_YOUR_APPS:
                         intent = new Intent(HomeV2Activity.this, PhoneAppsDashboardActivity.class);
                         break;
-                    case BotOptions.SHOW_PHONE_CONTACTS:
+                    case BotOptions.MANAGE_PHONE_CONTACTS:
                         intent = new Intent(HomeV2Activity.this, PhoneContactsActivity.class);
                         break;
                     case BotOptions.SHOW_CALL_LOGS:
@@ -88,6 +86,9 @@ public class HomeV2Activity extends BaseActivity {
                         break;
                     case BotOptions.SHOW_SENT_RECEIVED_SMS:
                         intent = new Intent(HomeV2Activity.this, PhoneSmsActivity.class);
+                        break;
+                    case BotOptions.SHOW_REMINDERS:
+                        intent = new Intent(HomeV2Activity.this, RemindersActivity.class);
                         break;
                     case BotOptions.SHOW_SETTINGS:
                         intent = new Intent(HomeV2Activity.this, SettingsActivity.class);
@@ -108,16 +109,19 @@ public class HomeV2Activity extends BaseActivity {
     private void refreshView() {
         List<String> availableActions = new ArrayList<String>();
         availableActions.add(BotOptions.SHOW_TRAVEL_HISTORY);
+        availableActions.add(BotOptions.MANAGE_PHONE_CONTACTS);
         availableActions.add(BotOptions.MANAGE_YOUR_APPS);
-        availableActions.add(BotOptions.SHOW_PHONE_CONTACTS);
-        availableActions.add(BotOptions.SHOW_CALL_LOGS);
-        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
+        availableActions.add(BotOptions.SHOW_REMINDERS);
+        availableActions.add(BotOptions.SHOW_NOTIFICATIONS);
+//        availableActions.add(BotOptions.SHOW_CALL_LOGS);
+//        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
         availableActions.add(BotOptions.SHOW_SETTINGS);
         availableActionsAdapter.setData(availableActions);
     }
 
     private boolean requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Stop tracking permissions.
             if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_ACTIVITY_RECOGNITION)) {
                 requestPermissions(StopTrackingOptions.PERMISSIONS_ACTIVITY_RECOGNITION, StopTrackingOptions.PERMISSIONS_REQUEST_CODE);
                 return false;
@@ -134,15 +138,26 @@ public class HomeV2Activity extends BaseActivity {
 
             Intent intentA = new Intent(StopTrackingOptions.BROADCAST_PERMISSIONS_ALL_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentA);
+
+            // Phone contact/call/sms permissions
+            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_PHONE_CALL)) {
+                requestPermissions(DeviceOptions.PERMISSIONS_PHONE_CALL, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+                return false;
+            }
+
+            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_PHONE_SMS)) {
+                requestPermissions(DeviceOptions.PERMISSIONS_PHONE_SMS, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+                return false;
+            }
         }
-        Toast.makeText(this, "Stop tracking permissions have been granted", Toast.LENGTH_SHORT).show();
         return true;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == StopTrackingOptions.PERMISSIONS_REQUEST_CODE) {
+        if (requestCode == StopTrackingOptions.PERMISSIONS_REQUEST_CODE
+                || requestCode == DeviceOptions.PERMISSIONS_REQUEST_CODE) {
             requestPermissions();
         }
     }

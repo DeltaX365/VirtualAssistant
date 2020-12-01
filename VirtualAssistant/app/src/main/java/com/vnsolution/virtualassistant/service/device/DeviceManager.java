@@ -33,9 +33,13 @@ import com.vnsolution.virtualassistant.model.PhoneCall;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneSms;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
+import com.vnsolution.virtualassistant.util.PhoneUtils;
+import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -136,7 +140,7 @@ public class DeviceManager {
         return phoneContactsLiveData;
     }
 
-    private void getPhoneAppsAsync(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
+    public void getPhoneAppsAsync(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneApp>> phoneAppListFuture = executor.submit(new Callable<List<PhoneApp>>() {
             @Override
@@ -176,10 +180,12 @@ public class DeviceManager {
             FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
-        phoneAppsLiveData.setValue(phoneApps);
+        if (phoneAppsLiveData != null) {
+            phoneAppsLiveData.setValue(phoneApps);
+        }
     }
 
-    private void getPhoneAppUsageStats(Context context) {
+    public void getPhoneAppUsageStats(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP
                 && context != null && (appUsageStats == null || appUsageStats.isEmpty())) {
 
@@ -203,9 +209,9 @@ public class DeviceManager {
         }
     }
 
-    private void getPhoneCallsAsync(Context context, boolean forceUpdate) {
+    public List<PhoneCall> getPhoneCallsAsync(Context context, boolean forceUpdate) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<List<PhoneCall>> phoneCallListFuture =  executor.submit(new Callable<List<PhoneCall>>() {
+        Future<List<PhoneCall>> phoneCallListFuture = executor.submit(new Callable<List<PhoneCall>>() {
             @Override
             public List<PhoneCall> call() throws Exception {
                 if (forceUpdate) {
@@ -223,10 +229,13 @@ public class DeviceManager {
             FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
-        phoneCallsLiveData.setValue(phoneCalls);
+        if (phoneCallsLiveData != null) {
+            phoneCallsLiveData.setValue(phoneCalls);
+        }
+        return phoneCalls;
     }
 
-    private void syncPhoneCalls(Context context) {
+    public void syncPhoneCalls(Context context) {
         List<PhoneCallEntity> phoneCalls = new ArrayList<>();
         if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_CALL_LOG)) {
             @SuppressLint("MissingPermission") Cursor cursor = context.getContentResolver().query(android.provider.CallLog.Calls.CONTENT_URI, null, null, null, android.provider.CallLog.Calls.DATE + " DESC");
@@ -239,7 +248,7 @@ public class DeviceManager {
         phoneCallDao.insert(phoneCalls);
     }
 
-    private void getPhoneSmsAsync(Context context, boolean forceUpdate) {
+    public List<PhoneSms> getPhoneSmsAsync(Context context, boolean forceUpdate) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneSms>> phoneSmsListFuture = executor.submit(new Callable<List<PhoneSms>>() {
             @Override
@@ -259,10 +268,13 @@ public class DeviceManager {
             FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
-        phoneSmsLiveData.setValue(phoneSmsList);
+        if (phoneSmsLiveData != null) {
+            phoneSmsLiveData.setValue(phoneSmsList);
+        }
+        return phoneSmsList;
     }
 
-    private void syncPhoneSms(Context context) {
+    public void syncPhoneSms(Context context) {
         List<PhoneSmsEntity> phoneSmsList = new ArrayList<>();
         if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_SMS)) {
             Cursor cursor = context.getContentResolver().query(Uri.parse(SMS_INBOX), null, null, null, null);
@@ -277,7 +289,7 @@ public class DeviceManager {
         phoneSmsDao.insert(phoneSmsList);
     }
 
-    private void getPhoneContactsAsync(Context context, boolean forceUpdate) {
+    public void getPhoneContactsAsync(Context context, boolean forceUpdate) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneContact>> phoneContactListFuture = executor.submit(new Callable<List<PhoneContact>>() {
             @Override
@@ -292,15 +304,24 @@ public class DeviceManager {
         List<PhoneContact> phoneContactList = new ArrayList<>();
         try {
             phoneContactList = phoneContactListFuture.get();
+            applyPhoneContactStat(context, phoneContactList);
+            Collections.sort(phoneContactList, new Comparator<PhoneContact>() {
+                @Override
+                public int compare(PhoneContact o1, PhoneContact o2) {
+                    return o1.name.compareTo(o2.name);
+                }
+            });
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
-        phoneContactsLiveData.setValue(phoneContactList);
+        if (phoneContactsLiveData != null) {
+            phoneContactsLiveData.setValue(phoneContactList);
+        }
     }
 
-    private void syncPhoneContacts(Context context) {
+    public void syncPhoneContacts(Context context) {
         List<PhoneContactEntity> phoneContacts = new ArrayList<>();
         if (context != null) {
             ContentResolver contentResolver = context.getContentResolver();
@@ -315,10 +336,12 @@ public class DeviceManager {
                                 null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{ String.valueOf(phoneContact.contactId) },
                                 null);
+                        List<String> phoneNumbers = new ArrayList<>();
                         while (cursor1.moveToNext()) {
                             String phoneNo = cursor1.getString(cursor1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                            phoneContact.phoneNumbers += phoneNo + ", ";
+                            phoneNumbers.add(phoneNo);
                         }
+                        phoneContact.phoneNumbers = StringUtils.join(",", phoneNumbers);
                         cursor1.close();
                     }
                     phoneContacts.add(phoneContact);
@@ -327,6 +350,34 @@ public class DeviceManager {
             cursor.close();
         }
         phoneContactDao.insert(phoneContacts);
+    }
+
+    private void applyPhoneContactStat(Context context, List<PhoneContact> contactList) {
+        List<PhoneCall> callList = getPhoneCallsAsync(context, true);
+        List<PhoneSms> smsList = getPhoneSmsAsync(context, true);
+        for (PhoneContact phoneContact : contactList) {
+            int totalIncomeCall = 0;
+            int totalOutcomeCall = 0;
+            int totalSms = 0;
+            for (PhoneCall phoneCall : callList) {
+                if (phoneContact.phoneNumbers.contains(phoneCall.phoneNumber)) {
+                    if (phoneCall.type == android.provider.CallLog.Calls.INCOMING_TYPE) {
+                        totalIncomeCall++;
+                    } else if (phoneCall.type == CallLog.Calls.OUTGOING_TYPE) {
+                        totalOutcomeCall++;
+                    }
+                }
+            }
+            for (PhoneSms phoneSms : smsList) {
+                String phoneNumber = PhoneUtils.convertInternationalToNational(phoneSms.address);
+                if (phoneContact.phoneNumbers.contains(phoneNumber)) {
+                    totalSms++;
+                }
+            }
+            phoneContact.totalIncomeCall = totalIncomeCall;
+            phoneContact.totalOutcomeCall = totalOutcomeCall;
+            phoneContact.totalSms = totalSms;
+        }
     }
 
     private PhoneCallEntity getPhoneCallEntity(Cursor cursor) {

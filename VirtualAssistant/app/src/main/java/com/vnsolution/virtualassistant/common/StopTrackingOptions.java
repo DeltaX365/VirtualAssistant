@@ -46,8 +46,8 @@ public class StopTrackingOptions {
     public static final int CONFIG_GEOFENCE_DWELLING_IN_MILLISECONDS = 30*60*1000;
 
     // Notifications.
-    public static final String NOTIFY_CHANNEL_ID = "com.vnsolution.virtualassistant.STOP_TRACKING_FOREGROUND_SERVICE";
-    public static final String NOTIFY_CHANNEL_NAME = "Stop Detection";
+    public static final String NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID = "com.vnsolution.virtualassistant.STOP_TRACKING_FOREGROUND_SERVICE";
+    public static final String NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME = "Stop Detection";
     public static final String NOTIFY_FOREGROUND_SERVICE_TITLE = "Foreground Service";
     public static final String NOTIFY_FOREGROUND_SERVICE_TEXT = "Checking activity...";
 }

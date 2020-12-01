@@ -16,8 +16,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public class PhoneContactsActivity extends BaseActivity implements HasAndroidInj
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;
 
-    private PhoneContactsAdapter phoneContactsAdapter;
+    private RecyclerViewAdapter<PhoneContact> phoneContactsAdapter;
     private List<PhoneContact> phoneContactList = new ArrayList<>();
 
     @Inject
@@ -54,19 +56,14 @@ public class PhoneContactsActivity extends BaseActivity implements HasAndroidInj
         setContentView(R.layout.screen_phone_contacts);
         setupActionBar();
 
-        recyclerView = findViewById(R.id.list_contacts);
         progressOverlay =  findViewById(R.id.progress_overlay);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
+        recyclerView = findViewById(R.id.list_contacts);
         recyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        // specify an adapter
-        phoneContactsAdapter = new PhoneContactsAdapter(this, phoneContactList);
+        phoneContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact_full_width);
         recyclerView.setAdapter(phoneContactsAdapter);
     }
 

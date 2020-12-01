@@ -22,6 +22,12 @@ public class UiOptions {
     public static final String APP_ACTION_LOCK = "APP_ACTION_LOCK";
     public static final String APP_ACTION_UNINSTALL = "APP_ACTION_UNINSTALL";
 
+    // Phone Contact UI
+    public static final String CONTACT_LIST_ALL = "CONTACT_LIST_ALL";
+
+    // Reminders UI
+    public static final String REMINDER_LIST_ALL = "REMINDER_LIST_ALL";
+
     // Bot UI
     public static final String BOT_AVAILABLE_ACTIONS = "BOT_AVAILABLE_ACTIONS";
 }

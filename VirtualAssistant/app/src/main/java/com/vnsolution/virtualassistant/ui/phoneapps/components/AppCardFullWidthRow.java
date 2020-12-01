@@ -22,6 +22,7 @@ import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<PhoneApp>, PopupMenu.OnMenuItemClickListener {
     private ImageView mAppIconImageView;
     private TextView mAppNameTextView;
+    private TextView mAppPackageNameTextView;
     private TextView mAppVersionTextView;
     private TextView mAppLastUsageTextView;
     private TextView mAppTotalUsageTextView;
@@ -51,6 +52,7 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
         super.onFinishInflate();
         mAppIconImageView = findViewById(R.id.app_icon);
         mAppNameTextView = findViewById(R.id.app_name);
+        mAppPackageNameTextView = findViewById(R.id.app_package_name);
         mAppVersionTextView = findViewById(R.id.app_version);
         mAppLastUsageTextView = findViewById(R.id.app_last_usage);
         mAppTotalUsageTextView = findViewById(R.id.app_total_usage);
@@ -73,6 +75,7 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
         Glide.with(mContext).load(phoneApp.appIcon).into(mAppIconImageView);
 
         mAppNameTextView.setText(phoneApp.appName);
+        mAppPackageNameTextView.setText(phoneApp.packageName);
         mAppVersionTextView.setText("Ver: " + phoneApp.versionName);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && phoneApp.usageStats != null) {

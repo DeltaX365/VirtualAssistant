@@ -40,6 +40,14 @@ public class PhoneAppsViewModel extends ViewModel {
         return Transformations.map(applicationsLiveData, applicationEntities -> {
             List<PhoneApp> applications = copy(applicationEntities);
             switch (filter) {
+                case 0: //Order by name
+                    Collections.sort(applications, new Comparator<PhoneApp>() {
+                        @Override
+                        public int compare(PhoneApp o1, PhoneApp o2) {
+                            return o1.appName.compareTo(o2.appName);
+                        }
+                    });
+                    break;
                 case 1: //Top 10 recent visited places
                     Collections.sort(applications, new Comparator<PhoneApp>() {
                         @Override

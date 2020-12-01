@@ -8,6 +8,7 @@ import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsActivity;
 import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
+import com.vnsolution.virtualassistant.ui.reminders.RemindersActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelHistoryActivity;
@@ -49,6 +50,9 @@ public abstract class ActivityBuildersModule {
     abstract TravelV2Activity contributeTravelV2Activity();
 
     @ContributesAndroidInjector()
+    abstract PhoneContactsActivity contributePhoneContactsActivity();
+
+    @ContributesAndroidInjector()
     abstract PhoneAppsDashboardActivity contributePhoneAppsDashboardActivity();
 
     @ContributesAndroidInjector()
@@ -64,7 +68,7 @@ public abstract class ActivityBuildersModule {
     abstract PhoneSmsActivity contributePhoneSmsActivity();
 
     @ContributesAndroidInjector()
-    abstract PhoneContactsActivity contributePhoneContactsActivity();
+    abstract RemindersActivity remindersActivity();
 
     @ContributesAndroidInjector()
     abstract SettingsActivity contributeSettingsActivity();

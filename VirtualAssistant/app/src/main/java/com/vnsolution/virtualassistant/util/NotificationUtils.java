@@ -11,6 +11,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
 
@@ -23,7 +24,7 @@ public class NotificationUtils {
      */
     public static void sendNotification(Context context, String title, String message, PlaceEntity visitedPlace) {
         // Get an instance of the Notification manager
-        NotificationManager mNotificationManager =
+        NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Android O requires a Notification Channel.
@@ -34,7 +35,7 @@ public class NotificationUtils {
                     new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
 
             // Set the Notification Channel for the Notification Manager.
-            mNotificationManager.createNotificationChannel(mChannel);
+            notificationManager.createNotificationChannel(mChannel);
         }
 
 //        // Create an explicit content Intent that starts the main Activity.
@@ -83,6 +84,6 @@ public class NotificationUtils {
         }
 
         // Issue the notification
-        mNotificationManager.notify((int) (Math.random() * 999999), builder.build());
+        notificationManager.notify((int) (Math.random() * 999999), builder.build());
     }
 }

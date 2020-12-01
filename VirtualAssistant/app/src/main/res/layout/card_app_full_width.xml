@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingVertical="5dp"
-        android:paddingHorizontal="10dp">
+        android:padding="10dp">
 
         <ImageView
             android:id="@+id/app_icon"
@@ -33,6 +32,14 @@
                 android:textSize="14sp"
                 />
             <TextView
+                android:id="@+id/app_package_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textSize="14sp"
+                />
+            <TextView
                 android:id="@+id/app_version"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,12 +50,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:visibility="gone"
                 />
             <TextView
                 android:id="@+id/app_last_usage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:visibility="gone"
                 />
 
         </LinearLayout>

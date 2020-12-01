@@ -7,4 +7,7 @@ public class PhoneContact {
     public String name;
     public String phoneNumbers;
     public Uri photoUri;
+    public int totalIncomeCall;
+    public int totalOutcomeCall;
+    public int totalSms;
 }

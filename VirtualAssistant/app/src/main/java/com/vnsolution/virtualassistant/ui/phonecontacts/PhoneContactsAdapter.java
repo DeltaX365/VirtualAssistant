@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
@@ -39,7 +38,7 @@ public class PhoneContactsAdapter extends RecyclerView.Adapter<PhoneContactsView
     @Override
     public PhoneContactsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_phone_contact, parent, false);
+        View view = inflater.inflate(R.layout.card_contact_full_width, parent, false);
         PhoneContactsViewHolder viewHolder = new PhoneContactsViewHolder(view);
         return viewHolder;
     }
