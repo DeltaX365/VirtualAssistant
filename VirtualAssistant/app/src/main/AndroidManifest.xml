@@ -65,7 +65,10 @@
             android:name=".ui.travel.TravelEditActivity"
             android:label="@string/title_screen_travel_edit" />
         <activity
-            android:name=".ui.phonecontacts.PhoneContactsActivity"
+            android:name=".ui.phonecontacts.PhoneContactDashboardActivity"
+            android:label="@string/title_screen_contacts"/>
+        <activity
+            android:name=".ui.phonecontacts.PhoneContactActivity"
             android:label="@string/title_screen_contacts"/>
         <activity
             android:name=".ui.phoneapps.PhoneAppsDashboardActivity"
