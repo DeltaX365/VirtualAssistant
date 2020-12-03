@@ -14,12 +14,12 @@ import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 
 import java.util.List;
 
-public class PhoneContactsAdapter extends RecyclerView.Adapter<PhoneContactsViewHolder> {
+public class PhoneContactAdapter extends RecyclerView.Adapter<PhoneContactViewHolder> {
     private Context context;
     private List<PhoneContact> dataSource;
     private OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener;
 
-    public PhoneContactsAdapter(Context context, List<PhoneContact> dataSource) {
+    public PhoneContactAdapter(Context context, List<PhoneContact> dataSource) {
         this.context = context;
         this.dataSource = dataSource;
     }
@@ -36,16 +36,16 @@ public class PhoneContactsAdapter extends RecyclerView.Adapter<PhoneContactsView
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
-    public PhoneContactsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PhoneContactViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.card_contact_full_width, parent, false);
-        PhoneContactsViewHolder viewHolder = new PhoneContactsViewHolder(view);
+        PhoneContactViewHolder viewHolder = new PhoneContactViewHolder(view);
         return viewHolder;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(@NonNull PhoneContactsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PhoneContactViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         try {

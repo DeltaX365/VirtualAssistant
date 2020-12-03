@@ -1,13 +1,10 @@
 package com.vnsolution.virtualassistant.model;
 
-import android.net.Uri;
-
 public class PhoneContact {
     public int contactId;
     public String name;
     public String phoneNumbers;
-    public Uri photoUri;
-    public int totalIncomeCall;
-    public int totalOutcomeCall;
+    public int totalIncomingCall;
+    public int totalOutgoingCall;
     public int totalSms;
 }

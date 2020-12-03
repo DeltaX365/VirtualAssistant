@@ -5,10 +5,18 @@ import android.location.Address;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceSearchDto;
+import com.vnsolution.virtualassistant.db.entity.PhoneCallEntity;
+import com.vnsolution.virtualassistant.db.entity.PhoneCallSummaryEntity;
+import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
+import com.vnsolution.virtualassistant.model.PhoneApp;
+import com.vnsolution.virtualassistant.model.PhoneContact;
+import com.vnsolution.virtualassistant.model.PhoneContactSummary;
 import com.vnsolution.virtualassistant.model.StopPoint;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class MappingUtils {
@@ -156,5 +164,39 @@ public class MappingUtils {
             placeEntity.createdDate = new Date();
         }
         return placeEntity;
+    }
+
+    public static List<PhoneContact> convertPhoneContactEntitiesToPhoneContacts(List<PhoneContactEntity> phoneContactEntities) {
+        List<PhoneContact> phoneContacts = new ArrayList<>();
+        for (PhoneContactEntity phoneContactEntity : phoneContactEntities) {
+            PhoneContact phoneContact = convertPhoneContactEntityToPhoneContact(phoneContactEntity);
+            phoneContacts.add(phoneContact);
+        }
+        return phoneContacts;
+    }
+
+    public static PhoneContact convertPhoneContactEntityToPhoneContact(PhoneContactEntity phoneContactEntity) {
+        PhoneContact phoneContact = new PhoneContact();
+        phoneContact.contactId = phoneContactEntity.contactId;
+        phoneContact.name = phoneContactEntity.displayName;
+        phoneContact.phoneNumbers = phoneContactEntity.phoneNumbers;
+        return phoneContact;
+    }
+
+    public static List<PhoneContactSummary> convertPhoneCallSummaryEntitiesToPhoneContacts(List<PhoneCallSummaryEntity> phoneCallSummaryEntityList) {
+        List<PhoneContactSummary> phoneContactSummaryList = new ArrayList<>();
+        for (PhoneCallSummaryEntity phoneCallSummaryEntity : phoneCallSummaryEntityList) {
+            PhoneContactSummary phoneContactSummary = convertPhoneCallSummaryEntityToPhoneContactSummary(phoneCallSummaryEntity);
+            phoneContactSummaryList.add(phoneContactSummary);
+        }
+        return phoneContactSummaryList;
+    }
+
+    public static PhoneContactSummary convertPhoneCallSummaryEntityToPhoneContactSummary(PhoneCallSummaryEntity phoneCallSummaryEntity) {
+        PhoneContactSummary phoneContactSummary = new PhoneContactSummary();
+        phoneContactSummary.type = phoneCallSummaryEntity.type;
+        phoneContactSummary.total = phoneCallSummaryEntity.total;
+        phoneContactSummary.duration = phoneCallSummaryEntity.duration;
+        return phoneContactSummary;
     }
 }

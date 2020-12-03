@@ -23,15 +23,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class PhoneContactsFragment extends Fragment implements Injectable {
+public class PhoneContactFragment extends Fragment implements Injectable {
     private PhoneAppsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private PhoneContactsAdapter phoneContactsAdapter;
+    private PhoneContactAdapter phoneContactAdapter;
     private List<PhoneContact> phoneContacts = new ArrayList<>();
     private Context mContext;
 
     @Inject
-    public PhoneContactsViewModel phoneContactsViewModel;
+    public PhoneContactViewModel phoneContactViewModel;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
@@ -63,15 +63,15 @@ public class PhoneContactsFragment extends Fragment implements Injectable {
             recyclerView.setLayoutManager(layoutManager);
 
             // specify an adapter
-            phoneContactsAdapter = new PhoneContactsAdapter(mContext, phoneContacts);
-            recyclerView.setAdapter(phoneContactsAdapter);
+            phoneContactAdapter = new PhoneContactAdapter(mContext, phoneContacts);
+            recyclerView.setAdapter(phoneContactAdapter);
 
             // retrieve data
-            phoneContactsViewModel.getContacts(mContext,false).observe(getViewLifecycleOwner(), new Observer<List<PhoneContact>>() {
+            phoneContactViewModel.getContacts(mContext,false).observe(getViewLifecycleOwner(), new Observer<List<PhoneContact>>() {
                 @Override
                 public void onChanged(List<PhoneContact> phoneContacts) {
                     phoneContacts = phoneContacts;
-                    phoneContactsAdapter.setData(phoneContacts);
+                    phoneContactAdapter.setData(phoneContacts);
                 }
             });
         }

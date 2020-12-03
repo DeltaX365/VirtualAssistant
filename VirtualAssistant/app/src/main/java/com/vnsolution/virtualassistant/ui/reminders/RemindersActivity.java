@@ -1,14 +1,8 @@
 package com.vnsolution.virtualassistant.ui.reminders;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +12,7 @@ import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
-import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsViewModel;
+import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +31,7 @@ public class RemindersActivity extends BaseActivity implements HasAndroidInjecto
     private List<PhoneContact> phoneContactList = new ArrayList<>();
 
     @Inject
-    public PhoneContactsViewModel phoneContactsViewModel;
+    public PhoneContactViewModel phoneContactViewModel;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;

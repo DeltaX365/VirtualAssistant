@@ -26,6 +26,7 @@ import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneSmsDao;
 import com.vnsolution.virtualassistant.db.entity.PhoneCallEntity;
+import com.vnsolution.virtualassistant.db.entity.PhoneCallSummaryEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneSmsEntity;
 import com.vnsolution.virtualassistant.model.PhoneApp;
@@ -34,6 +35,7 @@ import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneSms;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 import com.vnsolution.virtualassistant.util.PhoneUtils;
+import com.vnsolution.virtualassistant.util.SerialUtils;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
@@ -84,29 +86,87 @@ public class DeviceManager {
         return instance;
     }
 
-    public void getTotalInstalledApps() {}
+    public List<PhoneCallSummaryEntity> getContactSummary() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<PhoneCallSummaryEntity>> phoneContactSummaryListFuture = executor.submit(new Callable<List<PhoneCallSummaryEntity>>() {
+            @Override
+            public List<PhoneCallSummaryEntity> call() throws Exception {
+                return phoneCallDao.getCallStat();
+            }
+        });
+        List<PhoneCallSummaryEntity> phoneContactSummary = new ArrayList<>();
+        try {
+            phoneContactSummary = phoneContactSummaryListFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return phoneContactSummary;
+    }
 
-    public void getTop10RecentUsedApps() {}
+    public List<PhoneContactEntity> getRecentContactsByType(int type) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<PhoneContactEntity>> phoneCallListFuture = executor.submit(new Callable<List<PhoneContactEntity>>() {
+            @Override
+            public List<PhoneContactEntity> call() throws Exception {
+                List<PhoneCallEntity> recentPhoneCalls = (type == 0)? phoneCallDao.getRecentCalls() : phoneCallDao.getRecentCallsByType(type);
+                List<PhoneContactEntity> phoneContacts = phoneContactDao.getAll();
+                return filterPhoneContacts(phoneContacts, recentPhoneCalls);
+            }
+        });
+        List<PhoneContactEntity> phoneCalls = new ArrayList<>();
+        try {
+            phoneCalls = phoneCallListFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return phoneCalls;
+    }
 
-    public void getTop10MostUsedApps() {}
+    public List<PhoneContactEntity> getMostContactsByType(int type) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<PhoneContactEntity>> phoneCallListFuture = executor.submit(new Callable<List<PhoneContactEntity>>() {
+            @Override
+            public List<PhoneContactEntity> call() throws Exception {
+                List<PhoneCallEntity> mostPhoneCalls = (type == 0) ? phoneCallDao.getMostCalls() : phoneCallDao.getMostCallsByType(type);
+                List<PhoneContactEntity> phoneContacts = phoneContactDao.getAll();
+                return filterPhoneContacts(phoneContacts, mostPhoneCalls);
+            }
+        });
+        List<PhoneContactEntity> phoneCalls = new ArrayList<>();
+        try {
+            phoneCalls = phoneCallListFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return phoneCalls;
+    }
 
-    public void getTop10FavouriteUsedApps() {}
-
-    public void getTop10UnusedApps() {}
-
-    public void favouriteApp(PhoneApp application) {}
-
-    public void categorizeApp(PhoneApp application) {}
-
-    public void getTotalCalls() {}
-
-    public void getTotalPhones() {}
-
-    public void getTotalTime() {}
-
-    public void getTop10RecentCalls() {}
-
-    public void getTop10MostCalls() {}
+    private List<PhoneContactEntity> filterPhoneContacts(List<PhoneContactEntity> phoneContacts, List<PhoneCallEntity> phoneCalls) {
+        List<PhoneContactEntity> filteredResult = new ArrayList<>();
+        if (phoneCalls != null) {
+            for (PhoneCallEntity phoneCall : phoneCalls) {
+                PhoneContactEntity existingPhoneContact = null;
+                if (phoneContacts != null) {
+                    for (PhoneContactEntity phoneContact : phoneContacts) {
+                        if (phoneContact.phoneNumbers != null && phoneContact.phoneNumbers.contains(phoneCall.phoneNumber)) {
+                            existingPhoneContact = (PhoneContactEntity) SerialUtils.cloneObject(phoneContact);
+                            break;
+                        }
+                    }
+                }
+                existingPhoneContact = (existingPhoneContact == null) ? new PhoneContactEntity() : existingPhoneContact;
+                existingPhoneContact.phoneNumbers = phoneCall.phoneNumber;
+                filteredResult.add(existingPhoneContact);
+            }
+        }
+        return filteredResult;
+    }
 
     public MutableLiveData<List<PhoneApp>> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
         if (phoneAppsLiveData == null) {
@@ -374,8 +434,8 @@ public class DeviceManager {
                     totalSms++;
                 }
             }
-            phoneContact.totalIncomeCall = totalIncomeCall;
-            phoneContact.totalOutcomeCall = totalOutcomeCall;
+            phoneContact.totalIncomingCall = totalIncomeCall;
+            phoneContact.totalOutgoingCall = totalOutcomeCall;
             phoneContact.totalSms = totalSms;
         }
     }

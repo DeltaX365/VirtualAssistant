@@ -21,7 +21,8 @@ import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.ui.phoneapps.PhoneAppsDashboardActivity;
 import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
-import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactsActivity;
+import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactActivity;
+import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactDashboardActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
 import com.vnsolution.virtualassistant.ui.reminders.RemindersActivity;
 import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
@@ -79,7 +80,7 @@ public class HomeV2Activity extends BaseActivity {
                         intent = new Intent(HomeV2Activity.this, PhoneAppsDashboardActivity.class);
                         break;
                     case BotOptions.MANAGE_PHONE_CONTACTS:
-                        intent = new Intent(HomeV2Activity.this, PhoneContactsActivity.class);
+                        intent = new Intent(HomeV2Activity.this, PhoneContactDashboardActivity.class);
                         break;
                     case BotOptions.SHOW_CALL_LOGS:
                         intent = new Intent(HomeV2Activity.this, PhoneCallsActivity.class);
@@ -144,9 +145,12 @@ public class HomeV2Activity extends BaseActivity {
                 requestPermissions(DeviceOptions.PERMISSIONS_PHONE_CALL, DeviceOptions.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
-
             if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_PHONE_SMS)) {
                 requestPermissions(DeviceOptions.PERMISSIONS_PHONE_SMS, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+                return false;
+            }
+            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_PHONE_CONTACT)) {
+                requestPermissions(DeviceOptions.PERMISSIONS_PHONE_CONTACT, DeviceOptions.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
         }

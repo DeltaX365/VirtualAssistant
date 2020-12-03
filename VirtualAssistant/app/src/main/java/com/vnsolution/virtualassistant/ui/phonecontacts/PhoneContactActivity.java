@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -26,11 +24,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class PhoneContactsActivity extends BaseActivity implements HasAndroidInjector {
+public class PhoneContactActivity extends BaseActivity implements HasAndroidInjector {
     private static final int REQUEST_CODE = 1001;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -40,7 +36,7 @@ public class PhoneContactsActivity extends BaseActivity implements HasAndroidInj
     private List<PhoneContact> phoneContactList = new ArrayList<>();
 
     @Inject
-    public PhoneContactsViewModel phoneContactsViewModel;
+    public PhoneContactViewModel phoneContactViewModel;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
@@ -53,7 +49,7 @@ public class PhoneContactsActivity extends BaseActivity implements HasAndroidInj
     }
 
     private void setupView() {
-        setContentView(R.layout.screen_phone_contacts);
+        setContentView(R.layout.screen_phone_contact);
         setupActionBar();
 
         progressOverlay =  findViewById(R.id.progress_overlay);
@@ -75,7 +71,7 @@ public class PhoneContactsActivity extends BaseActivity implements HasAndroidInj
             }
         }
 
-        phoneContactsViewModel.getContacts(this,false).observe(this, new Observer<List<PhoneContact>>() {
+        phoneContactViewModel.getContacts(this,false).observe(this, new Observer<List<PhoneContact>>() {
             @Override
             public void onChanged(List<PhoneContact> phoneContacts) {
                 phoneContactList = phoneContacts;

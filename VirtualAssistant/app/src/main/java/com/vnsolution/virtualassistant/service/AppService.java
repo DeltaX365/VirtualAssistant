@@ -12,6 +12,7 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
+import com.vnsolution.virtualassistant.service.device.DeviceWorker;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService;
 import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingWorker;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
@@ -27,11 +28,16 @@ public class AppService {
     }
 
     public void run() {
-        runStopTrackingService();
+        startBackgroundServices();
         startWatchingPermissionsChanged();
     }
 
-    private void runStopTrackingService() {
+    private void startBackgroundServices() {
+        startStopTrackingService();
+        startDeviceSyncWorker();
+    }
+
+    private void startStopTrackingService() {
         if (PermissionUtils.hasPermissions(mContext, StopTrackingOptions.PERMISSIONS_STOP_TRACKING)) {
             Intent serviceIntent = new Intent(mContext, StopTrackingService.class);
             serviceIntent.setAction(StopTrackingOptions.INTENT_ACTION_INITIAL);
@@ -39,6 +45,11 @@ public class AppService {
         }
         final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(StopTrackingWorker.class, 24, TimeUnit.HOURS).build();
         WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("StopTrackingWorker", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
+    }
+
+    private void startDeviceSyncWorker() {
+        final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(DeviceWorker.class, 24, TimeUnit.HOURS).build();
+        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("DeviceSyncWorker", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
     }
 
     private void startWatchingPermissionsChanged() {

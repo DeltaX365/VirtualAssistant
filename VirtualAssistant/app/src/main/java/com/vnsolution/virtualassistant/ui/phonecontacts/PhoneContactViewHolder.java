@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 
-public class PhoneContactsViewHolder extends RecyclerView.ViewHolder {
+public class PhoneContactViewHolder extends RecyclerView.ViewHolder {
     public ImageView avatar;
     public TextView name;
     public TextView phoneNumbers;
     public OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener;
 
-    public PhoneContactsViewHolder(View view) {
+    public PhoneContactViewHolder(View view) {
         super(view);
 
         avatar = view.findViewById(R.id.contact_avatar);

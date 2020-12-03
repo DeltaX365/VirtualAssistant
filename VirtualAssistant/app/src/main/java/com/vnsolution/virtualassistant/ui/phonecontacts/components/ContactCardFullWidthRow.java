@@ -2,11 +2,6 @@ package com.vnsolution.virtualassistant.ui.phonecontacts.components;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.icu.text.DateFormat;
-import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,12 +10,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
-
-import java.util.Random;
+import com.vnsolution.virtualassistant.util.BitmapUtils;
 
 public class ContactCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact> {
     private ImageView mAvatarImageView;
@@ -64,41 +57,18 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
     public void showData(PhoneContact phoneContact, String viewType) {
         mPhoneContact = phoneContact;
 
-        String avatarText = (phoneContact.name != null && phoneContact.name.length() > 1) ? phoneContact.name.substring(0, 2) : "";
-        Bitmap avatar = generateBitmapByText(avatarText.toUpperCase(), 30, 60, 60);
+        Bitmap avatar = BitmapUtils.generateBitmapByText(mContext, phoneContact.name, 12, 60, 60);
         Glide.with(mContext).load(avatar).apply(RequestOptions.circleCropTransform()).circleCrop().into(mAvatarImageView);
 
         mContactNameTextView.setText(phoneContact.name);
         mPhoneNumbersTextView.setText(phoneContact.phoneNumbers);
-        mTotalIncomeCallTextView.setText("INCOMING: " + phoneContact.totalIncomeCall);
-        mTotalOutcomeCallTextView.setText("OUTGOING: " + phoneContact.totalOutcomeCall);
+        mTotalIncomeCallTextView.setText("INCOMING: " + phoneContact.totalIncomingCall);
+        mTotalOutcomeCallTextView.setText("OUTGOING: " + phoneContact.totalOutgoingCall);
         mTotalSmsTextView.setText("SMS: " + phoneContact.totalSms);
     }
 
     @Override
     public void setOnItemClickListener(OnRecyclerViewRowTouchListener<PhoneContact> onRecyclerViewRowTouchListener) {
         this.mOnRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
-    }
-
-    private Bitmap generateBitmapByText(String text, float textSize, int bitmapWidth, int bitmapHeight) {
-        Bitmap bitmap = Bitmap.createBitmap(bitmapWidth , bitmapHeight, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
-
-        Random random = new Random();
-        int randomColor = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-        paint.setColor(randomColor);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        canvas.drawPaint(paint);
-
-        paint.setTextSize(textSize);
-        paint.setColor(Color.WHITE);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        float baseline = -paint.ascent(); // ascent() is negative
-        float measureWidth = paint.measureText(text); // round
-//        float measureHeight = baseline + paint.descent();
-        canvas.drawText(text,(bitmapWidth - measureWidth)/2, (bitmapHeight - (paint.descent() + paint.ascent()))/2, paint);
-
-        return bitmap;
     }
 }
