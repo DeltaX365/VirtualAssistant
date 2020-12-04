@@ -12,6 +12,9 @@ public interface PhoneContactDao extends BaseDao<PhoneContactEntity> {
     @Query("SELECT * FROM PhoneContact")
     List<PhoneContactEntity> getAll();
 
+    @Query("SELECT * FROM PhoneContact WHERE Id = :id")
+    PhoneContactEntity getById(String id);
+
     @Query("DELETE FROM PhoneContact")
     void reset();
 }

@@ -2,12 +2,13 @@ package com.vnsolution.virtualassistant.di;
 
 import com.vnsolution.virtualassistant.ui.StartupActivity;
 import com.vnsolution.virtualassistant.ui.contact.ContactActivity;
+import com.vnsolution.virtualassistant.ui.contact.ContactViewActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
 import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppDashboardActivity;
-import com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsActivity;
-import com.vnsolution.virtualassistant.ui.phoneapp.v2.PhoneAppsV2Activity;
-import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallsActivity;
+import com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppActivity;
+import com.vnsolution.virtualassistant.ui.phoneapp.v2.PhoneAppV2Activity;
+import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallActivity;
 import com.vnsolution.virtualassistant.ui.contact.ContactDashboardActivity;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderActivity;
 import com.vnsolution.virtualassistant.ui.setting.SettingActivity;
@@ -51,29 +52,32 @@ public abstract class ActivityBuildersModule {
     abstract TravelV2Activity contributeTravelV2Activity();
 
     @ContributesAndroidInjector()
-    abstract ContactDashboardActivity contributePhoneContactDashboardActivity();
+    abstract ContactDashboardActivity contributeContactDashboardActivity();
 
     @ContributesAndroidInjector()
-    abstract ContactActivity contributePhoneContactsActivity();
+    abstract ContactViewActivity contributeContactViewActivity();
 
     @ContributesAndroidInjector()
-    abstract PhoneAppDashboardActivity contributePhoneAppsDashboardActivity();
+    abstract ContactActivity contributeContactActivity();
 
     @ContributesAndroidInjector()
-    abstract PhoneAppsActivity contributePhoneAppsActivity();
+    abstract PhoneAppDashboardActivity contributePhoneAppDashboardActivity();
+
+    @ContributesAndroidInjector()
+    abstract PhoneAppActivity contributePhoneAppActivity();
 
     @ContributesAndroidInjector(modules = PhoneAppsFragmentBuildersModule.class)
-    abstract PhoneAppsV2Activity contributePhoneAppsV2Activity();
+    abstract PhoneAppV2Activity contributePhoneAppV2Activity();
 
     @ContributesAndroidInjector()
-    abstract PhoneCallsActivity contributePhoneCallsActivity();
+    abstract PhoneCallActivity contributePhoneCallActivity();
 
     @ContributesAndroidInjector()
     abstract PhoneSmsActivity contributePhoneSmsActivity();
 
     @ContributesAndroidInjector()
-    abstract ReminderActivity remindersActivity();
+    abstract ReminderActivity contributeReminderActivity();
 
     @ContributesAndroidInjector()
-    abstract SettingActivity contributeSettingsActivity();
+    abstract SettingActivity contributeSettingActivity();
 }

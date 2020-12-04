@@ -27,9 +27,19 @@ public class ContactViewModel extends ViewModel {
         return deviceManager.getPhoneContacts(context, forceUpdate);
     }
 
-    public List<PhoneContactSummary> getContactSummary() {
-        List<PhoneCallSummaryEntity> contactSummary = deviceManager.getContactSummary();
+    public PhoneContact getContactById(String id) {
+        PhoneContactEntity contactEntity = deviceManager.getContactById(id);
+        return MappingUtils.convertPhoneContactEntityToPhoneContact(contactEntity);
+    }
+
+    public List<PhoneContactSummary> getContactSummaryByNumbers(String phoneNumbers) {
+        List<PhoneCallSummaryEntity> contactSummary = deviceManager.getContactSummaryByNumbers(phoneNumbers);
         return MappingUtils.convertPhoneCallSummaryEntitiesToPhoneContacts(contactSummary);
+    }
+
+    public List<PhoneContact> getCallHistoryByNumbers(String phoneNumbers) {
+        List<PhoneContactEntity> phoneCalls = deviceManager.getCallHistoryByNumbers(phoneNumbers);
+        return MappingUtils.convertPhoneContactEntitiesToPhoneContacts(phoneCalls);
     }
 
     public List<PhoneContact> getRecentContactsByType(int type) {

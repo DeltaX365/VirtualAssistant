@@ -25,7 +25,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class PhoneAppsActivity extends AppCompatActivity implements HasAndroidInjector {
+public class PhoneAppActivity extends AppCompatActivity implements HasAndroidInjector {
     private PhoneAppsRecycleView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FrameLayout progressOverlay;

@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 import dagger.android.HasAndroidInjector;
 
-public class PhoneCallsActivity extends BaseActivity implements HasAndroidInjector {
+public class PhoneCallActivity extends BaseActivity implements HasAndroidInjector {
     private static final int REQUEST_CODE = 1001;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;

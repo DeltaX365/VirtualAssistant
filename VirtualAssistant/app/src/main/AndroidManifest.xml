@@ -68,6 +68,9 @@
             android:name=".ui.contact.ContactDashboardActivity"
             android:label="@string/title_screen_contacts"/>
         <activity
+            android:name=".ui.contact.ContactViewActivity"
+            android:label="@string/title_screen_contacts"/>
+        <activity
             android:name=".ui.contact.ContactActivity"
             android:label="@string/title_screen_contacts"/>
         <activity
@@ -76,10 +79,10 @@
         <activity
             android:name=".ui.reminder.ReminderActivity"
             android:label="@string/title_screen_reminders" />
-        <activity android:name=".ui.phoneapp.v1.PhoneAppsActivity" />
-        <activity android:name=".ui.phoneapp.v2.PhoneAppsV2Activity" />
+        <activity android:name=".ui.phoneapp.v1.PhoneAppActivity" />
+        <activity android:name=".ui.phoneapp.v2.PhoneAppV2Activity" />
         <activity
-            android:name=".ui.phonecall.v1.PhoneCallsActivity"
+            android:name=".ui.phonecall.v1.PhoneCallActivity"
             android:label="@string/title_screen_call_history"/>
         <activity
             android:name=".ui.phonesms.v1.PhoneSmsActivity"

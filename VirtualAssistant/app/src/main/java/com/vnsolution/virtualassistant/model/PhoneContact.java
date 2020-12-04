@@ -1,10 +1,12 @@
 package com.vnsolution.virtualassistant.model;
 
 public class PhoneContact {
-    public int contactId;
+    public String id;
     public String name;
     public String phoneNumbers;
-    public int totalIncomingCall;
-    public int totalOutgoingCall;
+    public long lastUpdatedTime;
+
+    public int totalIncomingNumber;
+    public int totalOutgoingNumber;
     public int totalSms;
 }

@@ -1,5 +1,6 @@
 package com.vnsolution.virtualassistant.ui.contact;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.CallLog;
 import android.view.View;
@@ -16,7 +17,9 @@ import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneContactSummary;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
+import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.DateTimeUtils;
 
 import java.util.ArrayList;
@@ -132,6 +135,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentContactsRecyclerView.setLayoutManager(recentContactsLayoutManager);
 
         recentContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        recentContactsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactDashboardActivity.this, ContactViewActivity.class);
+                intent.putExtra("Id", phoneContact.id);
+                startActivity(intent);
+            }
+        });
         recentContactsRecyclerView.setAdapter(recentContactsAdapter);
 
         recentContacts = vm.getRecentContactsByType(0); // no filter type
@@ -150,6 +161,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         mostContactsRecyclerView.setLayoutManager(mostContactsLayoutManager);
 
         mostContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        mostContactsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactDashboardActivity.this, ContactViewActivity.class);
+                intent.putExtra("Id", phoneContact.id);
+                startActivity(intent);
+            }
+        });
         mostContactsRecyclerView.setAdapter(mostContactsAdapter);
 
         mostContacts = vm.getMostContactsByType(0); // no filter type
@@ -172,7 +191,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
 
         int totalDuration = 0;
         int totalNumber = 0;
-        List<PhoneContactSummary> contactSummaryList = vm.getContactSummary();
+        List<PhoneContactSummary> contactSummaryList = vm.getContactSummaryByNumbers(null);
         for (PhoneContactSummary contactSummary : contactSummaryList) {
             totalDuration += contactSummary.duration;
             totalNumber += contactSummary.total;
@@ -207,6 +226,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentIncomingCallsRecyclerView.setLayoutManager(recentIncomingCallsLayoutManager);
 
         recentIncomingCallsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        recentIncomingCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactDashboardActivity.this, ContactViewActivity.class);
+                intent.putExtra("Id", phoneContact.id);
+                startActivity(intent);
+            }
+        });
         recentIncomingCallsRecyclerView.setAdapter(recentIncomingCallsAdapter);
 
         recentIncomingCalls = vm.getRecentContactsByType(CallLog.Calls.INCOMING_TYPE);
@@ -225,6 +252,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentOutgoingCallsRecyclerView.setLayoutManager(recentOutgoingCallsLayoutManager);
 
         recentOutgoingCallsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        recentOutgoingCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactDashboardActivity.this, ContactViewActivity.class);
+                intent.putExtra("Id", phoneContact.id);
+                startActivity(intent);
+            }
+        });
         recentOutgoingCallsRecyclerView.setAdapter(recentOutgoingCallsAdapter);
 
         recentOutgoingCalls = vm.getRecentContactsByType(CallLog.Calls.OUTGOING_TYPE);
@@ -243,6 +278,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentMissedCallsRecyclerView.setLayoutManager(recentMissedCallsLayoutManager);
 
         recentMissedCallsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        recentMissedCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactDashboardActivity.this, ContactViewActivity.class);
+                intent.putExtra("Id", phoneContact.id);
+                startActivity(intent);
+            }
+        });
         recentMissedCallsRecyclerView.setAdapter(recentMissedCallsAdapter);
 
         recentMissedCalls = vm.getRecentContactsByType(CallLog.Calls.MISSED_TYPE);
@@ -261,6 +304,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentRejectedCallsRecyclerView.setLayoutManager(recentRejectedCallsLayoutManager);
 
         recentRejectedCallsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        recentRejectedCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactDashboardActivity.this, ContactViewActivity.class);
+                intent.putExtra("Id", phoneContact.id);
+                startActivity(intent);
+            }
+        });
         recentRejectedCallsRecyclerView.setAdapter(recentRejectedCallsAdapter);
 
         recentRejectedCalls = vm.getRecentContactsByType(CallLog.Calls.REJECTED_TYPE);
@@ -279,6 +330,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentBlockedCallsRecyclerView.setLayoutManager(recentBlockedCallsLayoutManager);
 
         recentBlockedCallsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        recentBlockedCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactDashboardActivity.this, ContactViewActivity.class);
+                intent.putExtra("Id", phoneContact.id);
+                startActivity(intent);
+            }
+        });
         recentBlockedCallsRecyclerView.setAdapter(recentBlockedCallsAdapter);
 
         recentBlockedCalls = vm.getRecentContactsByType(CallLog.Calls.BLOCKED_TYPE);
@@ -297,6 +356,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         mostIncomingCallsRecyclerView.setLayoutManager(mostIncomingCallsLayoutManager);
 
         mostIncomingCallsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        mostIncomingCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactDashboardActivity.this, ContactViewActivity.class);
+                intent.putExtra("Id", phoneContact.id);
+                startActivity(intent);
+            }
+        });
         mostIncomingCallsRecyclerView.setAdapter(mostIncomingCallsAdapter);
 
         mostIncomingCalls = vm.getMostContactsByType(CallLog.Calls.INCOMING_TYPE);
@@ -315,6 +382,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         mostOutgoingCallsRecyclerView.setLayoutManager(mostOutgoingCallsLayoutManager);
 
         mostOutgoingCallsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        mostOutgoingCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactDashboardActivity.this, ContactViewActivity.class);
+                intent.putExtra("Id", phoneContact.id);
+                startActivity(intent);
+            }
+        });
         mostOutgoingCallsRecyclerView.setAdapter(mostOutgoingCallsAdapter);
 
         mostOutgoingCalls = vm.getMostContactsByType(CallLog.Calls.OUTGOING_TYPE);

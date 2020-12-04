@@ -5,11 +5,9 @@ import android.location.Address;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceSearchDto;
-import com.vnsolution.virtualassistant.db.entity.PhoneCallEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneCallSummaryEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
-import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneContactSummary;
 import com.vnsolution.virtualassistant.model.StopPoint;
@@ -177,9 +175,10 @@ public class MappingUtils {
 
     public static PhoneContact convertPhoneContactEntityToPhoneContact(PhoneContactEntity phoneContactEntity) {
         PhoneContact phoneContact = new PhoneContact();
-        phoneContact.contactId = phoneContactEntity.contactId;
+        phoneContact.id = phoneContactEntity.id;
         phoneContact.name = phoneContactEntity.displayName;
         phoneContact.phoneNumbers = phoneContactEntity.phoneNumbers;
+        phoneContact.lastUpdatedTime = phoneContactEntity.contactLastUpdatedTimestamp;
         return phoneContact;
     }
 

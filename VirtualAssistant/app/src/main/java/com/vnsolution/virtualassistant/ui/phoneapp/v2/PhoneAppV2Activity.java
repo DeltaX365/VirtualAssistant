@@ -18,7 +18,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 
-public class PhoneAppsV2Activity extends AppCompatActivity implements HasAndroidInjector {
+public class PhoneAppV2Activity extends AppCompatActivity implements HasAndroidInjector {
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 

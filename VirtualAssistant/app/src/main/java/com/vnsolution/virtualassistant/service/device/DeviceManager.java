@@ -33,6 +33,7 @@ import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.model.PhoneCall;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneSms;
+import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 import com.vnsolution.virtualassistant.util.PhoneUtils;
 import com.vnsolution.virtualassistant.util.SerialUtils;
@@ -86,12 +87,31 @@ public class DeviceManager {
         return instance;
     }
 
-    public List<PhoneCallSummaryEntity> getContactSummary() {
+    public PhoneContactEntity getContactById(String id) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<PhoneContactEntity> phoneContactFuture = executor.submit(new Callable<PhoneContactEntity>() {
+            @Override
+            public PhoneContactEntity call() throws Exception {
+                return phoneContactDao.getById(id);
+            }
+        });
+        PhoneContactEntity phoneContact = null;
+        try {
+            phoneContact = phoneContactFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return phoneContact;
+    }
+
+    public List<PhoneCallSummaryEntity> getContactSummaryByNumbers(String phoneNumbers) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneCallSummaryEntity>> phoneContactSummaryListFuture = executor.submit(new Callable<List<PhoneCallSummaryEntity>>() {
             @Override
             public List<PhoneCallSummaryEntity> call() throws Exception {
-                return phoneCallDao.getCallStat();
+                return (phoneNumbers != null && phoneNumbers != "")? phoneCallDao.getCallStatByNumbers(phoneNumbers) : phoneCallDao.getCallStat();
             }
         });
         List<PhoneCallSummaryEntity> phoneContactSummary = new ArrayList<>();
@@ -103,6 +123,27 @@ public class DeviceManager {
         }
         executor.shutdown();
         return phoneContactSummary;
+    }
+
+    public List<PhoneContactEntity> getCallHistoryByNumbers(String phoneNumbers) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<PhoneContactEntity>> callHistoryFuture = executor.submit(new Callable<List<PhoneContactEntity>>() {
+            @Override
+            public List<PhoneContactEntity> call() throws Exception {
+                List<PhoneCallEntity> callHistory = phoneCallDao.getCallHistoryByNumbers(phoneNumbers);
+                List<PhoneContactEntity> phoneContacts = phoneContactDao.getAll();
+                return filterPhoneContacts(phoneContacts, callHistory);
+            }
+        });
+        List<PhoneContactEntity> callHistory = new ArrayList<>();
+        try {
+            callHistory = callHistoryFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return callHistory;
     }
 
     public List<PhoneContactEntity> getRecentContactsByType(int type) {
@@ -358,7 +399,7 @@ public class DeviceManager {
                     syncPhoneContacts(context);
                 }
                 List<PhoneContactEntity> phoneContactEntities = phoneContactDao.getAll();
-                return transformToPhoneContacts(phoneContactEntities);
+                return MappingUtils.convertPhoneContactEntitiesToPhoneContacts(phoneContactEntities);
             }
         });
         List<PhoneContact> phoneContactList = new ArrayList<>();
@@ -434,8 +475,8 @@ public class DeviceManager {
                     totalSms++;
                 }
             }
-            phoneContact.totalIncomingCall = totalIncomeCall;
-            phoneContact.totalOutgoingCall = totalOutcomeCall;
+            phoneContact.totalIncomingNumber = totalIncomeCall;
+            phoneContact.totalOutgoingNumber = totalOutcomeCall;
             phoneContact.totalSms = totalSms;
         }
     }
@@ -647,20 +688,6 @@ public class DeviceManager {
 //        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, new Long(contact.id));
 //        contact.photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.DISPLAY_PHOTO);
         return contact;
-    }
-
-    private List<PhoneContact> transformToPhoneContacts(List<PhoneContactEntity> phoneContactEntities) {
-        List<PhoneContact> phoneContacts = new ArrayList<>();
-        if (phoneContactEntities != null && phoneContactEntities.size() > 0) {
-            for (PhoneContactEntity phoneContactEntity : phoneContactEntities) {
-                PhoneContact phoneContact = new PhoneContact();
-                phoneContact.contactId = phoneContactEntity.contactId;
-                phoneContact.name = phoneContactEntity.displayName;
-                phoneContact.phoneNumbers = phoneContactEntity.phoneNumbers;
-                phoneContacts.add(phoneContact);
-            }
-        }
-        return phoneContacts;
     }
 
     private boolean isSystemPackage(PackageInfo packageInfo) {

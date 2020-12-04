@@ -19,9 +19,6 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
     private ImageView mAvatarImageView;
     private TextView mContactNameTextView;
     private TextView mPhoneNumbersTextView;
-    private TextView mTotalIncomeCallTextView;
-    private TextView mTotalOutcomeCallTextView;
-    private TextView mTotalSmsTextView;
 
     private Context mContext;
     private PhoneContact mPhoneContact;
@@ -48,9 +45,6 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
         mAvatarImageView = findViewById(R.id.contact_avatar);
         mContactNameTextView = findViewById(R.id.contact_name);
         mPhoneNumbersTextView = findViewById(R.id.contact_phone_number);
-        mTotalIncomeCallTextView = findViewById(R.id.total_incoming_number);
-        mTotalOutcomeCallTextView = findViewById(R.id.total_outgoing_number);
-        mTotalSmsTextView = findViewById(R.id.total_sms);
     }
 
     @Override
@@ -62,9 +56,6 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
 
         mContactNameTextView.setText(phoneContact.name);
         mPhoneNumbersTextView.setText(phoneContact.phoneNumbers);
-        mTotalIncomeCallTextView.setText("INCOMING: " + phoneContact.totalIncomingCall);
-        mTotalOutcomeCallTextView.setText("OUTGOING: " + phoneContact.totalOutgoingCall);
-        mTotalSmsTextView.setText("SMS: " + phoneContact.totalSms);
     }
 
     @Override

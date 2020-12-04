@@ -21,7 +21,7 @@ import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppDashboardActivity;
 import com.vnsolution.virtualassistant.ui.contact.ContactDashboardActivity;
-import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallsActivity;
+import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderActivity;
 import com.vnsolution.virtualassistant.ui.setting.SettingActivity;
@@ -82,7 +82,7 @@ public class HomeV2Activity extends BaseActivity {
                         intent = new Intent(HomeV2Activity.this, ContactDashboardActivity.class);
                         break;
                     case BotOptions.SHOW_CALL_LOGS:
-                        intent = new Intent(HomeV2Activity.this, PhoneCallsActivity.class);
+                        intent = new Intent(HomeV2Activity.this, PhoneCallActivity.class);
                         break;
                     case BotOptions.SHOW_SENT_RECEIVED_SMS:
                         intent = new Intent(HomeV2Activity.this, PhoneSmsActivity.class);

@@ -18,6 +18,18 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "GROUP BY Type")
     List<PhoneCallSummaryEntity> getCallStat();
 
+    @Query("SELECT Type, COUNT(*) AS Total, SUM(Duration) AS Duration " +
+            "FROM PhoneCall " +
+            "WHERE :phoneNumbers LIKE '%' || PhoneNumber ||'%' " +
+            "GROUP BY Type")
+    List<PhoneCallSummaryEntity> getCallStatByNumbers(String phoneNumbers);
+
+    @Query("SELECT * " +
+            "FROM PhoneCall " +
+            "WHERE :phoneNumbers LIKE '%' || PhoneNumber ||'%' " +
+            "ORDER BY Date DESC")
+    List<PhoneCallEntity> getCallHistoryByNumbers(String phoneNumbers);
+
     @Query("SELECT * " +
             "FROM " +
             "( " +
