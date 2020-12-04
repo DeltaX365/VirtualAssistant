@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.vnsolution.virtualassistant.ui.reminders.components.ReminderCardFullWidthRow xmlns:android="http://schemas.android.com/apk/res/android"
+<com.vnsolution.virtualassistant.ui.reminder.component.ReminderCardFullWidthRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="20dp"
@@ -131,4 +131,4 @@
 
     </LinearLayout>
 
-</com.vnsolution.virtualassistant.ui.reminders.components.ReminderCardFullWidthRow>
+</com.vnsolution.virtualassistant.ui.reminder.component.ReminderCardFullWidthRow>

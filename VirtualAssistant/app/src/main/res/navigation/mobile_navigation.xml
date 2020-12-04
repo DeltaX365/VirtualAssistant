@@ -19,19 +19,19 @@
 
     <fragment
         android:id="@+id/navigation_apps"
-        android:name="com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsFragment"
+        android:name="com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsFragment"
         android:label="@string/title_screen_applications"
-        tools:layout="@layout/screen_phone_apps" />
+        tools:layout="@layout/screen_app" />
 
     <fragment
         android:id="@+id/navigation_call_logs"
-        android:name="com.vnsolution.virtualassistant.ui.phonecalls.v1.CallLogsFragment"
+        android:name="com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsFragment"
         android:label="@string/title_screen_call_history"
-        tools:layout="@layout/screen_phone_calls" />
+        tools:layout="@layout/screen_phone_call" />
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.vnsolution.virtualassistant.ui.settings.SettingsFragment"
+        android:name="com.vnsolution.virtualassistant.ui.setting.SettingFragment"
         android:label="@string/title_screen_settings"
-        tools:layout="@layout/screen_settings" />
+        tools:layout="@layout/screen_setting" />
 </navigation>

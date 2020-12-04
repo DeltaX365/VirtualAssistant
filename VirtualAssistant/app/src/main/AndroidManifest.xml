@@ -65,27 +65,27 @@
             android:name=".ui.travel.TravelEditActivity"
             android:label="@string/title_screen_travel_edit" />
         <activity
-            android:name=".ui.phonecontacts.PhoneContactDashboardActivity"
+            android:name=".ui.contact.ContactDashboardActivity"
             android:label="@string/title_screen_contacts"/>
         <activity
-            android:name=".ui.phonecontacts.PhoneContactActivity"
+            android:name=".ui.contact.ContactActivity"
             android:label="@string/title_screen_contacts"/>
         <activity
-            android:name=".ui.phoneapps.PhoneAppsDashboardActivity"
+            android:name=".ui.phoneapp.PhoneAppDashboardActivity"
             android:label="@string/title_screen_applications" />
         <activity
-            android:name=".ui.reminders.RemindersActivity"
+            android:name=".ui.reminder.ReminderActivity"
             android:label="@string/title_screen_reminders" />
-        <activity android:name=".ui.phoneapps.v1.PhoneAppsActivity" />
-        <activity android:name=".ui.phoneapps.v2.PhoneAppsV2Activity" />
+        <activity android:name=".ui.phoneapp.v1.PhoneAppsActivity" />
+        <activity android:name=".ui.phoneapp.v2.PhoneAppsV2Activity" />
         <activity
-            android:name=".ui.phonecalls.v1.PhoneCallsActivity"
+            android:name=".ui.phonecall.v1.PhoneCallsActivity"
             android:label="@string/title_screen_call_history"/>
         <activity
             android:name=".ui.phonesms.v1.PhoneSmsActivity"
             android:label="@string/title_screen_sms_history"/>
         <activity
-            android:name=".ui.settings.SettingsActivity"
+            android:name=".ui.setting.SettingActivity"
             android:label="@string/title_screen_settings" />
 
         <!-- Services -->

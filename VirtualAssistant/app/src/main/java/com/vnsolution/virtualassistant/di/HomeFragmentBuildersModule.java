@@ -1,10 +1,10 @@
 package com.vnsolution.virtualassistant.di;
 
-import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsFragment;
-import com.vnsolution.virtualassistant.ui.phonecalls.v1.CallLogsFragment;
+import com.vnsolution.virtualassistant.ui.notification.NotificationFragment;
+import com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsFragment;
+import com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsFragment;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardFragment;
-import com.vnsolution.virtualassistant.ui.notifications.NotificationsFragment;
-import com.vnsolution.virtualassistant.ui.settings.SettingsFragment;
+import com.vnsolution.virtualassistant.ui.setting.SettingFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -21,7 +21,7 @@ public abstract class HomeFragmentBuildersModule {
 //    abstract VisitedPlacesFragment contributeVisitedPlacesFragment();
 
     @ContributesAndroidInjector
-    abstract NotificationsFragment contributeNotificationsFragment();
+    abstract NotificationFragment contributeNotificationsFragment();
 
     @ContributesAndroidInjector
     abstract PhoneAppsFragment contributeInstalledApplicationsFragment();
@@ -30,5 +30,5 @@ public abstract class HomeFragmentBuildersModule {
     abstract CallLogsFragment contributeCallLogsFragment();
 
     @ContributesAndroidInjector
-    abstract SettingsFragment contributeSettingsFragment();
+    abstract SettingFragment contributeSettingsFragment();
 }

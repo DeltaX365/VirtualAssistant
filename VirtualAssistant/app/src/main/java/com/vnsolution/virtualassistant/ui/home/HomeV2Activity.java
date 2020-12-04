@@ -19,13 +19,12 @@ import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.phoneapps.PhoneAppsDashboardActivity;
-import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
-import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactActivity;
-import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactDashboardActivity;
+import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppDashboardActivity;
+import com.vnsolution.virtualassistant.ui.contact.ContactDashboardActivity;
+import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallsActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
-import com.vnsolution.virtualassistant.ui.reminders.RemindersActivity;
-import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderActivity;
+import com.vnsolution.virtualassistant.ui.setting.SettingActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
@@ -77,10 +76,10 @@ public class HomeV2Activity extends BaseActivity {
                         intent = new Intent(HomeV2Activity.this, TravelDashboardActivity.class);
                         break;
                     case BotOptions.MANAGE_YOUR_APPS:
-                        intent = new Intent(HomeV2Activity.this, PhoneAppsDashboardActivity.class);
+                        intent = new Intent(HomeV2Activity.this, PhoneAppDashboardActivity.class);
                         break;
                     case BotOptions.MANAGE_PHONE_CONTACTS:
-                        intent = new Intent(HomeV2Activity.this, PhoneContactDashboardActivity.class);
+                        intent = new Intent(HomeV2Activity.this, ContactDashboardActivity.class);
                         break;
                     case BotOptions.SHOW_CALL_LOGS:
                         intent = new Intent(HomeV2Activity.this, PhoneCallsActivity.class);
@@ -89,10 +88,10 @@ public class HomeV2Activity extends BaseActivity {
                         intent = new Intent(HomeV2Activity.this, PhoneSmsActivity.class);
                         break;
                     case BotOptions.SHOW_REMINDERS:
-                        intent = new Intent(HomeV2Activity.this, RemindersActivity.class);
+                        intent = new Intent(HomeV2Activity.this, ReminderActivity.class);
                         break;
                     case BotOptions.SHOW_SETTINGS:
-                        intent = new Intent(HomeV2Activity.this, SettingsActivity.class);
+                        intent = new Intent(HomeV2Activity.this, SettingActivity.class);
                         break;
                 }
                 if (intent != null) {

@@ -1,6 +1,6 @@
 package com.vnsolution.virtualassistant.di;
 
-import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsFragment;
+import com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

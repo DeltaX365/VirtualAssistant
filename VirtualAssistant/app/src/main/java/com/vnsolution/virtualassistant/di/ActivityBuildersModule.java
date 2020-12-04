@@ -1,20 +1,20 @@
 package com.vnsolution.virtualassistant.di;
 
 import com.vnsolution.virtualassistant.ui.StartupActivity;
+import com.vnsolution.virtualassistant.ui.contact.ContactActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
-import com.vnsolution.virtualassistant.ui.phoneapps.PhoneAppsDashboardActivity;
-import com.vnsolution.virtualassistant.ui.phoneapps.v1.PhoneAppsActivity;
-import com.vnsolution.virtualassistant.ui.phoneapps.v2.PhoneAppsV2Activity;
-import com.vnsolution.virtualassistant.ui.phonecalls.v1.PhoneCallsActivity;
-import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactActivity;
-import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactDashboardActivity;
-import com.vnsolution.virtualassistant.ui.reminders.RemindersActivity;
+import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppDashboardActivity;
+import com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsActivity;
+import com.vnsolution.virtualassistant.ui.phoneapp.v2.PhoneAppsV2Activity;
+import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallsActivity;
+import com.vnsolution.virtualassistant.ui.contact.ContactDashboardActivity;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderActivity;
+import com.vnsolution.virtualassistant.ui.setting.SettingActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelHistoryActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelV2Activity;
-import com.vnsolution.virtualassistant.ui.settings.SettingsActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelViewActivity;
 
@@ -51,13 +51,13 @@ public abstract class ActivityBuildersModule {
     abstract TravelV2Activity contributeTravelV2Activity();
 
     @ContributesAndroidInjector()
-    abstract PhoneContactDashboardActivity contributePhoneContactDashboardActivity();
+    abstract ContactDashboardActivity contributePhoneContactDashboardActivity();
 
     @ContributesAndroidInjector()
-    abstract PhoneContactActivity contributePhoneContactsActivity();
+    abstract ContactActivity contributePhoneContactsActivity();
 
     @ContributesAndroidInjector()
-    abstract PhoneAppsDashboardActivity contributePhoneAppsDashboardActivity();
+    abstract PhoneAppDashboardActivity contributePhoneAppsDashboardActivity();
 
     @ContributesAndroidInjector()
     abstract PhoneAppsActivity contributePhoneAppsActivity();
@@ -72,8 +72,8 @@ public abstract class ActivityBuildersModule {
     abstract PhoneSmsActivity contributePhoneSmsActivity();
 
     @ContributesAndroidInjector()
-    abstract RemindersActivity remindersActivity();
+    abstract ReminderActivity remindersActivity();
 
     @ContributesAndroidInjector()
-    abstract SettingsActivity contributeSettingsActivity();
+    abstract SettingActivity contributeSettingsActivity();
 }

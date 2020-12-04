@@ -3,11 +3,11 @@ package com.vnsolution.virtualassistant.di;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.vnsolution.virtualassistant.ui.phoneapps.PhoneAppsViewModel;
-import com.vnsolution.virtualassistant.ui.phonecalls.v1.CallLogsViewModel;
-import com.vnsolution.virtualassistant.ui.phonecontacts.PhoneContactViewModel;
+import com.vnsolution.virtualassistant.ui.notification.NotificationViewModel;
+import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppViewModel;
+import com.vnsolution.virtualassistant.ui.contact.ContactViewModel;
+import com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsViewModel;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardViewModel;
-import com.vnsolution.virtualassistant.ui.notifications.NotificationsViewModel;
 import com.vnsolution.virtualassistant.ui.travel.TravelViewModel;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.SmsViewModel;
 import com.vnsolution.virtualassistant.viewmodel.VirtualAssistantViewModelFactory;
@@ -30,8 +30,8 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(PhoneAppsViewModel.class)
-    abstract ViewModel bindInstalledApplicationsViewModel(PhoneAppsViewModel phoneAppsViewModel);
+    @ViewModelKey(PhoneAppViewModel.class)
+    abstract ViewModel bindInstalledApplicationsViewModel(PhoneAppViewModel phoneAppViewModel);
 
     @Binds
     @IntoMap
@@ -45,13 +45,13 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(PhoneContactViewModel.class)
-    abstract ViewModel bindContactsViewModel(PhoneContactViewModel phoneContactViewModel);
+    @ViewModelKey(ContactViewModel.class)
+    abstract ViewModel bindContactsViewModel(ContactViewModel contactViewModel);
 
     @Binds
     @IntoMap
-    @ViewModelKey(NotificationsViewModel.class)
-    abstract ViewModel bindNotificationsViewModel(NotificationsViewModel notificationsViewModel);
+    @ViewModelKey(NotificationViewModel.class)
+    abstract ViewModel bindNotificationsViewModel(NotificationViewModel notificationViewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(VirtualAssistantViewModelFactory factory);

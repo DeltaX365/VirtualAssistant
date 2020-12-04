@@ -23,4 +23,11 @@ public class DateTimeUtils {
         calendar.set(Calendar.MILLISECOND, 999);
         return calendar.getTime();
     }
+
+    public static String formatElapsedTime(long elapsedSeconds) {
+        long hours = elapsedSeconds / 3600;
+        long minutes = (elapsedSeconds % 3600) / 60;
+        long seconds = elapsedSeconds % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
 }
