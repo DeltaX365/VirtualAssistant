@@ -5,9 +5,11 @@ import android.location.Address;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceSearchDto;
+import com.vnsolution.virtualassistant.db.entity.PhoneCallEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneCallSummaryEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
+import com.vnsolution.virtualassistant.model.PhoneCall;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneContactSummary;
 import com.vnsolution.virtualassistant.model.StopPoint;
@@ -178,8 +180,28 @@ public class MappingUtils {
         phoneContact.id = phoneContactEntity.id;
         phoneContact.name = phoneContactEntity.displayName;
         phoneContact.phoneNumbers = phoneContactEntity.phoneNumbers;
+        phoneContact.starred = phoneContactEntity.starred;
         phoneContact.lastUpdatedTime = phoneContactEntity.contactLastUpdatedTimestamp;
         return phoneContact;
+    }
+
+    public static List<PhoneCall> convertPhoneCallEntitiesToPhoneCalls(List<PhoneCallEntity> phoneCallEntities) {
+        List<PhoneCall> phoneCalls = new ArrayList<>();
+        for (PhoneCallEntity phoneCallEntity : phoneCallEntities) {
+            PhoneCall phoneCall = convertPhoneCallEntityToPhoneCall(phoneCallEntity);
+            phoneCalls.add(phoneCall);
+        }
+        return phoneCalls;
+    }
+
+    public static PhoneCall convertPhoneCallEntityToPhoneCall(PhoneCallEntity phoneCallEntity) {
+        PhoneCall phoneCall = new PhoneCall();
+        phoneCall.id = phoneCallEntity.id;
+        phoneCall.phoneNumber = phoneCallEntity.phoneNumber;
+        phoneCall.duration = phoneCallEntity.duration;
+        phoneCall.type = phoneCallEntity.type;
+        phoneCall.date = phoneCallEntity.date;
+        return phoneCall;
     }
 
     public static List<PhoneContactSummary> convertPhoneCallSummaryEntitiesToPhoneContacts(List<PhoneCallSummaryEntity> phoneCallSummaryEntityList) {

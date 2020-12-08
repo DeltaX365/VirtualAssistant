@@ -5,6 +5,7 @@ public class PhoneContact {
     public String name;
     public String phoneNumbers;
     public long lastUpdatedTime;
+    public int starred;
 
     public int totalIncomingNumber;
     public int totalOutgoingNumber;

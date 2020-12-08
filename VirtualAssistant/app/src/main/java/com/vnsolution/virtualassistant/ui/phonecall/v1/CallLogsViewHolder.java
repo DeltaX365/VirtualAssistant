@@ -21,7 +21,7 @@ public class CallLogsViewHolder extends RecyclerView.ViewHolder {
 
         imageCallIcon = view.findViewById(R.id.call_icon);
         textPhoneNumber = view.findViewById(R.id.phone_number);
-        textCallDate = view.findViewById(R.id.call_date);
-        textCallDuration = view.findViewById(R.id.call_duration);
+        textCallDate = view.findViewById(R.id.contact_date);
+        textCallDuration = view.findViewById(R.id.contact_duration);
     }
 }

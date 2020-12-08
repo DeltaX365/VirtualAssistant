@@ -9,7 +9,7 @@ import java.util.List;
 
 @Dao
 public interface PhoneContactDao extends BaseDao<PhoneContactEntity> {
-    @Query("SELECT * FROM PhoneContact")
+    @Query("SELECT * FROM PhoneContact ORDER BY DisplayName ASC")
     List<PhoneContactEntity> getAll();
 
     @Query("SELECT * FROM PhoneContact WHERE Id = :id")

@@ -5,13 +5,17 @@ import androidx.room.Query;
 
 import com.vnsolution.virtualassistant.db.entity.PhoneCallEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneCallSummaryEntity;
+import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
 
 import java.util.List;
 
 @Dao
 public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
-    @Query("SELECT * FROM PhoneCall")
+    @Query("SELECT * FROM PhoneCall ORDER BY Date DESC")
     List<PhoneCallEntity> getAll();
+
+    @Query("SELECT * FROM PhoneCall WHERE Id = :id")
+    PhoneCallEntity getById(String id);
 
     @Query("SELECT Type, COUNT(*) AS Total, SUM(Duration) AS Duration " +
             "FROM PhoneCall " +

@@ -50,7 +50,7 @@
 
             <include layout="@layout/card_contact_stat"/>
 
-            <include layout="@layout/card_contact_history"/>
+            <include layout="@layout/card_phone_call_history"/>
 
         </LinearLayout>
 

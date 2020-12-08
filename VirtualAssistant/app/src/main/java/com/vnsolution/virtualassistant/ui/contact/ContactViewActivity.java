@@ -19,12 +19,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.model.PhoneCall;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneContactSummary;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.util.BitmapUtils;
 import com.vnsolution.virtualassistant.util.DateTimeUtils;
+import com.vnsolution.virtualassistant.util.SerialUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class ContactViewActivity extends BaseActivity implements HasAndroidInjec
     private TextView displayNameTextView;
     private TextView phoneNumberTextView;
     private TextView lastUpdatedTimeTextView;
+    private PhoneCall phoneCall;
     private PhoneContact phoneContact;
 
     private TextView totalCallDurationTextView;
@@ -49,11 +52,11 @@ public class ContactViewActivity extends BaseActivity implements HasAndroidInjec
     private TextView totalMissedNumberTextView;
     private TextView totalBlockedNumberTextView;
 
-    private RecyclerView contactHistoryRecyclerView;
-    private RecyclerViewAdapter<PhoneContact> contactHistoryAdapter;
-    private RecyclerView.LayoutManager contactHistoryLayoutManager;
-    private List<PhoneContact> contactHistory = new ArrayList<>();
-    private TextView noContactHistoryTextView;
+    private RecyclerView phoneCallHistoryRecyclerView;
+    private RecyclerViewAdapter<PhoneCall> phoneCallHistoryAdapter;
+    private RecyclerView.LayoutManager phoneCallHistoryLayoutManager;
+    private List<PhoneCall> phoneCallHistory = new ArrayList<>();
+    private TextView noPhoneCallHistoryTextView;
 
     private FrameLayout progressOverlay;
     private ContactViewModel vm;
@@ -72,14 +75,22 @@ public class ContactViewActivity extends BaseActivity implements HasAndroidInjec
         setContentView(R.layout.screen_contact_view);
         setupActionBar();
 
+        progressOverlay =  findViewById(R.id.progress_overlay);
+
         Intent intent = getIntent();
         if (intent != null) {
-            String phoneContactId = intent.getStringExtra("Id");
+            String phoneContactId = intent.getStringExtra("PhoneContactId");
             if (phoneContactId != null && phoneContactId != "") {
-                phoneContact = vm.getContactById(phoneContactId);
+                phoneContact = vm.getPhoneContactById(phoneContactId);
+            }
+            String phoneCallId = intent.getStringExtra("PhoneCallId");
+            if (phoneCallId != null && phoneCallId != "") {
+                phoneCall = vm.getPhoneCallById(phoneCallId);
+                if (phoneCall != null && phoneContact != null) {
+                    phoneCall.contactRef = phoneContact;
+                }
             }
         }
-        progressOverlay =  findViewById(R.id.progress_overlay);
 
         setupBasicInfoView();
         setupContactStatView();
@@ -88,18 +99,20 @@ public class ContactViewActivity extends BaseActivity implements HasAndroidInjec
 
     private void setupBasicInfoView() {
         avatarImageView = findViewById(R.id.contact_avatar);
+        String contactName = (phoneContact != null) ? phoneContact.name : "";
+        Bitmap avatar = BitmapUtils.generateBitmapByText(this, contactName, 12, 60, 60);
+        Glide.with(this).load(avatar).apply(RequestOptions.circleCropTransform()).circleCrop().into(avatarImageView);
+
         displayNameTextView = findViewById(R.id.contact_name);
-        phoneNumberTextView = findViewById(R.id.contact_phone_number);
+        displayNameTextView.setText(contactName);
+
+        phoneNumberTextView = findViewById(R.id.phone_number);
+        String phoneNumbers = (phoneContact != null) ? phoneContact.phoneNumbers : ((phoneCall != null) ? phoneCall.phoneNumber : "");
+        phoneNumberTextView.setText(phoneNumbers);
+
         lastUpdatedTimeTextView = findViewById(R.id.contact_last_updated_time);
-
-        if (phoneContact != null) {
-            Bitmap avatar = BitmapUtils.generateBitmapByText(this, phoneContact.name, 12, 60, 60);
-            Glide.with(this).load(avatar).apply(RequestOptions.circleCropTransform()).circleCrop().into(avatarImageView);
-
-            displayNameTextView.setText(phoneContact.name);
-            phoneNumberTextView.setText(phoneContact.phoneNumbers);
-            lastUpdatedTimeTextView.setText(DateUtils.formatDateTime(this, phoneContact.lastUpdatedTime, DateUtils.FORMAT_ABBREV_ALL));
-        }
+        long lastUpdatedTime = (phoneContact != null) ? phoneContact.lastUpdatedTime : 0;
+        lastUpdatedTimeTextView.setText(DateUtils.formatDateTime(this, lastUpdatedTime, DateUtils.FORMAT_ABBREV_ALL));
     }
 
     private void setupContactStatView() {
@@ -112,57 +125,61 @@ public class ContactViewActivity extends BaseActivity implements HasAndroidInjec
         totalMissedNumberTextView = findViewById(R.id.total_missed_number);
         totalBlockedNumberTextView = findViewById(R.id.total_blocked_number);
 
-        if (phoneContact != null) {
-            int totalDuration = 0;
-            int totalNumber = 0;
-            List<PhoneContactSummary> contactSummaryList = vm.getContactSummaryByNumbers(phoneContact.phoneNumbers);
-            for (PhoneContactSummary contactSummary : contactSummaryList) {
-                totalDuration += contactSummary.duration;
-                totalNumber += contactSummary.total;
-                switch (contactSummary.type) {
-                    case CallLog.Calls.INCOMING_TYPE:
-                        totalIncomingDurationTextView.setText(DateTimeUtils.formatElapsedTime(contactSummary.duration));
-                        totalIncomingNumberTextView.setText(String.valueOf(contactSummary.total));
-                        break;
-                    case CallLog.Calls.OUTGOING_TYPE:
-                        totalOutgoingDurationTextView.setText(DateTimeUtils.formatElapsedTime(contactSummary.duration));
-                        totalOutgoingNumberTextView.setText(String.valueOf(contactSummary.total));
-                        break;
-                    case CallLog.Calls.MISSED_TYPE:
-                        totalMissedNumberTextView.setText(String.valueOf(contactSummary.total));
-                        break;
-                    case CallLog.Calls.REJECTED_TYPE:
-                        break;
-                    case CallLog.Calls.BLOCKED_TYPE:
-                        totalBlockedNumberTextView.setText(String.valueOf(contactSummary.total));
-                        break;
-                }
+        int totalDuration = 0;
+        int totalNumber = 0;
+        String phoneNumbers = (phoneContact != null) ? phoneContact.phoneNumbers : ((phoneCall != null) ? phoneCall.phoneNumber : "");
+        List<PhoneContactSummary> contactSummaryList = vm.getContactSummaryByNumbers(phoneNumbers);
+        for (PhoneContactSummary contactSummary : contactSummaryList) {
+            totalDuration += contactSummary.duration;
+            totalNumber += contactSummary.total;
+            switch (contactSummary.type) {
+                case CallLog.Calls.INCOMING_TYPE:
+                    totalIncomingDurationTextView.setText(DateTimeUtils.formatElapsedTime(contactSummary.duration));
+                    totalIncomingNumberTextView.setText(String.valueOf(contactSummary.total));
+                    break;
+                case CallLog.Calls.OUTGOING_TYPE:
+                    totalOutgoingDurationTextView.setText(DateTimeUtils.formatElapsedTime(contactSummary.duration));
+                    totalOutgoingNumberTextView.setText(String.valueOf(contactSummary.total));
+                    break;
+                case CallLog.Calls.MISSED_TYPE:
+                    totalMissedNumberTextView.setText(String.valueOf(contactSummary.total));
+                    break;
+                case CallLog.Calls.REJECTED_TYPE:
+                    break;
+                case CallLog.Calls.BLOCKED_TYPE:
+                    totalBlockedNumberTextView.setText(String.valueOf(contactSummary.total));
+                    break;
             }
-            totalCallDurationTextView.setText(DateTimeUtils.formatElapsedTime(totalDuration));
-            totalCallNumberTextView.setText(String.valueOf(totalNumber));
         }
+        totalCallDurationTextView.setText(DateTimeUtils.formatElapsedTime(totalDuration));
+        totalCallNumberTextView.setText(String.valueOf(totalNumber));
     }
 
     private void setupContactHistoryView() {
-        contactHistoryRecyclerView = findViewById(R.id.list_contact_history);
-        noContactHistoryTextView = findViewById(R.id.no_contact_history);
+        phoneCallHistoryRecyclerView = findViewById(R.id.list_contact_history);
+        phoneCallHistoryRecyclerView.setHasFixedSize(true);
 
-        if (phoneContact != null) {
-            contactHistoryRecyclerView.setHasFixedSize(true);
+        phoneCallHistoryLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        phoneCallHistoryRecyclerView.setLayoutManager(phoneCallHistoryLayoutManager);
 
-            contactHistoryLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-            contactHistoryRecyclerView.setLayoutManager(contactHistoryLayoutManager);
+        phoneCallHistoryAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.item_phone_call);
+        phoneCallHistoryRecyclerView.setAdapter(phoneCallHistoryAdapter);
 
-            contactHistoryAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact_full_width);
-            contactHistoryRecyclerView.setAdapter(contactHistoryAdapter);
+        String phoneNumbers = (phoneContact != null) ? phoneContact.phoneNumbers : ((phoneCall != null) ? phoneCall.phoneNumber : "");
+        phoneCallHistory = vm.getCallHistoryByNumbers(phoneNumbers);
+        assignContactToPhoneCalls(phoneCallHistory);
+        phoneCallHistoryAdapter.setData(phoneCallHistory);
 
-            contactHistory = vm.getCallHistoryByNumbers(phoneContact.phoneNumbers);
-            contactHistoryAdapter.setData(contactHistory);
+        noPhoneCallHistoryTextView = findViewById(R.id.no_contact_history);
+        int visibility = (phoneCallHistory != null && phoneCallHistory.size() > 0) ? View.GONE : View.VISIBLE;
+        noPhoneCallHistoryTextView.setVisibility(visibility);
+    }
 
-            int visibility = (contactHistory != null && contactHistory.size() > 0) ? View.GONE : View.VISIBLE;
-            noContactHistoryTextView.setVisibility(visibility);
-        } else {
-            noContactHistoryTextView.setVisibility(View.VISIBLE);
+    private void assignContactToPhoneCalls(List<PhoneCall> phoneCalls) {
+        if (phoneCalls != null && phoneContact != null) {
+            for (PhoneCall phoneCall : phoneCalls) {
+                phoneCall.contactRef = phoneContact;
+            }
         }
     }
 }

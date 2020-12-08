@@ -10,31 +10,32 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.model.PhoneCall;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.BitmapUtils;
 
-public class ContactCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact> {
+public class PhoneContactCardRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact> {
     private ImageView mAvatarImageView;
     private TextView mContactNameTextView;
-    private TextView mPhoneNumbersTextView;
+    private TextView mPhoneNumberTextView;
 
     private Context mContext;
     private PhoneContact mPhoneContact;
     private OnRecyclerViewRowTouchListener<PhoneContact> mOnRecyclerViewRowTouchListener;
 
-    public ContactCardFullWidthRow(Context context) {
+    public PhoneContactCardRow(Context context) {
         super(context);
         mContext = context;
     }
 
-    public ContactCardFullWidthRow(Context context, AttributeSet attrs) {
+    public PhoneContactCardRow(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
 
-    public ContactCardFullWidthRow(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PhoneContactCardRow(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
     }
@@ -44,18 +45,19 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
         super.onFinishInflate();
         mAvatarImageView = findViewById(R.id.contact_avatar);
         mContactNameTextView = findViewById(R.id.contact_name);
-        mPhoneNumbersTextView = findViewById(R.id.contact_phone_number);
+        mPhoneNumberTextView = findViewById(R.id.phone_number);
     }
 
     @Override
     public void showData(PhoneContact phoneContact, String viewType) {
         mPhoneContact = phoneContact;
+        String contactName = (phoneContact != null) ? phoneContact.name : "";
 
-        Bitmap avatar = BitmapUtils.generateBitmapByText(mContext, phoneContact.name, 12, 60, 60);
+        Bitmap avatar = BitmapUtils.generateBitmapByText(mContext, contactName, 10, 60, 60);
         Glide.with(mContext).load(avatar).apply(RequestOptions.circleCropTransform()).circleCrop().into(mAvatarImageView);
 
-        mContactNameTextView.setText(phoneContact.name);
-        mPhoneNumbersTextView.setText(phoneContact.phoneNumbers);
+        mContactNameTextView.setText(contactName);
+        mPhoneNumberTextView.setText(phoneContact.phoneNumbers);
     }
 
     @Override

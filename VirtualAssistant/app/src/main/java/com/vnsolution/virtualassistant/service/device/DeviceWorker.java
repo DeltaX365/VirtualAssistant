@@ -36,6 +36,8 @@ public class DeviceWorker extends Worker {
         try {
             isProcessing = true;
             deviceManager.syncPhoneContacts(context);
+            deviceManager.syncPhoneCalls(context);
+            deviceManager.syncPhoneSms(context);
         }
         catch (Exception exception) {
             exception.printStackTrace();

@@ -48,7 +48,7 @@ public class AppService {
     }
 
     private void startDeviceSyncWorker() {
-        final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(DeviceWorker.class, 24, TimeUnit.HOURS).build();
+        final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(DeviceWorker.class, 3, TimeUnit.HOURS).build();
         WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("DeviceSyncWorker", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
     }
 

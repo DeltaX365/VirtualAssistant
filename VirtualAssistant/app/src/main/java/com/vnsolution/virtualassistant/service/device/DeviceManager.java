@@ -87,6 +87,25 @@ public class DeviceManager {
         return instance;
     }
 
+    public List<PhoneContactEntity> getPhoneContacts() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<PhoneContactEntity>> phoneContactListFuture = executor.submit(new Callable<List<PhoneContactEntity>>() {
+            @Override
+            public List<PhoneContactEntity> call() throws Exception {
+                return phoneContactDao.getAll();
+            }
+        });
+        List<PhoneContactEntity> phoneContactList = new ArrayList<>();
+        try {
+            phoneContactList = phoneContactListFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return phoneContactList;
+    }
+
     public PhoneContactEntity getContactById(String id) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<PhoneContactEntity> phoneContactFuture = executor.submit(new Callable<PhoneContactEntity>() {
@@ -104,6 +123,25 @@ public class DeviceManager {
         }
         executor.shutdown();
         return phoneContact;
+    }
+
+    public PhoneCallEntity getPhoneCallById(String id) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<PhoneCallEntity> phoneContactFuture = executor.submit(new Callable<PhoneCallEntity>() {
+            @Override
+            public PhoneCallEntity call() throws Exception {
+                return phoneCallDao.getById(id);
+            }
+        });
+        PhoneCallEntity phoneCall = null;
+        try {
+            phoneCall = phoneContactFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return phoneCall;
     }
 
     public List<PhoneCallSummaryEntity> getContactSummaryByNumbers(String phoneNumbers) {
@@ -125,17 +163,15 @@ public class DeviceManager {
         return phoneContactSummary;
     }
 
-    public List<PhoneContactEntity> getCallHistoryByNumbers(String phoneNumbers) {
+    public List<PhoneCallEntity> getCallHistoryByNumbers(String phoneNumbers) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<List<PhoneContactEntity>> callHistoryFuture = executor.submit(new Callable<List<PhoneContactEntity>>() {
+        Future<List<PhoneCallEntity>> callHistoryFuture = executor.submit(new Callable<List<PhoneCallEntity>>() {
             @Override
-            public List<PhoneContactEntity> call() throws Exception {
-                List<PhoneCallEntity> callHistory = phoneCallDao.getCallHistoryByNumbers(phoneNumbers);
-                List<PhoneContactEntity> phoneContacts = phoneContactDao.getAll();
-                return filterPhoneContacts(phoneContacts, callHistory);
+            public List<PhoneCallEntity> call() throws Exception {
+                return phoneCallDao.getCallHistoryByNumbers(phoneNumbers);
             }
         });
-        List<PhoneContactEntity> callHistory = new ArrayList<>();
+        List<PhoneCallEntity> callHistory = new ArrayList<>();
         try {
             callHistory = callHistoryFuture.get();
         } catch (InterruptedException | ExecutionException e) {
@@ -146,17 +182,16 @@ public class DeviceManager {
         return callHistory;
     }
 
-    public List<PhoneContactEntity> getRecentContactsByType(int type) {
+    public List<PhoneCallEntity> getRecentCallsByType(int type) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<List<PhoneContactEntity>> phoneCallListFuture = executor.submit(new Callable<List<PhoneContactEntity>>() {
+        Future<List<PhoneCallEntity>> phoneCallListFuture = executor.submit(new Callable<List<PhoneCallEntity>>() {
             @Override
-            public List<PhoneContactEntity> call() throws Exception {
+            public List<PhoneCallEntity> call() throws Exception {
                 List<PhoneCallEntity> recentPhoneCalls = (type == 0)? phoneCallDao.getRecentCalls() : phoneCallDao.getRecentCallsByType(type);
-                List<PhoneContactEntity> phoneContacts = phoneContactDao.getAll();
-                return filterPhoneContacts(phoneContacts, recentPhoneCalls);
+                return recentPhoneCalls;
             }
         });
-        List<PhoneContactEntity> phoneCalls = new ArrayList<>();
+        List<PhoneCallEntity> phoneCalls = new ArrayList<>();
         try {
             phoneCalls = phoneCallListFuture.get();
         } catch (InterruptedException | ExecutionException e) {
@@ -167,17 +202,16 @@ public class DeviceManager {
         return phoneCalls;
     }
 
-    public List<PhoneContactEntity> getMostContactsByType(int type) {
+    public List<PhoneCallEntity> getMostCallsByType(int type) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<List<PhoneContactEntity>> phoneCallListFuture = executor.submit(new Callable<List<PhoneContactEntity>>() {
+        Future<List<PhoneCallEntity>> phoneCallListFuture = executor.submit(new Callable<List<PhoneCallEntity>>() {
             @Override
-            public List<PhoneContactEntity> call() throws Exception {
+            public List<PhoneCallEntity> call() throws Exception {
                 List<PhoneCallEntity> mostPhoneCalls = (type == 0) ? phoneCallDao.getMostCalls() : phoneCallDao.getMostCallsByType(type);
-                List<PhoneContactEntity> phoneContacts = phoneContactDao.getAll();
-                return filterPhoneContacts(phoneContacts, mostPhoneCalls);
+                return mostPhoneCalls;
             }
         });
-        List<PhoneContactEntity> phoneCalls = new ArrayList<>();
+        List<PhoneCallEntity> phoneCalls = new ArrayList<>();
         try {
             phoneCalls = phoneCallListFuture.get();
         } catch (InterruptedException | ExecutionException e) {
@@ -186,27 +220,6 @@ public class DeviceManager {
         }
         executor.shutdown();
         return phoneCalls;
-    }
-
-    private List<PhoneContactEntity> filterPhoneContacts(List<PhoneContactEntity> phoneContacts, List<PhoneCallEntity> phoneCalls) {
-        List<PhoneContactEntity> filteredResult = new ArrayList<>();
-        if (phoneCalls != null) {
-            for (PhoneCallEntity phoneCall : phoneCalls) {
-                PhoneContactEntity existingPhoneContact = null;
-                if (phoneContacts != null) {
-                    for (PhoneContactEntity phoneContact : phoneContacts) {
-                        if (phoneContact.phoneNumbers != null && phoneContact.phoneNumbers.contains(phoneCall.phoneNumber)) {
-                            existingPhoneContact = (PhoneContactEntity) SerialUtils.cloneObject(phoneContact);
-                            break;
-                        }
-                    }
-                }
-                existingPhoneContact = (existingPhoneContact == null) ? new PhoneContactEntity() : existingPhoneContact;
-                existingPhoneContact.phoneNumbers = phoneCall.phoneNumber;
-                filteredResult.add(existingPhoneContact);
-            }
-        }
-        return filteredResult;
     }
 
     public MutableLiveData<List<PhoneApp>> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {

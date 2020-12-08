@@ -20,6 +20,6 @@ public class ContactViewHolder extends RecyclerView.ViewHolder {
 
         avatar = view.findViewById(R.id.contact_avatar);
         name = view.findViewById(R.id.contact_name);
-        phoneNumbers = view.findViewById(R.id.contact_phone_number);
+        phoneNumbers = view.findViewById(R.id.phone_number);
     }
 }

@@ -1,14 +1,9 @@
 package com.vnsolution.virtualassistant.ui.contact;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +13,7 @@ import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +23,17 @@ import javax.inject.Inject;
 import dagger.android.HasAndroidInjector;
 
 public class ContactActivity extends BaseActivity implements HasAndroidInjector {
-    private static final int REQUEST_CODE = 1001;
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView favouriteContactsRecyclerView;
+    private RecyclerView.LayoutManager favouriteContactsLayoutManager;
+    private RecyclerViewAdapter<PhoneContact> favouriteContactsAdapter;
+
+    private RecyclerView phoneContactsRecyclerView;
+    private RecyclerView.LayoutManager phoneContactsLayoutManager;
+    private RecyclerViewAdapter<PhoneContact> phoneContactsAdapter;
+
+    private List<PhoneContact> phoneContacts = new ArrayList<>();
     private FrameLayout progressOverlay;
 
-    private RecyclerViewAdapter<PhoneContact> phoneContactsAdapter;
-    private List<PhoneContact> phoneContactList = new ArrayList<>();
 
     @Inject
     public ContactViewModel contactViewModel;
@@ -45,7 +45,6 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupView();
-        refreshView();
     }
 
     private void setupView() {
@@ -53,38 +52,62 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
         setupActionBar();
 
         progressOverlay =  findViewById(R.id.progress_overlay);
-        recyclerView = findViewById(R.id.list_contacts);
-        recyclerView.setHasFixedSize(true);
+        phoneContacts = contactViewModel.getPhoneContacts();
 
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        phoneContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact_full_width);
-        recyclerView.setAdapter(phoneContactsAdapter);
+        setupFavouriteContactsView();
+        setupPhoneContactsView();
     }
 
-    private void refreshView() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[] { Manifest.permission.READ_CONTACTS }, REQUEST_CODE);
-                return;
-            }
-        }
+    private void setupFavouriteContactsView() {
+        favouriteContactsRecyclerView = findViewById(R.id.list_favourite_contact);
+        favouriteContactsRecyclerView.setHasFixedSize(true);
 
-        contactViewModel.getContacts(this,false).observe(this, new Observer<List<PhoneContact>>() {
+        favouriteContactsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        favouriteContactsRecyclerView.setLayoutManager(favouriteContactsLayoutManager);
+
+        favouriteContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        favouriteContactsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
             @Override
-            public void onChanged(List<PhoneContact> phoneContacts) {
-                phoneContactList = phoneContacts;
-                phoneContactsAdapter.setData(phoneContacts);
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactActivity.this, ContactViewActivity.class);
+                intent.putExtra("PhoneContactId", phoneContact.id);
+                startActivity(intent);
             }
         });
+        List<PhoneContact> favouriteContacts = filterContacts(phoneContacts, 1);
+        favouriteContactsAdapter.setData(favouriteContacts);
+        favouriteContactsRecyclerView.setAdapter(favouriteContactsAdapter);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE) {
-            refreshView();
+    private void setupPhoneContactsView() {
+        phoneContactsRecyclerView = findViewById(R.id.list_normal_contact);
+        phoneContactsRecyclerView.setHasFixedSize(true);
+
+        phoneContactsLayoutManager = new LinearLayoutManager(this);
+        phoneContactsRecyclerView.setLayoutManager(phoneContactsLayoutManager);
+
+        phoneContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact_full_width);
+        phoneContactsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
+            @Override
+            public void onTap(PhoneContact phoneContact) {
+                Intent intent = new Intent(ContactActivity.this, ContactViewActivity.class);
+                intent.putExtra("PhoneContactId", phoneContact.id);
+                startActivity(intent);
+            }
+        });
+        phoneContactsAdapter.setData(phoneContacts);
+        phoneContactsRecyclerView.setAdapter(phoneContactsAdapter);
+    }
+
+    private List<PhoneContact> filterContacts(List<PhoneContact> phoneContacts, int starred) {
+        List<PhoneContact> result = new ArrayList<>();
+        if (phoneContacts != null) {
+            for(PhoneContact phoneContact : phoneContacts) {
+                if (phoneContact.starred == starred) {
+                    result.add(phoneContact);
+                }
+            }
         }
+        return result;
     }
 }
