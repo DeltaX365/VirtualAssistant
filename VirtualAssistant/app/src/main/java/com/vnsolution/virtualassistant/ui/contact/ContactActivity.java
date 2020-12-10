@@ -1,21 +1,33 @@
 package com.vnsolution.virtualassistant.ui.contact;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.DeviceOptions;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
+import com.vnsolution.virtualassistant.util.PermissionUtils;
+import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -33,7 +45,6 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
 
     private List<PhoneContact> phoneContacts = new ArrayList<>();
     private FrameLayout progressOverlay;
-
 
     @Inject
     public ContactViewModel contactViewModel;
@@ -73,6 +84,10 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
                 intent.putExtra("PhoneContactId", phoneContact.id);
                 startActivity(intent);
             }
+            @Override
+            public void onLongTap(PhoneContact phoneContact) {
+                makePhoneCall(phoneContact.phoneNumbers);
+            }
         });
         List<PhoneContact> favouriteContacts = filterContacts(phoneContacts, 1);
         favouriteContactsAdapter.setData(favouriteContacts);
@@ -94,6 +109,11 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
                 intent.putExtra("PhoneContactId", phoneContact.id);
                 startActivity(intent);
             }
+
+            @Override
+            public void onAction(PhoneContact phoneContact, String action) {
+                makePhoneCall(phoneContact.phoneNumbers);
+            }
         });
         phoneContactsAdapter.setData(phoneContacts);
         phoneContactsRecyclerView.setAdapter(phoneContactsAdapter);
@@ -109,5 +129,49 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
             }
         }
         return result;
+    }
+
+    @SuppressLint("MissingPermission")
+    private void makePhoneCall(String phoneNumber) {
+        if (requestPermissions() && phoneNumber != null) {
+            String[] splitedNumbers = phoneNumber.split(",");
+            if (splitedNumbers != null && splitedNumbers.length > 0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Choose phone number")
+                        .setItems(splitedNumbers, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(Intent.ACTION_CALL);
+                                intent.setData(Uri.parse("tel:" + splitedNumbers[which]));
+                                startActivity(intent);
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                intent.setData(Uri.parse("tel:" + phoneNumber));
+                startActivity(intent);
+            }
+        }
+    }
+
+    private boolean requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_MAKE_CALL)) {
+                requestPermissions(DeviceOptions.PERMISSIONS_MAKE_CALL, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == StopTrackingOptions.PERMISSIONS_REQUEST_CODE
+                || requestCode == DeviceOptions.PERMISSIONS_REQUEST_CODE) {
+            //TODO
+        }
     }
 }

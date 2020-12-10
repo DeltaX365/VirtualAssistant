@@ -82,7 +82,7 @@ public class HomeV2Activity extends BaseActivity {
                     case BotOptions.MANAGE_CONTACTS:
                         intent = new Intent(HomeV2Activity.this, ContactActivity.class);
                         break;
-                    case BotOptions.SHOW_CONTACT_STAT:
+                    case BotOptions.SHOW_CALL_STAT:
                         intent = new Intent(HomeV2Activity.this, ContactDashboardActivity.class);
                         break;
                     case BotOptions.SHOW_CALL_LOGS:
@@ -114,7 +114,7 @@ public class HomeV2Activity extends BaseActivity {
         List<String> availableActions = new ArrayList<String>();
         availableActions.add(BotOptions.SHOW_TRAVEL_HISTORY);
         availableActions.add(BotOptions.MANAGE_CONTACTS);
-        availableActions.add(BotOptions.SHOW_CONTACT_STAT);
+        availableActions.add(BotOptions.SHOW_CALL_STAT);
         availableActions.add(BotOptions.MANAGE_YOUR_APPS);
         availableActions.add(BotOptions.SHOW_REMINDERS);
         availableActions.add(BotOptions.SHOW_NOTIFICATIONS);

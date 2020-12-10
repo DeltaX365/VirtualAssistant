@@ -42,6 +42,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
@@ -182,30 +183,35 @@ public class StopTrackingService extends Service {
 
         //do heavy work on a background thread
         if (intent != null) {
-            switch (intent.getAction()) {
-                case StopTrackingOptions.INTENT_ACTION_INITIAL:
+            try {
+                switch (intent.getAction()) {
+                    case StopTrackingOptions.INTENT_ACTION_INITIAL:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Initial service.");
-                    StopPoint stopPoint = getStopPointFromCache();
-                    if (stopPoint == null) {
-                        processInitialRequest();
-                    } else {
-                        processMarkAsVisitedRequest();
-                    }
-                    break;
-                case StopTrackingOptions.INTENT_ACTION_CHECK_IN:
+                        StopPoint stopPoint = getStopPointFromCache();
+                        if (stopPoint == null) {
+                            processInitialRequest();
+                        } else {
+                            processMarkAsVisitedRequest();
+                        }
+                        break;
+                    case StopTrackingOptions.INTENT_ACTION_CHECK_IN:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check in.");
-                    checkIn(true);
-                    break;
-                case StopTrackingOptions.INTENT_ACTION_MARK_AS_VISITED:
+                        checkIn(true);
+                        break;
+                    case StopTrackingOptions.INTENT_ACTION_MARK_AS_VISITED:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Mark as visited.");
-                    processMarkAsVisitedRequest();
-                    break;
-                case StopTrackingOptions.INTENT_ACTION_CHECK_OUT:
+                        processMarkAsVisitedRequest();
+                        break;
+                    case StopTrackingOptions.INTENT_ACTION_CHECK_OUT:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check out.");
-                    processCheckOutRequest();
-                    break;
+                        processCheckOutRequest();
+                        break;
+                }
+                //stopSelf();
+            } catch (Exception e) {
+                e.printStackTrace();
+                FirebaseCrashlytics.getInstance().recordException(e);
             }
-            //stopSelf();
         }
 
         return START_NOT_STICKY;

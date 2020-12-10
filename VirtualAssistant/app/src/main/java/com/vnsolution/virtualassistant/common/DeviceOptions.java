@@ -13,6 +13,7 @@ public class DeviceOptions {
     public static final String[] PERMISSIONS_PHONE_CALL = {Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CALL_LOG, Manifest.permission.PROCESS_OUTGOING_CALLS};
     public static final String[] PERMISSIONS_PHONE_SMS = {Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_SMS};
     public static final String[] PERMISSIONS_PHONE_CONTACT = {Manifest.permission.READ_CONTACTS};
+    public static final String[] PERMISSIONS_MAKE_CALL = {Manifest.permission.CALL_PHONE};
 
     // Notifications.
     public static final String NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID = "com.vnsolution.virtualassistant.DEVICE_FOREGROUND_SERVICE";

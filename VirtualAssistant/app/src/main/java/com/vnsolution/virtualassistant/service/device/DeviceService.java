@@ -106,15 +106,20 @@ public class DeviceService extends Service {
 
         //do heavy work on a background thread
         if (intent != null) {
-            switch (intent.getAction()) {
-                case DeviceOptions.INTENT_ACTION_SYNC_PHONE_CALL:
-                    new SyncPhoneCallTask().execute();
-                    break;
-                case DeviceOptions.INTENT_ACTION_SYNC_PHONE_SMS:
-                    new SyncPhoneSmsTask().execute();
-                    break;
-                case DeviceOptions.INTENT_ACTION_SYNC_PHONE_CONTACT:
-                    break;
+            try {
+                switch (intent.getAction()) {
+                    case DeviceOptions.INTENT_ACTION_SYNC_PHONE_CALL:
+                        new SyncPhoneCallTask().execute();
+                        break;
+                    case DeviceOptions.INTENT_ACTION_SYNC_PHONE_SMS:
+                        new SyncPhoneSmsTask().execute();
+                        break;
+                    case DeviceOptions.INTENT_ACTION_SYNC_PHONE_CONTACT:
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                FirebaseCrashlytics.getInstance().recordException(e);
             }
         }
 

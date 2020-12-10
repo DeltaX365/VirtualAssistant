@@ -3,7 +3,7 @@ package com.vnsolution.virtualassistant.common;
 public class BotOptions {
     public static final String SHOW_TRAVEL_HISTORY = "Show travel history";
     public static final String MANAGE_YOUR_APPS = "Manage your apps";
-    public static final String SHOW_CONTACT_STAT = "Show contact stat";
+    public static final String SHOW_CALL_STAT = "Show call stat";
     public static final String MANAGE_CONTACTS = "Manage contacts";
     public static final String SHOW_REMINDERS = "Show reminders";
     public static final String SHOW_NOTIFICATIONS = "Show notifications";
