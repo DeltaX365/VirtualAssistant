@@ -28,7 +28,7 @@ public class PhoneAppV2Activity extends AppCompatActivity implements HasAndroidI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_app_v2);
+        setContentView(R.layout.screen_app_list_v2);
 
         PhoneAppsV2ViewPagerAdapter adapter = new PhoneAppsV2ViewPagerAdapter(getSupportFragmentManager());
         adapter.addItem("Static", PhoneAppsFragment.newInstance(0));

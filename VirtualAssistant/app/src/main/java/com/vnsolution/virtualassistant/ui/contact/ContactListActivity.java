@@ -11,7 +11,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,18 +22,18 @@ import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderNewActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.android.HasAndroidInjector;
 
-public class ContactActivity extends BaseActivity implements HasAndroidInjector {
+public class ContactListActivity extends BaseActivity implements HasAndroidInjector {
     private RecyclerView favouriteContactsRecyclerView;
     private RecyclerView.LayoutManager favouriteContactsLayoutManager;
     private RecyclerViewAdapter<PhoneContact> favouriteContactsAdapter;
@@ -59,7 +58,7 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
     }
 
     private void setupView() {
-        setContentView(R.layout.screen_contact);
+        setContentView(R.layout.screen_contact_list);
         setupActionBar();
 
         progressOverlay =  findViewById(R.id.progress_overlay);
@@ -80,7 +79,7 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
         favouriteContactsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
             @Override
             public void onTap(PhoneContact phoneContact) {
-                Intent intent = new Intent(ContactActivity.this, ContactViewActivity.class);
+                Intent intent = new Intent(ContactListActivity.this, ContactViewActivity.class);
                 intent.putExtra("PhoneContactId", phoneContact.id);
                 startActivity(intent);
             }
@@ -105,14 +104,25 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
         phoneContactsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
             @Override
             public void onTap(PhoneContact phoneContact) {
-                Intent intent = new Intent(ContactActivity.this, ContactViewActivity.class);
+                Intent intent = new Intent(ContactListActivity.this, ContactViewActivity.class);
                 intent.putExtra("PhoneContactId", phoneContact.id);
                 startActivity(intent);
             }
 
             @Override
             public void onAction(PhoneContact phoneContact, String action) {
-                makePhoneCall(phoneContact.phoneNumbers);
+                switch (action) {
+                    case UiOptions.CONTACT_ACTION_CALL:
+                        makePhoneCall(phoneContact.phoneNumbers);
+                        break;
+                    case UiOptions.CONTACT_ACTION_SMS:
+                        sendSms(phoneContact.phoneNumbers);
+                        break;
+                    case UiOptions.CONTACT_ACTION_SCHEDULE:
+                        Intent intent = new Intent(ContactListActivity.this, ReminderNewActivity.class);
+                        startActivity(intent);
+                        break;
+                }
             }
         });
         phoneContactsAdapter.setData(phoneContacts);
@@ -153,6 +163,49 @@ public class ContactActivity extends BaseActivity implements HasAndroidInjector 
                 intent.setData(Uri.parse("tel:" + phoneNumber));
                 startActivity(intent);
             }
+        }
+    }
+
+    private void sendSms(String phoneNumber) {
+        String[] splitedNumbers = phoneNumber.split(",");
+        if (splitedNumbers != null && splitedNumbers.length > 0) {
+            List<String> selectedNumber = new ArrayList<>();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Choose phone number")
+                    .setMultiChoiceItems(splitedNumbers, null, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            if (isChecked) {
+                                selectedNumber.add(splitedNumbers[which]);
+                            } else if (selectedNumber.contains(splitedNumbers[which])) {
+                                selectedNumber.remove(splitedNumbers[which]);
+                            }
+                        }
+                    })
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setData(Uri.parse("smsto:"));
+                            intent.setType("vnd.android-dir/mms-sms");
+                            intent.putExtra("address", StringUtils.join(";", selectedNumber));
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("smsto:"));
+            intent.setType("vnd.android-dir/mms-sms");
+            intent.putExtra("address", phoneNumber);
+            startActivity(intent);
         }
     }
 

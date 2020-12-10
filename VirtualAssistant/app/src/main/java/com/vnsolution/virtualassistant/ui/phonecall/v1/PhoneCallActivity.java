@@ -47,7 +47,7 @@ public class PhoneCallActivity extends BaseActivity implements HasAndroidInjecto
     }
 
     private void setupView() {
-        setContentView(R.layout.screen_phone_call);
+        setContentView(R.layout.screen_phone_call_list);
         setupActionBar();
 
         recyclerView = findViewById(R.id.list_call_logs);

@@ -43,7 +43,7 @@ public class PhoneAppActivity extends AppCompatActivity implements HasAndroidInj
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_app);
+        setContentView(R.layout.screen_app_list);
 
         recyclerView = findViewById(R.id.list_applications);
         progressOverlay =  findViewById(R.id.progress_overlay);

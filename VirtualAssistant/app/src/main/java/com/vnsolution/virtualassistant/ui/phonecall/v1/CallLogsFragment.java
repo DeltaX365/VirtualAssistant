@@ -57,7 +57,7 @@ public class CallLogsFragment extends Fragment implements Injectable {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.screen_phone_call, container, false);
+        View root = inflater.inflate(R.layout.screen_phone_call_list, container, false);
 
         if (mContext != null) {
             recyclerView = root.findViewById(R.id.list_sms);

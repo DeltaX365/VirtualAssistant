@@ -17,7 +17,7 @@
             android:id="@+id/list_favourite_contact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp"
+            android:padding="5dp"
             android:clipToPadding="false"
             android:background="@color/colorGrey"
             />

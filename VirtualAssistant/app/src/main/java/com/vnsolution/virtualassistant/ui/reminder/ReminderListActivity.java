@@ -21,7 +21,7 @@ import javax.inject.Inject;
 
 import dagger.android.HasAndroidInjector;
 
-public class ReminderActivity extends BaseActivity implements HasAndroidInjector {
+public class ReminderListActivity extends BaseActivity implements HasAndroidInjector {
     private static final int REQUEST_CODE = 1001;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -44,8 +44,9 @@ public class ReminderActivity extends BaseActivity implements HasAndroidInjector
     }
 
     private void setupView() {
-        setContentView(R.layout.screen_reminder);
+        setContentView(R.layout.screen_reminder_list);
         setupActionBar();
+        turnScreenOnThroughKeyguard();
 
         progressOverlay =  findViewById(R.id.progress_overlay);
         recyclerView = findViewById(R.id.list_reminders);
@@ -71,4 +72,24 @@ public class ReminderActivity extends BaseActivity implements HasAndroidInjector
         reminders.add("Reminder 9");
         remindersAdapter.setData(reminders);
     }
+
+//    @Override
+//    public void onAttachedToWindow() {
+//        super.onAttachedToWindow();
+//        getWindow().addFlags(
+//                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+//                        | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+//                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+//                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+//    }
+//
+//    @Override
+//    public void onDetachedFromWindow() {
+//        super.onDetachedFromWindow();
+//        getWindow().clearFlags(
+//                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+//                        | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+//                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+//                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+//    }
 }

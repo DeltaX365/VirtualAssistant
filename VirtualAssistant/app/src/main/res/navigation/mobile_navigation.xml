@@ -21,13 +21,13 @@
         android:id="@+id/navigation_apps"
         android:name="com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsFragment"
         android:label="@string/title_screen_applications"
-        tools:layout="@layout/screen_app" />
+        tools:layout="@layout/screen_app_list" />
 
     <fragment
         android:id="@+id/navigation_call_logs"
         android:name="com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsFragment"
         android:label="@string/title_screen_call_history"
-        tools:layout="@layout/screen_phone_call" />
+        tools:layout="@layout/screen_phone_call_list" />
 
     <fragment
         android:id="@+id/navigation_settings"

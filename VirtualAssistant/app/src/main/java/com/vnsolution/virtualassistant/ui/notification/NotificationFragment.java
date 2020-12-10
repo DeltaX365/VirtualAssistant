@@ -29,7 +29,7 @@ public class NotificationFragment extends Fragment implements Injectable {
                              ViewGroup container, Bundle savedInstanceState) {
         notificationViewModel =
                 ViewModelProviders.of(this, viewModelFactory).get(NotificationViewModel.class);
-        View root = inflater.inflate(R.layout.screen_notifications, container, false);
+        View root = inflater.inflate(R.layout.screen_notification_list, container, false);
         final TextView textView = root.findViewById(R.id.text_notifications);
         notificationViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override

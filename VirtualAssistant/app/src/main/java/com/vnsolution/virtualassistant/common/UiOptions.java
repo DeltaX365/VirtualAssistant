@@ -25,6 +25,9 @@ public class UiOptions {
     // Phone Contact UI
     public static final String CONTACT_LIST_ALL = "CONTACT_LIST_ALL";
     public static final String CONTACT_ACTION_CALL = "CONTACT_ACTION_CALL";
+    public static final String CONTACT_ACTION_SMS = "CONTACT_ACTION_SMS";
+    public static final String CONTACT_ACTION_LOCK = "CONTACT_ACTION_LOCK";
+    public static final String CONTACT_ACTION_SCHEDULE = "CONTACT_ACTION_SCHEDULE";
 
     // Reminders UI
     public static final String REMINDER_LIST_ALL = "REMINDER_LIST_ALL";

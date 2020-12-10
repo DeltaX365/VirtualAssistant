@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -49,7 +47,7 @@ public class PhoneSmsActivity extends BaseActivity implements HasAndroidInjector
     }
 
     private void setupView() {
-        setContentView(R.layout.screen_phone_sms);
+        setContentView(R.layout.screen_phone_sms_list);
         setupActionBar();
 
         recyclerView = findViewById(R.id.list_sms);

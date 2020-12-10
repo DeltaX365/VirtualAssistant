@@ -1,7 +1,7 @@
 package com.vnsolution.virtualassistant.di;
 
 import com.vnsolution.virtualassistant.ui.StartupActivity;
-import com.vnsolution.virtualassistant.ui.contact.ContactActivity;
+import com.vnsolution.virtualassistant.ui.contact.ContactListActivity;
 import com.vnsolution.virtualassistant.ui.contact.ContactViewActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
@@ -10,7 +10,8 @@ import com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppActivity;
 import com.vnsolution.virtualassistant.ui.phoneapp.v2.PhoneAppV2Activity;
 import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallActivity;
 import com.vnsolution.virtualassistant.ui.contact.ContactDashboardActivity;
-import com.vnsolution.virtualassistant.ui.reminder.ReminderActivity;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderListActivity;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderNewActivity;
 import com.vnsolution.virtualassistant.ui.setting.SettingActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
@@ -37,7 +38,7 @@ public abstract class ActivityBuildersModule {
     abstract HomeV2Activity contributeHomeV2Activity();
 
     @ContributesAndroidInjector()
-    abstract TravelDashboardActivity contributeTravelActivity();
+    abstract TravelDashboardActivity contributeTravelDashboardActivity();
 
     @ContributesAndroidInjector()
     abstract TravelEditActivity contributeTravelEditActivity();
@@ -46,7 +47,7 @@ public abstract class ActivityBuildersModule {
     abstract TravelViewActivity contributeTravelViewActivity();
 
     @ContributesAndroidInjector()
-    abstract TravelHistoryActivity contributeTravelSummaryActivity();
+    abstract TravelHistoryActivity contributeTravelHistoryActivity();
 
     @ContributesAndroidInjector(modules = TravelFragmentBuildersModule.class)
     abstract TravelV2Activity contributeTravelV2Activity();
@@ -58,7 +59,7 @@ public abstract class ActivityBuildersModule {
     abstract ContactViewActivity contributeContactViewActivity();
 
     @ContributesAndroidInjector()
-    abstract ContactActivity contributeContactActivity();
+    abstract ContactListActivity contributeContactListActivity();
 
     @ContributesAndroidInjector()
     abstract PhoneAppDashboardActivity contributePhoneAppDashboardActivity();
@@ -76,7 +77,10 @@ public abstract class ActivityBuildersModule {
     abstract PhoneSmsActivity contributePhoneSmsActivity();
 
     @ContributesAndroidInjector()
-    abstract ReminderActivity contributeReminderActivity();
+    abstract ReminderListActivity contributeReminderListActivity();
+
+    @ContributesAndroidInjector()
+    abstract ReminderNewActivity contributeReminderNewActivity();
 
     @ContributesAndroidInjector()
     abstract SettingActivity contributeSettingActivity();

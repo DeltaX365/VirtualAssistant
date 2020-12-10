@@ -12,7 +12,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.ui.reminder.ReminderActivity;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderListActivity;
 
 public class ReminderBroadcastReceiver extends BroadcastReceiver {
     @Override
@@ -23,7 +23,7 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void createFullScreenNotification(Context context) {
-        Intent fullScreenIntent = new Intent(context, ReminderActivity.class);
+        Intent fullScreenIntent = new Intent(context, ReminderListActivity.class);
 //        fullScreenIntent.setFlags(
 //                Intent.FLAG_ACTIVITY_NEW_TASK
 //                        | Intent.FLAG_ACTIVITY_CLEAR_TASK

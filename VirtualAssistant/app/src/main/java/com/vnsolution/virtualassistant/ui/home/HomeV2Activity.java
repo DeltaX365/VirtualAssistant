@@ -1,10 +1,14 @@
 package com.vnsolution.virtualassistant.ui.home;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -16,15 +20,16 @@ import com.vnsolution.virtualassistant.common.BotOptions;
 import com.vnsolution.virtualassistant.common.DeviceOptions;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.service.reminder.ReminderBroadcastReceiver;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.contact.ContactActivity;
+import com.vnsolution.virtualassistant.ui.contact.ContactListActivity;
 import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppDashboardActivity;
 import com.vnsolution.virtualassistant.ui.contact.ContactDashboardActivity;
 import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
-import com.vnsolution.virtualassistant.ui.reminder.ReminderActivity;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderListActivity;
 import com.vnsolution.virtualassistant.ui.setting.SettingActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
@@ -80,7 +85,7 @@ public class HomeV2Activity extends BaseActivity {
                         intent = new Intent(HomeV2Activity.this, PhoneAppDashboardActivity.class);
                         break;
                     case BotOptions.MANAGE_CONTACTS:
-                        intent = new Intent(HomeV2Activity.this, ContactActivity.class);
+                        intent = new Intent(HomeV2Activity.this, ContactListActivity.class);
                         break;
                     case BotOptions.SHOW_CALL_STAT:
                         intent = new Intent(HomeV2Activity.this, ContactDashboardActivity.class);
@@ -92,7 +97,16 @@ public class HomeV2Activity extends BaseActivity {
                         intent = new Intent(HomeV2Activity.this, PhoneSmsActivity.class);
                         break;
                     case BotOptions.SHOW_REMINDERS:
-                        intent = new Intent(HomeV2Activity.this, ReminderActivity.class);
+                        intent = new Intent(HomeV2Activity.this, ReminderListActivity.class);
+                        break;
+                    case BotOptions.ADD_REMINDER:
+                        Intent intent1 = new Intent(HomeV2Activity.this, ReminderBroadcastReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeV2Activity.this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        if (alarmManager != null) {
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 15000, pendingIntent);
+                            Toast.makeText(HomeV2Activity.this, "Alarm was set in 15s next.", Toast.LENGTH_LONG).show();
+                        }
                         break;
                     case BotOptions.SHOW_SETTINGS:
                         intent = new Intent(HomeV2Activity.this, SettingActivity.class);
@@ -117,6 +131,7 @@ public class HomeV2Activity extends BaseActivity {
         availableActions.add(BotOptions.SHOW_CALL_STAT);
         availableActions.add(BotOptions.MANAGE_YOUR_APPS);
         availableActions.add(BotOptions.SHOW_REMINDERS);
+        availableActions.add(BotOptions.ADD_REMINDER);
         availableActions.add(BotOptions.SHOW_NOTIFICATIONS);
 //        availableActions.add(BotOptions.SHOW_CALL_LOGS);
 //        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
@@ -157,6 +172,12 @@ public class HomeV2Activity extends BaseActivity {
                 requestPermissions(DeviceOptions.PERMISSIONS_PHONE_CONTACT, DeviceOptions.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
+
+            // Full Screen permission
+//            if (!PermissionUtils.hasPermissions(this, new String[] {Manifest.permission.USE_FULL_SCREEN_INTENT})) {
+//                requestPermissions(new String[] {Manifest.permission.USE_FULL_SCREEN_INTENT}, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+//                return false;
+//            }
         }
         return true;
     }
