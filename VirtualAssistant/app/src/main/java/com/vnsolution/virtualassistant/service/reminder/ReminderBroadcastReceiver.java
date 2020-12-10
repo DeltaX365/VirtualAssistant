@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.service.device;
+package com.vnsolution.virtualassistant.service.reminder;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -10,24 +10,16 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.DeviceOptions;
-import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderActivity;
-import com.vnsolution.virtualassistant.util.NotificationUtils;
 
 public class ReminderBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        //Android full screen notification shows over the lock screen
-        //https://stackoverflow.com/questions/60535947/android-full-screen-notification-wont-show-over-the-lock-screen
+        // Android full screen notification shows over the lock screen
+        // Link: https://developer.android.com/training/notify-user/time-sensitive
         createFullScreenNotification(context);
-
-//        Intent serviceIntent = new Intent(context, DeviceService.class);
-//        ContextCompat.startForegroundService(context, serviceIntent);
     }
 
     private void createFullScreenNotification(Context context) {
@@ -40,6 +32,7 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
 //        );
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent , PendingIntent.FLAG_UPDATE_CURRENT);
 
+        // The notification chanel should have a HIGH IMPORTANT. Otherwise, it doesn't work.
         String chanelId = "com.vnsolution.virtualassistant.REMINDER_FOREGROUND_SERVICE";
         String chanelName = "Schedule Reminder";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
