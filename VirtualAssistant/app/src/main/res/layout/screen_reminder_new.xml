@@ -19,12 +19,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:startIconDrawable="@drawable/ic_baseline_alarm_add_24"
-            app:boxBackgroundColor="@color/colorWhite">
+            app:boxBackgroundColor="@color/colorWhite"
+            android:hint="Title">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reminder_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter your reminder title"
+                android:maxLines="1"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -33,12 +35,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:startIconDrawable="@drawable/ic_baseline_alarm_24"
-            app:boxBackgroundColor="@color/colorWhite">
+            app:boxBackgroundColor="@color/colorWhite"
+            android:hint="Time">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reminder_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Today at 21:35"
+                android:clickable="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -47,16 +53,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:startIconDrawable="@drawable/ic_baseline_repeat_24"
-            app:boxBackgroundColor="@color/colorWhite">
+            app:boxBackgroundColor="@color/colorWhite"
+            android:hint="Repeat (Ex: Every week)">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reminder_repeat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Repeat (Ex: Every week)"
+                android:clickable="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
+
+    <!-- BottomSheet -->
+    <include layout="@layout/bottomsheet_reminder_repeat_options" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
