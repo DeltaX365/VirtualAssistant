@@ -81,9 +81,8 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
             @Override
             public void afterTextChanged(Editable s) {
                 reminderTitle = s.toString().trim();
-                if (reminderTitle != null && reminderTitle != "" && reminderCreationCompletedMenuItem != null) {
-                    reminderCreationCompletedMenuItem.setEnabled(true);
-                }
+                boolean isEnabled = (reminderTitle != null && reminderTitle != "" && reminderCreationCompletedMenuItem != null) ? true : false;
+                reminderCreationCompletedMenuItem.setEnabled(isEnabled);
             }
         });
     }
@@ -147,16 +146,16 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
                         reminderRepeatOption = "";
                         break;
                     case R.id.reminder_repeat_option_daily:
-                        reminderRepeatOption = "Repeat daily";
+                        reminderRepeatOption = "Daily";
                         break;
                     case R.id.reminder_repeat_option_weekly:
-                        reminderRepeatOption = "Repeat weekly";
+                        reminderRepeatOption = "Weekly";
                         break;
                     case R.id.reminder_repeat_option_monthly:
-                        reminderRepeatOption = "Repeat monthly";
+                        reminderRepeatOption = "Monthly";
                         break;
                     case R.id.reminder_repeat_option_yearly:
-                        reminderRepeatOption = "Repeat yearly";
+                        reminderRepeatOption = "Yearly";
                         break;
                 }
                 reminderRepeatTextInput.setText(reminderRepeatOption);
@@ -197,6 +196,9 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
         switch (item.getItemId()) {
             case R.id.menu_item_done:
                 Toast.makeText(this, "Will create reminder: " + reminderTitle, Toast.LENGTH_SHORT).show();
+                break;
+            case android.R.id.home:
+                finish();
                 break;
         }
         return true;

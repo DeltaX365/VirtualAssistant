@@ -7,9 +7,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +27,7 @@ import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderListActivity;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderNewActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 import com.vnsolution.virtualassistant.util.StringUtils;
@@ -33,7 +39,7 @@ import javax.inject.Inject;
 
 import dagger.android.HasAndroidInjector;
 
-public class ContactListActivity extends BaseActivity implements HasAndroidInjector {
+public class ContactListActivity extends BaseActivity implements HasAndroidInjector, SearchView.OnQueryTextListener {
     private RecyclerView favouriteContactsRecyclerView;
     private RecyclerView.LayoutManager favouriteContactsLayoutManager;
     private RecyclerViewAdapter<PhoneContact> favouriteContactsAdapter;
@@ -139,6 +145,49 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_contact_list_options, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setQueryHint("Search People");
+        searchView.setOnQueryTextListener(this);
+        searchView.setIconified(false);
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Toast.makeText(this, "Query Inserted", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        filter(newText);
+        return true;
+    }
+
+    private void filter(String queryText) {
+        List<PhoneContact> filteredContacts = new ArrayList<>();
+        if (queryText.isEmpty()) {
+            filteredContacts.addAll(phoneContacts);
+        } else {
+            for (PhoneContact contact : phoneContacts) {
+                String normalizedName = StringUtils.nonAccentVietnamese(contact.name);
+                if (normalizedName.toLowerCase().contains(queryText.toLowerCase())) {
+                    filteredContacts.add(contact);
+                }
+            }
+        }
+        phoneContactsAdapter.setData(filteredContacts);
     }
 
     @SuppressLint("MissingPermission")
