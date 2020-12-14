@@ -17,15 +17,14 @@
             android:id="@+id/list_favourite_contact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="10dp"
             android:clipToPadding="false"
-            android:background="@color/colorGrey"
             />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_normal_contact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
+            />
 
     </LinearLayout>
 

@@ -68,7 +68,7 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
         setupActionBar();
 
         progressOverlay =  findViewById(R.id.progress_overlay);
-        phoneContacts = contactViewModel.getPhoneContacts();
+        phoneContacts = contactViewModel.getPhoneContacts(true);
 
         setupFavouriteContactsView();
         setupPhoneContactsView();
@@ -157,7 +157,6 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search People");
         searchView.setOnQueryTextListener(this);
-        searchView.setIconified(false);
         searchView.setMaxWidth(Integer.MAX_VALUE);
 
         return true;

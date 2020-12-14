@@ -1,15 +1,17 @@
 package com.vnsolution.virtualassistant.ui.contact.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
+
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
+import androidx.appcompat.widget.PopupMenu;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -19,15 +21,16 @@ import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.phoneapp.component.AppCardFullWidthRow;
 import com.vnsolution.virtualassistant.util.BitmapUtils;
 
 public class PhoneContactCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact>, PopupMenu.OnMenuItemClickListener {
     private ImageView mAvatarImageView;
     private TextView mContactNameTextView;
     private TextView mPhoneNumbersTextView;
-//    private ImageButton mCallActionButton;
     private TextView mContactOptionsTextView;
+    private TextView mTotalIncomingNumberTextView;
+    private TextView mTotalOutgoingNumberTextView;
+    private TextView mTotalMissedNumberTextView;
 
     private Context mContext;
     private PhoneContact mPhoneContact;
@@ -54,23 +57,23 @@ public class PhoneContactCardFullWidthRow extends MaterialCardView implements IR
         mAvatarImageView = findViewById(R.id.contact_avatar);
         mContactNameTextView = findViewById(R.id.contact_name);
         mPhoneNumbersTextView = findViewById(R.id.phone_number);
-//        mCallActionButton = findViewById(R.id.action_call);
-//        mCallActionButton.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mOnRecyclerViewRowTouchListener != null) {
-//                    mOnRecyclerViewRowTouchListener.onAction(mPhoneContact, UiOptions.CONTACT_ACTION_CALL);
-//                }
-//            }
-//        });
+
+        mTotalIncomingNumberTextView = findViewById(R.id.total_incoming_number);
+        mTotalOutgoingNumberTextView = findViewById(R.id.total_outgoing_number);
+        mTotalMissedNumberTextView = findViewById(R.id.total_missed_number);
+
         mContactOptionsTextView = findViewById(R.id.contact_options);
         mContactOptionsTextView.setOnClickListener(new OnClickListener() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(mContext, v);
                 popupMenu.setOnMenuItemClickListener(PhoneContactCardFullWidthRow.this);
                 popupMenu.inflate(R.menu.menu_contact_options);
-                popupMenu.show();
+
+                MenuPopupHelper menuPopupHelper = new MenuPopupHelper(mContext, (MenuBuilder) popupMenu.getMenu(), v);
+                menuPopupHelper.setForceShowIcon(true);
+                menuPopupHelper.show();
             }
         });
     }
@@ -84,6 +87,10 @@ public class PhoneContactCardFullWidthRow extends MaterialCardView implements IR
 
         mContactNameTextView.setText(phoneContact.name);
         mPhoneNumbersTextView.setText(phoneContact.phoneNumbers);
+
+        mTotalIncomingNumberTextView.setText(String.valueOf(phoneContact.totalIncomingNumber));
+        mTotalOutgoingNumberTextView.setText(String.valueOf(phoneContact.totalOutgoingNumber));
+        mTotalMissedNumberTextView.setText(String.valueOf(phoneContact.totalMissedNumber));
     }
 
     @Override

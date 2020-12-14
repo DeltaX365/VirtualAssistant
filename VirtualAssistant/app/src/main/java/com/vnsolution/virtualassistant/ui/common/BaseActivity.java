@@ -1,6 +1,5 @@
 package com.vnsolution.virtualassistant.ui.common;
 
-import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.os.Build;
@@ -11,7 +10,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -49,7 +47,7 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.colorWhite));
+            window.setStatusBarColor(getResources().getColor(R.color.color_white));
         }
     }
 

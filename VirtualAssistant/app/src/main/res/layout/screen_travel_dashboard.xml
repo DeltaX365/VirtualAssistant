@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="20dp"
                     android:text="You are visiting"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:textStyle="bold"
                     />
                 <TextView
@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="20dp"
                     android:id="@+id/visiting_place"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_marginTop="10dp"
                     />
 
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
                 android:text="Recently visited"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/color_black"
                 android:layout_marginTop="40dp"
                 android:textStyle="bold"
                 />
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
                 android:text="Most visited"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/color_black"
                 android:layout_marginTop="40dp"
                 android:textStyle="bold"
                 />
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
                 android:text="Visited"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/color_black"
                 android:layout_marginTop="40dp"
                 android:textStyle="bold"
                 />

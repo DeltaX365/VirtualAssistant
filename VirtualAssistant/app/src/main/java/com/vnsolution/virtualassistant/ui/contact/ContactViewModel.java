@@ -1,6 +1,7 @@
 package com.vnsolution.virtualassistant.ui.contact;
 
 import android.content.Context;
+import android.provider.CallLog;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -15,7 +16,9 @@ import com.vnsolution.virtualassistant.service.device.DeviceManager;
 import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.SerialUtils;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,9 +34,35 @@ public class ContactViewModel extends ViewModel {
         return deviceManager.getPhoneContacts(context, forceUpdate);
     }
 
-    public List<PhoneContact> getPhoneContacts() {
-        List<PhoneContactEntity> phoneContacts = deviceManager.getPhoneContacts();
-        return MappingUtils.convertPhoneContactEntitiesToPhoneContacts(phoneContacts);
+    public List<PhoneContact> getPhoneContacts(boolean includeStat) {
+        List<PhoneContactEntity> phoneContactEntityList = deviceManager.getPhoneContacts();
+        List<PhoneContact> phoneContactList = MappingUtils.convertPhoneContactEntitiesToPhoneContacts(phoneContactEntityList);
+        if (includeStat) {
+            for (PhoneContact phoneContact : phoneContactList) {
+                List<PhoneContactSummary> phoneContactSummaryList = getContactSummaryByNumbers(phoneContact.phoneNumbers);
+                for (PhoneContactSummary phoneContactSummary : phoneContactSummaryList) {
+                    switch (phoneContactSummary.type) {
+                        case CallLog.Calls.INCOMING_TYPE:
+                            phoneContact.totalIncomingNumber = phoneContactSummary.total;
+                            break;
+                        case CallLog.Calls.OUTGOING_TYPE:
+                            phoneContact.totalOutgoingNumber = phoneContactSummary.total;
+                            break;
+                        case CallLog.Calls.MISSED_TYPE:
+                            phoneContact.totalMissedNumber = phoneContactSummary.total;
+                            break;
+                    }
+                }
+            }
+            Collections.sort(phoneContactList, new Comparator<PhoneContact>() {
+                @Override
+                public int compare(PhoneContact o1, PhoneContact o2) {
+                    return (o2.totalIncomingNumber + o2.totalOutgoingNumber + o2.totalMissedNumber) -
+                            (o1.totalIncomingNumber + o1.totalOutgoingNumber + o1.totalMissedNumber);
+                }
+            });
+        }
+        return phoneContactList;
     }
 
     public PhoneContact getPhoneContactById(String id) {

@@ -6,8 +6,7 @@ public class PhoneContact {
     public String phoneNumbers;
     public long lastUpdatedTime;
     public int starred;
-
     public int totalIncomingNumber;
     public int totalOutgoingNumber;
-    public int totalSms;
+    public int totalMissedNumber;
 }

@@ -112,7 +112,6 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         setupActionBar();
 
         progressOverlay =  findViewById(R.id.progress_overlay);
-        phoneContacts = vm.getPhoneContacts();
 
         setupContactStatView();
 
@@ -422,7 +421,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
 
     private void assignContactToPhoneCalls(List<PhoneCall> phoneCalls) {
         if (phoneContacts == null) {
-            phoneContacts = vm.getPhoneContacts();
+            phoneContacts = vm.getPhoneContacts(false);
         }
         vm.assignContactToPhoneCalls(phoneCalls, phoneContacts);
     }

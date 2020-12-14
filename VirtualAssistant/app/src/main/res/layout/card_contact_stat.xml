@@ -19,14 +19,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Call Duration"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/color_black"
             android:textStyle="bold"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Time you spend on your calls"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/color_black"
             />
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,7 +40,7 @@
                 app:strokeWidth="1dp"
                 app:strokeColor="#cccccc"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/colorPrimary"
+                app:cardBackgroundColor="@color/color_primary"
                 android:layout_weight="1">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -51,7 +51,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Total Duration"
-                        android:textColor="@color/colorWhite"
+                        android:textColor="@color/color_white"
                         android:textStyle="bold"
                         android:textSize="12sp"
                         />
@@ -59,7 +59,7 @@
                         android:id="@+id/total_call_duration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorWhite"
+                        android:textColor="@color/color_white"
                         android:textStyle="bold"
                         android:textSize="18sp"
                         />
@@ -72,7 +72,7 @@
                 app:strokeWidth="1dp"
                 app:strokeColor="#cccccc"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/colorAccent"
+                app:cardBackgroundColor="@color/color_accent"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="5dp">
                 <LinearLayout
@@ -84,7 +84,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Outgoing"
-                        android:textColor="@color/colorWhite"
+                        android:textColor="@color/color_white"
                         android:textStyle="bold"
                         android:textSize="12sp"
                         />
@@ -92,7 +92,7 @@
                         android:id="@+id/total_outgoing_duration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorWhite"
+                        android:textColor="@color/color_white"
                         android:textStyle="bold"
                         android:textSize="18sp"
                         />
@@ -105,7 +105,7 @@
                 app:strokeWidth="1dp"
                 app:strokeColor="#cccccc"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/colorPrimaryDark"
+                app:cardBackgroundColor="@color/color_primary_dark"
                 android:layout_weight="1">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -116,7 +116,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Incoming"
-                        android:textColor="@color/colorWhite"
+                        android:textColor="@color/color_white"
                         android:textStyle="bold"
                         android:textSize="12sp"
                         />
@@ -124,7 +124,7 @@
                         android:id="@+id/total_incoming_duration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorWhite"
+                        android:textColor="@color/color_white"
                         android:textStyle="bold"
                         android:textSize="18sp"
                         />
@@ -137,14 +137,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:text="Call Types"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/color_black"
             android:textStyle="bold"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Number of calls by call type"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/color_black"
             />
         <View
             android:layout_width="match_parent"
@@ -165,14 +165,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Total Calls:"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentLeft="true"
                     />
                 <TextView
                     android:id="@+id/total_call_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentRight="true"
                     />
 
@@ -191,14 +191,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Incoming:"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentLeft="true"
                     />
                 <TextView
                     android:id="@+id/total_incoming_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentRight="true"
                     />
 
@@ -217,14 +217,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Outgoing:"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentLeft="true"
                     />
                 <TextView
                     android:id="@+id/total_outgoing_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentRight="true"
                     />
 
@@ -243,14 +243,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Missed Calls:"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentLeft="true"
                     />
                 <TextView
                     android:id="@+id/total_missed_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentRight="true"
                     />
 
@@ -269,14 +269,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Blocked Calls:"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentLeft="true"
                     />
                 <TextView
                     android:id="@+id/total_blocked_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentRight="true"
                     />
 

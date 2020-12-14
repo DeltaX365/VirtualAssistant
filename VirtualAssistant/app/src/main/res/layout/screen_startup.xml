@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:text="Bop earthling"
             android:textSize="18sp"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/color_black"
             android:layout_marginTop="15dp"
             />
         <TextView
@@ -34,14 +34,14 @@
             android:text="I'm here for waiting and executing your commands."
             android:gravity="center_horizontal"
             android:textSize="14sp"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/color_black"
             android:layout_marginTop="20dp"
             />
         <com.google.android.material.progressindicator.ProgressIndicator
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            app:indicatorColor="@color/colorBlack"
+            app:indicatorColor="@color/color_black"
             app:indicatorType="linear"
             android:indeterminate="true"
             />

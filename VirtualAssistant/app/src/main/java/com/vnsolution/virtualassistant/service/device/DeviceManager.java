@@ -36,7 +36,6 @@ import com.vnsolution.virtualassistant.model.PhoneSms;
 import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 import com.vnsolution.virtualassistant.util.PhoneUtils;
-import com.vnsolution.virtualassistant.util.SerialUtils;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
@@ -490,7 +489,7 @@ public class DeviceManager {
             }
             phoneContact.totalIncomingNumber = totalIncomeCall;
             phoneContact.totalOutgoingNumber = totalOutcomeCall;
-            phoneContact.totalSms = totalSms;
+            phoneContact.totalMissedNumber = totalSms;
         }
     }
 

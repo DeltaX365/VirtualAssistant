@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Contact Info"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/color_black"
             android:textStyle="bold"
             />
         <View
@@ -41,14 +41,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Mobile:"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentLeft="true"
                     />
                 <TextView
                     android:id="@+id/phone_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentRight="true"
                     />
 
@@ -67,14 +67,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Last Updated Time:"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentLeft="true"
                     />
                 <TextView
                     android:id="@+id/contact_last_updated_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/color_black"
                     android:layout_alignParentRight="true"
                     />
 

@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottomsheet_reminder_repeat_options"
-    android:background="@color/colorGrey"
+    android:background="@color/color_grey"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     app:behavior_hideable="true"
@@ -26,7 +26,7 @@
                 android:layout_weight="1"
                 android:textStyle="bold"
                 android:text="Repeat Options"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/color_white"
                 android:layout_gravity="center_vertical"
                 />
             <ImageButton
@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_baseline_close_24"
-                android:background="@color/colorWhite"
+                android:background="@color/color_white"
                 />
 
         </LinearLayout>
@@ -55,35 +55,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="No repeat"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/color_white"
                 />
             <RadioButton
                 android:id="@+id/reminder_repeat_option_daily"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Daily"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/color_white"
                 />
             <RadioButton
                 android:id="@+id/reminder_repeat_option_weekly"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Weekly"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/color_white"
                 />
             <RadioButton
                 android:id="@+id/reminder_repeat_option_monthly"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Monthly"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/color_white"
                 />
             <RadioButton
                 android:id="@+id/reminder_repeat_option_yearly"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Yearly"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/color_white"
                 />
             
         </RadioGroup>

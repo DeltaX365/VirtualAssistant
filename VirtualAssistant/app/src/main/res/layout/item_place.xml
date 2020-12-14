@@ -80,9 +80,9 @@
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 app:icon="@drawable/ic_baseline_check_circle_outline_24"
-                app:iconTint="@color/colorBlack"
+                app:iconTint="@color/color_black"
                 android:text="Yes"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/color_black"
                 />
             <Button
                 android:id="@+id/edit_place"
@@ -91,9 +91,9 @@
                 android:layout_marginLeft="20dp"
                 style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 app:icon="@drawable/ic_baseline_edit_24"
-                app:iconTint="@color/colorBlack"
+                app:iconTint="@color/color_black"
                 android:text="Edit"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/color_black"
                 />
         </LinearLayout>
     </LinearLayout>

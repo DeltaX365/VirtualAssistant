@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
                 android:text="Recently usage"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/color_black"
                 android:textStyle="bold"
                 />
             <androidx.recyclerview.widget.RecyclerView
@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
                 android:text="Most usage"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/color_black"
                 android:layout_marginTop="20dp"
                 android:textStyle="bold"
                 />
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
                 android:text="Your apps"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/color_black"
                 android:layout_marginTop="20dp"
                 android:textStyle="bold"
                 />

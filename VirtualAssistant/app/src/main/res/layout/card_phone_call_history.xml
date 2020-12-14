@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Call History"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/color_black"
             android:textStyle="bold"
             />
         <View
@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="There is no call"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/color_black"
             android:textStyle="italic"
             android:visibility="gone"
             />
