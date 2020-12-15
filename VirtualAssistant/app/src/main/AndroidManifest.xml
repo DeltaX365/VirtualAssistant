@@ -23,6 +23,7 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         android:name=".VirtualAssistantApp"
@@ -114,6 +115,7 @@
             android:name=".service.stop_tracking.GeofenceTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name=".service.FloatingViewService" />
 
         <!-- Broadcast Receivers -->
         <receiver

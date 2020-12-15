@@ -172,7 +172,9 @@ public class StopTrackingService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
         }
         Notification notification = new NotificationCompat.Builder(this, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID)
                 .setContentTitle(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_TITLE)

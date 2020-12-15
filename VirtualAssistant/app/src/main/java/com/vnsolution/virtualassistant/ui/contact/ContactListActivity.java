@@ -215,45 +215,47 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
     }
 
     private void sendSms(String phoneNumber) {
-        String[] splitedNumbers = phoneNumber.split(",");
-        if (splitedNumbers != null && splitedNumbers.length > 0) {
-            List<String> selectedNumber = new ArrayList<>();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Choose phone number")
-                    .setMultiChoiceItems(splitedNumbers, null, new DialogInterface.OnMultiChoiceClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                            if (isChecked) {
-                                selectedNumber.add(splitedNumbers[which]);
-                            } else if (selectedNumber.contains(splitedNumbers[which])) {
-                                selectedNumber.remove(splitedNumbers[which]);
+        if (phoneNumber != null) {
+            String[] splitedNumbers = phoneNumber.split(",");
+            if (splitedNumbers != null && splitedNumbers.length > 0) {
+                List<String> selectedNumber = new ArrayList<>();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Choose phone number")
+                        .setMultiChoiceItems(splitedNumbers, null, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                if (isChecked) {
+                                    selectedNumber.add(splitedNumbers[which]);
+                                } else if (selectedNumber.contains(splitedNumbers[which])) {
+                                    selectedNumber.remove(splitedNumbers[which]);
+                                }
                             }
-                        }
-                    })
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setData(Uri.parse("smsto:"));
-                            intent.setType("vnd.android-dir/mms-sms");
-                            intent.putExtra("address", StringUtils.join(";", selectedNumber));
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        })
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setData(Uri.parse("smsto:"));
+                                intent.setType("vnd.android-dir/mms-sms");
+                                intent.putExtra("address", StringUtils.join(";", selectedNumber));
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        } else {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("smsto:"));
-            intent.setType("vnd.android-dir/mms-sms");
-            intent.putExtra("address", phoneNumber);
-            startActivity(intent);
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("smsto:"));
+                intent.setType("vnd.android-dir/mms-sms");
+                intent.putExtra("address", phoneNumber);
+                startActivity(intent);
+            }
         }
     }
 

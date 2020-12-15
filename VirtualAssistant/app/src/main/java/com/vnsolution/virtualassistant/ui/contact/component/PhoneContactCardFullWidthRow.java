@@ -28,6 +28,7 @@ public class PhoneContactCardFullWidthRow extends MaterialCardView implements IR
     private TextView mContactNameTextView;
     private TextView mPhoneNumbersTextView;
     private TextView mContactOptionsTextView;
+
     private TextView mTotalIncomingNumberTextView;
     private TextView mTotalOutgoingNumberTextView;
     private TextView mTotalMissedNumberTextView;
@@ -70,6 +71,13 @@ public class PhoneContactCardFullWidthRow extends MaterialCardView implements IR
                 PopupMenu popupMenu = new PopupMenu(mContext, v);
                 popupMenu.setOnMenuItemClickListener(PhoneContactCardFullWidthRow.this);
                 popupMenu.inflate(R.menu.menu_contact_options);
+
+                if (mPhoneContact.phoneNumbers == null || mPhoneContact.phoneNumbers == "") {
+                    for(int i = 0; i < popupMenu.getMenu().size(); i++) {
+                        MenuItem menuItem = popupMenu.getMenu().getItem(i);
+                        menuItem.setEnabled(false);
+                    }
+                }
 
                 MenuPopupHelper menuPopupHelper = new MenuPopupHelper(mContext, (MenuBuilder) popupMenu.getMenu(), v);
                 menuPopupHelper.setForceShowIcon(true);

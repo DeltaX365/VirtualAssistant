@@ -102,15 +102,19 @@ public class TravelDashboardActivity extends BaseActivity {
                             place.formattedAddress != null && place.formattedAddress != "") {
                             detail += place.placeName + "\n" + place.formattedAddress;
                         } else if (place.latitude > 0 && place.longitude > 0) {
-                            detail += place.latitude + ", " + place.longitude;
+                            detail += "Unknown" + " (" + place.latitude + ", " + place.longitude + ")";
                         }
-                        detail += "\n\n Since " + DateConverter.toString(stopPoint.enter);
-                        visitingPlaceTextView.setText(detail);
+                        if (detail != "") {
+                            detail += "\n\n Since " + DateConverter.toString(stopPoint.enter);
+                            visitingPlaceTextView.setText(detail);
+                        }
                     }
                     int visibility = (detail != null && detail != "") ? View.VISIBLE : View.GONE;
                     visitingPlaceViewGroup.setVisibility(visibility);
                 }
             });
+        } else {
+            visitingPlaceViewGroup.setVisibility(View.GONE);
         }
     }
 

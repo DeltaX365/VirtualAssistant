@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant.di;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,12 +13,16 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.vnsolution.virtualassistant.VirtualAssistantApp;
+import com.vnsolution.virtualassistant.service.FloatingViewService;
 
 import dagger.android.AndroidInjection;
 import dagger.android.HasAndroidInjector;
 import dagger.android.support.AndroidSupportInjection;
 
 public class AppInjector {
+    private static int activityReferences = 0;
+    private static Intent floatingServiceIntent;
+
     public static AppComponent init(VirtualAssistantApp virtualAssistantApp) {
         AppComponent appComponent = DaggerAppComponent.builder().application(virtualAssistantApp)
                 .build();
@@ -30,7 +35,10 @@ public class AppInjector {
 
             @Override
             public void onActivityStarted(@NonNull Activity activity) {
-
+                if (activityReferences == 0 && floatingServiceIntent != null) {
+                    activity.stopService(floatingServiceIntent);
+                }
+                activityReferences++;
             }
 
             @Override
@@ -45,7 +53,11 @@ public class AppInjector {
 
             @Override
             public void onActivityStopped(@NonNull Activity activity) {
-
+                activityReferences--;
+                if (activityReferences == 0) {
+                    floatingServiceIntent = new Intent(activity, FloatingViewService.class);
+                    activity.startService(floatingServiceIntent);
+                }
             }
 
             @Override
