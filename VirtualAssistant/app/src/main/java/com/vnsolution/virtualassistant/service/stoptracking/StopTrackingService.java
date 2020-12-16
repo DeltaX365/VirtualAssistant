@@ -102,7 +102,7 @@ public class StopTrackingService extends Service {
                         && (visitedPlace.formattedAddress != null) && (visitedPlace.formattedAddress != "")) {
                     placeFormatted = visitedPlace.placeName + "\n" + visitedPlace.formattedAddress;
                 }
-                NotificationUtils.sendNotification(StopTrackingService.this, "ARE YOU VISITING HERE?", placeFormatted, visitedPlace);
+                NotificationUtils.sendNotification(StopTrackingService.this, "Are you visiting here?", placeFormatted, visitedPlace);
             }
         }
     }
@@ -492,18 +492,20 @@ public class StopTrackingService extends Service {
 //                String address = nearBy.name + "\n" + nearBy.vicinity;
 //                AppService.sendNotification(StopTrackingService.this, "NEARBY", address);
 //            }
-            Address place = placeManager.getAddressByLocation(this, stopPoint.latitude, stopPoint.longitude);
-            if (place != null) {
-                String address = place.getFeatureName() + "\n" + place.getAddressLine(0);
-                NotificationUtils.sendNotification(StopTrackingService.this, "DETECTED PLACE", address, null);
-            } else {
-                NotificationUtils.sendNotification(StopTrackingService.this, "DETECTED PLACE", "Unknown Place", null);
-            }
+
+//            Address place = placeManager.getAddressByLocation(this, stopPoint.latitude, stopPoint.longitude);
+//            if (place != null) {
+//                String address = place.getFeatureName() + "\n" + place.getAddressLine(0);
+//                NotificationUtils.sendNotification(StopTrackingService.this, "DETECTED PLACE", address, null);
+//            } else {
+//                NotificationUtils.sendNotification(StopTrackingService.this, "DETECTED PLACE", "Unknown Place", null);
+//            }
+
 //            if (placeDetail == null && nearBy == null && place == null) {
 //                AppService.sendNotification(StopTrackingService.this, "NOTICE", "Can not get address of stop position.");
 //            }
         } else {
-            NotificationUtils.sendNotification(StopTrackingService.this, "NOTICE", "Stop position is not available.", null);
+//            NotificationUtils.sendNotification(StopTrackingService.this, "NOTICE", "Stop position is not available.", null);
         }
     }
 

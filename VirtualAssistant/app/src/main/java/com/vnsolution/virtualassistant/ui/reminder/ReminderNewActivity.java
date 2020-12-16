@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
@@ -22,6 +24,7 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.ReminderOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
@@ -42,15 +45,23 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
     private TextInputEditText reminderTitleTextInput;
     private TextInputEditText reminderDateTextInput;
     private TextInputEditText reminderRepeatTextInput;
+    private TextInputEditText reminderActionTextInput;
+    private AutoCompleteTextView reminderMetaDataTextView;
 
     private RadioGroup reminderRepeatOptionRadioGroup;
     private LinearLayout reminderRepeatOptionsBottomSheet;
     private BottomSheetBehavior reminderRepeatOptionsSheetBehavior;
     private ImageButton reminderRepeatOptionCloseButton;
 
+    private RadioGroup reminderActionRadioGroup;
+    private LinearLayout reminderActionsBottomSheet;
+    private BottomSheetBehavior reminderActionsSheetBehavior;
+    private ImageButton reminderActionCloseButton;
+
     private String reminderTitle;
     private Date reminderDate;
     private String reminderRepeatOption;
+    private String reminderAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +76,8 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
         setupReminderTitleView();
         setupReminderDateView();
         setupReminderRepeatOptionsView();
+        setupReminderActionsView();
+        setupReminderMetaDataView();
     }
 
     private void setupReminderTitleView() {
@@ -143,19 +156,19 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.reminder_repeat_option_no_repeat:
-                        reminderRepeatOption = "";
+                        reminderRepeatOption = ReminderOptions.REPEAT_NONE;
                         break;
                     case R.id.reminder_repeat_option_daily:
-                        reminderRepeatOption = "Daily";
+                        reminderRepeatOption = ReminderOptions.REPEAT_DAILY;
                         break;
                     case R.id.reminder_repeat_option_weekly:
-                        reminderRepeatOption = "Weekly";
+                        reminderRepeatOption = ReminderOptions.REPEAT_WEEKLY;
                         break;
                     case R.id.reminder_repeat_option_monthly:
-                        reminderRepeatOption = "Monthly";
+                        reminderRepeatOption = ReminderOptions.REPEAT_MONTHLY;
                         break;
                     case R.id.reminder_repeat_option_yearly:
-                        reminderRepeatOption = "Yearly";
+                        reminderRepeatOption = ReminderOptions.REPEAT_YEARLY;
                         break;
                 }
                 reminderRepeatTextInput.setText(reminderRepeatOption);
@@ -167,19 +180,75 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
         reminderRepeatTextInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toggleBottomSheet();
+                toggleBottomSheet(reminderRepeatOptionsSheetBehavior);
             }
         });
-        reminderRepeatOption = "";
+        reminderRepeatOption = ReminderOptions.REPEAT_NONE;
         reminderRepeatTextInput.setText(reminderRepeatOption);
     }
 
-    private void toggleBottomSheet() {
-        if (reminderRepeatOptionsSheetBehavior != null) {
-            int state = (reminderRepeatOptionsSheetBehavior.getState() != BottomSheetBehavior.STATE_HIDDEN) ?
+    private void setupReminderActionsView() {
+        reminderActionsBottomSheet = findViewById(R.id.bottomsheet_reminder_actions);
+        reminderActionsSheetBehavior = BottomSheetBehavior.from(reminderActionsBottomSheet);
+        reminderActionsSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        // Close bottomsheet
+        reminderActionCloseButton = findViewById(R.id.reminder_action_close);
+        reminderActionCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reminderActionsSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
+
+        // UI for bottomsheet
+        reminderActionRadioGroup = findViewById(R.id.reminder_action_group);
+        reminderActionRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.reminder_action_none:
+                        reminderAction = "";
+                        break;
+                    case R.id.reminder_action_launch_app:
+                        reminderAction = "Launch app";
+                        break;
+                    case R.id.reminder_action_send_sms:
+                        reminderAction = "Send sms";
+                        break;
+                    case R.id.reminder_action_call_phone:
+                        reminderAction = "Call phone";
+                        break;
+                }
+                reminderActionTextInput.setText(reminderAction);
+            }
+        });
+//        reminderRepeatOptionRadioGroup.check(R.id.reminder_repeat_option_daily);
+
+        reminderActionTextInput = findViewById(R.id.reminder_action);
+        reminderActionTextInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleBottomSheet(reminderActionsSheetBehavior);
+            }
+        });
+        reminderAction = "";
+        reminderActionTextInput.setText(reminderAction);
+    }
+
+    private void setupReminderMetaDataView() {
+        reminderMetaDataTextView = findViewById(R.id.reminder_metadata);
+        List<String> items = Arrays.asList(new String[] { "Material", "Design", "Component", "Android" });
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, items);
+        reminderMetaDataTextView.setAdapter(adapter);
+    }
+
+    private void toggleBottomSheet(BottomSheetBehavior bottomSheetBehavior) {
+        if (bottomSheetBehavior != null) {
+            int state = (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_HIDDEN) ?
                     BottomSheetBehavior.STATE_HIDDEN :
                     BottomSheetBehavior.STATE_EXPANDED;
-            reminderRepeatOptionsSheetBehavior.setState(state);
+            bottomSheetBehavior.setState(state);
         }
     }
 

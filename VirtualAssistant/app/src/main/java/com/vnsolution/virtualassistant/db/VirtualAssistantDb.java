@@ -15,6 +15,7 @@ import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneSmsDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
+import com.vnsolution.virtualassistant.db.dao.ReminderDao;
 import com.vnsolution.virtualassistant.db.dao.SettingDao;
 import com.vnsolution.virtualassistant.db.dao.WeatherDao;
 import com.vnsolution.virtualassistant.db.entity.PhoneCallEntity;
@@ -26,6 +27,7 @@ import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneSmsEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
+import com.vnsolution.virtualassistant.db.entity.ReminderEntity;
 import com.vnsolution.virtualassistant.db.entity.SettingEntity;
 import com.vnsolution.virtualassistant.db.entity.WeatherEntity;
 
@@ -42,9 +44,10 @@ import com.vnsolution.virtualassistant.db.entity.WeatherEntity;
         PhoneContactEntity.class,
         PhoneAppEntity.class,
         PhoneAppUsageEntity.class,
+        ReminderEntity.class,
         SettingEntity.class
     },
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters({
@@ -62,5 +65,6 @@ public abstract class VirtualAssistantDb extends RoomDatabase {
     public abstract PhoneContactDao phoneContactDao();
     public abstract PhoneAppDao phoneAppDao();
     public abstract PhoneAppUsageDao phoneAppUsageDao();
+    public abstract ReminderDao reminderDao();
     public abstract SettingDao settingDao();
 }

@@ -67,9 +67,46 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:startIconDrawable="@drawable/ic_baseline_vertical_split_24"
+            app:boxBackgroundColor="@color/color_white"
+            android:hint="Action">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reminder_action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/reminder_metadata_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:startIconDrawable="@drawable/ic_baseline_playlist_add_24"
+            app:boxBackgroundColor="@color/color_white"
+            android:hint="Additional Input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+
+            <AutoCompleteTextView
+                android:id="@+id/reminder_metadata"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoComplete"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
 
     <!-- BottomSheet -->
     <include layout="@layout/bottomsheet_reminder_repeat_options" />
+    <include layout="@layout/bottomsheet_reminder_actions" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

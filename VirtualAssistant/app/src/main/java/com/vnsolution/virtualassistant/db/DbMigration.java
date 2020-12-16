@@ -237,4 +237,22 @@ public class DbMigration {
             database.execSQL(addColumnConfirmedToPlaceTableSql);
         }
     };
+
+    public static final Migration MIGRATION_8_9 = new Migration(8, 9) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            String reminderTableCreation = "CREATE TABLE Reminder ( " +
+                    "Title TEXT, " +
+                    "Date TEXT, " +
+                    "Repeat TEXT," +
+                    "\"Action\" TEXT, " +
+                    "ExtendedData TEXT, " +
+                    "CreatedDate TEXT, " +
+                    "UpdatedDate TEXT, " +
+                    "Id TEXT NOT NULL, " +
+                    "PRIMARY KEY(Id) " +
+                    ");";
+            database.execSQL(reminderTableCreation);
+        }
+    };
 }
