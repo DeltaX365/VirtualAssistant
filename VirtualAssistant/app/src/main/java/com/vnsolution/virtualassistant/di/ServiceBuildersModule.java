@@ -1,7 +1,7 @@
 package com.vnsolution.virtualassistant.di;
 
 import com.vnsolution.virtualassistant.service.device.DeviceService;
-import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService;
+import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

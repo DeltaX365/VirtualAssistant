@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.service.stop_tracking;
+package com.vnsolution.virtualassistant.service.stoptracking;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -155,6 +155,19 @@ public class StopTrackingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         AndroidInjection.inject(this);
 
+        //notification channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+        Notification notification = new NotificationCompat.Builder(this, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID)
+                .setContentTitle(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_TITLE)
+                .setContentText(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_TEXT)
+                .setSmallIcon(R.drawable.ic_baseline_hearing_24)
+                .build();
+        startForeground((int) (Math.random() * 999999), notification);
+
         //validate
         if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_STOP_TRACKING)) {
             // TODO: Consider calling
@@ -167,21 +180,6 @@ public class StopTrackingService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
-
-        //notification channel
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(channel);
-            }
-        }
-        Notification notification = new NotificationCompat.Builder(this, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID)
-                .setContentTitle(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_TITLE)
-                .setContentText(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_TEXT)
-                .setSmallIcon(R.drawable.ic_unknown)
-                .build();
-        startForeground((int) (Math.random() * 999999), notification);
 
         //do heavy work on a background thread
         if (intent != null) {

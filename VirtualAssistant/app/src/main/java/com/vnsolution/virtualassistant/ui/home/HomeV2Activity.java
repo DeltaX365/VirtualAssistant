@@ -4,8 +4,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -178,6 +180,11 @@ public class HomeV2Activity extends BaseActivity {
 //                requestPermissions(new String[] {Manifest.permission.USE_FULL_SCREEN_INTENT}, DeviceOptions.PERMISSIONS_REQUEST_CODE);
 //                return false;
 //            }
+
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, StopTrackingOptions.PERMISSIONS_REQUEST_CODE);
+            }
         }
         return true;
     }

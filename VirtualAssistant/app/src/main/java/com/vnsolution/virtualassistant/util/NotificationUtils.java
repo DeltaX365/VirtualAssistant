@@ -59,7 +59,7 @@ public class NotificationUtils {
 
         // Define the notification settings.
         builder.setContentTitle(title)
-                .setSmallIcon(R.drawable.ic_unknown)
+                .setSmallIcon(R.drawable.ic_baseline_hearing_24)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
 //                .setContentIntent(notificationPendingIntent)
                 .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})

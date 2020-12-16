@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,7 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.vnsolution.virtualassistant.VirtualAssistantApp;
-import com.vnsolution.virtualassistant.service.FloatingViewService;
+import com.vnsolution.virtualassistant.service.bubble.FloatingViewService;
 
 import dagger.android.AndroidInjection;
 import dagger.android.HasAndroidInjector;
@@ -36,7 +37,12 @@ public class AppInjector {
             @Override
             public void onActivityStarted(@NonNull Activity activity) {
                 if (activityReferences == 0 && floatingServiceIntent != null) {
-                    activity.stopService(floatingServiceIntent);
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                        activity.stopService(floatingServiceIntent);
+                    } else {
+                        floatingServiceIntent.setAction("StopFloatingService");
+                        activity.startForegroundService(floatingServiceIntent);
+                    }
                 }
                 activityReferences++;
             }
@@ -56,7 +62,12 @@ public class AppInjector {
                 activityReferences--;
                 if (activityReferences == 0) {
                     floatingServiceIntent = new Intent(activity, FloatingViewService.class);
-                    activity.startService(floatingServiceIntent);
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                        activity.startService(floatingServiceIntent);
+                    } else {
+                        floatingServiceIntent.setAction("StartFloatingService");
+                        activity.startForegroundService(floatingServiceIntent);
+                    }
                 }
             }
 

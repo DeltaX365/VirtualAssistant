@@ -102,20 +102,20 @@
 
         <!-- Services -->
         <service
-            android:name=".service.stop_tracking.StopTrackingService"
+            android:name=".service.stoptracking.StopTrackingService"
             android:exported="true" />
         <service
             android:name=".service.device.DeviceService"
             android:exported="true" />
         <service
-            android:name=".service.stop_tracking.ActivityTransitionsJobIntentService"
+            android:name=".service.stoptracking.ActivityTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
-            android:name=".service.stop_tracking.GeofenceTransitionsJobIntentService"
+            android:name=".service.stoptracking.GeofenceTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".service.FloatingViewService" />
+        <service android:name=".service.bubble.FloatingViewService" />
 
         <!-- Broadcast Receivers -->
         <receiver
@@ -126,7 +126,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".service.stop_tracking.ActivityTransitionBroadcastReceiver"
+            android:name=".service.stoptracking.ActivityTransitionBroadcastReceiver"
             android:exported="true"
             android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">
             <intent-filter>
@@ -134,11 +134,11 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".service.stop_tracking.GeofenceBroadcastReceiver"
+            android:name=".service.stoptracking.GeofenceBroadcastReceiver"
             android:exported="true"
             />
         <receiver
-            android:name=".service.stop_tracking.LocationUpdatesBroadcastReceiver"
+            android:name=".service.stoptracking.LocationUpdatesBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.vnsolution.virtualassistant.ACTION_UPDATE_LOCATIONS" />

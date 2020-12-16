@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.service.stop_tracking;
+package com.vnsolution.virtualassistant.service.stoptracking;
 
 import android.content.Context;
 
@@ -8,8 +8,6 @@ import androidx.work.WorkerParameters;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.vnsolution.virtualassistant.VirtualAssistantApp;
-import com.vnsolution.virtualassistant.api.GoogleApi;
-import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.service.place.PlaceManager;
 
 import javax.inject.Inject;

@@ -42,7 +42,7 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, chanelId)
-                .setSmallIcon(R.drawable.ic_unknown)
+                .setSmallIcon(R.drawable.ic_baseline_hearing_24)
                 .setContentTitle("Full Screen Alarm Test")
                 .setContentText("This is a test")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

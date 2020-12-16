@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.service.stop_tracking;
+package com.vnsolution.virtualassistant.service.stoptracking;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

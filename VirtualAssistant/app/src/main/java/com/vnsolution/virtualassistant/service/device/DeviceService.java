@@ -100,7 +100,7 @@ public class DeviceService extends Service {
         Notification notification = new NotificationCompat.Builder(this, DeviceOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID)
                 .setContentTitle(DeviceOptions.NOTIFY_FOREGROUND_SERVICE_TITLE)
                 .setContentText(DeviceOptions.NOTIFY_FOREGROUND_SERVICE_TEXT)
-                .setSmallIcon(R.drawable.ic_unknown)
+                .setSmallIcon(R.drawable.ic_baseline_hearing_24)
                 .build();
         startForeground((int) (Math.random() * 999999), notification);
 

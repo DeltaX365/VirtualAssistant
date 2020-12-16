@@ -1,10 +1,16 @@
-package com.vnsolution.virtualassistant.service;
+package com.vnsolution.virtualassistant.service.bubble;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,8 +21,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.StopTrackingOptions;
+import com.vnsolution.virtualassistant.model.StopPoint;
+import com.vnsolution.virtualassistant.ui.StartupActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
 
 public class FloatingViewService extends Service implements View.OnTouchListener {
@@ -42,6 +54,51 @@ public class FloatingViewService extends Service implements View.OnTouchListener
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // Create notification channel
+        String chanelId = "com.vnsolution.virtualassistant.BUBBLE_WIDGET_FOREGROUND_SERVICE";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(chanelId, "Bubble Widget", NotificationManager.IMPORTANCE_LOW);
+            channel.setShowBadge(false);
+            channel.setSound(null, null);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+        Notification notification = new NotificationCompat.Builder(this, chanelId)
+                .setContentTitle("Bubble Widget")
+                .setContentText("Prevent your bubble widget from destroying by System")
+                .setSmallIcon(R.drawable.ic_baseline_hearing_24)
+                .setPriority(NotificationManager.IMPORTANCE_LOW)
+                .build();
+        startForeground((int) (Math.random() * 999999), notification);
+
+        // Check permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                stopSelf();
+                return START_NOT_STICKY;
+            }
+        }
+
+        // Request to stop foreground service
+        if (intent != null) {
+            try {
+                if (intent.getAction().equals("StopFloatingService")) {
+                    stopSelf();
+                    return START_NOT_STICKY;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                FirebaseCrashlytics.getInstance().recordException(e);
+            }
+        }
+
         // Inflate the floating view layout we created
         floatingView = LayoutInflater.from(this).inflate(R.layout.screen_floating_widget,null);
 
@@ -55,9 +112,15 @@ public class FloatingViewService extends Service implements View.OnTouchListener
 
         // Specify the view position
         layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
-        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-        layoutParams.x = 0;
-        layoutParams.y = displayMetrics.heightPixels / 2;
+        ViewPosition floatingViewPosition = getViewPositionFromCache();
+        if (floatingViewPosition != null) {
+            layoutParams.x = floatingViewPosition.x;
+            layoutParams.y = floatingViewPosition.y;
+        } else {
+            DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+            layoutParams.x = 0;
+            layoutParams.y = displayMetrics.heightPixels / 2;
+        }
 
         // Add the view to the window
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -70,7 +133,7 @@ public class FloatingViewService extends Service implements View.OnTouchListener
         Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
         floatingView.findViewById(R.id.hearing_icon).startAnimation(shake);
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -117,19 +180,45 @@ public class FloatingViewService extends Service implements View.OnTouchListener
                         layoutParams.x = displayMetrics.widthPixels;
                     }
                     windowManager.updateViewLayout(floatingView, layoutParams);
+                    saveViewPositionToCache(new ViewPosition(layoutParams.x, layoutParams.y));
                 }
                 return true;
         }
         return false;
     }
 
-    public void launchApp() {
+    private void launchApp() {
         // Open the application  click.
-        Intent intent = new Intent(this, HomeV2Activity.class);
+        Intent intent = new Intent(this, StartupActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
 
         // Close the service and remove view from the view hierarchy
         stopSelf();
+    }
+
+    private void saveViewPositionToCache(ViewPosition viewPosition) {
+        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Gson gson = new Gson();
+        String viewPositionString = gson.toJson(viewPosition);
+        editor.putString("FloatingViewService.ViewPosition", viewPositionString);
+        editor.commit();
+    }
+
+    private ViewPosition getViewPositionFromCache() {
+        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        String viewPositionString = sharedPref.getString("FloatingViewService.ViewPosition", "");
+        Gson gson = new Gson();
+        return !viewPositionString.isEmpty()? gson.fromJson(viewPositionString, ViewPosition.class) : null;
+    }
+
+    private class ViewPosition {
+        public int x;
+        public int y;
+        public ViewPosition(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 }

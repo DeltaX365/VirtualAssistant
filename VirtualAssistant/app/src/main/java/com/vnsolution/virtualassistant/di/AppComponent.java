@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.vnsolution.virtualassistant.VirtualAssistantApp;
 import com.vnsolution.virtualassistant.service.device.DeviceWorker;
-import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingWorker;
+import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingWorker;
 
 import javax.inject.Singleton;
 

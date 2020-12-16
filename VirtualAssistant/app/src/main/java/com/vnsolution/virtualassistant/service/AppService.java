@@ -12,16 +12,17 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
+import com.vnsolution.virtualassistant.service.bubble.FloatingViewBroadcastReceiver;
 import com.vnsolution.virtualassistant.service.device.DeviceWorker;
-import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingService;
-import com.vnsolution.virtualassistant.service.stop_tracking.StopTrackingWorker;
+import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
+import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingWorker;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.concurrent.TimeUnit;
 
 public class AppService {
     private Context mContext;
-    private BroadcastReceiver mBroadcastReceiver;
+    private BroadcastReceiver mPermissionChangedBroadcastReceiver;
 
     public AppService(Context context) {
         mContext = context;
@@ -29,7 +30,7 @@ public class AppService {
 
     public void run() {
         startBackgroundServices();
-        startWatchingPermissionsChanged();
+        startWatchingPermissions();
     }
 
     private void startBackgroundServices() {
@@ -52,24 +53,24 @@ public class AppService {
         WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("DeviceSyncWorker", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
     }
 
-    private void startWatchingPermissionsChanged() {
-        if (mBroadcastReceiver == null) {
-            mBroadcastReceiver = new BroadcastReceiver() {
+    private void startWatchingPermissions() {
+        if (mPermissionChangedBroadcastReceiver == null) {
+            mPermissionChangedBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     run();
                 }
             };
         }
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mBroadcastReceiver);
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mPermissionChangedBroadcastReceiver);
         IntentFilter filter = new IntentFilter();
         filter.addAction(StopTrackingOptions.BROADCAST_PERMISSIONS_ALL_GRANTED);
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(mBroadcastReceiver, filter);
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mPermissionChangedBroadcastReceiver, filter);
     }
 
-    private void stopWatchingPermissionsChanged() {
-        if (mBroadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mBroadcastReceiver);
+    private void stopWatchingPermissions() {
+        if (mPermissionChangedBroadcastReceiver != null) {
+            LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mPermissionChangedBroadcastReceiver);
         }
     }
 }
