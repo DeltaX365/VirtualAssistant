@@ -255,4 +255,13 @@ public class DbMigration {
             database.execSQL(reminderTableCreation);
         }
     };
+
+    public static final Migration MIGRATION_9_10 = new Migration(9, 10) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Add column AlarmRequestCode to Reminder table
+            String addColumnAlarmRequestCodeToReminderTableSql = "ALTER TABLE Reminder ADD COLUMN AlarmRequestCode INTEGER NOT NULL DEFAULT 0";
+            database.execSQL(addColumnAlarmRequestCodeToReminderTableSql);
+        }
+    };
 }

@@ -31,7 +31,6 @@ import com.vnsolution.virtualassistant.db.entity.ReminderEntity;
 import com.vnsolution.virtualassistant.db.entity.SettingEntity;
 import com.vnsolution.virtualassistant.db.entity.WeatherEntity;
 
-
 @Database(
     entities = {
         DeviceEntity.class,
@@ -47,7 +46,7 @@ import com.vnsolution.virtualassistant.db.entity.WeatherEntity;
         ReminderEntity.class,
         SettingEntity.class
     },
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters({

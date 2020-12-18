@@ -1,7 +1,6 @@
 package com.vnsolution.virtualassistant.ui.reminder;
 
 import android.os.Bundle;
-import android.widget.FrameLayout;
 
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,8 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneContact;
+import com.vnsolution.virtualassistant.model.Reminder;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.ui.contact.ContactViewModel;
 
 import java.util.ArrayList;
@@ -22,16 +23,14 @@ import javax.inject.Inject;
 import dagger.android.HasAndroidInjector;
 
 public class ReminderListActivity extends BaseActivity implements HasAndroidInjector {
-    private static final int REQUEST_CODE = 1001;
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-    private FrameLayout progressOverlay;
+    private RecyclerView reminderListRecyclerView;
+    private RecyclerView.LayoutManager reminderListLayoutManager;
+    private RecyclerViewAdapter<Reminder> reminderListAdapter;
 
-    private RecyclerViewAdapter<String> remindersAdapter;
-    private List<PhoneContact> phoneContactList = new ArrayList<>();
+    private List<Reminder> reminderList = new ArrayList<>();
 
     @Inject
-    public ContactViewModel contactViewModel;
+    public ReminderViewModel vm;
 
     @Inject
     public ViewModelProvider.Factory viewModelFactory;
@@ -48,29 +47,30 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
         setupActionBar();
         turnScreenOnThroughKeyguard();
 
-        progressOverlay =  findViewById(R.id.progress_overlay);
-        recyclerView = findViewById(R.id.list_reminders);
-        recyclerView.setHasFixedSize(true);
+        reminderListRecyclerView = findViewById(R.id.list_reminders);
+        reminderListRecyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        reminderListLayoutManager = new LinearLayoutManager(this);
+        reminderListRecyclerView.setLayoutManager(reminderListLayoutManager);
 
-        remindersAdapter = new RecyclerViewAdapter<String>(this, UiOptions.REMINDER_LIST_ALL, R.layout.card_reminder_full_width);
-        recyclerView.setAdapter(remindersAdapter);
+        reminderListAdapter = new RecyclerViewAdapter<Reminder>(this, UiOptions.REMINDER_LIST_ALL, R.layout.card_reminder_full_width);
+        reminderListAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Reminder>() {
+            @Override
+            public void onAction(Reminder reminder, String action) {
+                switch (action) {
+                    case UiOptions.REMINDER_ACTION_REMOVE:
+                        vm.deleteReminder(ReminderListActivity.this, reminder.id);
+                        refreshView();
+                        break;
+                }
+            }
+        });
+        reminderListRecyclerView.setAdapter(reminderListAdapter);
     }
 
     private void refreshView() {
-        List<String> reminders = new ArrayList<>();
-        reminders.add("Reminder 1");
-        reminders.add("Reminder 2");
-        reminders.add("Reminder 3");
-        reminders.add("Reminder 4");
-        reminders.add("Reminder 5");
-        reminders.add("Reminder 6");
-        reminders.add("Reminder 7");
-        reminders.add("Reminder 8");
-        reminders.add("Reminder 9");
-        remindersAdapter.setData(reminders);
+        reminderList = vm.getReminders();
+        reminderListAdapter.setData(reminderList);
     }
 
 //    @Override

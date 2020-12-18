@@ -25,6 +25,7 @@ import com.vnsolution.virtualassistant.db.dao.PhoneCallDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneSmsDao;
+import com.vnsolution.virtualassistant.db.entity.PhoneAppEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneCallEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneCallSummaryEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
@@ -221,14 +222,6 @@ public class DeviceManager {
         return phoneCalls;
     }
 
-    public MutableLiveData<List<PhoneApp>> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
-        if (phoneAppsLiveData == null) {
-            phoneAppsLiveData = new MutableLiveData<>();
-            getPhoneAppsAsync(context, shouldGetSystemPackages, forceUpdate);
-        }
-        return phoneAppsLiveData;
-    }
-
     public MutableLiveData<List<PhoneCall>> getPhoneCalls(Context context, boolean forceUpdate) {
         if (phoneCallsLiveData == null) {
             phoneCallsLiveData = new MutableLiveData<>();
@@ -253,7 +246,34 @@ public class DeviceManager {
         return phoneContactsLiveData;
     }
 
-    public void getPhoneAppsAsync(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
+    public MutableLiveData<List<PhoneApp>> getPhoneAppsAsync(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
+        if (phoneAppsLiveData == null) {
+            phoneAppsLiveData = new MutableLiveData<>();
+            getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
+        }
+        return phoneAppsLiveData;
+    }
+
+    public List<PhoneAppEntity> getPhoneApps() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<PhoneAppEntity>> phoneAppListFuture = executor.submit(new Callable<List<PhoneAppEntity>>() {
+            @Override
+            public List<PhoneAppEntity> call() throws Exception {
+                return phoneAppDao.getAll();
+            }
+        });
+        List<PhoneAppEntity> phoneApps = new ArrayList<>();
+        try {
+            phoneApps = phoneAppListFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return phoneApps;
+    }
+
+    public List<PhoneApp> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneApp>> phoneAppListFuture = executor.submit(new Callable<List<PhoneApp>>() {
             @Override
@@ -296,6 +316,7 @@ public class DeviceManager {
         if (phoneAppsLiveData != null) {
             phoneAppsLiveData.setValue(phoneApps);
         }
+        return phoneApps;
     }
 
     public void getPhoneAppUsageStats(Context context) {
@@ -331,7 +352,7 @@ public class DeviceManager {
                     syncPhoneCalls(context);
                 }
                 List<PhoneCallEntity> phoneCallEntities = phoneCallDao.getAll();
-                return transformToPhoneCall(phoneCallEntities);
+                return MappingUtils.convertPhoneCallEntitiesToPhoneCalls(phoneCallEntities);
             }
         });
         List<PhoneCall> phoneCalls = new ArrayList<>();
@@ -370,7 +391,7 @@ public class DeviceManager {
                     syncPhoneSms(context);
                 }
                 List<PhoneSmsEntity> phoneSmsEntities = phoneSmsDao.getAll();
-                return transformToPhoneSms(phoneSmsEntities);
+                return MappingUtils.convertPhoneSmsEntitiesToPhoneSmses(phoneSmsEntities);
             }
         });
         List<PhoneSms> phoneSmsList = new ArrayList<>();
@@ -548,21 +569,6 @@ public class DeviceManager {
         return call;
     }
 
-    private List<PhoneCall> transformToPhoneCall(List<PhoneCallEntity> phoneCallEntities) {
-        List<PhoneCall> phoneCalls = new ArrayList<>();
-        if (phoneCallEntities != null && phoneCallEntities.size() > 0) {
-            for (PhoneCallEntity phoneCallEntity : phoneCallEntities) {
-                PhoneCall phoneCall = new PhoneCall();
-                phoneCall.phoneNumber = phoneCallEntity.phoneNumber;
-                phoneCall.type = phoneCallEntity.type;
-                phoneCall.duration = phoneCallEntity.duration;
-                phoneCall.date = phoneCallEntity.date;
-                phoneCalls.add(phoneCall);
-            }
-        }
-        return phoneCalls;
-    }
-
     private PhoneSmsEntity getSmsHistoryEntity(Cursor cursor) {
         PhoneSmsEntity sms = new PhoneSmsEntity();
         sms.id = UUID.randomUUID().toString();
@@ -616,21 +622,6 @@ public class DeviceManager {
             }
         }
         return sms;
-    }
-
-    private List<PhoneSms> transformToPhoneSms(List<PhoneSmsEntity> smsHistoryEntities) {
-        List<PhoneSms> phoneSmsHistories = new ArrayList<>();
-        if (smsHistoryEntities != null && smsHistoryEntities.size() > 0) {
-            for (PhoneSmsEntity phoneSmsEntity : smsHistoryEntities) {
-                PhoneSms phoneSms = new PhoneSms();
-                phoneSms.smsId = phoneSmsEntity.smsId;
-                phoneSms.address = phoneSmsEntity.address;
-                phoneSms.body = phoneSmsEntity.body;
-                phoneSms.dateSent = phoneSmsEntity.dateSent;
-                phoneSmsHistories.add(phoneSms);
-            }
-        }
-        return phoneSmsHistories;
     }
 
     private PhoneContactEntity getPhoneContactEntity(Cursor cursor) {

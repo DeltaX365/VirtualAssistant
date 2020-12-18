@@ -15,6 +15,7 @@ import com.vnsolution.virtualassistant.db.dao.PhoneAppUsageDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
+import com.vnsolution.virtualassistant.db.dao.ReminderDao;
 import com.vnsolution.virtualassistant.db.dao.SettingDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneSmsDao;
 
@@ -132,7 +133,9 @@ public class AppModule {
         return Room
                 .databaseBuilder(app, VirtualAssistantDb.class, "virtual_assistant.db")
                 .createFromAsset("database/virtual_assistant.db")
-                .addMigrations(DbMigration.MIGRATION_2_3, DbMigration.MIGRATION_3_4, DbMigration.MIGRATION_4_5, DbMigration.MIGRATION_5_6, DbMigration.MIGRATION_6_7, DbMigration.MIGRATION_7_8, DbMigration.MIGRATION_8_9)
+                .addMigrations(
+                        DbMigration.MIGRATION_2_3, DbMigration.MIGRATION_3_4, DbMigration.MIGRATION_4_5, DbMigration.MIGRATION_5_6,
+                        DbMigration.MIGRATION_6_7, DbMigration.MIGRATION_7_8, DbMigration.MIGRATION_8_9, DbMigration.MIGRATION_9_10)
                 // https://medium.com/androiddevelopers/understanding-migrations-with-room-f01e04b07929
                 // If you don’t want to provide migrations and you specifically want your database to be cleared when you upgrade the version, call fallbackToDestructiveMigration in the database builder
 //                .fallbackToDestructiveMigration()
@@ -172,6 +175,12 @@ public class AppModule {
     @Singleton
     @Provides
     public PhoneAppUsageDao providePhoneAppUsageDao(VirtualAssistantDb db) { return db.phoneAppUsageDao(); }
+
+    @Singleton
+    @Provides
+    public ReminderDao provideReminderDao(VirtualAssistantDb db) {
+        return db.reminderDao();
+    }
 
     @Singleton
     @Provides

@@ -19,10 +19,10 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // Android full screen notification shows over the lock screen
         // Link: https://developer.android.com/training/notify-user/time-sensitive
-        createFullScreenNotification(context);
+        createFullScreenNotification(context, intent);
     }
 
-    private void createFullScreenNotification(Context context) {
+    private void createFullScreenNotification(Context context, Intent intent) {
         Intent fullScreenIntent = new Intent(context, ReminderListActivity.class);
 //        fullScreenIntent.setFlags(
 //                Intent.FLAG_ACTIVITY_NEW_TASK
@@ -41,10 +41,15 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
             manager.createNotificationChannel(channel);
         }
 
+        String reminderContent = "";
+        if (intent != null && intent.getExtras() != null) {
+            reminderContent = intent.getExtras().getString("ReminderContent", "");
+        }
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, chanelId)
                 .setSmallIcon(R.drawable.ic_baseline_hearing_24)
-                .setContentTitle("Full Screen Alarm Test")
-                .setContentText("This is a test")
+                .setContentTitle("Reminder")
+                .setContentText(reminderContent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
 //                .setCategory(NotificationCompat.CATEGORY_CALL)
 

@@ -9,7 +9,7 @@ public class ReminderOptions {
     public static final String REPEAT_YEARLY = "Yearly";
 
     // Actions
-    public static final String ACTION_LAUNCH_APP = "com.vnsolution.virtualassistant.ACTION_LAUNCH_APP";
-    public static final String ACTION_SEND_SMS = "com.vnsolution.virtualassistant.ACTION_SEND_SMS";
-    public static final String ACTION_CALL_PHONE = "com.vnsolution.virtualassistant.ACTION_CALL_PHONE";
+    public static final String ACTION_LAUNCH_APP = "Launch app";
+    public static final String ACTION_SEND_SMS = "Send sms";
+    public static final String ACTION_CALL_PHONE = "Call phone";
 }

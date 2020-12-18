@@ -5,13 +5,19 @@ import android.location.Address;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceSearchDto;
+import com.vnsolution.virtualassistant.db.entity.PhoneAppEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneCallEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneCallSummaryEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
+import com.vnsolution.virtualassistant.db.entity.PhoneSmsEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
+import com.vnsolution.virtualassistant.db.entity.ReminderEntity;
+import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.model.PhoneCall;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneContactSummary;
+import com.vnsolution.virtualassistant.model.PhoneSms;
+import com.vnsolution.virtualassistant.model.Reminder;
 import com.vnsolution.virtualassistant.model.StopPoint;
 
 import java.util.ArrayList;
@@ -219,5 +225,62 @@ public class MappingUtils {
         phoneContactSummary.total = phoneCallSummaryEntity.total;
         phoneContactSummary.duration = phoneCallSummaryEntity.duration;
         return phoneContactSummary;
+    }
+
+    public static List<PhoneSms> convertPhoneSmsEntitiesToPhoneSmses(List<PhoneSmsEntity> phoneSmsEntities) {
+        List<PhoneSms> phoneSmsList = new ArrayList<>();
+        for (PhoneSmsEntity phoneSmsEntity : phoneSmsEntities) {
+            PhoneSms phoneSms = convertPhoneSmsEntityToPhoneSms(phoneSmsEntity);
+            phoneSmsList.add(phoneSms);
+        }
+        return phoneSmsList;
+    }
+
+    public static PhoneSms convertPhoneSmsEntityToPhoneSms(PhoneSmsEntity phoneSmsEntity) {
+        PhoneSms phoneSms = new PhoneSms();
+        phoneSms.smsId = phoneSmsEntity.smsId;
+        phoneSms.address = phoneSmsEntity.address;
+        phoneSms.body = phoneSmsEntity.body;
+        phoneSms.dateSent = phoneSmsEntity.dateSent;
+        return phoneSms;
+    }
+
+    public static List<PhoneApp> convertPhoneAppEntitiesToPhoneApps(List<PhoneAppEntity> phoneAppEntities) {
+        List<PhoneApp> phoneApps = new ArrayList<>();
+        for (PhoneAppEntity phoneAppEntity : phoneAppEntities) {
+            PhoneApp phoneApp = convertPhoneAppEntityToPhoneApp(phoneAppEntity);
+            phoneApps.add(phoneApp);
+        }
+        return phoneApps;
+    }
+
+    public static PhoneApp convertPhoneAppEntityToPhoneApp(PhoneAppEntity phoneAppEntity) {
+        PhoneApp phoneApp = new PhoneApp();
+        phoneApp.appName = phoneAppEntity.appName;
+        phoneApp.packageName = phoneAppEntity.packageName;
+        phoneApp.versionName = phoneAppEntity.versionName;
+        phoneApp.versionCode = phoneAppEntity.versionCode;
+        return phoneApp;
+    }
+
+    public static List<Reminder> convertReminderEntitiesToReminders(List<ReminderEntity> reminderEntities) {
+        List<Reminder> reminders = new ArrayList<>();
+        for (ReminderEntity reminderEntity : reminderEntities) {
+            Reminder reminder = convertReminderEntityToReminder(reminderEntity);
+            reminders.add(reminder);
+        }
+        return reminders;
+    }
+
+    public static Reminder convertReminderEntityToReminder(ReminderEntity reminderEntity) {
+        Reminder reminder = new Reminder();
+        reminder.id = reminderEntity.id;
+        reminder.name = reminderEntity.name;
+        reminder.date = reminderEntity.date;
+        reminder.repeat = reminderEntity.repeat;
+        reminder.action = reminderEntity.action;
+        reminder.extendedData = reminderEntity.extendedData;
+        reminder.alarmRequestCode = reminderEntity.alarmRequestCode;
+        return reminder;
     }
 }

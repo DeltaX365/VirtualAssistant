@@ -8,6 +8,7 @@ import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppViewModel;
 import com.vnsolution.virtualassistant.ui.contact.ContactViewModel;
 import com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsViewModel;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardViewModel;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderViewModel;
 import com.vnsolution.virtualassistant.ui.travel.TravelViewModel;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.SmsViewModel;
 import com.vnsolution.virtualassistant.viewmodel.VirtualAssistantViewModelFactory;
@@ -47,6 +48,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ContactViewModel.class)
     abstract ViewModel bindContactsViewModel(ContactViewModel contactViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ReminderViewModel.class)
+    abstract ViewModel bindReminderViewModel(ReminderViewModel reminderViewModel);
 
     @Binds
     @IntoMap

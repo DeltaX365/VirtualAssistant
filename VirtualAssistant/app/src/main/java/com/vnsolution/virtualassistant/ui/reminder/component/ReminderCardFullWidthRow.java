@@ -1,24 +1,38 @@
 package com.vnsolution.virtualassistant.ui.reminder.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
+import androidx.appcompat.widget.PopupMenu;
 
 import com.google.android.material.card.MaterialCardView;
+import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.ReminderOptions;
+import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneContact;
+import com.vnsolution.virtualassistant.model.Reminder;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
+import com.vnsolution.virtualassistant.ui.contact.component.PhoneContactCardFullWidthRow;
 
-public class ReminderCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<String> {
-//    private ImageView mAvatarImageView;
-//    private TextView mContactNameTextView;
-//    private TextView mPhoneNumbersTextView;
-//    private TextView mTotalIncomeCallTextView;
-//    private TextView mTotalOutcomeCallTextView;
-//    private TextView mTotalSmsTextView;
+import java.text.SimpleDateFormat;
+
+public class ReminderCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<Reminder>, PopupMenu.OnMenuItemClickListener {
+    private TextView mReminderTitleTextView;
+    private TextView mReminderActionTextView;
+    private TextView mReminderDateTextView;
+    private TextView mReminderRepeatTextView;
+    private TextView mReminderOptionsTextView;
 
     private Context mContext;
-    private PhoneContact mPhoneContact;
-    private OnRecyclerViewRowTouchListener<String> mOnRecyclerViewRowTouchListener;
+    private Reminder mReminder;
+    private OnRecyclerViewRowTouchListener<Reminder> mOnRecyclerViewRowTouchListener;
 
     public ReminderCardFullWidthRow(Context context) {
         super(context);
@@ -38,31 +52,59 @@ public class ReminderCardFullWidthRow extends MaterialCardView implements IRecyc
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-//        mAvatarImageView = findViewById(R.id.contact_avatar);
-//        mContactNameTextView = findViewById(R.id.contact_name);
-//        mPhoneNumbersTextView = findViewById(R.id.contact_phone_number);
-//        mTotalIncomeCallTextView = findViewById(R.id.total_call_income);
-//        mTotalOutcomeCallTextView = findViewById(R.id.total_call_outcome);
-//        mTotalSmsTextView = findViewById(R.id.total_sms);
+        mReminderTitleTextView = findViewById(R.id.reminder_title);
+        mReminderActionTextView = findViewById(R.id.reminder_action);
+        mReminderDateTextView = findViewById(R.id.reminder_date);
+        mReminderRepeatTextView = findViewById(R.id.reminder_repeat);
+
+        mReminderOptionsTextView = findViewById(R.id.reminder_options);
+        mReminderOptionsTextView.setOnClickListener(new OnClickListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(mContext, v);
+                popupMenu.setOnMenuItemClickListener(ReminderCardFullWidthRow.this);
+                popupMenu.inflate(R.menu.menu_reminder_options);
+
+                MenuPopupHelper menuPopupHelper = new MenuPopupHelper(mContext, (MenuBuilder) popupMenu.getMenu(), v);
+                menuPopupHelper.setForceShowIcon(true);
+                menuPopupHelper.show();
+            }
+        });
     }
 
     @Override
-    public void showData(String reminder, String viewType) {
-//        mPhoneContact = phoneContact;
-//
-//        String avatarText = (phoneContact.name != null && phoneContact.name.length() > 1) ? phoneContact.name.substring(0, 2) : "";
-//        Bitmap avatar = generateBitmapByText(avatarText.toUpperCase(), 30, 60, 60);
-//        Glide.with(mContext).load(avatar).apply(RequestOptions.circleCropTransform()).circleCrop().into(mAvatarImageView);
-//
-//        mContactNameTextView.setText(phoneContact.name);
-//        mPhoneNumbersTextView.setText(phoneContact.phoneNumbers);
-//        mTotalIncomeCallTextView.setText("INCOMING: " + phoneContact.totalIncomeCall);
-//        mTotalOutcomeCallTextView.setText("OUTGOING: " + phoneContact.totalOutcomeCall);
-//        mTotalSmsTextView.setText("SMS: " + phoneContact.totalSms);
+    public void showData(Reminder reminder, String viewType) {
+        mReminder = reminder;
+
+        mReminderTitleTextView.setText(reminder.name);
+        mReminderActionTextView.setText("Action: " + reminder.action + " " + reminder.extendedData);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' HH:mm");
+        mReminderDateTextView.setText(dateFormat.format(reminder.date));
+
+        String repeat = (reminder.repeat.equals(ReminderOptions.REPEAT_NONE))? "No repeat" : reminder.repeat;
+        mReminderRepeatTextView.setText(repeat);
     }
 
     @Override
-    public void setOnItemClickListener(OnRecyclerViewRowTouchListener<String> onRecyclerViewRowTouchListener) {
+    public void setOnItemClickListener(OnRecyclerViewRowTouchListener<Reminder> onRecyclerViewRowTouchListener) {
         this.mOnRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        String action = "";
+        switch (item.getItemId()) {
+            case R.id.menu_item_remove:
+                action = UiOptions.REMINDER_ACTION_REMOVE;
+                break;
+            default:
+                return false;
+        }
+        if (mReminder != null && action != null && action != "" && mOnRecyclerViewRowTouchListener != null) {
+            mOnRecyclerViewRowTouchListener.onAction(mReminder, action);
+        }
+        return true;
     }
 }

@@ -32,11 +32,11 @@ public class PhoneAppViewModel extends ViewModel {
     }
 
     public LiveData<List<PhoneApp>> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
-        return deviceManager.getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
+        return deviceManager.getPhoneAppsAsync(context, shouldGetSystemPackages, forceUpdate);
     }
 
     public LiveData<List<PhoneApp>> getPhoneApps(Context context, int filter, boolean shouldGetSystemPackages, boolean forceUpdate) {
-        LiveData<List<PhoneApp>> applicationsLiveData = deviceManager.getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
+        LiveData<List<PhoneApp>> applicationsLiveData = deviceManager.getPhoneAppsAsync(context, shouldGetSystemPackages, forceUpdate);
         return Transformations.map(applicationsLiveData, applicationEntities -> {
             List<PhoneApp> applications = copy(applicationEntities);
             switch (filter) {

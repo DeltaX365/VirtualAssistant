@@ -4,13 +4,17 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
 
+import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.db.entity.ReminderEntity;
 import com.vnsolution.virtualassistant.db.entity.SettingEntity;
 
 import java.util.List;
 
 @Dao
-public abstract class ReminderDao implements BaseDao<ReminderEntity> {
-    @Query("SELECT * FROM Reminder")
-    abstract LiveData<List<ReminderEntity>> getAll();
+public interface ReminderDao extends BaseDao<ReminderEntity> {
+    @Query("SELECT * FROM Reminder ORDER BY Date DESC")
+    List<ReminderEntity> getAll();
+
+    @Query("SELECT * FROM Reminder WHERE Id=:id")
+    ReminderEntity getById(String id);
 }

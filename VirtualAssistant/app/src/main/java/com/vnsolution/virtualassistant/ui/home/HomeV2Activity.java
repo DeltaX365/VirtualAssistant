@@ -101,15 +101,6 @@ public class HomeV2Activity extends BaseActivity {
                     case BotOptions.SHOW_REMINDERS:
                         intent = new Intent(HomeV2Activity.this, ReminderListActivity.class);
                         break;
-                    case BotOptions.ADD_REMINDER:
-                        Intent intent1 = new Intent(HomeV2Activity.this, ReminderBroadcastReceiver.class);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeV2Activity.this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
-                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        if (alarmManager != null) {
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 15000, pendingIntent);
-                            Toast.makeText(HomeV2Activity.this, "Alarm was set in 15s next.", Toast.LENGTH_LONG).show();
-                        }
-                        break;
                     case BotOptions.SHOW_SETTINGS:
                         intent = new Intent(HomeV2Activity.this, SettingActivity.class);
                         break;
@@ -133,7 +124,6 @@ public class HomeV2Activity extends BaseActivity {
         availableActions.add(BotOptions.SHOW_CALL_STAT);
         availableActions.add(BotOptions.MANAGE_YOUR_APPS);
         availableActions.add(BotOptions.SHOW_REMINDERS);
-        availableActions.add(BotOptions.ADD_REMINDER);
         availableActions.add(BotOptions.SHOW_NOTIFICATIONS);
 //        availableActions.add(BotOptions.SHOW_CALL_LOGS);
 //        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
