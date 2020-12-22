@@ -20,6 +20,6 @@ public class SmsViewModel extends ViewModel {
     public SmsViewModel() {}
 
     public LiveData<List<PhoneSms>> getSms(Context context, boolean forceUpdate) {
-        return deviceManager.getPhoneSms(context, forceUpdate);
+        return deviceManager.getPhoneSmsListAsync(context, forceUpdate);
     }
 }

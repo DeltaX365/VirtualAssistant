@@ -14,7 +14,7 @@ import java.util.List;
 
 @Dao
 public interface PlaceDao extends BaseDao<PlaceEntity> {
-    @Query("SELECT * FROM Place")
+    @Query("SELECT * FROM Place ORDER BY Name ASC")
     LiveData<List<PlaceEntity>> getAll();
 
     @Transaction

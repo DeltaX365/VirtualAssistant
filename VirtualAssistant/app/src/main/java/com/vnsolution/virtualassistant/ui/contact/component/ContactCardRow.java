@@ -16,7 +16,7 @@ import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.BitmapUtils;
 
-public class PhoneContactCardRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact> {
+public class ContactCardRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact> {
     private ImageView mAvatarImageView;
     private TextView mContactNameTextView;
     private TextView mPhoneNumberTextView;
@@ -25,17 +25,17 @@ public class PhoneContactCardRow extends MaterialCardView implements IRecyclerVi
     private PhoneContact mPhoneContact;
     private OnRecyclerViewRowTouchListener<PhoneContact> mOnRecyclerViewRowTouchListener;
 
-    public PhoneContactCardRow(Context context) {
+    public ContactCardRow(Context context) {
         super(context);
         mContext = context;
     }
 
-    public PhoneContactCardRow(Context context, AttributeSet attrs) {
+    public ContactCardRow(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
 
-    public PhoneContactCardRow(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ContactCardRow(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
     }

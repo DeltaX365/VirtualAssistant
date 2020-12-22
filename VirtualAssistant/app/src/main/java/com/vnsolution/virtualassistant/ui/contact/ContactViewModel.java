@@ -16,9 +16,6 @@ import com.vnsolution.virtualassistant.service.device.DeviceManager;
 import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.SerialUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,11 +28,11 @@ public class ContactViewModel extends ViewModel {
     public ContactViewModel() {}
 
     public LiveData<List<PhoneContact>> getContacts(Context context, boolean forceUpdate) {
-        return deviceManager.getPhoneContacts(context, forceUpdate);
+        return deviceManager.getPhoneContactsAsync(context, forceUpdate);
     }
 
-    public List<PhoneContact> getPhoneContacts(boolean includeStat) {
-        List<PhoneContactEntity> phoneContactEntityList = deviceManager.getPhoneContacts();
+    public List<PhoneContact> getPhoneContacts(Context context, boolean forceUpdate, boolean includeStat) {
+        List<PhoneContactEntity> phoneContactEntityList = deviceManager.getPhoneContacts(context, forceUpdate);
         List<PhoneContact> phoneContactList = MappingUtils.convertPhoneContactEntitiesToPhoneContacts(phoneContactEntityList);
         if (includeStat) {
             for (PhoneContact phoneContact : phoneContactList) {
@@ -54,19 +51,12 @@ public class ContactViewModel extends ViewModel {
                     }
                 }
             }
-            Collections.sort(phoneContactList, new Comparator<PhoneContact>() {
-                @Override
-                public int compare(PhoneContact o1, PhoneContact o2) {
-                    return (o2.totalIncomingNumber + o2.totalOutgoingNumber + o2.totalMissedNumber) -
-                            (o1.totalIncomingNumber + o1.totalOutgoingNumber + o1.totalMissedNumber);
-                }
-            });
         }
         return phoneContactList;
     }
 
     public PhoneContact getPhoneContactById(String id) {
-        PhoneContactEntity contactEntity = deviceManager.getContactById(id);
+        PhoneContactEntity contactEntity = deviceManager.getPhoneContactById(id);
         return MappingUtils.convertPhoneContactEntityToPhoneContact(contactEntity);
     }
 
@@ -76,7 +66,7 @@ public class ContactViewModel extends ViewModel {
     }
 
     public List<PhoneContactSummary> getContactSummaryByNumbers(String phoneNumbers) {
-        List<PhoneCallSummaryEntity> contactSummary = deviceManager.getContactSummaryByNumbers(phoneNumbers);
+        List<PhoneCallSummaryEntity> contactSummary = deviceManager.getPhoneCallSummaryByNumbers(phoneNumbers);
         return MappingUtils.convertPhoneCallSummaryEntitiesToPhoneContacts(contactSummary);
     }
 
@@ -91,7 +81,7 @@ public class ContactViewModel extends ViewModel {
     }
 
     public List<PhoneCall> getCallHistoryByNumbers(String phoneNumbers) {
-        List<PhoneCallEntity> phoneCalls = deviceManager.getCallHistoryByNumbers(phoneNumbers);
+        List<PhoneCallEntity> phoneCalls = deviceManager.getPhoneCallHistoryByNumbers(phoneNumbers);
         return MappingUtils.convertPhoneCallEntitiesToPhoneCalls(phoneCalls);
     }
 

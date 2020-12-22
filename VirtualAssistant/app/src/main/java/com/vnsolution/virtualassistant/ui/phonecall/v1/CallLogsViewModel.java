@@ -20,6 +20,6 @@ public class CallLogsViewModel extends ViewModel {
     public CallLogsViewModel() {}
 
     public MutableLiveData<List<PhoneCall>> getCallLogs(Context context, boolean forceUpdate) {
-        return deviceManager.getPhoneCalls(context, forceUpdate);
+        return deviceManager.getPhoneCallsAsync(context, forceUpdate);
     }
 }

@@ -23,7 +23,7 @@ import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.BitmapUtils;
 
-public class PhoneContactCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact>, PopupMenu.OnMenuItemClickListener {
+public class ContactCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact>, PopupMenu.OnMenuItemClickListener {
     private ImageView mAvatarImageView;
     private TextView mContactNameTextView;
     private TextView mPhoneNumbersTextView;
@@ -37,17 +37,17 @@ public class PhoneContactCardFullWidthRow extends MaterialCardView implements IR
     private PhoneContact mPhoneContact;
     private OnRecyclerViewRowTouchListener<PhoneContact> mOnRecyclerViewRowTouchListener;
 
-    public PhoneContactCardFullWidthRow(Context context) {
+    public ContactCardFullWidthRow(Context context) {
         super(context);
         mContext = context;
     }
 
-    public PhoneContactCardFullWidthRow(Context context, AttributeSet attrs) {
+    public ContactCardFullWidthRow(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
 
-    public PhoneContactCardFullWidthRow(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ContactCardFullWidthRow(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
     }
@@ -69,7 +69,7 @@ public class PhoneContactCardFullWidthRow extends MaterialCardView implements IR
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(mContext, v);
-                popupMenu.setOnMenuItemClickListener(PhoneContactCardFullWidthRow.this);
+                popupMenu.setOnMenuItemClickListener(ContactCardFullWidthRow.this);
                 popupMenu.inflate(R.menu.menu_contact_options);
 
                 if (mPhoneContact.phoneNumbers == null || mPhoneContact.phoneNumbers == "") {

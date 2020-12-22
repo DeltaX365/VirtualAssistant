@@ -26,7 +26,8 @@
                 android:id="@+id/reminder_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -104,9 +105,5 @@
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
-
-    <!-- BottomSheet -->
-    <include layout="@layout/bottomsheet_reminder_repeat_options" />
-    <include layout="@layout/bottomsheet_reminder_actions" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

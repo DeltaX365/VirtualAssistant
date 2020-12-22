@@ -9,6 +9,7 @@ import android.os.Build;
 import androidx.lifecycle.ViewModel;
 
 import com.vnsolution.virtualassistant.common.ReminderOptions;
+import com.vnsolution.virtualassistant.db.entity.PhoneAppEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
 import com.vnsolution.virtualassistant.db.entity.ReminderEntity;
 import com.vnsolution.virtualassistant.model.PhoneApp;
@@ -42,6 +43,9 @@ public class ReminderViewModel extends ViewModel {
     }
 
     public boolean createReminder(Context context, String title, Date date, String repeat, String action, String data) {
+        if (context == null || title == null || title.isEmpty() || date == null) {
+            return false;
+        }
         int requestCode = generateRequestCode();
         if (requestCode > 0 && date != null) {
             ReminderEntity reminderEntity = new ReminderEntity();
@@ -54,7 +58,7 @@ public class ReminderViewModel extends ViewModel {
             reminderEntity.alarmRequestCode = requestCode;
             reminderEntity.createdDate = new Date();
             boolean result = reminderManager.addReminder(reminderEntity);
-            if (result) {
+            if (result && repeat != null && !repeat.isEmpty()) {
                 return setReminderAlarm(context, requestCode, repeat, date, title);
             }
         }
@@ -72,15 +76,14 @@ public class ReminderViewModel extends ViewModel {
         return false;
     }
 
-    public List<PhoneContact> getPhoneContacts() {
-        List<PhoneContactEntity> phoneContactEntityList = deviceManager.getPhoneContacts();
+    public List<PhoneContact> getPhoneContacts(Context context, boolean forceUpdate) {
+        List<PhoneContactEntity> phoneContactEntityList = deviceManager.getPhoneContacts(context, forceUpdate);
         return MappingUtils.convertPhoneContactEntitiesToPhoneContacts(phoneContactEntityList);
     }
 
     public List<PhoneApp> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
-//        List<PhoneAppEntity> phoneAppEntityList = deviceManager.getPhoneApps();
-//        return MappingUtils.convertPhoneAppEntitiesToPhoneApps(phoneAppEntityList);
-        return deviceManager.getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
+        List<PhoneAppEntity> phoneAppEntityList =  deviceManager.getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
+        return MappingUtils.convertPhoneAppEntitiesToPhoneApps(phoneAppEntityList);
     }
 
     private int generateRequestCode() {

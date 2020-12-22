@@ -27,12 +27,14 @@ import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.reminder.ReminderListActivity;
+import com.vnsolution.virtualassistant.ui.contact.component.ContactListSortBottomSheetDialogFragment;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderNewActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -68,7 +70,7 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
         setupActionBar();
 
         progressOverlay =  findViewById(R.id.progress_overlay);
-        phoneContacts = contactViewModel.getPhoneContacts(true);
+        phoneContacts = contactViewModel.getPhoneContacts(this, false, true);
 
         setupFavouriteContactsView();
         setupPhoneContactsView();
@@ -160,6 +162,53 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
         searchView.setMaxWidth(Integer.MAX_VALUE);
 
         return true;
+    }
+
+    @SuppressLint("RestrictedApi")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_sort:
+                ContactListSortBottomSheetDialogFragment bottomSheetDialog = new ContactListSortBottomSheetDialogFragment();
+                bottomSheetDialog.listener(new ContactListSortBottomSheetDialogFragment.Listener() {
+                    @Override
+                    public void onChanged(ContactListSortBottomSheetDialogFragment.SortBy sortBy, ContactListSortBottomSheetDialogFragment.SortDirection sortDirection) {
+                        sort(sortBy, sortDirection);
+                    }
+                });
+                bottomSheetDialog.show(getSupportFragmentManager(), "ContactListSortBottomSheetDialogFragment");
+                break;
+        }
+        return true;
+    }
+
+    private void sort(ContactListSortBottomSheetDialogFragment.SortBy sortBy, ContactListSortBottomSheetDialogFragment.SortDirection sortDirection) {
+        if (sortBy == ContactListSortBottomSheetDialogFragment.SortBy.NAME && sortDirection == ContactListSortBottomSheetDialogFragment.SortDirection.ASC) {
+            Collections.sort(phoneContacts, new Comparator<PhoneContact>() {
+                @Override
+                public int compare(PhoneContact o1, PhoneContact o2) {
+                    return o1.name.compareTo(o2.name);
+                }
+            });
+        }
+        if (sortBy == ContactListSortBottomSheetDialogFragment.SortBy.NAME && sortDirection == ContactListSortBottomSheetDialogFragment.SortDirection.DESC) {
+            Collections.sort(phoneContacts, new Comparator<PhoneContact>() {
+                @Override
+                public int compare(PhoneContact o1, PhoneContact o2) {
+                    return o2.name.compareTo(o1.name);
+                }
+            });
+        }
+        if (sortBy == ContactListSortBottomSheetDialogFragment.SortBy.TOTAL_CALL && sortDirection == ContactListSortBottomSheetDialogFragment.SortDirection.DESC) {
+            Collections.sort(phoneContacts, new Comparator<PhoneContact>() {
+                @Override
+                public int compare(PhoneContact o1, PhoneContact o2) {
+                    return (o2.totalIncomingNumber + o2.totalOutgoingNumber + o2.totalMissedNumber) -
+                            (o1.totalIncomingNumber + o1.totalOutgoingNumber + o1.totalMissedNumber);
+                }
+            });
+        }
+        phoneContactsAdapter.setData(phoneContacts);
     }
 
     @Override

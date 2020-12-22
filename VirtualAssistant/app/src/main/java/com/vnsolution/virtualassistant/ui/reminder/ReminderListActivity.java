@@ -1,11 +1,14 @@
 package com.vnsolution.virtualassistant.ui.reminder;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneContact;
@@ -26,6 +29,7 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
     private RecyclerView reminderListRecyclerView;
     private RecyclerView.LayoutManager reminderListLayoutManager;
     private RecyclerViewAdapter<Reminder> reminderListAdapter;
+    private FloatingActionButton addNewReminderButton;
 
     private List<Reminder> reminderList = new ArrayList<>();
 
@@ -39,6 +43,11 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         refreshView();
     }
 
@@ -47,6 +56,11 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
         setupActionBar();
         turnScreenOnThroughKeyguard();
 
+        setupReminderListView();
+        setupReminderCreateView();
+    }
+
+    private void setupReminderListView() {
         reminderListRecyclerView = findViewById(R.id.list_reminders);
         reminderListRecyclerView.setHasFixedSize(true);
 
@@ -66,6 +80,17 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
             }
         });
         reminderListRecyclerView.setAdapter(reminderListAdapter);
+    }
+
+    private void setupReminderCreateView() {
+        addNewReminderButton = findViewById(R.id.new_reminder);
+        addNewReminderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ReminderListActivity.this, ReminderNewActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void refreshView() {

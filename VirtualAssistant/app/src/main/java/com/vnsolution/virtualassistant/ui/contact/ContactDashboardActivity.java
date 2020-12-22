@@ -421,7 +421,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
 
     private void assignContactToPhoneCalls(List<PhoneCall> phoneCalls) {
         if (phoneContacts == null) {
-            phoneContacts = vm.getPhoneContacts(false);
+            phoneContacts = vm.getPhoneContacts(this,false,false);
         }
         vm.assignContactToPhoneCalls(phoneCalls, phoneContacts);
     }

@@ -13,13 +13,10 @@ import androidx.appcompat.widget.PopupMenu;
 
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.ReminderOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
-import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.Reminder;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.contact.component.PhoneContactCardFullWidthRow;
 
 import java.text.SimpleDateFormat;
 
@@ -83,7 +80,7 @@ public class ReminderCardFullWidthRow extends MaterialCardView implements IRecyc
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' HH:mm");
         mReminderDateTextView.setText(dateFormat.format(reminder.date));
 
-        String repeat = (reminder.repeat.equals(ReminderOptions.REPEAT_NONE))? "No repeat" : reminder.repeat;
+        String repeat = (reminder.repeat != null)? reminder.repeat : "";
         mReminderRepeatTextView.setText(repeat);
     }
 

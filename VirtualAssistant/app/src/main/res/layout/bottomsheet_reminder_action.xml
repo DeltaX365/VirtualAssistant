@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/bottomsheet_reminder_repeat_options"
-    android:background="@color/color_grey"
+    android:id="@+id/bottomsheet_reminder_actions"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     app:behavior_hideable="true"
@@ -24,17 +23,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textStyle="bold"
-                android:text="Choose an option"
-                android:textColor="@color/color_white"
+                android:text="Reminder Action"
+                android:textSize="18sp"
                 android:layout_gravity="center_vertical"
                 />
             <ImageButton
-                android:id="@+id/reminder_repeat_option_close"
+                android:id="@+id/reminder_action_close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_baseline_close_24"
-                android:background="@color/color_white"
+                android:visibility="gone"
                 />
 
         </LinearLayout>
@@ -42,48 +40,37 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="?android:attr/listDivider"
-            android:layout_marginVertical="20dp"
+            android:layout_marginVertical="10dp"
             />
         <RadioGroup
-            android:id="@+id/reminder_repeat_option_group"
-            android:checkedButton="@+id/reminder_repeat_option_no_repeat"
+            android:id="@+id/reminder_action_group"
+            android:checkedButton="@+id/reminder_action_none"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             
             <RadioButton
-                android:id="@+id/reminder_repeat_option_no_repeat"
+                android:id="@+id/reminder_action_none"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="No repeat"
-                android:textColor="@color/color_white"
+                android:text="No action"
                 />
             <RadioButton
-                android:id="@+id/reminder_repeat_option_daily"
+                android:id="@+id/reminder_action_launch_app"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Daily"
-                android:textColor="@color/color_white"
+                android:text="Launch app"
                 />
             <RadioButton
-                android:id="@+id/reminder_repeat_option_weekly"
+                android:id="@+id/reminder_action_send_sms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Weekly"
-                android:textColor="@color/color_white"
+                android:text="Send sms"
                 />
             <RadioButton
-                android:id="@+id/reminder_repeat_option_monthly"
+                android:id="@+id/reminder_action_call_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Monthly"
-                android:textColor="@color/color_white"
-                />
-            <RadioButton
-                android:id="@+id/reminder_repeat_option_yearly"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Yearly"
-                android:textColor="@color/color_white"
+                android:text="Call phone"
                 />
             
         </RadioGroup>
