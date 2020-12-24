@@ -1,5 +1,7 @@
 package com.vnsolution.virtualassistant.ui.setting;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -11,6 +13,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -26,6 +29,8 @@ import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
@@ -34,7 +39,7 @@ import dagger.android.HasAndroidInjector;
 
 public class SettingActivity extends BaseActivity implements HasAndroidInjector {
     private Context mContext;
-    private String[] settings = { "Grant stop tracking permissions", "Reset factory" };
+    private String[] settings = { "Grant stop tracking permissions", "Remove unused notification channels", "Reset factory" };
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -84,6 +89,9 @@ public class SettingActivity extends BaseActivity implements HasAndroidInjector 
                         requestPermissions();
                         break;
                     case 1:
+                        removeUnusedNotifyChannel();
+                        break;
+                    case 2:
                         runResetFactory();
                         Toast.makeText(SettingActivity.this, "Data is reset successfully.", Toast.LENGTH_SHORT).show();
                         break;
@@ -120,6 +128,16 @@ public class SettingActivity extends BaseActivity implements HasAndroidInjector 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == StopTrackingOptions.PERMISSIONS_REQUEST_CODE) {
             requestPermissions();
+        }
+    }
+
+    private void removeUnusedNotifyChannel() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            List<NotificationChannel> notificationChannelList = notificationManager.getNotificationChannels();
+            for (NotificationChannel channel : notificationChannelList) {
+                notificationManager.deleteNotificationChannel(channel.getId());
+            }
         }
     }
 

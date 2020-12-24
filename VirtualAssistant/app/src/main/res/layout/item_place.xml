@@ -11,8 +11,8 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:scaleType="centerCrop"
-        android:foreground="@drawable/rounded_rectangle_fg"
-        app:shapeAppearanceOverlay="@style/RoundedImageView"
+        android:foreground="@drawable/shape_rectangle"
+        app:shapeAppearanceOverlay="@style/AppTheme.ImageView.Rounded"
         />
     <LinearLayout
         android:layout_width="match_parent"

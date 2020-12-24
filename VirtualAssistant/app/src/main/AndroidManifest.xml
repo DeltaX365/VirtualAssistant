@@ -25,6 +25,8 @@
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:name=".VirtualAssistantApp"
         android:allowBackup="true"
@@ -88,6 +90,11 @@
         <activity
             android:name=".ui.reminder.ReminderNewActivity"
             android:label="@string/title_screen_reminders" />
+        <activity
+            android:name=".ui.reminder.ReminderShowFullScreenActivity"
+            android:label="@string/title_screen_reminders"
+            android:taskAffinity=""
+            android:excludeFromRecents="true" />
         <activity android:name=".ui.phoneapp.v1.PhoneAppActivity" />
         <activity android:name=".ui.phoneapp.v2.PhoneAppV2Activity" />
         <activity

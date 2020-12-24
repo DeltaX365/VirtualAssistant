@@ -226,7 +226,7 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
 
     private void validate() {
         boolean isValid = (reminderTitle != null && !reminderTitle.isEmpty() && reminderCreationCompletedMenuItem != null) ? true : false;
-        if (reminderAction != null && !reminderAction.isEmpty()) {
+        if (reminderAction != null && !reminderAction.isEmpty() && !reminderAction.equals(ReminderOptions.ACTION_NONE)) {
             String reminderMetaData = reminderMetaDataTextView.getText().toString().trim();
             isValid = isValid && (reminderMetaData != null && !reminderMetaData.isEmpty());
         }

@@ -13,6 +13,7 @@ import androidx.appcompat.widget.PopupMenu;
 
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.ReminderOptions;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.Reminder;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
@@ -75,7 +76,13 @@ public class ReminderCardFullWidthRow extends MaterialCardView implements IRecyc
         mReminder = reminder;
 
         mReminderTitleTextView.setText(reminder.name);
-        mReminderActionTextView.setText("Action: " + reminder.action + " " + reminder.extendedData);
+
+        String action = reminder.action;
+        if (action != null && !action.isEmpty() && !action.equals(ReminderOptions.ACTION_NONE)
+            && reminder.extendedData != null && !reminder.extendedData.isEmpty()) {
+            action += " " + reminder.extendedData;
+        }
+        mReminderActionTextView.setText("Action: " + action);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' HH:mm");
         mReminderDateTextView.setText(dateFormat.format(reminder.date));

@@ -10,7 +10,7 @@
         android:layout_height="60dp"
         android:src="@drawable/ic_baseline_hearing_24"
         android:tint="@android:color/black"
-        android:background="@drawable/rounded_button"
+        android:background="@drawable/shape_oval"
         />
 
 </LinearLayout>

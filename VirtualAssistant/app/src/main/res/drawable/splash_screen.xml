@@ -9,7 +9,7 @@
     <!-- Your product logo - 144dp color version of your app icon -->
     <item>
         <bitmap
-            android:src="@drawable/animate_pikachu"
+            android:src="@drawable/img_animate_pikachu"
             android:gravity="center"
             />
     </item>

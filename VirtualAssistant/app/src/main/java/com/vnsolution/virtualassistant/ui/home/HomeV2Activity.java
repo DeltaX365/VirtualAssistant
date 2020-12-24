@@ -61,7 +61,7 @@ public class HomeV2Activity extends BaseActivity {
 
         botActionTextView = findViewById(R.id.bot_action);
 //        botProcessingImageView = findViewById(R.id.bot_processing);
-//        Glide.with(this).load(R.drawable.loading).into(botProcessingImageView);
+//        Glide.with(this).load(R.drawable.img_loading).into(botProcessingImageView);
 
         availableActionsRecyclerView = findViewById(R.id.list_available_actions);
         availableActionsRecyclerView.setHasFixedSize(true);

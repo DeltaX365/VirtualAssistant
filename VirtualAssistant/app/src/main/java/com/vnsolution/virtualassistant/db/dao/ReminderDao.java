@@ -12,7 +12,7 @@ import java.util.List;
 
 @Dao
 public interface ReminderDao extends BaseDao<ReminderEntity> {
-    @Query("SELECT * FROM Reminder ORDER BY Date DESC")
+    @Query("SELECT * FROM Reminder ORDER BY Date ASC")
     List<ReminderEntity> getAll();
 
     @Query("SELECT * FROM Reminder WHERE Id=:id")

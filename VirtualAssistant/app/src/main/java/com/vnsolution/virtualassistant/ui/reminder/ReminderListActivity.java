@@ -54,7 +54,6 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
     private void setupView() {
         setContentView(R.layout.screen_reminder_list);
         setupActionBar();
-        turnScreenOnThroughKeyguard();
 
         setupReminderListView();
         setupReminderCreateView();
@@ -97,24 +96,4 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
         reminderList = vm.getReminders();
         reminderListAdapter.setData(reminderList);
     }
-
-//    @Override
-//    public void onAttachedToWindow() {
-//        super.onAttachedToWindow();
-//        getWindow().addFlags(
-//                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-//                        | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-//                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-//                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-//    }
-//
-//    @Override
-//    public void onDetachedFromWindow() {
-//        super.onDetachedFromWindow();
-//        getWindow().clearFlags(
-//                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-//                        | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-//                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-//                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-//    }
 }

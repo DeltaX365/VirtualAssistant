@@ -12,6 +12,7 @@ import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallActivity;
 import com.vnsolution.virtualassistant.ui.contact.ContactDashboardActivity;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderListActivity;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderNewActivity;
+import com.vnsolution.virtualassistant.ui.reminder.ReminderShowFullScreenActivity;
 import com.vnsolution.virtualassistant.ui.setting.SettingActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
@@ -81,6 +82,9 @@ public abstract class ActivityBuildersModule {
 
     @ContributesAndroidInjector()
     abstract ReminderNewActivity contributeReminderNewActivity();
+
+    @ContributesAndroidInjector()
+    abstract ReminderShowFullScreenActivity contributeReminderShowFullScreenActivity();
 
     @ContributesAndroidInjector()
     abstract SettingActivity contributeSettingActivity();

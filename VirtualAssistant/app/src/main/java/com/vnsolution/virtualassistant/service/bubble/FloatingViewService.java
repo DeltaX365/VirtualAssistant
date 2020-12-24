@@ -26,10 +26,7 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
-import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.ui.StartupActivity;
-import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
 
 public class FloatingViewService extends Service implements View.OnTouchListener {
     private WindowManager windowManager;
@@ -133,7 +130,7 @@ public class FloatingViewService extends Service implements View.OnTouchListener
         Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
         floatingView.findViewById(R.id.hearing_icon).startAnimation(shake);
 
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
