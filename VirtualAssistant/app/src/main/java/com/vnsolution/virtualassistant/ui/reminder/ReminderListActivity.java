@@ -71,6 +71,11 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
             @Override
             public void onAction(Reminder reminder, String action) {
                 switch (action) {
+                    case UiOptions.REMINDER_ACTION_EDIT:
+                        Intent intent = new Intent(ReminderListActivity.this, ReminderNewActivity.class);
+                        intent.putExtra("ReminderId", reminder.id);
+                        startActivity(intent);
+                        break;
                     case UiOptions.REMINDER_ACTION_REMOVE:
                         vm.deleteReminder(ReminderListActivity.this, reminder.id);
                         refreshView();

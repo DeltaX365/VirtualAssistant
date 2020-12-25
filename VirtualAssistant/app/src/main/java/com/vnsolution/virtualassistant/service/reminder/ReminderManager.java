@@ -5,7 +5,9 @@ import com.vnsolution.virtualassistant.db.dao.ReminderDao;
 import com.vnsolution.virtualassistant.db.entity.ReminderEntity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,12 +60,19 @@ public class ReminderManager {
         return reminder;
     }
 
-    public boolean addReminder(ReminderEntity reminderEntity) {
+    public boolean saveReminder(ReminderEntity reminderEntity) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Boolean> addReminderFuture = executor.submit(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                reminderDao.insert(reminderEntity);
+                if (reminderEntity.id == null || reminderEntity.id.isEmpty()) {
+                    reminderEntity.id = UUID.randomUUID().toString();
+                    reminderEntity.createdDate = new Date();
+                    reminderDao.insert(reminderEntity);
+                } else {
+                    reminderEntity.updatedDate = new Date();
+                    reminderDao.update(reminderEntity);
+                }
                 return Boolean.TRUE;
             }
         });

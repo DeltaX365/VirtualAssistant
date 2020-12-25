@@ -283,4 +283,16 @@ public class MappingUtils {
         reminder.alarmRequestCode = reminderEntity.alarmRequestCode;
         return reminder;
     }
+
+    public static ReminderEntity convertReminderToReminderEntity(Reminder reminder) {
+        ReminderEntity reminderEntity = new ReminderEntity();
+        reminderEntity.id = reminder.id;
+        reminderEntity.name = reminder.name;
+        reminderEntity.date = reminder.date;
+        reminderEntity.repeat = reminder.repeat;
+        reminderEntity.action = reminder.action;
+        reminderEntity.extendedData = reminder.extendedData;
+        reminderEntity.alarmRequestCode = reminder.alarmRequestCode;
+        return reminderEntity;
+    }
 }

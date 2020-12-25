@@ -65,11 +65,12 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         }
 
         String reminderContent = "";
-        if (intent != null && intent.getExtras() != null) {
-            reminderContent = intent.getExtras().getString(ReminderOptions.NOTIFY_CONTENT_TEXT, "");
+        if (intent != null && intent.hasExtra(ReminderOptions.NOTIFY_CONTENT_TEXT)) {
+            reminderContent = intent.getStringExtra(ReminderOptions.NOTIFY_CONTENT_TEXT);
         }
 
         Intent fullScreenIntent = new Intent(context, ReminderShowFullScreenActivity.class);
+        fullScreenIntent.putExtra(ReminderOptions.NOTIFY_CONTENT_TEXT, reminderContent);
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context,0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, ReminderOptions.NOTIFY_CHANEL_ID)

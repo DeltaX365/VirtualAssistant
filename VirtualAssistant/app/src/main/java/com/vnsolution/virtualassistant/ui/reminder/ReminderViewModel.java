@@ -42,27 +42,20 @@ public class ReminderViewModel extends ViewModel {
         return MappingUtils.convertReminderEntitiesToReminders(reminderEntityList);
     }
 
-    public boolean createReminder(Context context, String title, Date date, String repeat, String action, String data) {
-        if (context == null || title == null || title.isEmpty() || date == null) {
-            return false;
-        }
-        int requestCode = generateRequestCode();
-        if (requestCode > 0 && date != null) {
-            ReminderEntity reminderEntity = new ReminderEntity();
-            reminderEntity.id = UUID.randomUUID().toString();
-            reminderEntity.name = title;
-            reminderEntity.date = date;
-            reminderEntity.repeat = repeat;
-            reminderEntity.action = action;
-            reminderEntity.extendedData = data;
-            reminderEntity.alarmRequestCode = requestCode;
-            reminderEntity.createdDate = new Date();
-            boolean result = reminderManager.addReminder(reminderEntity);
-            if (result && repeat != null && !repeat.isEmpty()) {
-                return setReminderAlarm(context, requestCode, repeat, date, title);
+    public Reminder getReminderById(String reminderId) {
+        ReminderEntity reminderEntity = reminderManager.getReminderById(reminderId);
+        return MappingUtils.convertReminderEntityToReminder(reminderEntity);
+    }
+
+    public boolean saveReminder(Context context, Reminder reminder) {
+        ReminderEntity reminderEntity = MappingUtils.convertReminderToReminderEntity(reminder);
+        if ((reminderEntity.id == null || reminder.id.isEmpty()) && reminderEntity.repeat != null && !reminderEntity.repeat.isEmpty()) {
+            reminderEntity.alarmRequestCode = generateRequestCode();
+            if(!setReminderAlarm(context, reminderEntity.alarmRequestCode, reminderEntity.repeat, reminderEntity.date, reminderEntity.name)) {
+                return false;
             }
         }
-        return false;
+        return reminderManager.saveReminder(reminderEntity);
     }
 
     public boolean deleteReminder(Context context, String reminderId) {

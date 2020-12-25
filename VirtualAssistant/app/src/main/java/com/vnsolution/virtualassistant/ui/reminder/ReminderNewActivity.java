@@ -15,15 +15,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog;
 import com.google.android.material.textfield.TextInputEditText;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.ReminderOptions;
+import com.vnsolution.virtualassistant.db.entity.ReminderEntity;
 import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.model.PhoneContact;
+import com.vnsolution.virtualassistant.model.Reminder;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.reminder.component.ReminderActionBottomSheetDialogFragment;
 import com.vnsolution.virtualassistant.ui.reminder.component.ReminderRepeatOptionBottomSheetDialogFragment;
@@ -52,21 +52,27 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
     private List<PhoneApp> phoneApps;
     private List<PhoneContact> phoneContacts;
 
-    private String reminderTitle;
-    private Date reminderDate;
-    private String reminderRepeat = ReminderOptions.REPEAT_NONE;
-    private String reminderAction = ReminderOptions.ACTION_NONE;
-    private String reminderMetaData;
+    private String reminderId;
+    private Reminder reminder;
+    private boolean isNewReminder = true;
 
     @Inject
-    ViewModelProvider.Factory vmFactory;
-
-    private ReminderViewModel vm;
+    ReminderViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vm = ViewModelProviders.of(this, vmFactory).get(ReminderViewModel.class);
+        if (getIntent().hasExtra("ReminderId")) {
+            reminderId = getIntent().getStringExtra("ReminderId");
+            reminder = vm.getReminderById(reminderId);
+            isNewReminder = false;
+        }
+        if (reminder == null) {
+            reminder = new Reminder();
+            reminder.date = new Date();
+            reminder.action = ReminderOptions.ACTION_NONE;
+            reminder.repeat = ReminderOptions.REPEAT_NONE;
+        }
         setupView();
     }
 
@@ -94,82 +100,101 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
 
             @Override
             public void afterTextChanged(Editable s) {
-                reminderTitle = s.toString().trim();
+                reminder.name = s.toString().trim();
                 validate();
             }
         });
+        if (reminder != null) {
+            reminderTitleTextInput.setText(reminder.name);
+        }
     }
 
     private void setupReminderDateView() {
         reminderDateTextInput = findViewById(R.id.reminder_date);
-        reminderDate = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' HH:mm");
-        reminderDateTextInput.setText(simpleDateFormat.format(reminderDate));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E, MMM dd, yyyy 'at' HH:mm");
+        reminderDateTextInput.setText(simpleDateFormat.format(reminder.date));
 
-        reminderDateTextInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new SingleDateAndTimePickerDialog.Builder(ReminderNewActivity.this)
-                        .bottomSheet()
-                        .curved()
-                        .minutesStep(1)
-                        .backgroundColor(Color.rgb(206, 206, 206))
-                        .mainColor(Color.BLACK)
-                        .titleTextColor(Color.BLACK)
-                        //.displayHours(false)
-                        //.displayMinutes(false)
-                        .title("Choose a date in future")
-                        .todayText("Today")
-                        .mustBeOnFuture()
-                        .listener(new SingleDateAndTimePickerDialog.Listener() {
-                            @Override
-                            public void onDateSelected(Date date) {
-                                reminderDate = date;
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' HH:mm");
-                                reminderDateTextInput.setText(simpleDateFormat.format(reminderDate));
+        if (isNewReminder) {
+            SingleDateAndTimePickerDialog.Builder reminderDatePicker = new SingleDateAndTimePickerDialog.Builder(ReminderNewActivity.this)
+                    .bottomSheet()
+                    .curved()
+                    .minutesStep(1)
+                    .backgroundColor(Color.rgb(206, 206, 206))
+                    .mainColor(Color.BLACK)
+                    .titleTextColor(Color.BLACK)
+                    //.displayHours(false)
+                    //.displayMinutes(false)
+                    .title("Choose a date in future")
+                    .todayText("Today")
+                    .mustBeOnFuture()
+                    .listener(new SingleDateAndTimePickerDialog.Listener() {
+                        @Override
+                        public void onDateSelected(Date date) {
+                            if (!reminder.date.equals(date)) {
+                                reminder.date = date;
+                                reminderDateTextInput.setText(simpleDateFormat.format(reminder.date));
                                 validate();
                             }
-                        }).display();
-            }
-        });
+                        }
+                    });
+            reminderDateTextInput.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    reminderDatePicker.display();
+                }
+            });
+        } else {
+            reminderDateTextInput.setEnabled(false);
+        }
     }
 
     private void setupReminderRepeatOptionsView() {
         reminderRepeatTextInput = findViewById(R.id.reminder_repeat);
-        reminderRepeatTextInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ReminderRepeatOptionBottomSheetDialogFragment bottomSheetDialog = new ReminderRepeatOptionBottomSheetDialogFragment();
-                bottomSheetDialog.listener(new ReminderRepeatOptionBottomSheetDialogFragment.Listener() {
-                    @Override
-                    public void onChanged(String repeatOption) {
-                        reminderRepeat = repeatOption;
-                        reminderRepeatTextInput.setText(String.valueOf(repeatOption));
-                        validate();
-                    }
-                });
-                bottomSheetDialog.setValue(reminderRepeat);
-                bottomSheetDialog.show(getSupportFragmentManager(), "ReminderRepeatOptionBottomSheetDialogFragment");
-            }
-        });
+        reminderRepeatTextInput.setText(reminder.repeat);
+        if (isNewReminder) {
+            reminderRepeatTextInput.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ReminderRepeatOptionBottomSheetDialogFragment bottomSheetDialog = new ReminderRepeatOptionBottomSheetDialogFragment();
+                    bottomSheetDialog.listener(new ReminderRepeatOptionBottomSheetDialogFragment.Listener() {
+                        @Override
+                        public void onChanged(String repeatOption) {
+                            if (!reminder.repeat.equals(repeatOption)) {
+                                reminder.repeat = repeatOption;
+                                reminderRepeatTextInput.setText(String.valueOf(repeatOption));
+                                validate();
+                            }
+                        }
+                    });
+                    bottomSheetDialog.setValue(reminder.repeat);
+                    bottomSheetDialog.show(getSupportFragmentManager(), "ReminderRepeatOptionBottomSheetDialogFragment");
+                }
+            });
+        } else {
+            reminderRepeatTextInput.setEnabled(false);
+        }
     }
 
     private void setupReminderActionsView() {
         reminderActionTextInput = findViewById(R.id.reminder_action);
+        reminderActionTextInput.setText(reminder.action);
+
+        ReminderActionBottomSheetDialogFragment bottomSheetDialog = new ReminderActionBottomSheetDialogFragment();
+        bottomSheetDialog.listener(new ReminderActionBottomSheetDialogFragment.Listener() {
+            @Override
+            public void onChanged(String action) {
+                if (!reminder.action.equals(action)) {
+                    reminder.action = action;
+                    reminderActionTextInput.setText(action);
+                    onChangeReminderAction();
+                    validate();
+                }
+            }
+        });
+        bottomSheetDialog.setValue(reminder.action);
         reminderActionTextInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ReminderActionBottomSheetDialogFragment bottomSheetDialog = new ReminderActionBottomSheetDialogFragment();
-                bottomSheetDialog.listener(new ReminderActionBottomSheetDialogFragment.Listener() {
-                    @Override
-                    public void onChanged(String action) {
-                        reminderAction = action;
-                        reminderActionTextInput.setText(action);
-                        onChangeReminderAction();
-                        validate();
-                    }
-                });
-                bottomSheetDialog.setValue(reminderAction);
                 bottomSheetDialog.show(getSupportFragmentManager(), "ReminderActionBottomSheetDialogFragment");
             }
         });
@@ -185,10 +210,14 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
         reminderMetaDataTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                reminderMetaData = reminderMetaDataTextView.getText().toString();
-                validate();
+                String extendData = reminderMetaDataTextView.getText().toString().trim();
+                if (!reminder.extendedData.equals(extendData)) {
+                    reminder.extendedData = extendData;
+                    validate();
+                }
             }
         });
+        reminderMetaDataTextView.setText(reminder.extendedData);
     }
 
 //    private void toggleBottomSheet(BottomSheetBehavior bottomSheetBehavior) {
@@ -202,7 +231,7 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
 
     private void onChangeReminderAction() {
         List<String> items = new ArrayList<>();
-        switch (reminderAction) {
+        switch (reminder.action) {
             case ReminderOptions.ACTION_LAUNCH_APP:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     items = phoneApps.stream().map(phoneApp -> phoneApp.appName).collect(Collectors.toList());
@@ -220,17 +249,18 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
         if (items != null && items.size() > 0) {
             reminderMetaDataAdapter.addAll(items);
         }
-        reminderMetaData = "";
-        reminderMetaDataTextView.setText(reminderMetaData);
+        reminder.extendedData = "";
+        reminderMetaDataTextView.setText(reminder.extendedData);
     }
 
     private void validate() {
-        boolean isValid = (reminderTitle != null && !reminderTitle.isEmpty() && reminderCreationCompletedMenuItem != null) ? true : false;
-        if (reminderAction != null && !reminderAction.isEmpty() && !reminderAction.equals(ReminderOptions.ACTION_NONE)) {
-            String reminderMetaData = reminderMetaDataTextView.getText().toString().trim();
-            isValid = isValid && (reminderMetaData != null && !reminderMetaData.isEmpty());
+        if (reminderCreationCompletedMenuItem != null) {
+            boolean isValid = (reminder.name != null && !reminder.name.isEmpty() && reminderCreationCompletedMenuItem != null) ? true : false;
+            if (reminder.action != null && !reminder.action.isEmpty() && !reminder.action.equals(ReminderOptions.ACTION_NONE)) {
+                isValid = isValid && (reminder.extendedData != null && !reminder.extendedData.isEmpty());
+            }
+            reminderCreationCompletedMenuItem.setEnabled(isValid);
         }
-        reminderCreationCompletedMenuItem.setEnabled(isValid);
     }
 
     @Override
@@ -245,13 +275,13 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_done:
-                boolean result = vm.createReminder(this, reminderTitle, reminderDate, reminderRepeat, reminderAction, reminderMetaData);
+                boolean result = vm.saveReminder(this, reminder);
                 String message = "";
                 if (result) {
-                    message = String.format("A reminder %s was added successfully", reminderTitle);
+                    message = String.format("A reminder %s was added successfully", reminder.name);
                     finish();
                 } else {
-                    message = String.format("Failed to add %s. Please correct reminder and submit again.", reminderTitle);
+                    message = String.format("Failed to add %s. Please correct reminder and submit again.", reminder.name);
                 }
                 Toast.makeText(ReminderNewActivity.this, message, Toast.LENGTH_SHORT).show();
                 break;

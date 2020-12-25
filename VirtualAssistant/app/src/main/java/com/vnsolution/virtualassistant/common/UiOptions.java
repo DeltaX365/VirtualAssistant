@@ -31,6 +31,7 @@ public class UiOptions {
 
     // Reminders UI
     public static final String REMINDER_LIST_ALL = "REMINDER_LIST_ALL";
+    public static final String REMINDER_ACTION_EDIT = "REMINDER_ACTION_EDIT";
     public static final String REMINDER_ACTION_REMOVE = "REMINDER_ACTION_REMOVE";
 
     // Bot UI

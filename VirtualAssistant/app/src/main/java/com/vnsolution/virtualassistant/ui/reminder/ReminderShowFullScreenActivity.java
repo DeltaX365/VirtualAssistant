@@ -50,8 +50,12 @@ public class ReminderShowFullScreenActivity extends BaseActivity implements HasA
         setContentView(R.layout.screen_reminder_show_full_screen);
         turnScreenOnThroughKeyguard();
 
-        String title = "Reminder";
         reminderTitleTextView = findViewById(R.id.reminder_title);
+        String title = "";
+        if (getIntent().hasExtra(ReminderOptions.NOTIFY_CONTENT_TEXT)) {
+            title = getIntent().getStringExtra(ReminderOptions.NOTIFY_CONTENT_TEXT);
+        }
+        title = (title == null || title.isEmpty())? "Reminder" : title;
         reminderTitleTextView.setText(title);
 
         Date today = new Date();

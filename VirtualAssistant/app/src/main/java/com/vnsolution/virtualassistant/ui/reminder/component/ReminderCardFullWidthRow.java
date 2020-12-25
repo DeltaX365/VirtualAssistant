@@ -100,6 +100,9 @@ public class ReminderCardFullWidthRow extends MaterialCardView implements IRecyc
     public boolean onMenuItemClick(MenuItem item) {
         String action = "";
         switch (item.getItemId()) {
+            case R.id.menu_item_edit:
+                action = UiOptions.REMINDER_ACTION_EDIT;
+                break;
             case R.id.menu_item_remove:
                 action = UiOptions.REMINDER_ACTION_REMOVE;
                 break;
