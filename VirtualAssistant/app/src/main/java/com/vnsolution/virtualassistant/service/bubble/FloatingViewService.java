@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -129,6 +130,7 @@ public class FloatingViewService extends Service implements View.OnTouchListener
         // Start animation
         Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
         floatingView.findViewById(R.id.hearing_icon).startAnimation(shake);
+        enableOpacity();
 
         return START_STICKY;
     }
@@ -178,10 +180,24 @@ public class FloatingViewService extends Service implements View.OnTouchListener
                     }
                     windowManager.updateViewLayout(floatingView, layoutParams);
                     saveViewPositionToCache(new ViewPosition(layoutParams.x, layoutParams.y));
+                    enableOpacity();
                 }
                 return true;
         }
         return false;
+    }
+
+    private void enableOpacity() {
+        floatingView.findViewById(R.id.hearing_icon).setAlpha(1.0f);
+        floatingView.setAlpha(1.0f);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                floatingView.findViewById(R.id.hearing_icon).setAlpha(0.6f);
+                floatingView.setAlpha(0.6f);
+            }
+        },3 * 1000);
     }
 
     private void launchApp() {
