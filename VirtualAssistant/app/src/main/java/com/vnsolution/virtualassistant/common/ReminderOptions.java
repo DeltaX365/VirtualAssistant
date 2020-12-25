@@ -16,4 +16,7 @@ public class ReminderOptions {
     public static final String NOTIFY_CHANEL_NAME = "Reminders";
     public static final int NOTIFY_ID = 9999;
     public static final String NOTIFY_TITLE = "Reminders";
+    public static final String NOTIFY_CONTENT_TEXT = "REMINDER_CONTENT_TEXT";
+    public static final String NOTIFY_ACTION_DISMISS = "REMINDER_DISMISS_NOTIFY";
+    public static final String NOTIFY_ACTION_SHOW_FULL_SCREEN = "REMINDER_SHOW_FULL_SCREEN";
 }

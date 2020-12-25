@@ -95,11 +95,13 @@ public class ReminderViewModel extends ViewModel {
         return requestCode;
     }
 
-    private boolean setReminderAlarm(Context context, int requestCode, String repeat, Date reminderDate, String title) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    private boolean setReminderAlarm(Context context, int requestCode, String repeat, Date reminderDate, String reminderTitle) {
         Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
-        intent.putExtra("ReminderContent", title);
+        intent.putExtra(ReminderOptions.NOTIFY_CONTENT_TEXT, reminderTitle);
+        intent.setAction(ReminderOptions.NOTIFY_ACTION_SHOW_FULL_SCREEN);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null|| pendingIntent == null) return false;
 
         Calendar reminderCalendar = Calendar.getInstance();
@@ -131,9 +133,10 @@ public class ReminderViewModel extends ViewModel {
     }
 
     private boolean deleteReminderAlarm(Context context, int requestCode) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null|| pendingIntent == null) return false;
 
         alarmManager.cancel(pendingIntent);

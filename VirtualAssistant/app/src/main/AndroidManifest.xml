@@ -92,9 +92,7 @@
             android:label="@string/title_screen_reminders" />
         <activity
             android:name=".ui.reminder.ReminderShowFullScreenActivity"
-            android:label="@string/title_screen_reminders"
-            android:taskAffinity=""
-            android:excludeFromRecents="true" />
+            android:label="@string/title_screen_reminders" />
         <activity android:name=".ui.phoneapp.v1.PhoneAppActivity" />
         <activity android:name=".ui.phoneapp.v2.PhoneAppV2Activity" />
         <activity
@@ -142,8 +140,7 @@
         </receiver>
         <receiver
             android:name=".service.stoptracking.GeofenceBroadcastReceiver"
-            android:exported="true"
-            />
+            android:exported="true" />
         <receiver
             android:name=".service.stoptracking.LocationUpdatesBroadcastReceiver"
             android:exported="true">
@@ -164,8 +161,7 @@
         </receiver>
         <receiver
             android:name=".service.reminder.ReminderBroadcastReceiver"
-            android:exported="true"
-            />
+            android:exported="true" />
 
     </application>
 

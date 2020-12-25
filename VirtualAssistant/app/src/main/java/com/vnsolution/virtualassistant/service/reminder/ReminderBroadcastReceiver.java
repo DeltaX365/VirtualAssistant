@@ -17,15 +17,24 @@ import androidx.core.app.NotificationCompat;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.ReminderOptions;
-import com.vnsolution.virtualassistant.ui.reminder.ReminderListActivity;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderShowFullScreenActivity;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class ReminderBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         // Android full screen notification shows over the lock screen
         // Link: https://developer.android.com/training/notify-user/time-sensitive
-        createFullScreenNotification(context, intent);
+        String action = intent.getAction();
+        switch (action) {
+            case ReminderOptions.NOTIFY_ACTION_SHOW_FULL_SCREEN:
+                createFullScreenNotification(context, intent);
+                break;
+            case ReminderOptions.NOTIFY_ACTION_DISMISS:
+                dismissNotification(context);
+                break;
+        }
     }
 
     private void createFullScreenNotification(Context context, Intent intent) {
@@ -57,17 +66,12 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
 
         String reminderContent = "";
         if (intent != null && intent.getExtras() != null) {
-            reminderContent = intent.getExtras().getString("ReminderContent", "");
+            reminderContent = intent.getExtras().getString(ReminderOptions.NOTIFY_CONTENT_TEXT, "");
         }
-        PendingIntent dismissPendingIntent = ReminderShowFullScreenActivity.getDismissIntent(ReminderOptions.NOTIFY_ID, context);
+
         Intent fullScreenIntent = new Intent(context, ReminderShowFullScreenActivity.class);
-//        fullScreenIntent.setFlags(
-//                Intent.FLAG_ACTIVITY_NEW_TASK
-//                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
-//                        | Intent.FLAG_ACTIVITY_NO_USER_ACTION
-//                        | Intent.FLAG_ACTIVITY_SINGLE_TOP
-//        );
-        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent , PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context,0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, ReminderOptions.NOTIFY_CHANEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_hearing_24)
                 .setContentTitle(ReminderOptions.NOTIFY_TITLE)
@@ -75,7 +79,6 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setSound(soundUri)
                 .setVibrate(vibratePattern)
-                .addAction(R.drawable.ic_baseline_close_24, "DISMISS", dismissPendingIntent)
 //                .setCategory(NotificationCompat.CATEGORY_CALL)
 
                 // Use a full-screen intent only for the highest-priority alerts where you
@@ -83,12 +86,25 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
                 // interacts with the notification. Also, if your app targets Android 10
                 // or higher, you need to request the USE_FULL_SCREEN_INTENT permission in
                 // order for the platform to invoke this notification.
-                .setFullScreenIntent(fullScreenPendingIntent, true);
+                .setFullScreenIntent(fullScreenPendingIntent, true)
+                .addAction(R.drawable.ic_baseline_close_24, "DISMISS", getDismissPendingIntent(context));
 
         Notification fullScreenNotification = notificationBuilder.build();
         NotificationManager notificationManager =
-                        (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                        (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(ReminderOptions.NOTIFY_ID, fullScreenNotification);
 //        NotificationManagerCompat.from(context).notify(9999, fullScreenNotification);
+    }
+
+    private PendingIntent getDismissPendingIntent(Context context) {
+        Intent dismissIntent = new Intent(context, ReminderBroadcastReceiver.class);
+        dismissIntent.setAction(ReminderOptions.NOTIFY_ACTION_DISMISS);
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context,0, dismissIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return dismissPendingIntent;
+    }
+
+    private void dismissNotification(Context context) {
+        NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        manager.cancel(ReminderOptions.NOTIFY_ID);
     }
 }

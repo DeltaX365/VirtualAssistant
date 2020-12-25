@@ -40,25 +40,9 @@ public class ReminderShowFullScreenActivity extends BaseActivity implements HasA
     @Inject
     public ReminderViewModel vm;
 
-    public static PendingIntent getDismissIntent(int notificationId, Context context) {
-        Intent intent = new Intent(context, ReminderShowFullScreenActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra("DISMISS_NOTIFICATION_ID", notificationId);
-        PendingIntent dismissIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        return dismissIntent;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Dismiss notify
-        if (getIntent().hasExtra("DISMISS_NOTIFICATION_ID")) {
-            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            manager.cancel(getIntent().getIntExtra("NOTIFICATION_ID",-1));
-            finish();
-            return;
-        }
         setupView();
     }
 
