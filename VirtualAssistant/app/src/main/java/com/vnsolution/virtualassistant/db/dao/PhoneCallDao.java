@@ -42,20 +42,19 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "ORDER BY Date DESC " +
             ") " +
             "GROUP BY PhoneNumber " +
-            "ORDER BY Date DESC " +
             "LIMIT 0, 10")
     List<PhoneCallEntity> getRecentCalls();
 
     @Query("SELECT * " +
             "FROM " +
             "( " +
-            "SELECT * " +
+            "SELECT PhoneCall.* " +
             "FROM PhoneCall " +
-            "ORDER BY Date DESC " +
+            "LEFT JOIN PhoneContact ON PhoneContact.PhoneNumber LIKE '%' || PhoneCall.PhoneNumber || '%' " +
+            "WHERE NULLIF(TRIM(PhoneContact.DisplayName), '') IS NOT NULL " +
+            "ORDER BY PhoneCall.Date DESC " +
             ") " +
-            "WHERE NULLIF(TRIM(PhoneNumber), '') IS NOT NULL " +
             "GROUP BY PhoneNumber " +
-            "ORDER BY Date DESC " +
             "LIMIT 0, 10")
     List<PhoneCallEntity> getRecentAuthorizedCalls();
 
@@ -68,21 +67,19 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "ORDER BY Date DESC " +
             ") " +
             "GROUP BY PhoneNumber " +
-            "ORDER BY Date DESC " +
             "LIMIT 0, 10")
     List<PhoneCallEntity> getRecentCalls(int type);
 
     @Query("SELECT * " +
             "FROM " +
             "( " +
-            "SELECT * " +
+            "SELECT PhoneCall.* " +
             "FROM PhoneCall " +
-            "WHERE Type = :type " +
-            "ORDER BY Date DESC " +
+            "LEFT JOIN PhoneContact ON PhoneContact.PhoneNumber LIKE '%' || PhoneCall.PhoneNumber || '%' " +
+            "WHERE PhoneCall.Type = :type AND NULLIF(TRIM(PhoneContact.DisplayName), '') IS NOT NULL " +
+            "ORDER BY PhoneCall.Date DESC " +
             ") " +
-            "WHERE NULLIF(TRIM(PhoneNumber), '') IS NOT NULL " +
             "GROUP BY PhoneNumber " +
-            "ORDER BY Date DESC " +
             "LIMIT 0, 10")
     List<PhoneCallEntity> getRecentAuthorizedCalls(int type);
 
@@ -100,11 +97,12 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
     @Query("SELECT * " +
             "FROM " +
             "( " +
-            "SELECT *, SUM(Duration) AS TotalDuration " +
+            "SELECT PhoneCall.*, SUM(Duration) AS TotalDuration " +
             "FROM PhoneCall " +
-            "GROUP BY PhoneNumber " +
+            "LEFT JOIN PhoneContact ON PhoneContact.PhoneNumber LIKE '%' || PhoneCall.PhoneNumber || '%' " +
+            "WHERE NULLIF(TRIM(PhoneContact.DisplayName), '') IS NOT NULL " +
+            "GROUP BY PhoneCall.PhoneNumber " +
             ") " +
-            "WHERE NULLIF(TRIM(PhoneNumber), '') IS NOT NULL " +
             "ORDER BY TotalDuration DESC " +
             "LIMIT 0, 10")
     List<PhoneCallEntity> getMostAuthorizedCalls();
@@ -124,12 +122,12 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
     @Query("SELECT * " +
             "FROM " +
             "( " +
-            "SELECT *, SUM(Duration) AS TotalDuration " +
+            "SELECT PhoneCall.*, SUM(Duration) AS TotalDuration " +
             "FROM PhoneCall " +
-            "WHERE Type = :type " +
-            "GROUP BY PhoneNumber " +
+            "LEFT JOIN PhoneContact ON PhoneContact.PhoneNumber LIKE '%' || PhoneCall.PhoneNumber || '%' " +
+            "WHERE PhoneCall.Type = :type AND NULLIF(TRIM(PhoneContact.DisplayName), '') IS NOT NULL " +
+            "GROUP BY PhoneCall.PhoneNumber " +
             ") " +
-            "WHERE NULLIF(TRIM(PhoneNumber), '') IS NOT NULL " +
             "ORDER BY TotalDuration DESC " +
             "LIMIT 0, 10")
     List<PhoneCallEntity> getMostAuthorizedCalls(int type);

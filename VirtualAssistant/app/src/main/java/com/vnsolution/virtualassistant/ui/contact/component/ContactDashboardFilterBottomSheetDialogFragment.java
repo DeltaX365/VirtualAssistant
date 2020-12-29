@@ -40,16 +40,16 @@ public class ContactDashboardFilterBottomSheetDialogFragment extends BottomSheet
         contactDashboardFilterRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Filter filter = Filter.INCLUDE_STRANGERS;
+                Filter filter = null;
                 switch (checkedId) {
                     case R.id.contact_dashboard_filter_include_strangers:
-                        filter = Filter.EXCLUDE_STRANGERS;
-                        break;
-                    case R.id.contact_dashboard_filter_exclude_strangers:
                         filter = Filter.INCLUDE_STRANGERS;
                         break;
+                    case R.id.contact_dashboard_filter_exclude_strangers:
+                        filter = Filter.EXCLUDE_STRANGERS;
+                        break;
                 }
-                if (listener != null) {
+                if (listener != null && filter != null) {
                     listener.onChanged(filter);
                 }
             }

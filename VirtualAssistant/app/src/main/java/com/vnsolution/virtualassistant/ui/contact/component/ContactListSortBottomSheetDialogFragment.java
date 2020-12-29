@@ -41,8 +41,8 @@ public class ContactListSortBottomSheetDialogFragment extends BottomSheetDialogF
         contactListSortByRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                SortBy sortBy = SortBy.NAME;
-                SortDirection sortDirection = SortDirection.DESC;
+                SortBy sortBy = null;
+                SortDirection sortDirection = null;
                 switch (checkedId) {
                     case R.id.contact_list_sort_by_name_asc:
                         sortBy = SortBy.NAME;
@@ -57,7 +57,7 @@ public class ContactListSortBottomSheetDialogFragment extends BottomSheetDialogF
                         sortDirection = SortDirection.DESC;
                         break;
                 }
-                if (listener != null) {
+                if (listener != null && sortBy != null && sortDirection != null) {
                     listener.onChanged(sortBy, sortDirection);
                 }
             }
