@@ -28,6 +28,9 @@ public class UiOptions {
     public static final String CONTACT_ACTION_SMS = "CONTACT_ACTION_SMS";
     public static final String CONTACT_ACTION_LOCK = "CONTACT_ACTION_LOCK";
     public static final String CONTACT_ACTION_SCHEDULE = "CONTACT_ACTION_SCHEDULE";
+    public static final String CONTACT_ACTION_EXPORT = "CONTACT_ACTION_EXPORT";
+    public static final String CONTACT_ACTION_SHARE = "CONTACT_ACTION_SHARE";
+    public static final String CONTACT_ACTION_REMOVE = "CONTACT_ACTION_REMOVE";
 
     // Reminders UI
     public static final String REMINDER_LIST_ALL = "REMINDER_LIST_ALL";

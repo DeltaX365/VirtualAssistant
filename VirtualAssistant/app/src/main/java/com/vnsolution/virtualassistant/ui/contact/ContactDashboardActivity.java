@@ -1,14 +1,16 @@
 package com.vnsolution.virtualassistant.ui.contact;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.CallLog;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +22,7 @@ import com.vnsolution.virtualassistant.model.PhoneContactSummary;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
+import com.vnsolution.virtualassistant.ui.contact.component.ContactDashboardFilterBottomSheetDialogFragment;
 import com.vnsolution.virtualassistant.util.DateTimeUtils;
 
 import java.util.ArrayList;
@@ -93,39 +96,72 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
     private List<PhoneCall> mostOutgoingCalls = new ArrayList<>();
     private TextView noMostOutgoingCallTextView;
 
-    private FrameLayout progressOverlay;
-    private ContactViewModel vm;
     private List<PhoneContact> phoneContacts;
+    private boolean includeStranger = false;
 
     @Inject
-    public ViewModelProvider.Factory viewModelFactory;
+    public ContactViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vm = ViewModelProviders.of(this, viewModelFactory).get(ContactViewModel.class);
         setupView();
+        refreshView();
     }
 
     private void setupView() {
         setContentView(R.layout.screen_contact_dashboard);
         setupActionBar();
 
-        progressOverlay =  findViewById(R.id.progress_overlay);
-
         setupContactStatView();
-
         setupRecentCallsView();
         setupMostCallsView();
-
         setupRecentIncomingCallsView();
         setupRecentOutgoingCallsView();
         setupRecentMissedCallsView();
         setupRecentRejectedCallsView();
         setupRecentBlockedCallsView();
-
         setupMostIncomingCallsView();
         setupMostOutgoingCallsView();
+    }
+
+    private void refreshView() {
+        refreshContactStatView();
+        refreshRecentCallsView();
+        refreshMostCallsView();
+        refreshRecentIncomingCallsView();
+        refreshRecentOutgoingCallsView();
+        refreshRecentMissedCallsView();
+        refreshRecentRejectedCallsView();
+        refreshRecentBlockedCallsView();
+        refreshMostIncomingCallsView();
+        refreshMostOutgoingCallsView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_contact_dashboard_options, menu);
+        return true;
+    }
+
+    @SuppressLint("RestrictedApi")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_filter:
+                ContactDashboardFilterBottomSheetDialogFragment bottomSheetDialog = new ContactDashboardFilterBottomSheetDialogFragment();
+                bottomSheetDialog.listener(new ContactDashboardFilterBottomSheetDialogFragment.Listener() {
+                    @Override
+                    public void onChanged(ContactDashboardFilterBottomSheetDialogFragment.Filter filterOption) {
+                        filter(filterOption);
+                    }
+                });
+                bottomSheetDialog.setValue(includeStranger? ContactDashboardFilterBottomSheetDialogFragment.Filter.INCLUDE_STRANGERS : ContactDashboardFilterBottomSheetDialogFragment.Filter.EXCLUDE_STRANGERS);
+                bottomSheetDialog.show(getSupportFragmentManager(), "ContactDashboardFilterBottomSheetDialogFragment");
+                break;
+        }
+        return true;
     }
 
     private void setupContactStatView() {
@@ -137,7 +173,9 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         totalOutgoingNumberTextView = findViewById(R.id.total_outgoing_number);
         totalMissedNumberTextView = findViewById(R.id.total_missed_number);
         totalBlockedNumberTextView = findViewById(R.id.total_blocked_number);
+    }
 
+    private void refreshContactStatView() {
         int totalDuration = 0;
         int totalNumber = 0;
         List<PhoneContactSummary> contactSummaryList = vm.getContactSummaryByNumbers(null);
@@ -185,12 +223,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
             }
         });
         recentCallsRecyclerView.setAdapter(recentCallsAdapter);
+        noRecentCallTextView = findViewById(R.id.no_recent_contact);
+    }
 
-        recentCalls = vm.getRecentCallsByType(0); // no filter type
+    private void refreshRecentCallsView() {
+        recentCalls = vm.getRecentCalls(0, includeStranger); // no filter type
         assignContactToPhoneCalls(recentCalls);
         recentCallsAdapter.setData(recentCalls);
 
-        noRecentCallTextView = findViewById(R.id.no_recent_contact);
         int visibility = (recentCalls != null && recentCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noRecentCallTextView.setVisibility(visibility);
     }
@@ -213,12 +253,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
             }
         });
         mostCallsRecyclerView.setAdapter(mostCallsAdapter);
+        noMostCallTextView = findViewById(R.id.no_most_contact);
+    }
 
-        mostCalls = vm.getMostCallsByType(0); // no filter type
+    private void refreshMostCallsView() {
+        mostCalls = vm.getMostCalls(0, includeStranger); // no filter type
         assignContactToPhoneCalls(mostCalls);
         mostCallsAdapter.setData(mostCalls);
 
-        noMostCallTextView = findViewById(R.id.no_most_contact);
         int visibility = (mostCalls != null && mostCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noMostCallTextView.setVisibility(visibility);
     }
@@ -241,12 +283,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
             }
         });
         recentIncomingCallsRecyclerView.setAdapter(recentIncomingCallsAdapter);
+        noRecentIncomingCallTextView = findViewById(R.id.no_recent_incoming_call);
+    }
 
-        recentIncomingCalls = vm.getRecentCallsByType(CallLog.Calls.INCOMING_TYPE);
+    private void refreshRecentIncomingCallsView() {
+        recentIncomingCalls = vm.getRecentCalls(CallLog.Calls.INCOMING_TYPE, includeStranger);
         assignContactToPhoneCalls(recentIncomingCalls);
         recentIncomingCallsAdapter.setData(recentIncomingCalls);
 
-        noRecentIncomingCallTextView = findViewById(R.id.no_recent_incoming_call);
         int visibility = (recentIncomingCalls != null && recentIncomingCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noRecentIncomingCallTextView.setVisibility(visibility);
     }
@@ -269,12 +313,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
             }
         });
         recentOutgoingCallsRecyclerView.setAdapter(recentOutgoingCallsAdapter);
+        noRecentOutgoingCallTextView = findViewById(R.id.no_recent_outgoing_call);
+    }
 
-        recentOutgoingCalls = vm.getRecentCallsByType(CallLog.Calls.OUTGOING_TYPE);
+    private void refreshRecentOutgoingCallsView() {
+        recentOutgoingCalls = vm.getRecentCalls(CallLog.Calls.OUTGOING_TYPE, includeStranger);
         assignContactToPhoneCalls(recentOutgoingCalls);
         recentOutgoingCallsAdapter.setData(recentOutgoingCalls);
 
-        noRecentOutgoingCallTextView = findViewById(R.id.no_recent_outgoing_call);
         int visibility = (recentOutgoingCalls != null && recentOutgoingCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noRecentOutgoingCallTextView.setVisibility(visibility);
     }
@@ -297,12 +343,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
             }
         });
         recentMissedCallsRecyclerView.setAdapter(recentMissedCallsAdapter);
+        noRecentMissedCallTextView = findViewById(R.id.no_missed_call);
+    }
 
-        recentMissedCalls = vm.getRecentCallsByType(CallLog.Calls.MISSED_TYPE);
+    private void refreshRecentMissedCallsView() {
+        recentMissedCalls = vm.getRecentCalls(CallLog.Calls.MISSED_TYPE, includeStranger);
         assignContactToPhoneCalls(recentMissedCalls);
         recentMissedCallsAdapter.setData(recentMissedCalls);
 
-        noRecentMissedCallTextView = findViewById(R.id.no_missed_call);
         int visibility = (recentMissedCalls != null && recentMissedCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noRecentMissedCallTextView.setVisibility(visibility);
     }
@@ -325,12 +373,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
             }
         });
         recentRejectedCallsRecyclerView.setAdapter(recentRejectedCallsAdapter);
+        noRecentRejectedCallTextView = findViewById(R.id.no_recent_rejected_call);
+    }
 
-        recentRejectedCalls = vm.getRecentCallsByType(CallLog.Calls.REJECTED_TYPE);
+    private void refreshRecentRejectedCallsView() {
+        recentRejectedCalls = vm.getRecentCalls(CallLog.Calls.REJECTED_TYPE, includeStranger);
         assignContactToPhoneCalls(recentRejectedCalls);
         recentRejectedCallsAdapter.setData(recentRejectedCalls);
 
-        noRecentRejectedCallTextView = findViewById(R.id.no_recent_rejected_call);
         int visibility = (recentRejectedCalls != null && recentRejectedCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noRecentRejectedCallTextView.setVisibility(visibility);
     }
@@ -353,12 +403,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
             }
         });
         recentBlockedCallsRecyclerView.setAdapter(recentBlockedCallsAdapter);
+        noRecentBlockedCallTextView = findViewById(R.id.no_recent_blocked_call);
+    }
 
-        recentBlockedCalls = vm.getRecentCallsByType(CallLog.Calls.BLOCKED_TYPE);
+    private void refreshRecentBlockedCallsView() {
+        recentBlockedCalls = vm.getRecentCalls(CallLog.Calls.BLOCKED_TYPE, includeStranger);
         assignContactToPhoneCalls(recentBlockedCalls);
         recentBlockedCallsAdapter.setData(recentBlockedCalls);
 
-        noRecentBlockedCallTextView = findViewById(R.id.no_recent_blocked_call);
         int visibility = (recentBlockedCalls != null && recentBlockedCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noRecentBlockedCallTextView.setVisibility(visibility);
     }
@@ -381,12 +433,14 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
             }
         });
         mostIncomingCallsRecyclerView.setAdapter(mostIncomingCallsAdapter);
+        noMostIncomingCallTextView = findViewById(R.id.no_most_incoming_call);
+    }
 
-        mostIncomingCalls = vm.getMostCallsByType(CallLog.Calls.INCOMING_TYPE);
+    private void refreshMostIncomingCallsView() {
+        mostIncomingCalls = vm.getMostCalls(CallLog.Calls.INCOMING_TYPE, includeStranger);
         assignContactToPhoneCalls(mostIncomingCalls);
         mostIncomingCallsAdapter.setData(mostIncomingCalls);
 
-        noMostIncomingCallTextView = findViewById(R.id.no_most_incoming_call);
         int visibility = (mostIncomingCalls != null && mostIncomingCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noMostIncomingCallTextView.setVisibility(visibility);
     }
@@ -409,14 +463,21 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
             }
         });
         mostOutgoingCallsRecyclerView.setAdapter(mostOutgoingCallsAdapter);
+        noMostOutgoingCallTextView = findViewById(R.id.no_most_outgoing_call);
+    }
 
-        mostOutgoingCalls = vm.getMostCallsByType(CallLog.Calls.OUTGOING_TYPE);
+    private void refreshMostOutgoingCallsView() {
+        mostOutgoingCalls = vm.getMostCalls(CallLog.Calls.OUTGOING_TYPE, includeStranger);
         assignContactToPhoneCalls(mostOutgoingCalls);
         mostOutgoingCallsAdapter.setData(mostOutgoingCalls);
 
-        noMostOutgoingCallTextView = findViewById(R.id.no_most_outgoing_call);
         int visibility = (mostOutgoingCalls != null && mostOutgoingCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noMostOutgoingCallTextView.setVisibility(visibility);
+    }
+
+    private void filter(ContactDashboardFilterBottomSheetDialogFragment.Filter filterOption) {
+        includeStranger = (filterOption == ContactDashboardFilterBottomSheetDialogFragment.Filter.INCLUDE_STRANGERS)? true : false;
+        refreshView();
     }
 
     private void assignContactToPhoneCalls(List<PhoneCall> phoneCalls) {

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,6 +34,7 @@ import com.vnsolution.virtualassistant.util.PermissionUtils;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -51,7 +53,6 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
     private RecyclerViewAdapter<PhoneContact> phoneContactsAdapter;
 
     private List<PhoneContact> phoneContacts = new ArrayList<>();
-    private FrameLayout progressOverlay;
 
     @Inject
     public ContactViewModel contactViewModel;
@@ -63,17 +64,26 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupView();
+        refreshView();
     }
 
     private void setupView() {
         setContentView(R.layout.screen_contact_list);
         setupActionBar();
 
-        progressOverlay =  findViewById(R.id.progress_overlay);
-        phoneContacts = contactViewModel.getPhoneContacts(this, false, true);
-
         setupFavouriteContactsView();
         setupPhoneContactsView();
+    }
+
+    private void refreshView() {
+        try {
+            startProcessing();
+            phoneContacts = contactViewModel.getPhoneContacts(this, false, true);
+            refreshFavouriteContactsView();
+            refreshPhoneContactsView();
+        } finally {
+            stopProcessing();
+        }
     }
 
     private void setupFavouriteContactsView() {
@@ -96,6 +106,9 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
                 makePhoneCall(phoneContact.phoneNumbers);
             }
         });
+    }
+
+    private void refreshFavouriteContactsView() {
         List<PhoneContact> favouriteContacts = filterContacts(phoneContacts, 1);
         favouriteContactsAdapter.setData(favouriteContacts);
         favouriteContactsRecyclerView.setAdapter(favouriteContactsAdapter);
@@ -130,9 +143,21 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
                         Intent intent = new Intent(ContactListActivity.this, ReminderNewActivity.class);
                         startActivity(intent);
                         break;
+                    case UiOptions.CONTACT_ACTION_EXPORT:
+                        exportContact(phoneContact);
+                        break;
+                    case UiOptions.CONTACT_ACTION_SHARE:
+                        shareContact(phoneContact);
+                        break;
+                    case UiOptions.CONTACT_ACTION_REMOVE:
+                        removeContact(phoneContact);
+                        break;
                 }
             }
         });
+    }
+
+    private void refreshPhoneContactsView() {
         phoneContactsAdapter.setData(phoneContacts);
         phoneContactsRecyclerView.setAdapter(phoneContactsAdapter);
     }
@@ -308,10 +333,63 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
         }
     }
 
+    private void exportContact(PhoneContact phoneContact) {
+        if (phoneContact != null) {
+            if (contactViewModel.isExternalStorageWritable()) {
+                List<String> exportContactIds = new ArrayList<>(Arrays.asList(new String[]{phoneContact.id}));
+                String exportPath = contactViewModel.exportPhoneContacts(this, exportContactIds);
+                Toast.makeText(this, "Exported successfully at " + exportPath, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "External storage is not available to write data", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void shareContact(PhoneContact phoneContact) {
+        if (phoneContact != null) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType(ContactsContract.Contacts.CONTENT_VCARD_TYPE);
+            Uri shareUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, phoneContact.lookup);
+            intent.putExtra(Intent.EXTRA_STREAM, shareUri);
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Share a contact");
+            startActivity(intent);
+        }
+    }
+
+    private void removeContact(PhoneContact phoneContact) {
+        if (phoneContact != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Are you sure?")
+                    .setMessage("The contact will be removed permanently and can't be restored.")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            List<String> deletedContactIds = new ArrayList<>(Arrays.asList(new String[]{ phoneContact.id }));
+                            boolean result = contactViewModel.deletePhoneContacts(ContactListActivity.this, deletedContactIds);
+                            if (result) {
+                                refreshView();
+                                Toast.makeText(ContactListActivity.this,"Deleted successfully contact " + phoneContact.name, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
+
     private boolean requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_MAKE_CALL)) {
                 requestPermissions(DeviceOptions.PERMISSIONS_MAKE_CALL, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+                return false;
+            }
+            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_EXPORT_CONTACT)) {
+                requestPermissions(DeviceOptions.PERMISSIONS_EXPORT_CONTACT, DeviceOptions.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
         }

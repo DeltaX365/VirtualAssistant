@@ -1,5 +1,6 @@
 package com.vnsolution.virtualassistant.ui.phoneapp.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.icu.text.DateFormat;
 import android.text.format.DateUtils;
@@ -7,8 +8,11 @@ import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
+
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
+import androidx.appcompat.widget.PopupMenu;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
@@ -58,12 +62,16 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
         mAppOptionsTextView = findViewById(R.id.app_options);
 
         mAppOptionsTextView.setOnClickListener(new OnClickListener() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(mContext, v);
                 popupMenu.setOnMenuItemClickListener(AppCardFullWidthRow.this);
                 popupMenu.inflate(R.menu.menu_app_options);
-                popupMenu.show();
+
+                MenuPopupHelper menuPopupHelper = new MenuPopupHelper(mContext, (MenuBuilder) popupMenu.getMenu(), v);
+                menuPopupHelper.setForceShowIcon(true);
+                menuPopupHelper.show();
             }
         });
     }

@@ -70,19 +70,35 @@ public class ContactViewModel extends ViewModel {
         return MappingUtils.convertPhoneCallSummaryEntitiesToPhoneContacts(contactSummary);
     }
 
-    public List<PhoneCall> getRecentCallsByType(int type) {
-        List<PhoneCallEntity> recentPhoneCalls = deviceManager.getRecentCallsByType(type);
+    public List<PhoneCall> getRecentCalls(int type, boolean includeStranger) {
+        List<PhoneCallEntity> recentPhoneCalls = deviceManager.getRecentCalls(type, includeStranger);
         return MappingUtils.convertPhoneCallEntitiesToPhoneCalls(recentPhoneCalls);
     }
 
-    public List<PhoneCall> getMostCallsByType(int type) {
-        List<PhoneCallEntity> mostPhoneCalls = deviceManager.getMostCallsByType(type);
+    public List<PhoneCall> getMostCalls(int type, boolean includeStranger) {
+        List<PhoneCallEntity> mostPhoneCalls = deviceManager.getMostCalls(type, includeStranger);
         return MappingUtils.convertPhoneCallEntitiesToPhoneCalls(mostPhoneCalls);
     }
 
     public List<PhoneCall> getCallHistoryByNumbers(String phoneNumbers) {
         List<PhoneCallEntity> phoneCalls = deviceManager.getPhoneCallHistoryByNumbers(phoneNumbers);
         return MappingUtils.convertPhoneCallEntitiesToPhoneCalls(phoneCalls);
+    }
+
+    public String exportPhoneContacts(Context context, List<String> phoneContactIds) {
+        return deviceManager.exportPhoneContacts(context, phoneContactIds);
+    }
+
+    public boolean deletePhoneContacts(Context context, List<String> phoneContactIds) {
+        return deviceManager.deletePhoneContacts(context, phoneContactIds);
+    }
+
+    public boolean isExternalStorageWritable() {
+        return deviceManager.isExternalStorageWritable();
+    }
+
+    public boolean isExternalStorageReadable() {
+        return deviceManager.isExternalStorageReadable();
     }
 
     public void assignContactToPhoneCalls(List<PhoneCall> phoneCalls, List<PhoneContact> phoneContacts) {

@@ -8,8 +8,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.vnsolution.virtualassistant.db.entity.PhoneAppEntity;
 import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.service.device.DeviceManager;
+import com.vnsolution.virtualassistant.util.MappingUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,11 +33,16 @@ public class PhoneAppViewModel extends ViewModel {
         this.index = index;
     }
 
-    public LiveData<List<PhoneApp>> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
+    public List<PhoneApp> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
+        List<PhoneAppEntity> phoneAppEntities = deviceManager.getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
+        return MappingUtils.convertPhoneAppEntitiesToPhoneApps(phoneAppEntities);
+    }
+
+    public LiveData<List<PhoneApp>> getPhoneAppsAsync(Context context, boolean shouldGetSystemPackages, boolean forceUpdate) {
         return deviceManager.getPhoneAppsAsync(context, shouldGetSystemPackages, forceUpdate);
     }
 
-    public LiveData<List<PhoneApp>> getPhoneApps(Context context, int filter, boolean shouldGetSystemPackages, boolean forceUpdate) {
+    public LiveData<List<PhoneApp>> getPhoneAppsAsync(Context context, int filter, boolean shouldGetSystemPackages, boolean forceUpdate) {
         LiveData<List<PhoneApp>> applicationsLiveData = deviceManager.getPhoneAppsAsync(context, shouldGetSystemPackages, forceUpdate);
         return Transformations.map(applicationsLiveData, applicationEntities -> {
             List<PhoneApp> applications = copy(applicationEntities);

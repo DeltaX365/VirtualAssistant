@@ -23,6 +23,11 @@ import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.BitmapUtils;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class ContactCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact>, PopupMenu.OnMenuItemClickListener {
     private ImageView mAvatarImageView;
     private TextView mContactNameTextView;
@@ -75,7 +80,9 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
                 if (mPhoneContact.phoneNumbers == null || mPhoneContact.phoneNumbers == "") {
                     for(int i = 0; i < popupMenu.getMenu().size(); i++) {
                         MenuItem menuItem = popupMenu.getMenu().getItem(i);
-                        menuItem.setEnabled(false);
+                        if (menuItem.getItemId() != R.id.menu_item_remove) {
+                            menuItem.setEnabled(false);
+                        }
                     }
                 }
 
@@ -121,6 +128,15 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
                 break;
             case R.id.menu_item_schedule:
                 action = UiOptions.CONTACT_ACTION_SCHEDULE;
+                break;
+            case R.id.menu_item_export:
+                action = UiOptions.CONTACT_ACTION_EXPORT;
+                break;
+            case R.id.menu_item_share:
+                action = UiOptions.CONTACT_ACTION_SHARE;
+                break;
+            case R.id.menu_item_remove:
+                action = UiOptions.CONTACT_ACTION_REMOVE;
                 break;
             default:
                 return false;

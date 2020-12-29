@@ -28,4 +28,7 @@
 
     </LinearLayout>
 
+    <!-- ProgressBar Overlay -->
+    <include layout="@layout/progress_overlay" />
+
 </LinearLayout>

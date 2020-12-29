@@ -187,6 +187,7 @@ public class MappingUtils {
         phoneContact.name = phoneContactEntity.displayName;
         phoneContact.phoneNumbers = phoneContactEntity.phoneNumbers;
         phoneContact.starred = phoneContactEntity.starred;
+        phoneContact.lookup = phoneContactEntity.lookup;
         phoneContact.lastUpdatedTime = phoneContactEntity.contactLastUpdatedTimestamp;
         return phoneContact;
     }

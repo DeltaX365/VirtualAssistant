@@ -4,10 +4,14 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,10 +34,20 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
 
     protected Toolbar toolbar;
 
+    private static boolean isProcessing = false;
+    private int processingTimeOut = 3 * 1000; //3 seconds
+    private FrameLayout progressOverlay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupStatusBar();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopProcessing();
     }
 
     @Override
@@ -67,6 +81,37 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
         userPowerManagerWakeup();
         useWindowFlags();
         useActivityScreenMethods();
+    }
+
+    protected void startProcessing() {
+        if (isProcessing) return;
+
+        isProcessing = true;
+        progressOverlay = findViewById(R.id.progress_overlay);
+
+        if (progressOverlay != null) {
+            AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+            inAnimation.setDuration(200);
+            progressOverlay.setAnimation(inAnimation);
+            progressOverlay.setVisibility(View.VISIBLE);
+        }
+
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                stopProcessing();
+//            }
+//        }, processingTimeOut);
+    }
+
+    protected void stopProcessing() {
+        isProcessing = false;
+        if (progressOverlay != null) {
+            AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+            outAnimation.setDuration(200);
+            progressOverlay.setAnimation(outAnimation);
+            progressOverlay.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void useActivityScreenMethods() {

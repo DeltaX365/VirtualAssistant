@@ -91,7 +91,7 @@ public class PhoneAppDashboardActivity extends BaseActivity {
         progressOverlay.setVisibility(View.VISIBLE);
 
         int filter = 1;
-        vm.getPhoneApps(this, filter,false, false).observe(this, new Observer<List<PhoneApp>>() {
+        vm.getPhoneAppsAsync(this, filter,false, false).observe(this, new Observer<List<PhoneApp>>() {
             @Override
             public void onChanged(@Nullable List<PhoneApp> apps) {
                 PhoneAppDashboardActivity.this.recentlyUsageApps = apps;
@@ -130,7 +130,7 @@ public class PhoneAppDashboardActivity extends BaseActivity {
         progressOverlay.setVisibility(View.VISIBLE);
 
         int filter = 2;
-        vm.getPhoneApps(this, filter,false, false).observe(this, new Observer<List<PhoneApp>>() {
+        vm.getPhoneAppsAsync(this, filter,false, false).observe(this, new Observer<List<PhoneApp>>() {
             @Override
             public void onChanged(@Nullable List<PhoneApp> apps) {
                 PhoneAppDashboardActivity.this.mostUsageApps = apps;
@@ -170,23 +170,7 @@ public class PhoneAppDashboardActivity extends BaseActivity {
         });
         categorizedAppsRecyclerView.setAdapter(categorizedAppsAdapter);
 
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressOverlay.setAnimation(inAnimation);
-        progressOverlay.setVisibility(View.VISIBLE);
-
-        int filter = 0;
-        vm.getPhoneApps(this, filter,false, false).observe(this, new Observer<List<PhoneApp>>() {
-            @Override
-            public void onChanged(@Nullable List<PhoneApp> apps) {
-                PhoneAppDashboardActivity.this.categorizedApps = apps;
-                categorizedAppsAdapter.setData(apps);
-
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                progressOverlay.setAnimation(outAnimation);
-                progressOverlay.setVisibility(View.INVISIBLE);
-            }
-        });
+        categorizedApps = vm.getPhoneApps(this,false,false);
+        categorizedAppsAdapter.setData(categorizedApps);
     }
 }

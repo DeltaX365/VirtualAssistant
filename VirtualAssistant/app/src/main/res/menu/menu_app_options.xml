@@ -1,16 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/menu_item_launch"
-        android:title="Open" />
-
+        android:title="Open"
+        android:icon="@drawable/ic_baseline_launch_24"
+        />
     <item
         android:id="@+id/menu_item_lock"
-        android:title="Lock" />
-
+        android:title="Lock"
+        android:icon="@drawable/ic_baseline_lock_24"
+        android:enabled="false"
+        />
+    <item
+        android:id="@+id/menu_item_schedule"
+        android:title="Schedule"
+        android:icon="@drawable/ic_baseline_alarm_24"
+        android:enabled="false"
+        />
+    <item
+        android:id="@+id/menu_item_export"
+        android:title="Export"
+        android:icon="@drawable/ic_baseline_sd_storage_24"
+        android:enabled="false"
+        />
+    <item
+        android:id="@+id/menu_item_share"
+        android:title="Share"
+        android:icon="@drawable/ic_baseline_share_24"
+        android:enabled="false"
+        />
     <item
         android:id="@+id/menu_item_uninstall"
-        android:title="Uninstall" />
-
+        android:title="Uninstall"
+        android:icon="@drawable/ic_baseline_delete_outline_24"
+        android:enabled="false"
+        />
 </menu>

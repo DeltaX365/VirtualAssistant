@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottomsheet_contact_dashboard_filter_options"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    app:behavior_hideable="true"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Filter"
+            android:textSize="18sp"
+            android:textColor="@color/color_black"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginVertical="10dp"
+            />
+        <RadioGroup
+            android:id="@+id/contact_dashboard_filter"
+            android:checkedButton="@+id/contact_dashboard_filter_exclude_strangers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/contact_dashboard_filter_exclude_strangers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Exclude strangers"
+                />
+            <RadioButton
+                android:id="@+id/contact_dashboard_filter_include_strangers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Include strangers"
+                />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+</LinearLayout>

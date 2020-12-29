@@ -51,13 +51,40 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "( " +
             "SELECT * " +
             "FROM PhoneCall " +
+            "ORDER BY Date DESC " +
+            ") " +
+            "WHERE NULLIF(TRIM(PhoneNumber), '') IS NOT NULL " +
+            "GROUP BY PhoneNumber " +
+            "ORDER BY Date DESC " +
+            "LIMIT 0, 10")
+    List<PhoneCallEntity> getRecentAuthorizedCalls();
+
+    @Query("SELECT * " +
+            "FROM " +
+            "( " +
+            "SELECT * " +
+            "FROM PhoneCall " +
             "WHERE Type = :type " +
             "ORDER BY Date DESC " +
             ") " +
             "GROUP BY PhoneNumber " +
             "ORDER BY Date DESC " +
             "LIMIT 0, 10")
-    List<PhoneCallEntity> getRecentCallsByType(int type);
+    List<PhoneCallEntity> getRecentCalls(int type);
+
+    @Query("SELECT * " +
+            "FROM " +
+            "( " +
+            "SELECT * " +
+            "FROM PhoneCall " +
+            "WHERE Type = :type " +
+            "ORDER BY Date DESC " +
+            ") " +
+            "WHERE NULLIF(TRIM(PhoneNumber), '') IS NOT NULL " +
+            "GROUP BY PhoneNumber " +
+            "ORDER BY Date DESC " +
+            "LIMIT 0, 10")
+    List<PhoneCallEntity> getRecentAuthorizedCalls(int type);
 
     @Query("SELECT * " +
             "FROM " +
@@ -75,12 +102,37 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "( " +
             "SELECT *, SUM(Duration) AS TotalDuration " +
             "FROM PhoneCall " +
+            "GROUP BY PhoneNumber " +
+            ") " +
+            "WHERE NULLIF(TRIM(PhoneNumber), '') IS NOT NULL " +
+            "ORDER BY TotalDuration DESC " +
+            "LIMIT 0, 10")
+    List<PhoneCallEntity> getMostAuthorizedCalls();
+
+    @Query("SELECT * " +
+            "FROM " +
+            "( " +
+            "SELECT *, SUM(Duration) AS TotalDuration " +
+            "FROM PhoneCall " +
             "WHERE Type = :type " +
             "GROUP BY PhoneNumber " +
             ") " +
             "ORDER BY TotalDuration DESC " +
             "LIMIT 0, 10")
-    List<PhoneCallEntity> getMostCallsByType(int type);
+    List<PhoneCallEntity> getMostCalls(int type);
+
+    @Query("SELECT * " +
+            "FROM " +
+            "( " +
+            "SELECT *, SUM(Duration) AS TotalDuration " +
+            "FROM PhoneCall " +
+            "WHERE Type = :type " +
+            "GROUP BY PhoneNumber " +
+            ") " +
+            "WHERE NULLIF(TRIM(PhoneNumber), '') IS NOT NULL " +
+            "ORDER BY TotalDuration DESC " +
+            "LIMIT 0, 10")
+    List<PhoneCallEntity> getMostAuthorizedCalls(int type);
 
     @Query("DELETE FROM PhoneCall")
     void reset();
