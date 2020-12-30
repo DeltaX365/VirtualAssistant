@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.phoneapp.v2;
+package com.vnsolution.virtualassistant.ui.app.v2;
 
 import android.os.Bundle;
 import android.view.View;
@@ -10,7 +10,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsFragment;
+import com.vnsolution.virtualassistant.ui.app.v1.PhoneAppsFragment;
 
 import javax.inject.Inject;
 

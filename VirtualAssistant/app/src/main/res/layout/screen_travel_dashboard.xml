@@ -63,12 +63,22 @@
                     android:textStyle="bold"
                     />
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/list_recently_visited_places"
+                    android:id="@+id/list_recent_visited_places"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="20dp"
                     android:clipToPadding="false"
                     android:layout_marginTop="10dp"
+                    />
+                <TextView
+                    android:id="@+id/no_recent_visited_place"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="20dp"
+                    android:text="There is no recent visited place"
+                    android:textColor="@color/color_black"
+                    android:textStyle="italic"
+                    android:visibility="gone"
                     />
 
             </LinearLayout>
@@ -93,6 +103,16 @@
                     android:paddingHorizontal="20dp"
                     android:clipToPadding="false"
                     android:layout_marginTop="10dp"
+                    />
+                <TextView
+                    android:id="@+id/no_most_visited_place"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="20dp"
+                    android:text="There is no most visited place"
+                    android:textColor="@color/color_black"
+                    android:textStyle="italic"
+                    android:visibility="gone"
                     />
             </LinearLayout>
 

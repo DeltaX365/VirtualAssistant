@@ -44,6 +44,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
+import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.model.StopPoint;
@@ -607,7 +608,7 @@ public class StopTrackingService extends Service {
     }
 
     private void saveStopPointInCache(StopPoint stopPoint) {
-        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         Gson gson = new Gson();
         String stopPointString = gson.toJson(stopPoint);
@@ -616,14 +617,14 @@ public class StopTrackingService extends Service {
     }
 
     private StopPoint getStopPointFromCache() {
-        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
         String stopPointString = sharedPref.getString("StopTrackingService.StopPoint", "");
         Gson gson = new Gson();
         return !stopPointString.isEmpty()? gson.fromJson(stopPointString, StopPoint.class) : null;
     }
 
     private void removeStopPointFromCache() {
-        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.remove("StopTrackingService.StopPoint");
         editor.commit();

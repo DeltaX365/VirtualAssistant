@@ -26,4 +26,7 @@ public class PhoneAppEntity extends AuditEntity {
 
     @ColumnInfo(name = "AppIcon")
     public String appIcon;
+
+    @ColumnInfo(name = "Type")
+    public int type;
 }

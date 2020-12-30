@@ -2,16 +2,18 @@ package com.vnsolution.virtualassistant.common;
 
 import android.Manifest;
 
-public class StopTrackingOptions {
-    public static final String BROADCAST_PERMISSIONS_ALL_GRANTED = "com.vnsolution.virtualassistant.STOP_TRACKING_BROADCAST_PERMISSIONS_ALL_GRANTED";
-    public static final String BROADCAST_PERMISSIONS_LOCATION_GRANTED = "com.vnsolution.virtualassistant.STOP_TRACKING_BROADCAST_LOCATION_PERMISSIONS_GRANTED";
-    public static final String BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED = "com.vnsolution.virtualassistant.STOP_TRACKING_BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED";
+import com.vnsolution.virtualassistant.BuildConfig;
 
-    public static final String INTENT_ACTION_INITIAL = "com.vnsolution.virtualassistant.STOP_TRACKING_INTENT_ACTION_INITIAL";
-    public static final String INTENT_ACTION_CHECK_IN = "com.vnsolution.virtualassistant.STOP_TRACKING_INTENT_ACTION_CHECK_IN";
-    public static final String INTENT_ACTION_MARK_AS_VISITED = "com.vnsolution.virtualassistant.STOP_TRACKING_INTENT_ACTION_MARK_AS_VISITED";
-    public static final String INTENT_ACTION_CHECK_OUT = "com.vnsolution.virtualassistant.STOP_TRACKING_INTENT_ACTION_CHECK_OUT";
-    public static final String INTENT_CATEGORY_ACTIVITY_TRANSITION = "com.vnsolution.virtualassistant.STOP_TRACKING_INTENT_CATEGORY_ACTIVITY_TRANSITION";
+public class StopTrackingOptions {
+    public static final String BROADCAST_PERMISSIONS_ALL_GRANTED = BuildConfig.APPLICATION_ID + "STOP_TRACKING_BROADCAST_PERMISSIONS_ALL_GRANTED";
+    public static final String BROADCAST_PERMISSIONS_LOCATION_GRANTED = BuildConfig.APPLICATION_ID + "STOP_TRACKING_BROADCAST_LOCATION_PERMISSIONS_GRANTED";
+    public static final String BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED = BuildConfig.APPLICATION_ID + "STOP_TRACKING_BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED";
+
+    public static final String INTENT_ACTION_INITIAL = BuildConfig.APPLICATION_ID + "STOP_TRACKING_INTENT_ACTION_INITIAL";
+    public static final String INTENT_ACTION_CHECK_IN = BuildConfig.APPLICATION_ID + "STOP_TRACKING_INTENT_ACTION_CHECK_IN";
+    public static final String INTENT_ACTION_MARK_AS_VISITED = BuildConfig.APPLICATION_ID + "STOP_TRACKING_INTENT_ACTION_MARK_AS_VISITED";
+    public static final String INTENT_ACTION_CHECK_OUT = BuildConfig.APPLICATION_ID + "STOP_TRACKING_INTENT_ACTION_CHECK_OUT";
+    public static final String INTENT_CATEGORY_ACTIVITY_TRANSITION = BuildConfig.APPLICATION_ID + "STOP_TRACKING_INTENT_CATEGORY_ACTIVITY_TRANSITION";
 
     public static final int PERMISSIONS_REQUEST_CODE = 1000;
     public static final String[] PERMISSIONS_STOP_TRACKING = {Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION};
@@ -39,7 +41,7 @@ public class StopTrackingOptions {
     public static final int CONFIG_GEOFENCE_EXPIRATION_IN_MILLISECONDS = 1*60*1000;
     public static final int CONFIG_GEOFENCE_DWELLING_IN_MILLISECONDS = 30*60*1000;
 
-    public static final String NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID = "com.vnsolution.virtualassistant.STOP_TRACKING_FOREGROUND_SERVICE";
+    public static final String NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID = BuildConfig.APPLICATION_ID + "STOP_TRACKING_FOREGROUND_SERVICE";
     public static final String NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME = "Stop Detection";
     public static final String NOTIFY_FOREGROUND_SERVICE_TITLE = "Foreground Service";
     public static final String NOTIFY_FOREGROUND_SERVICE_TEXT = "Checking activity...";

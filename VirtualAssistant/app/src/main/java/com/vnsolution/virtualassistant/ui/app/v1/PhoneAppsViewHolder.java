@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.phoneapp.v1;
+package com.vnsolution.virtualassistant.ui.app.v1;
 
 import android.view.View;
 import android.widget.ImageView;

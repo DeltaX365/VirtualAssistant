@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.phoneapp.component;
+package com.vnsolution.virtualassistant.ui.app.component;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -69,6 +69,13 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
                 popupMenu.setOnMenuItemClickListener(AppCardFullWidthRow.this);
                 popupMenu.inflate(R.menu.menu_app_options);
 
+                for(int i = 0; i < popupMenu.getMenu().size(); i++) {
+                    MenuItem menuItem = popupMenu.getMenu().getItem(i);
+                    if (menuItem.getItemId() == R.id.menu_item_remove && mPhoneApp != null && mPhoneApp.type == 1) {  //2 normal apps, 1 system apps
+                        menuItem.setEnabled(false);
+                    }
+                }
+
                 MenuPopupHelper menuPopupHelper = new MenuPopupHelper(mContext, (MenuBuilder) popupMenu.getMenu(), v);
                 menuPopupHelper.setForceShowIcon(true);
                 menuPopupHelper.show();
@@ -107,6 +114,15 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
                 break;
             case R.id.menu_item_lock:
                 action = UiOptions.APP_ACTION_LOCK;
+                break;
+            case R.id.menu_item_schedule:
+                action = UiOptions.APP_ACTION_SCHEDULE;
+                break;
+            case R.id.menu_item_export:
+                action = UiOptions.APP_ACTION_EXPORT;
+                break;
+            case R.id.menu_item_share:
+                action = UiOptions.APP_ACTION_SHARE;
                 break;
             case R.id.menu_item_uninstall:
                 action = UiOptions.APP_ACTION_UNINSTALL;

@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,10 +34,11 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
     protected Toolbar toolbar;
+    protected ProgressBar progressbar;
+    protected View container;
 
     private static boolean isProcessing = false;
     private int processingTimeOut = 3 * 1000; //3 seconds
-    private FrameLayout progressOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,13 +89,14 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
         if (isProcessing) return;
 
         isProcessing = true;
-        progressOverlay = findViewById(R.id.progress_overlay);
+        progressbar = findViewById(R.id.progress_bar);
+        container = findViewById(R.id.container);
 
-        if (progressOverlay != null) {
-            AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-            inAnimation.setDuration(200);
-            progressOverlay.setAnimation(inAnimation);
-            progressOverlay.setVisibility(View.VISIBLE);
+        if (progressbar != null) {
+            progressbar.setVisibility(View.VISIBLE);
+        }
+        if (container != null) {
+            container.setVisibility(View.GONE);
         }
 
 //        new Handler().postDelayed(new Runnable() {
@@ -106,11 +109,11 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
 
     protected void stopProcessing() {
         isProcessing = false;
-        if (progressOverlay != null) {
-            AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-            outAnimation.setDuration(200);
-            progressOverlay.setAnimation(outAnimation);
-            progressOverlay.setVisibility(View.INVISIBLE);
+        if (progressbar != null) {
+            progressbar.setVisibility(View.GONE);
+        }
+        if (container != null) {
+            container.setVisibility(View.VISIBLE);
         }
     }
 

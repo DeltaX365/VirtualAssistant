@@ -1,10 +1,10 @@
-package com.vnsolution.virtualassistant.ui.phoneapp.v2;
+package com.vnsolution.virtualassistant.ui.app.v2;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsFragment;
+import com.vnsolution.virtualassistant.ui.app.v1.PhoneAppsFragment;
 
 import java.util.ArrayList;
 import java.util.List;

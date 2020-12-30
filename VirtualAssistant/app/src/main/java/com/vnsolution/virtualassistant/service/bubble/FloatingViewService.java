@@ -26,6 +26,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
+import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.ui.StartupActivity;
 
@@ -211,7 +212,7 @@ public class FloatingViewService extends Service implements View.OnTouchListener
     }
 
     private void saveViewPositionToCache(ViewPosition viewPosition) {
-        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         Gson gson = new Gson();
         String viewPositionString = gson.toJson(viewPosition);
@@ -220,7 +221,7 @@ public class FloatingViewService extends Service implements View.OnTouchListener
     }
 
     private ViewPosition getViewPositionFromCache() {
-        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
         String viewPositionString = sharedPref.getString("FloatingViewService.ViewPosition", "");
         Gson gson = new Gson();
         return !viewPositionString.isEmpty()? gson.fromJson(viewPositionString, ViewPosition.class) : null;

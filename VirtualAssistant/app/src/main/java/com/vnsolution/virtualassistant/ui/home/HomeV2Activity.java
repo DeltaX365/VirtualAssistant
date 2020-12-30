@@ -22,7 +22,7 @@ import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.ui.contact.ContactListActivity;
-import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppDashboardActivity;
+import com.vnsolution.virtualassistant.ui.app.AppDashboardActivity;
 import com.vnsolution.virtualassistant.ui.contact.ContactDashboardActivity;
 import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
@@ -79,7 +79,7 @@ public class HomeV2Activity extends BaseActivity {
                         intent = new Intent(HomeV2Activity.this, TravelDashboardActivity.class);
                         break;
                     case BotOptions.MANAGE_YOUR_APPS:
-                        intent = new Intent(HomeV2Activity.this, PhoneAppDashboardActivity.class);
+                        intent = new Intent(HomeV2Activity.this, AppDashboardActivity.class);
                         break;
                     case BotOptions.MANAGE_CONTACTS:
                         intent = new Intent(HomeV2Activity.this, ContactListActivity.class);
@@ -119,7 +119,7 @@ public class HomeV2Activity extends BaseActivity {
         availableActions.add(BotOptions.SHOW_CALL_STAT);
         availableActions.add(BotOptions.MANAGE_YOUR_APPS);
         availableActions.add(BotOptions.SHOW_REMINDERS);
-        availableActions.add(BotOptions.SHOW_NOTIFICATIONS);
+//        availableActions.add(BotOptions.SHOW_NOTIFICATIONS);
 //        availableActions.add(BotOptions.SHOW_CALL_LOGS);
 //        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
         availableActions.add(BotOptions.SHOW_SETTINGS);

@@ -44,8 +44,8 @@ public class TravelViewModel extends ViewModel {
         this.googleService = googleService;
     }
 
-    public LiveData<List<Place>> getRecentlyVisitedPlaces() {
-        LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getRecentlyVisitedPlaces();
+    public LiveData<List<Place>> getRecentVisitedPlaces() {
+        LiveData<List<PlaceWithHistoryDetailEntity>> placesLiveData = placeDao.getRecentVisitedPlaces();
         return Transformations.map(placesLiveData, placeEntities -> transformFromPlaceEntity(placeEntities));
     }
 

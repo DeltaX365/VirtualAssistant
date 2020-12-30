@@ -40,7 +40,12 @@ import com.vnsolution.virtualassistant.util.PhoneUtils;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -519,10 +524,10 @@ public class DeviceManager {
         Future<List<PhoneAppEntity>> phoneAppListFuture = executor.submit(new Callable<List<PhoneAppEntity>>() {
             @Override
             public List<PhoneAppEntity> call() throws Exception {
-                List<PhoneAppEntity> phoneApps = phoneAppDao.getAll();
+                List<PhoneAppEntity> phoneApps = shouldGetSystemPackages? phoneAppDao.getAll() : phoneAppDao.getPhoneApps(2); //2 normal apps, 1 system apps
                 if (forceUpdate || phoneApps == null || phoneApps.size() == 0) {
                     syncPhoneApps(context);
-                    phoneApps = phoneAppDao.getAll();
+                    phoneApps = shouldGetSystemPackages? phoneAppDao.getAll() : phoneAppDao.getPhoneApps(2);
                 }
                 return phoneApps;
             }
@@ -550,6 +555,19 @@ public class DeviceManager {
         phoneAppDao.insert(phoneApps);
     }
 
+    private PhoneAppEntity getPhoneAppEntity(Context context, PackageInfo packageInfo) {
+        PhoneAppEntity phoneAppEntity = new PhoneAppEntity();
+        phoneAppEntity.id = UUID.randomUUID().toString();
+        phoneAppEntity.appId = packageInfo.applicationInfo.uid;
+        phoneAppEntity.appName = packageInfo.applicationInfo.loadLabel(context.getPackageManager()).toString();
+        phoneAppEntity.packageName = packageInfo.packageName;
+        phoneAppEntity.versionCode = packageInfo.versionCode;
+        phoneAppEntity.versionName = packageInfo.versionName;
+        phoneAppEntity.type = isSystemPackage(packageInfo)? 1 : 2; //1 system app, 2 normal app
+        phoneAppEntity.createdDate = new Date();
+        return phoneAppEntity;
+    }
+
     public ArrayMap<String, UsageStats> getPhoneAppUsageStats(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
@@ -572,46 +590,6 @@ public class DeviceManager {
             return appUsageStats;
         }
         return null;
-    }
-
-    private PhoneAppEntity getPhoneAppEntity(Context context, PackageInfo packageInfo) {
-        PhoneAppEntity phoneAppEntity = new PhoneAppEntity();
-        phoneAppEntity.id = UUID.randomUUID().toString();
-        phoneAppEntity.appId = packageInfo.applicationInfo.uid;
-        phoneAppEntity.appName = packageInfo.applicationInfo.loadLabel(context.getPackageManager()).toString();
-        phoneAppEntity.packageName = packageInfo.packageName;
-        phoneAppEntity.versionCode = packageInfo.versionCode;
-        phoneAppEntity.versionName = packageInfo.versionName;
-        phoneAppEntity.createdDate = new Date();
-        return phoneAppEntity;
-    }
-
-    private void applyPhoneContactStat(Context context, List<PhoneContact> contactList) {
-        List<PhoneCall> callList = getPhoneCalls(context, true);
-        List<PhoneSms> smsList = getPhoneSmsList(context, true);
-        for (PhoneContact phoneContact : contactList) {
-            int totalIncomeCall = 0;
-            int totalOutcomeCall = 0;
-            int totalSms = 0;
-            for (PhoneCall phoneCall : callList) {
-                if (phoneContact.phoneNumbers.contains(phoneCall.phoneNumber)) {
-                    if (phoneCall.type == android.provider.CallLog.Calls.INCOMING_TYPE) {
-                        totalIncomeCall++;
-                    } else if (phoneCall.type == CallLog.Calls.OUTGOING_TYPE) {
-                        totalOutcomeCall++;
-                    }
-                }
-            }
-            for (PhoneSms phoneSms : smsList) {
-                String phoneNumber = PhoneUtils.convertInternationalToNational(phoneSms.address);
-                if (phoneContact.phoneNumbers.contains(phoneNumber)) {
-                    totalSms++;
-                }
-            }
-            phoneContact.totalIncomingNumber = totalIncomeCall;
-            phoneContact.totalOutgoingNumber = totalOutcomeCall;
-            phoneContact.totalMissedNumber = totalSms;
-        }
     }
 
     private PhoneCallEntity getPhoneCallEntity(Cursor cursor) {

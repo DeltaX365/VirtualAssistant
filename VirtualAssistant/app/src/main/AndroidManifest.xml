@@ -38,7 +38,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- Meta Data -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -46,7 +45,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBQr8YzGqe0PWQiEMx9JbsnXmbpRZvQURo" />
 
-        <!-- Screens -->
         <activity
             android:name=".ui.StartupActivity"
             android:noHistory="true"
@@ -84,7 +82,7 @@
             android:name=".ui.contact.ContactListActivity"
             android:label="@string/title_screen_contacts"/>
         <activity
-            android:name=".ui.phoneapp.PhoneAppDashboardActivity"
+            android:name=".ui.app.AppDashboardActivity"
             android:label="@string/title_screen_applications" />
         <activity
             android:name=".ui.reminder.ReminderListActivity"
@@ -95,8 +93,8 @@
         <activity
             android:name=".ui.reminder.ReminderShowFullScreenActivity"
             android:label="@string/title_screen_reminders" />
-        <activity android:name=".ui.phoneapp.v1.PhoneAppActivity" />
-        <activity android:name=".ui.phoneapp.v2.PhoneAppV2Activity" />
+        <activity android:name=".ui.app.v1.PhoneAppActivity" />
+        <activity android:name=".ui.app.v2.PhoneAppV2Activity" />
         <activity
             android:name=".ui.phonecall.v1.PhoneCallActivity"
             android:label="@string/title_screen_call_history"/>
@@ -107,7 +105,6 @@
             android:name=".ui.setting.SettingActivity"
             android:label="@string/title_screen_settings" />
 
-        <!-- Services -->
         <service
             android:name=".service.stoptracking.StopTrackingService"
             android:exported="true" />
@@ -124,7 +121,6 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".service.bubble.FloatingViewService" />
 
-        <!-- Broadcast Receivers -->
         <receiver
             android:name=".startup.StartupBroadcastReceiver"
             android:exported="true">
@@ -142,7 +138,8 @@
         </receiver>
         <receiver
             android:name=".service.stoptracking.GeofenceBroadcastReceiver"
-            android:exported="true" />
+            android:exported="true">
+        </receiver>
         <receiver
             android:name=".service.stoptracking.LocationUpdatesBroadcastReceiver"
             android:exported="true">
@@ -163,7 +160,18 @@
         </receiver>
         <receiver
             android:name=".service.reminder.ReminderBroadcastReceiver"
-            android:exported="true" />
+            android:exported="true">
+        </receiver>
+        
+        <provider
+            android:authorities="${applicationId}.provider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provide_paths" />
+        </provider>
 
     </application>
 

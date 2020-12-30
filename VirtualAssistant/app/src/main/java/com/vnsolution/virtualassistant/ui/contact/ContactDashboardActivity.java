@@ -154,11 +154,18 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
                 bottomSheetDialog.listener(new ContactDashboardFilterBottomSheetDialogFragment.Listener() {
                     @Override
                     public void onChanged(ContactDashboardFilterBottomSheetDialogFragment.Filter filterOption) {
-                        filter(filterOption);
+                        boolean includeStrangerNew = (filterOption == ContactDashboardFilterBottomSheetDialogFragment.Filter.INCLUDE_STRANGERS)? true : false;
+                        if (includeStranger != includeStrangerNew) {
+                            includeStranger = includeStrangerNew;
+                            refreshView();
+                        }
                     }
                 });
                 bottomSheetDialog.setValue(includeStranger? ContactDashboardFilterBottomSheetDialogFragment.Filter.INCLUDE_STRANGERS : ContactDashboardFilterBottomSheetDialogFragment.Filter.EXCLUDE_STRANGERS);
                 bottomSheetDialog.show(getSupportFragmentManager(), "ContactDashboardFilterBottomSheetDialogFragment");
+                break;
+            case android.R.id.home:
+                finish();
                 break;
         }
         return true;
@@ -473,11 +480,6 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
 
         int visibility = (mostOutgoingCalls != null && mostOutgoingCalls.size() > 0) ? View.GONE : View.VISIBLE;
         noMostOutgoingCallTextView.setVisibility(visibility);
-    }
-
-    private void filter(ContactDashboardFilterBottomSheetDialogFragment.Filter filterOption) {
-        includeStranger = (filterOption == ContactDashboardFilterBottomSheetDialogFragment.Filter.INCLUDE_STRANGERS)? true : false;
-        refreshView();
     }
 
     private void assignContactToPhoneCalls(List<PhoneCall> phoneCalls) {

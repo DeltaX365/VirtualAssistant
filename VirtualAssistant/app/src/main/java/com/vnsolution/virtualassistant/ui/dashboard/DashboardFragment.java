@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
+import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.di.Injectable;
@@ -256,7 +257,7 @@ public class DashboardFragment extends Fragment implements Injectable {
     private StopPoint getStopPointFromCache() {
         String stopPointString = "";
         if (mContext != null) {
-            SharedPreferences sharedPref = mContext.getSharedPreferences("com.vnsolution.VirtualAssistant", Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = mContext.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
             stopPointString = sharedPref.getString("StopPoint", "");
         }
         Gson gson = new Gson();

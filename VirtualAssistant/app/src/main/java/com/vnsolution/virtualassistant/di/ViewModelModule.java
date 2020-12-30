@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.vnsolution.virtualassistant.ui.notification.NotificationViewModel;
-import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppViewModel;
+import com.vnsolution.virtualassistant.ui.app.AppViewModel;
 import com.vnsolution.virtualassistant.ui.contact.ContactViewModel;
 import com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsViewModel;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardViewModel;
@@ -31,8 +31,8 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(PhoneAppViewModel.class)
-    abstract ViewModel bindInstalledApplicationsViewModel(PhoneAppViewModel phoneAppViewModel);
+    @ViewModelKey(AppViewModel.class)
+    abstract ViewModel bindInstalledApplicationsViewModel(AppViewModel appViewModel);
 
     @Binds
     @IntoMap

@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.phoneapp.v1;
+package com.vnsolution.virtualassistant.ui.app.v1;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.PhoneApp;
-import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppViewModel;
+import com.vnsolution.virtualassistant.ui.app.AppViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class PhoneAppsFragment extends Fragment implements Injectable {
 
     private PhoneAppsAdapter adapter;
     private List<PhoneApp> installedApplications = new ArrayList<>();
-    private PhoneAppViewModel vm;
+    private AppViewModel vm;
     private Context mContext;
 
     @Inject
@@ -69,7 +69,7 @@ public class PhoneAppsFragment extends Fragment implements Injectable {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vm = ViewModelProviders.of(this, viewModelFactory).get(PhoneAppViewModel.class);
+        vm = ViewModelProviders.of(this, viewModelFactory).get(AppViewModel.class);
         int index = 1;
         if (getArguments() != null) {
             index = getArguments().getInt(ARG_SECTION_NUMBER);

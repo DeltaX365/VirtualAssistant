@@ -264,4 +264,13 @@ public class DbMigration {
             database.execSQL(addColumnAlarmRequestCodeToReminderTableSql);
         }
     };
+
+    public static final Migration MIGRATION_10_11 = new Migration(10, 11) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Add column System to PhoneApp table
+            String addColumnSystemToPhoneAppTableSql = "ALTER TABLE PhoneApp ADD COLUMN Type INTEGER NOT NULL DEFAULT 0";
+            database.execSQL(addColumnSystemToPhoneAppTableSql);
+        }
+    };
 }

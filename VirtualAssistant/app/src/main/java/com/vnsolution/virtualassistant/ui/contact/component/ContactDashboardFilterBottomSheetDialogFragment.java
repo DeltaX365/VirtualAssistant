@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.view.View;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -40,17 +41,13 @@ public class ContactDashboardFilterBottomSheetDialogFragment extends BottomSheet
         contactDashboardFilterRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Filter filter = null;
                 switch (checkedId) {
                     case R.id.contact_dashboard_filter_include_strangers:
-                        filter = Filter.INCLUDE_STRANGERS;
+                        value = Filter.INCLUDE_STRANGERS;
                         break;
                     case R.id.contact_dashboard_filter_exclude_strangers:
-                        filter = Filter.EXCLUDE_STRANGERS;
+                        value = Filter.EXCLUDE_STRANGERS;
                         break;
-                }
-                if (listener != null && filter != null) {
-                    listener.onChanged(filter);
                 }
             }
         });
@@ -62,6 +59,17 @@ public class ContactDashboardFilterBottomSheetDialogFragment extends BottomSheet
                 contactDashboardFilterRadioGroup.check(R.id.contact_dashboard_filter_exclude_strangers);
             }
         }
+
+        TextView acceptFilterTextView = contentView.findViewById(R.id.accept_filter);
+        acceptFilterTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null && value != null) {
+                    listener.onChanged(value);
+                    dismiss();
+                }
+            }
+        });
 
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
         CoordinatorLayout.Behavior behavior = params.getBehavior();

@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vnsolution.virtualassistant.R;
 
 public class ContactListSortBottomSheetDialogFragment extends BottomSheetDialogFragment {
+    private SortBy sortBy;
+    private SortDirection sortDirection;
     private Listener listener;
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
         @Override
@@ -41,8 +44,6 @@ public class ContactListSortBottomSheetDialogFragment extends BottomSheetDialogF
         contactListSortByRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                SortBy sortBy = null;
-                SortDirection sortDirection = null;
                 switch (checkedId) {
                     case R.id.contact_list_sort_by_name_asc:
                         sortBy = SortBy.NAME;
@@ -57,8 +58,16 @@ public class ContactListSortBottomSheetDialogFragment extends BottomSheetDialogF
                         sortDirection = SortDirection.DESC;
                         break;
                 }
+            }
+        });
+
+        TextView acceptFilterTextView = contentView.findViewById(R.id.accept_filter);
+        acceptFilterTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 if (listener != null && sortBy != null && sortDirection != null) {
                     listener.onChanged(sortBy, sortDirection);
+                    dismiss();
                 }
             }
         });

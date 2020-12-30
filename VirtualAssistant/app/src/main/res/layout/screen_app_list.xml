@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsFragment">
+    tools:context="com.vnsolution.virtualassistant.ui.app.v1.PhoneAppsFragment">
 
-    <com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsRecycleView
+    <com.vnsolution.virtualassistant.ui.app.v1.PhoneAppsRecycleView
         android:id="@+id/list_applications"
         android:layout_width="0dp"
         android:layout_height="0dp"

@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.phoneapp.component;
+package com.vnsolution.virtualassistant.ui.app.component;
 
 import android.content.Context;
 import android.icu.text.DateFormat;
@@ -61,7 +61,7 @@ public class AppCardRow extends MaterialCardView implements IRecyclerViewRow<Pho
             appLastUsedTime += DateUtils.formatSameDayTime(phoneApp.usageStats.getLastTimeUsed(), System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM).toString();
             appUsageTime += DateUtils.formatElapsedTime(phoneApp.usageStats.getTotalTimeInForeground() / 1000);
         }
-        String appUsage = (viewType.equals(UiOptions.APP_LIST_RECENTLY_USAGE))? appLastUsedTime :
+        String appUsage = (viewType.equals(UiOptions.APP_LIST_RECENT_USAGE))? appLastUsedTime :
                 (viewType.equals(UiOptions.APP_LIST_MOST_USAGE))? appUsageTime : "";
         mAppUsageTextView.setText(appUsage);
     }

@@ -53,7 +53,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "GROUP BY p.Id " +
             "ORDER BY ph.EnterTime DESC " +
             "LIMIT 0, 10")
-    LiveData<List<PlaceWithHistoryDetailEntity>> getRecentlyVisitedPlaces();
+    LiveData<List<PlaceWithHistoryDetailEntity>> getRecentVisitedPlaces();
 
     @Transaction
     @Query("SELECT p.* " +

@@ -2,7 +2,7 @@ package com.vnsolution.virtualassistant.common;
 
 public class UiOptions {
     // Place Dashboard UI
-    public static final String PLACE_LIST_RECENTLY_VISITED = "PLACE_LIST_RECENTLY_VISITED";
+    public static final String PLACE_LIST_RECENT_VISITED = "PLACE_LIST_RECENTLY_VISITED";
     public static final String PLACE_LIST_MOST_VISITED = "PLACE_LIST_MOST_VISITED";
     public static final String PLACE_LIST_SUMMARY = "PLACE_LIST_SUMMARY";
     public static final String PLACE_SUMMARY_YESTERDAY = "PLACE_SUMMARY_YESTERDAY";
@@ -15,11 +15,14 @@ public class UiOptions {
     public static final String PLACE_LIST_HISTORY = "PLACE_LIST_HISTORY";
 
     // App Dashboard UI
-    public static final String APP_LIST_RECENTLY_USAGE = "APP_LIST_RECENTLY_USAGE";
+    public static final String APP_LIST_RECENT_USAGE = "APP_LIST_RECENTLY_USAGE";
     public static final String APP_LIST_MOST_USAGE = "APP_LIST_MOST_USAGE";
     public static final String APP_LIST_CATEGORY = "APP_LIST_CATEGORY";
     public static final String APP_ACTION_LAUNCH = "APP_ACTION_LAUNCH";
     public static final String APP_ACTION_LOCK = "APP_ACTION_LOCK";
+    public static final String APP_ACTION_SCHEDULE = "APP_ACTION_SCHEDULE";
+    public static final String APP_ACTION_EXPORT = "APP_ACTION_EXPORT";
+    public static final String APP_ACTION_SHARE = "APP_ACTION_SHARE";
     public static final String APP_ACTION_UNINSTALL = "APP_ACTION_UNINSTALL";
 
     // Phone Contact UI

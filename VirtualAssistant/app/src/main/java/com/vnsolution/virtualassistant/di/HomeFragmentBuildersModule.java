@@ -1,7 +1,7 @@
 package com.vnsolution.virtualassistant.di;
 
 import com.vnsolution.virtualassistant.ui.notification.NotificationFragment;
-import com.vnsolution.virtualassistant.ui.phoneapp.v1.PhoneAppsFragment;
+import com.vnsolution.virtualassistant.ui.app.v1.PhoneAppsFragment;
 import com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsFragment;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardFragment;
 import com.vnsolution.virtualassistant.ui.setting.SettingFragment;

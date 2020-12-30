@@ -8,6 +8,7 @@ public class PhoneApp {
     public String packageName;
     public String versionName;
     public int versionCode;
+    public int type;
     public Drawable appIcon;
     public UsageStats usageStats;
 }

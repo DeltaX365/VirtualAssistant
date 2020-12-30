@@ -15,7 +15,6 @@
         android:id="@+id/menu_item_schedule"
         android:title="Schedule"
         android:icon="@drawable/ic_baseline_alarm_24"
-        android:enabled="false"
         />
     <item
         android:id="@+id/menu_item_export"
@@ -27,12 +26,10 @@
         android:id="@+id/menu_item_share"
         android:title="Share"
         android:icon="@drawable/ic_baseline_share_24"
-        android:enabled="false"
         />
     <item
         android:id="@+id/menu_item_uninstall"
         android:title="Uninstall"
         android:icon="@drawable/ic_baseline_delete_outline_24"
-        android:enabled="false"
         />
 </menu>

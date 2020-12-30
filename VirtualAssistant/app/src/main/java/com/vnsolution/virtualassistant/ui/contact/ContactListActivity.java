@@ -203,6 +203,9 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
                 });
                 bottomSheetDialog.show(getSupportFragmentManager(), "ContactListSortBottomSheetDialogFragment");
                 break;
+            case android.R.id.home:
+                finish();
+                break;
         }
         return true;
     }

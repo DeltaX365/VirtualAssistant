@@ -1,4 +1,4 @@
-package com.vnsolution.virtualassistant.ui.phoneapp.v1;
+package com.vnsolution.virtualassistant.ui.app.v1;
 
 import android.os.Bundle;
 import android.view.View;
@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.model.PhoneApp;
-import com.vnsolution.virtualassistant.ui.phoneapp.PhoneAppViewModel;
+import com.vnsolution.virtualassistant.ui.app.AppViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public class PhoneAppActivity extends AppCompatActivity implements HasAndroidInj
 
     private PhoneAppsAdapter installedApplicationAdapter;
     private List<PhoneApp> installedApplications = new ArrayList<>();
-    private PhoneAppViewModel vm;
+    private AppViewModel vm;
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -66,7 +66,7 @@ public class PhoneAppActivity extends AppCompatActivity implements HasAndroidInj
         progressOverlay.setAnimation(inAnimation);
         progressOverlay.setVisibility(View.VISIBLE);
 
-        vm = ViewModelProviders.of(this, viewModelFactory).get(PhoneAppViewModel.class);
+        vm = ViewModelProviders.of(this, viewModelFactory).get(AppViewModel.class);
         vm.getPhoneAppsAsync(this, false, false).observe(this, new Observer<List<PhoneApp>>() {
             @Override
             public void onChanged(List<PhoneApp> applications) {

@@ -261,6 +261,7 @@ public class MappingUtils {
         phoneApp.packageName = phoneAppEntity.packageName;
         phoneApp.versionName = phoneAppEntity.versionName;
         phoneApp.versionCode = phoneAppEntity.versionCode;
+        phoneApp.type = phoneAppEntity.type;
         return phoneApp;
     }
 

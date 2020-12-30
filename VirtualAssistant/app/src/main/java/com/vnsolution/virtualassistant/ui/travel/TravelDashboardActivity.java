@@ -3,24 +3,17 @@ package com.vnsolution.virtualassistant.ui.travel;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
+import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.db.convertor.DateConverter;
@@ -42,14 +35,16 @@ public class TravelDashboardActivity extends BaseActivity {
     private ViewGroup visitingPlaceViewGroup;
     private TextView visitingPlaceTextView;
 
-    private RecyclerView recentlyVisitedPlacesRecyclerView;
-    private RecyclerViewAdapter<Place> recentlyVisitedPlacesAdapter;
-    private RecyclerView.LayoutManager recentlyVisitedPlacesLayoutManager;
-    private List<Place> recentlyVisitedPlaces = new ArrayList<>();
+    private RecyclerView recentVisitedPlacesRecyclerView;
+    private RecyclerViewAdapter<Place> recentVisitedPlacesAdapter;
+    private RecyclerView.LayoutManager recentVisitedPlacesLayoutManager;
+    private TextView noRecentVisitedPlaceTextView;
+    private List<Place> recentVisitedPlaces = new ArrayList<>();
 
     private RecyclerView mostVisitedPlacesRecyclerView;
     private RecyclerViewAdapter<Place> mostVisitedPlacesAdapter;
     private RecyclerView.LayoutManager mostVisitedPlacesLayoutManager;
+    private TextView noMostVisitedPlaceTextView;
     private List<Place> mostVisitedPlaces = new ArrayList<>();
 
     private RecyclerView categorizedVisitedPlacesRecyclerView;
@@ -57,12 +52,10 @@ public class TravelDashboardActivity extends BaseActivity {
     private RecyclerView.LayoutManager categorizedVisitedPlacesLayoutManager;
     private List<PlaceSummary> placeSummaryList;
 
-    private FrameLayout progressOverlay;
-    private TravelViewModel vm;
     private List<PlaceType> placeTypes = new ArrayList<>();
 
     @Inject
-    public ViewModelProvider.Factory viewModelFactory;
+    public TravelViewModel vm;
 
     @Inject
     public PlaceManager placeManager;
@@ -70,16 +63,13 @@ public class TravelDashboardActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vm = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
         setupView();
+        refreshView();
     }
 
     private void setupView() {
         setContentView(R.layout.screen_travel_dashboard);
         setupActionBar();
-
-        progressOverlay = findViewById(R.id.progress_overlay);
-        placeTypes = placeManager.getPlaceTypes();
 
         setupVisitingPlaceView();
         setupRecentlyVisitedPlacesView();
@@ -87,10 +77,21 @@ public class TravelDashboardActivity extends BaseActivity {
         setupCategorizedVisitedPlacesView();
     }
 
+    private void refreshView() {
+        placeTypes = placeManager.getPlaceTypes();
+
+        refreshVisitingPlaceView();
+        refreshRecentVisitedPlacesView();
+        refreshMostVisitedPlacesView();
+        refreshCategorizedVisitedPlacesView();
+    }
+
     private void setupVisitingPlaceView() {
         visitingPlaceViewGroup = findViewById(R.id.visiting_place_group);
         visitingPlaceTextView = findViewById(R.id.visiting_place);
+    }
 
+    private void refreshVisitingPlaceView() {
         StopPoint stopPoint = getStopPointFromCache(); //this should be called via StopTrackingManager - to be changed
         if (stopPoint != null && stopPoint.placeId != null && stopPoint.placeId != "") {
             vm.getPlaceById(stopPoint.placeId).observe(this, new Observer<Place>() {
@@ -99,7 +100,7 @@ public class TravelDashboardActivity extends BaseActivity {
                     String detail = "";
                     if (place != null) {
                         if (place.placeName != null && place.placeName != "" &&
-                            place.formattedAddress != null && place.formattedAddress != "") {
+                                place.formattedAddress != null && place.formattedAddress != "") {
                             detail += place.placeName + "\n" + place.formattedAddress;
                         } else if (place.latitude > 0 && place.longitude > 0) {
                             detail += "Unknown" + " (" + place.latitude + ", " + place.longitude + ")";
@@ -119,21 +120,21 @@ public class TravelDashboardActivity extends BaseActivity {
     }
 
     private StopPoint getStopPointFromCache() {
-        SharedPreferences sharedPref = getSharedPreferences("com.vnsolution.VirtualAssistant", MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
         String stopPointString = sharedPref.getString("StopTrackingService.StopPoint", "");
         Gson gson = new Gson();
         return !stopPointString.isEmpty()? gson.fromJson(stopPointString, StopPoint.class) : null;
     }
 
     private void setupRecentlyVisitedPlacesView() {
-        recentlyVisitedPlacesRecyclerView = findViewById(R.id.list_recently_visited_places);
-        recentlyVisitedPlacesRecyclerView.setHasFixedSize(true);
+        recentVisitedPlacesRecyclerView = findViewById(R.id.list_recent_visited_places);
+        recentVisitedPlacesRecyclerView.setHasFixedSize(true);
 
-        recentlyVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        recentlyVisitedPlacesRecyclerView.setLayoutManager(recentlyVisitedPlacesLayoutManager);
+        recentVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recentVisitedPlacesRecyclerView.setLayoutManager(recentVisitedPlacesLayoutManager);
 
-        recentlyVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_LIST_RECENTLY_VISITED, R.layout.card_place);
-        recentlyVisitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
+        recentVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_LIST_RECENT_VISITED, R.layout.card_place);
+        recentVisitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
             @Override
             public void onTap(Place place) {
                 super.onTap(place);
@@ -142,23 +143,18 @@ public class TravelDashboardActivity extends BaseActivity {
                 startActivity(intent);
             }
         });
-        recentlyVisitedPlacesRecyclerView.setAdapter(recentlyVisitedPlacesAdapter);
+        recentVisitedPlacesRecyclerView.setAdapter(recentVisitedPlacesAdapter);
+        noRecentVisitedPlaceTextView = findViewById(R.id.no_recent_visited_place);
+    }
 
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressOverlay.setAnimation(inAnimation);
-        progressOverlay.setVisibility(View.VISIBLE);
-
-        vm.getRecentlyVisitedPlaces().observe(this, new Observer<List<Place>>() {
+    private void refreshRecentVisitedPlacesView() {
+        vm.getRecentVisitedPlaces().observe(this, new Observer<List<Place>>() {
             @Override
             public void onChanged(@Nullable List<Place> places) {
-                TravelDashboardActivity.this.recentlyVisitedPlaces = places;
-                recentlyVisitedPlacesAdapter.setData(places);
-
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                progressOverlay.setAnimation(outAnimation);
-                progressOverlay.setVisibility(View.INVISIBLE);
+                TravelDashboardActivity.this.recentVisitedPlaces = places;
+                recentVisitedPlacesAdapter.setData(places);
+                recentVisitedPlacesRecyclerView.setVisibility(places.size() > 0? View.VISIBLE : View.GONE);
+                noRecentVisitedPlaceTextView.setVisibility(places.size() > 0? View.GONE : View.VISIBLE);
             }
         });
     }
@@ -181,22 +177,17 @@ public class TravelDashboardActivity extends BaseActivity {
             }
         });
         mostVisitedPlacesRecyclerView.setAdapter(mostVisitedPlacesAdapter);
+        noMostVisitedPlaceTextView = findViewById(R.id.no_most_visited_place);
+    }
 
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressOverlay.setAnimation(inAnimation);
-        progressOverlay.setVisibility(View.VISIBLE);
-
+    private void refreshMostVisitedPlacesView() {
         vm.getMostVisitedPlaces().observe(this, new Observer<List<Place>>() {
             @Override
             public void onChanged(@Nullable List<Place> places) {
                 TravelDashboardActivity.this.mostVisitedPlaces = places;
                 mostVisitedPlacesAdapter.setData(places);
-
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                progressOverlay.setAnimation(outAnimation);
-                progressOverlay.setVisibility(View.INVISIBLE);
+                mostVisitedPlacesRecyclerView.setVisibility(places.size() > 0? View.VISIBLE : View.GONE);
+                noMostVisitedPlaceTextView.setVisibility(places.size() > 0? View.GONE : View.VISIBLE);
             }
         });
     }
@@ -219,22 +210,14 @@ public class TravelDashboardActivity extends BaseActivity {
             }
         });
         categorizedVisitedPlacesRecyclerView.setAdapter(categorizedVisitedPlacesAdapter);
+    }
 
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressOverlay.setAnimation(inAnimation);
-        progressOverlay.setVisibility(View.VISIBLE);
-
+    private void refreshCategorizedVisitedPlacesView() {
         vm.getPlaceSummary().observe(this, new Observer<List<PlaceSummary>>() {
             @Override
             public void onChanged(@Nullable List<PlaceSummary> placeSummaryList) {
                 TravelDashboardActivity.this.placeSummaryList = placeSummaryList;
                 categorizedVisitedPlacesAdapter.setData(placeSummaryList);
-
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                progressOverlay.setAnimation(outAnimation);
-                progressOverlay.setVisibility(View.INVISIBLE);
             }
         });
     }
