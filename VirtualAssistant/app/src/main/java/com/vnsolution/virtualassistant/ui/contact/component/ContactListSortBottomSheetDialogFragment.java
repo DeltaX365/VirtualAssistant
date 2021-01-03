@@ -60,6 +60,18 @@ public class ContactListSortBottomSheetDialogFragment extends BottomSheetDialogF
                 }
             }
         });
+        if (sortBy != null && sortDirection != null) {
+//            contactListSortByRadioGroup.clearCheck();
+            if (sortBy.equals(SortBy.NAME) && sortDirection.equals(SortDirection.ASC)) {
+                contactListSortByRadioGroup.check(R.id.contact_list_sort_by_name_asc);
+            }
+            if (sortBy.equals(SortBy.NAME) && sortDirection.equals(SortDirection.DESC)) {
+                contactListSortByRadioGroup.check(R.id.contact_list_sort_by_name_desc);
+            }
+            if (sortBy.equals(SortBy.TOTAL_CALL) && sortDirection.equals(SortDirection.DESC)) {
+                contactListSortByRadioGroup.check(R.id.contact_list_sort_by_total_call);
+            }
+        }
 
         TextView acceptFilterTextView = contentView.findViewById(R.id.accept_filter);
         acceptFilterTextView.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +90,11 @@ public class ContactListSortBottomSheetDialogFragment extends BottomSheetDialogF
         if (behavior != null && behavior instanceof BottomSheetBehavior) {
             ((BottomSheetBehavior) behavior).addBottomSheetCallback(mBottomSheetBehaviorCallback);
         }
+    }
+
+    public void setValue(SortBy sortBy, SortDirection sortDirection) {
+        this.sortBy = sortBy;
+        this.sortDirection = sortDirection;
     }
 
     public void listener(Listener listener) {

@@ -129,9 +129,9 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
             case R.id.menu_item_schedule:
                 action = UiOptions.CONTACT_ACTION_SCHEDULE;
                 break;
-            case R.id.menu_item_export:
-                action = UiOptions.CONTACT_ACTION_EXPORT;
-                break;
+//            case R.id.menu_item_export:
+//                action = UiOptions.CONTACT_ACTION_EXPORT;
+//                break;
             case R.id.menu_item_share:
                 action = UiOptions.CONTACT_ACTION_SHARE;
                 break;

@@ -13,4 +13,6 @@
     <string name="title_screen_travel_history">Visited Places</string>
     <string name="title_screen_travel_edit">Edit Place</string>
     <string name="title_screen_travel_view">Visited Place</string>
+    <string name="search_label">Search</string>
+    <string name="search_hint">Search</string>
 </resources>

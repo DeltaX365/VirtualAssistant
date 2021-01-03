@@ -118,9 +118,9 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
             case R.id.menu_item_schedule:
                 action = UiOptions.APP_ACTION_SCHEDULE;
                 break;
-            case R.id.menu_item_export:
-                action = UiOptions.APP_ACTION_EXPORT;
-                break;
+//            case R.id.menu_item_export:
+//                action = UiOptions.APP_ACTION_EXPORT;
+//                break;
             case R.id.menu_item_share:
                 action = UiOptions.APP_ACTION_SHARE;
                 break;

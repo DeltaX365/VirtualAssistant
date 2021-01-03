@@ -46,10 +46,13 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.common.ReminderOptions;
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
+import com.vnsolution.virtualassistant.service.place.PlaceBroadcastReceiver;
 import com.vnsolution.virtualassistant.service.place.PlaceManager;
+import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
 import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.NotificationUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
@@ -86,6 +89,7 @@ public class StopTrackingService extends Service {
                 if (stopPoint.exist.getTime() - stopPoint.enter.getTime() >= StopTrackingOptions.CONFIG_STOP_DETECTION_IN_MILLISECONDS) {
                     PlaceEntity placeEntity = MappingUtils.convertStopPointToPlaceEntity(stopPoint);
                     visitedPlace = placeManager.savePlace(StopTrackingService.this, placeEntity);
+                    placeManager.visitPlace(visitedPlace, stopPoint.enter, stopPoint.exist);
                     stopPoint.placeId = visitedPlace.id;
                     stopPoint.isCheckedIn = true;
                     newDetectedPlace = true;
@@ -98,12 +102,7 @@ public class StopTrackingService extends Service {
         @Override
         protected void onPostExecute(PlaceEntity visitedPlace) {
             if (newDetectedPlace && visitedPlace != null) {
-                String placeFormatted = "Unknown Address (" + visitedPlace.latitude + "," + visitedPlace.longitude + ")";
-                if ((visitedPlace.placeName != null) && (visitedPlace.placeName != "")
-                        && (visitedPlace.formattedAddress != null) && (visitedPlace.formattedAddress != "")) {
-                    placeFormatted = visitedPlace.placeName + "\n" + visitedPlace.formattedAddress;
-                }
-                NotificationUtils.sendNotification(StopTrackingService.this, "Are you visiting here?", placeFormatted, visitedPlace);
+                confirmVisitedPlace(visitedPlace);
             }
         }
     }
@@ -131,12 +130,7 @@ public class StopTrackingService extends Service {
         @Override
         protected void onPostExecute(PlaceEntity visitedPlace) {
             if (newDetectedPlace && visitedPlace != null) {
-                String placeFormatted = "Unknown Address (" + visitedPlace.latitude + "," + visitedPlace.longitude + ")";
-                if ((visitedPlace.placeName != null) && (visitedPlace.placeName != "")
-                        && (visitedPlace.formattedAddress != null) && (visitedPlace.formattedAddress != "")) {
-                    placeFormatted = visitedPlace.placeName + "\n" + visitedPlace.formattedAddress;
-                }
-                NotificationUtils.sendNotification(StopTrackingService.this, "CHECK OUT", placeFormatted, visitedPlace);
+                confirmVisitedPlace(visitedPlace);
             }
         }
     }
@@ -480,6 +474,46 @@ public class StopTrackingService extends Service {
 //        location.setLatitude(roundedLatitude);
 //        return location;
 //    }
+
+    private void confirmVisitedPlace(PlaceEntity visitedPlace) {
+        // Create notification channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+        // Build notification
+        int notifyId = (int) (Math.random() * 999999);
+
+        String placeFormatted = "Unknown Address (" + visitedPlace.latitude + "," + visitedPlace.longitude + ")";
+        if ((visitedPlace.placeName != null) && (visitedPlace.placeName != "")
+                && (visitedPlace.formattedAddress != null) && (visitedPlace.formattedAddress != "")) {
+            placeFormatted = visitedPlace.placeName + "\n" + visitedPlace.formattedAddress;
+        }
+
+        Intent travelConfirmYesIntent = new Intent(this, PlaceBroadcastReceiver.class);
+        travelConfirmYesIntent.putExtra("PlaceId", visitedPlace.id);
+        travelConfirmYesIntent.putExtra("NotifyId", notifyId);
+        PendingIntent travelConfirmPendingIntent = PendingIntent.getBroadcast(this, 0, travelConfirmYesIntent, 0);
+
+        Intent travelEditIntent = new Intent(this, TravelEditActivity.class);
+        travelEditIntent.putExtra("PlaceId", visitedPlace.id);
+        PendingIntent travelEditPendingIntent = PendingIntent.getActivity(this, 0, travelEditIntent, 0);
+
+        Notification notification = new NotificationCompat.Builder(this, StopTrackingOptions.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_baseline_hearing_24)
+                .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentTitle("Are you visiting here?")
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(placeFormatted))
+                .addAction(R.drawable.ic_baseline_check_24,"YES", travelConfirmPendingIntent)
+                .addAction(R.drawable.ic_baseline_edit_24, "EDIT", travelEditPendingIntent)
+                .build();
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(notifyId, notification);
+    }
 
     private void notifyPosition(StopPoint stopPoint) {
         if (stopPoint != null) {

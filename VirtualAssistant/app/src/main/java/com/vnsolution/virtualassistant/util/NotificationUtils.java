@@ -22,7 +22,7 @@ public class NotificationUtils {
      * Posts a notification in the notification bar when a transition is detected.
      * If the user clicks the notification, control goes to the MainActivity.
      */
-    public static void sendNotification(Context context, String title, String message, PlaceEntity visitedPlace) {
+    public static void sendNotification(Context context, String title, String message) {
         // Get an instance of the Notification manager
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -73,15 +73,6 @@ public class NotificationUtils {
 
         // Dismiss notification once the user touches it.
         builder.setAutoCancel(true);
-
-        // Test for notification actions.
-        if (visitedPlace != null) {
-            Intent travelEditIntent = new Intent(context, TravelEditActivity.class);
-            travelEditIntent.putExtra("longitude", visitedPlace.longitude);
-            travelEditIntent.putExtra("latitude", visitedPlace.latitude);
-            PendingIntent travelEditPendingIntent = PendingIntent.getActivity(context, 0, travelEditIntent, 0);
-            builder.addAction(android.R.drawable.ic_menu_view, "VIEW", travelEditPendingIntent);
-        }
 
         // Issue the notification
         notificationManager.notify((int) (Math.random() * 999999), builder.build());

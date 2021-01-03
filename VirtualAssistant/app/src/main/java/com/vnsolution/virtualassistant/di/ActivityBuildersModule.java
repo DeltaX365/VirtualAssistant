@@ -63,7 +63,7 @@ public abstract class ActivityBuildersModule {
     abstract ContactListActivity contributeContactListActivity();
 
     @ContributesAndroidInjector()
-    abstract AppDashboardActivity contributePhoneAppDashboardActivity();
+    abstract AppDashboardActivity contributeAppDashboardActivity();
 
     @ContributesAndroidInjector()
     abstract PhoneAppActivity contributePhoneAppActivity();

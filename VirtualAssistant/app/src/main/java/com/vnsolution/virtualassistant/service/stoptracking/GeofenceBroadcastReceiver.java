@@ -26,7 +26,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = getErrorString(geofencingEvent.getErrorCode());
-            NotificationUtils.sendNotification(context, "GEOFENCE BROADCAST", errorMessage, null);
+            NotificationUtils.sendNotification(context, "GEOFENCE BROADCAST", errorMessage);
             return;
         }
         handleEvent(context, geofencingEvent);

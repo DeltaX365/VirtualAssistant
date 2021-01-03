@@ -52,10 +52,11 @@ public class ContactDashboardFilterBottomSheetDialogFragment extends BottomSheet
             }
         });
         if (value != null) {
-            contactDashboardFilterRadioGroup.clearCheck();
-            if (value == Filter.INCLUDE_STRANGERS) {
+//            contactDashboardFilterRadioGroup.clearCheck();
+            if (value.equals(Filter.INCLUDE_STRANGERS)) {
                 contactDashboardFilterRadioGroup.check(R.id.contact_dashboard_filter_include_strangers);
-            } else {
+            }
+            if (value.equals(Filter.EXCLUDE_STRANGERS)) {
                 contactDashboardFilterRadioGroup.check(R.id.contact_dashboard_filter_exclude_strangers);
             }
         }

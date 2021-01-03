@@ -1,6 +1,8 @@
 package com.vnsolution.virtualassistant.ui.app;
 
 import android.annotation.SuppressLint;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,11 +23,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneApp;
+import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.app.component.AppDashboardFilterBottomSheetDialogFragment;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderNewActivity;
+import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +38,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class AppDashboardActivity extends BaseActivity {
+import dagger.android.HasAndroidInjector;
+
+public class AppDashboardActivity extends BaseActivity implements HasAndroidInjector, SearchView.OnQueryTextListener {
     private RecyclerView recentUsageAppsRecyclerView;
     private RecyclerViewAdapter<PhoneApp> recentUsageAppsAdapter;
     private RecyclerView.LayoutManager recentUsageAppsLayoutManager;
@@ -68,6 +75,16 @@ public class AppDashboardActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_app_dashboard_options, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_item_search).getActionView();
+        searchView.setQueryHint("Search your contact");
+        searchView.setOnQueryTextListener(this);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//        searchView.setQueryRefinementEnabled(true);
+//        searchView.setSubmitButtonEnabled(true);
+//        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
         return true;
     }
 
@@ -245,5 +262,32 @@ public class AppDashboardActivity extends BaseActivity {
         phoneAppsAdapter.setData(phoneApps);
         phoneAppsRecyclerView.setVisibility(phoneApps.size() > 0? View.VISIBLE : View.GONE);
         noPhoneAppTextView.setVisibility(phoneApps.size() > 0? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Toast.makeText(this, "Query Inserted", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        filter(newText);
+        return true;
+    }
+
+    private void filter(String queryText) {
+        List<PhoneApp> filteredApps = new ArrayList<>();
+        if (queryText.isEmpty()) {
+            filteredApps.addAll(phoneApps);
+        } else {
+            for (PhoneApp app : phoneApps) {
+                String normalizedName = StringUtils.nonAccentVietnamese(app.appName);
+                if (normalizedName.toLowerCase().contains(queryText.toLowerCase())) {
+                    filteredApps.add(app);
+                }
+            }
+        }
+        phoneAppsAdapter.setData(filteredApps);
     }
 }

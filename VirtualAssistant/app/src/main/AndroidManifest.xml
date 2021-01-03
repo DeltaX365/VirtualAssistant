@@ -80,7 +80,14 @@
             android:label="@string/title_screen_contacts"/>
         <activity
             android:name=".ui.contact.ContactListActivity"
-            android:label="@string/title_screen_contacts"/>
+            android:label="@string/title_screen_contacts">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.SEARCH" />-->
+<!--            </intent-filter>-->
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
         <activity
             android:name=".ui.app.AppDashboardActivity"
             android:label="@string/title_screen_applications" />
@@ -160,6 +167,10 @@
         </receiver>
         <receiver
             android:name=".service.reminder.ReminderBroadcastReceiver"
+            android:exported="true">
+        </receiver>
+        <receiver
+            android:name=".service.place.PlaceBroadcastReceiver"
             android:exported="true">
         </receiver>
         

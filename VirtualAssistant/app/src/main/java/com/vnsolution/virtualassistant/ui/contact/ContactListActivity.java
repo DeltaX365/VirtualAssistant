@@ -2,6 +2,8 @@ package com.vnsolution.virtualassistant.ui.contact;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -53,6 +55,8 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
     private RecyclerViewAdapter<PhoneContact> phoneContactsAdapter;
 
     private List<PhoneContact> phoneContacts = new ArrayList<>();
+    private ContactListSortBottomSheetDialogFragment.SortBy sortBy = ContactListSortBottomSheetDialogFragment.SortBy.NAME;
+    private ContactListSortBottomSheetDialogFragment.SortDirection sortDirection = ContactListSortBottomSheetDialogFragment.SortDirection.ASC;
 
     @Inject
     public ContactViewModel contactViewModel;
@@ -179,12 +183,14 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_contact_list_options, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.menu_item_search);
-
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setQueryHint("Search People");
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_item_search).getActionView();
+        searchView.setQueryHint("Search your contact");
         searchView.setOnQueryTextListener(this);
-        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//        searchView.setQueryRefinementEnabled(true);
+//        searchView.setSubmitButtonEnabled(true);
+//        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
         return true;
     }
@@ -197,10 +203,15 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
                 ContactListSortBottomSheetDialogFragment bottomSheetDialog = new ContactListSortBottomSheetDialogFragment();
                 bottomSheetDialog.listener(new ContactListSortBottomSheetDialogFragment.Listener() {
                     @Override
-                    public void onChanged(ContactListSortBottomSheetDialogFragment.SortBy sortBy, ContactListSortBottomSheetDialogFragment.SortDirection sortDirection) {
-                        sort(sortBy, sortDirection);
+                    public void onChanged(ContactListSortBottomSheetDialogFragment.SortBy sortByOption, ContactListSortBottomSheetDialogFragment.SortDirection sortDirectionOption) {
+                        if (!sortBy.equals(sortByOption) || !sortDirection.equals(sortDirectionOption)) {
+                            sortBy = sortByOption;
+                            sortDirection = sortDirectionOption;
+                            sort(sortBy, sortDirection);
+                        }
                     }
                 });
+                bottomSheetDialog.setValue(sortBy, sortDirection);
                 bottomSheetDialog.show(getSupportFragmentManager(), "ContactListSortBottomSheetDialogFragment");
                 break;
             case android.R.id.home:

@@ -28,6 +28,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.service.device.CheckAppLaunchThread;
 import com.vnsolution.virtualassistant.ui.StartupActivity;
 
 public class FloatingViewService extends Service implements View.OnTouchListener {
@@ -39,6 +40,8 @@ public class FloatingViewService extends Service implements View.OnTouchListener
     private int initialY;
     private float initialTouchX;
     private float initialTouchY;
+
+    private CheckAppLaunchThread launchChecker;
 
     @Nullable
     @Override
@@ -133,6 +136,11 @@ public class FloatingViewService extends Service implements View.OnTouchListener
         floatingView.findViewById(R.id.hearing_icon).startAnimation(shake);
         enableOpacity();
 
+        // Watching the running app
+//        Handler handler = new Handler(getMainLooper());
+//        launchChecker = new CheckAppLaunchThread(handler,getApplicationContext());
+//        watchingRunningApp();
+
         return START_STICKY;
     }
 
@@ -225,6 +233,14 @@ public class FloatingViewService extends Service implements View.OnTouchListener
         String viewPositionString = sharedPref.getString("FloatingViewService.ViewPosition", "");
         Gson gson = new Gson();
         return !viewPositionString.isEmpty()? gson.fromJson(viewPositionString, ViewPosition.class) : null;
+    }
+
+    private void watchingRunningApp() {
+        while (true) {
+            if (!launchChecker.isAlive()) {
+                launchChecker.start();
+            }
+        }
     }
 
     private class ViewPosition {

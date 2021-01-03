@@ -53,10 +53,11 @@ public class AppDashboardFilterBottomSheetDialogFragment extends BottomSheetDial
             }
         });
         if (value != null) {
-            appDashboardFilterRadioGroup.clearCheck();
-            if (value == Filter.INCLUDE_SYSTEM_APPS) {
+//            appDashboardFilterRadioGroup.clearCheck();
+            if (value.equals(Filter.INCLUDE_SYSTEM_APPS)) {
                 appDashboardFilterRadioGroup.check(R.id.app_dashboard_filter_include_system_apps);
-            } else {
+            }
+            if (value.equals(Filter.EXCLUDE_SYSTEM_APPS)) {
                 appDashboardFilterRadioGroup.check(R.id.app_dashboard_filter_exclude_system_apps);
             }
         }
