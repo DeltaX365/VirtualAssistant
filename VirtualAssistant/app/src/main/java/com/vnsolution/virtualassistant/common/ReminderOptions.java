@@ -14,7 +14,7 @@ public class ReminderOptions {
     public static final String ACTION_SEND_SMS = "Send sms";
     public static final String ACTION_CALL_PHONE = "Call phone";
 
-    public static final String NOTIFY_CHANEL_ID = BuildConfig.APPLICATION_ID + "SCHEDULE_REMINDER_FOREGROUND_SERVICE";
+    public static final String NOTIFY_CHANEL_ID = BuildConfig.APPLICATION_ID + "." + "SCHEDULE_REMINDER_FOREGROUND_SERVICE";
     public static final String NOTIFY_CHANEL_NAME = "Reminders";
     public static final int NOTIFY_ID = 9999;
     public static final String NOTIFY_TITLE = "Reminders";

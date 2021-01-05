@@ -609,7 +609,7 @@ public class StopTrackingService extends Service {
         GeofencingRequest.Builder geofencingRequestbuilder = new GeofencingRequest.Builder();
 
         String action = (actions.length > 0) ? actions[0] : "";
-        if (action != null && !action.isEmpty()) {
+        if (action != null && !action.isEmpty() && stopPoint != null) {
             Geofence.Builder geofenceBuilder = new Geofence.Builder()
                     .setRequestId(stopPoint.id)
                     .setCircularRegion(stopPoint.latitude, stopPoint.longitude, StopTrackingOptions.CONFIG_GEOFENCE_RADIUS_IN_METERS)

@@ -262,6 +262,7 @@ public class MappingUtils {
         phoneApp.versionName = phoneAppEntity.versionName;
         phoneApp.versionCode = phoneAppEntity.versionCode;
         phoneApp.type = phoneAppEntity.type;
+        phoneApp.locked = phoneAppEntity.locked;
         return phoneApp;
     }
 

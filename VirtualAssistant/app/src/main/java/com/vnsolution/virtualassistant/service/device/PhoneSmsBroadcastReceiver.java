@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat;
 
 import com.vnsolution.virtualassistant.common.DeviceOptions;
 
-public class PhoneSmsReceiver extends BroadcastReceiver {
+public class PhoneSmsBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         syncPhoneSms(context);

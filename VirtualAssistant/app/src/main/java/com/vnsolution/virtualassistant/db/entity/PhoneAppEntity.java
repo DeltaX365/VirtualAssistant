@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Index;
 
+import java.util.Date;
+
 @Entity(
     tableName = "PhoneApp",
     indices = {@Index(value = "AppId", unique = true)}
@@ -29,4 +31,16 @@ public class PhoneAppEntity extends AuditEntity {
 
     @ColumnInfo(name = "Type")
     public int type;
+
+    @ColumnInfo(name = "Category")
+    public String category;
+
+    @ColumnInfo(name = "Locked")
+    public int locked;
+
+    @ColumnInfo(name = "LockedBeginTime")
+    public Date lockedBeginTime;
+
+    @ColumnInfo(name = "LockedEndTime")
+    public Date lockedEndTime;
 }

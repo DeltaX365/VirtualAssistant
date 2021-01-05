@@ -1,5 +1,6 @@
 package com.vnsolution.virtualassistant.di;
 
+import com.vnsolution.virtualassistant.service.device.AppLockService;
 import com.vnsolution.virtualassistant.service.device.DeviceService;
 import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
 
@@ -10,6 +11,9 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class ServiceBuildersModule {
     @ContributesAndroidInjector
     abstract StopTrackingService contributeStopTrackingService();
+
+    @ContributesAndroidInjector
+    abstract AppLockService contributeAppLockService();
 
     @ContributesAndroidInjector
     abstract DeviceService contributeDeviceService();

@@ -9,6 +9,7 @@ public class PhoneApp {
     public String versionName;
     public int versionCode;
     public int type;
+    public int locked;
     public Drawable appIcon;
     public UsageStats usageStats;
 }

@@ -37,12 +37,12 @@ public class AppInjector {
             @Override
             public void onActivityStarted(@NonNull Activity activity) {
                 if (activityReferences == 0 && floatingServiceIntent != null) {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                        activity.stopService(floatingServiceIntent);
-                    } else {
-                        floatingServiceIntent.setAction("StopFloatingService");
-                        activity.startForegroundService(floatingServiceIntent);
-                    }
+//                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+//                        activity.stopService(floatingServiceIntent);
+//                    } else {
+//                        floatingServiceIntent.setAction("StopFloatingService");
+//                        activity.startForegroundService(floatingServiceIntent);
+//                    }
                 }
                 activityReferences++;
             }
@@ -61,13 +61,13 @@ public class AppInjector {
             public void onActivityStopped(@NonNull Activity activity) {
                 activityReferences--;
                 if (activityReferences == 0) {
-                    floatingServiceIntent = new Intent(activity, FloatingViewService.class);
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                        activity.startService(floatingServiceIntent);
-                    } else {
-                        floatingServiceIntent.setAction("StartFloatingService");
-                        activity.startForegroundService(floatingServiceIntent);
-                    }
+//                    floatingServiceIntent = new Intent(activity, FloatingViewService.class);
+//                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+//                        activity.startService(floatingServiceIntent);
+//                    } else {
+//                        floatingServiceIntent.setAction("StartFloatingService");
+//                        activity.startForegroundService(floatingServiceIntent);
+//                    }
                 }
             }
 

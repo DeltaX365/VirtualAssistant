@@ -13,6 +13,7 @@ import androidx.work.WorkManager;
 
 import com.vnsolution.virtualassistant.common.StopTrackingOptions;
 import com.vnsolution.virtualassistant.service.bubble.FloatingViewBroadcastReceiver;
+import com.vnsolution.virtualassistant.service.device.AppLockService;
 import com.vnsolution.virtualassistant.service.device.DeviceWorker;
 import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
 import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingWorker;
@@ -35,6 +36,7 @@ public class AppService {
 
     private void startBackgroundServices() {
         startStopTrackingService();
+        startAppLockService();
         startDeviceSyncWorker();
     }
 
@@ -46,6 +48,11 @@ public class AppService {
         }
         final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(StopTrackingWorker.class, 24, TimeUnit.HOURS).build();
         WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("StopTrackingWorker", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
+    }
+
+    private void startAppLockService() {
+        Intent serviceIntent = new Intent(mContext, AppLockService.class);
+        ContextCompat.startForegroundService(mContext, serviceIntent);
     }
 
     private void startDeviceSyncWorker() {

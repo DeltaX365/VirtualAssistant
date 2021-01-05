@@ -74,6 +74,10 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
                     if (menuItem.getItemId() == R.id.menu_item_remove && mPhoneApp != null && mPhoneApp.type == 1) {  //2 normal apps, 1 system apps
                         menuItem.setEnabled(false);
                     }
+                    if (menuItem.getItemId() == R.id.menu_item_lock) {
+                        menuItem.setTitle((mPhoneApp.locked == 1)? "Unlock" : "Lock");
+                        menuItem.setIcon((mPhoneApp.locked == 1)? R.drawable.ic_baseline_lock_open_24 : R.drawable.ic_baseline_lock_24);
+                    }
                 }
 
                 MenuPopupHelper menuPopupHelper = new MenuPopupHelper(mContext, (MenuBuilder) popupMenu.getMenu(), v);
@@ -113,7 +117,7 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
                 action = UiOptions.APP_ACTION_LAUNCH;
                 break;
             case R.id.menu_item_lock:
-                action = UiOptions.APP_ACTION_LOCK;
+                action = (mPhoneApp.locked == 1)? UiOptions.APP_ACTION_UNLOCK : UiOptions.APP_ACTION_LOCK;
                 break;
             case R.id.menu_item_schedule:
                 action = UiOptions.APP_ACTION_SCHEDULE;

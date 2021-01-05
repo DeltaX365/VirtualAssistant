@@ -16,6 +16,19 @@ public class StringUtils {
         return sb.toString();
     }
 
+    public static String join(String delimiter, int[] list) {
+        StringBuffer sb = new StringBuffer();
+        if (list != null) {
+            for (int i = 0; i < list.length; i++) {
+                sb.append(list[i]);
+                if (i < list.length - 1) {
+                    sb.append(delimiter);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
     public static String nonAccentVietnamese(String str) {
         String output = str.toLowerCase();
 //     We can also use this instead of from line 11 to line 17

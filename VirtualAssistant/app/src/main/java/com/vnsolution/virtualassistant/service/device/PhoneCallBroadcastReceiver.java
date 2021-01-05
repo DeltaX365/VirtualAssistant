@@ -13,7 +13,7 @@ import com.vnsolution.virtualassistant.common.DeviceOptions;
 
 import java.util.Date;
 
-public class PhoneCallReceiver extends BroadcastReceiver {
+public class PhoneCallBroadcastReceiver extends BroadcastReceiver {
     //The receiver will be recreated whenever android feels like it.  We need a static variable to remember data between instantiations
     private static int lastState = TelephonyManager.CALL_STATE_IDLE;
     private static Date callStartTime;

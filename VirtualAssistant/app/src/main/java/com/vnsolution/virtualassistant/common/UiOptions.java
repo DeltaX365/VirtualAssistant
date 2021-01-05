@@ -20,6 +20,7 @@ public class UiOptions {
     public static final String APP_LIST_CATEGORY = "APP_LIST_CATEGORY";
     public static final String APP_ACTION_LAUNCH = "APP_ACTION_LAUNCH";
     public static final String APP_ACTION_LOCK = "APP_ACTION_LOCK";
+    public static final String APP_ACTION_UNLOCK = "APP_ACTION_UNLOCK";
     public static final String APP_ACTION_SCHEDULE = "APP_ACTION_SCHEDULE";
     public static final String APP_ACTION_EXPORT = "APP_ACTION_EXPORT";
     public static final String APP_ACTION_SHARE = "APP_ACTION_SHARE";

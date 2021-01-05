@@ -1,16 +1,23 @@
 package com.vnsolution.virtualassistant.ui.app;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +27,7 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.takwolf.android.lock9.Lock9View;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.UiOptions;
 import com.vnsolution.virtualassistant.model.PhoneApp;
@@ -32,6 +40,7 @@ import com.vnsolution.virtualassistant.ui.reminder.ReminderNewActivity;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -60,6 +69,10 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
     private List<PhoneApp> phoneApps;
 
     private boolean shouldGetSystemPackages = false;
+
+    private boolean isEnteringFirstTime = true;
+    private boolean isEnteringSecondTime = false;
+    private String passwordNumbers;
 
     @Inject
     public AppViewModel vm;
@@ -234,6 +247,22 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
                         startActivity(launchIntent);
                         break;
                     case UiOptions.APP_ACTION_LOCK:
+                        if (vm.hasPhoneLockPasscode(AppDashboardActivity.this)) {
+                            vm.lockPhoneApp(AppDashboardActivity.this, phoneApp);
+                            onPhoneAppLocked(phoneApp);
+                            Toast.makeText(AppDashboardActivity.this, "App locked", Toast.LENGTH_SHORT).show();
+                        } else {
+                            showAppLockPasscodeDialog();
+                        }
+                        break;
+                    case UiOptions.APP_ACTION_UNLOCK:
+                        if (vm.hasPhoneLockPasscode(AppDashboardActivity.this)) {
+                            vm.unlockPhoneApp(AppDashboardActivity.this, phoneApp);
+                            onPhoneAppUnlocked(phoneApp);
+                            Toast.makeText(AppDashboardActivity.this, "App unlocked", Toast.LENGTH_SHORT).show();
+                        } else {
+                            showAppLockPasscodeDialog();
+                        }
                         break;
                     case UiOptions.APP_ACTION_SCHEDULE:
                         Intent intent = new Intent(AppDashboardActivity.this, ReminderNewActivity.class);
@@ -258,10 +287,71 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
         noPhoneAppTextView = findViewById(R.id.no_phone_apps);
     }
 
+    private void onPhoneAppLocked(PhoneApp phoneApp) {
+        for(PhoneApp phoneApp1 : phoneApps) {
+            if (phoneApp1.packageName.equals(phoneApp.packageName)) {
+                phoneApp1.locked = 1;
+                break;
+            }
+        }
+        refreshPhoneAppsView();
+    }
+
+    private void onPhoneAppUnlocked(PhoneApp phoneApp) {
+        for(PhoneApp phoneApp1 : phoneApps) {
+            if (phoneApp1.packageName.equals(phoneApp.packageName)) {
+                phoneApp1.locked = 0;
+                break;
+            }
+        }
+        refreshPhoneAppsView();
+    }
+
     private void refreshPhoneAppsView() {
         phoneAppsAdapter.setData(phoneApps);
         phoneAppsRecyclerView.setVisibility(phoneApps.size() > 0? View.VISIBLE : View.GONE);
         noPhoneAppTextView.setVisibility(phoneApps.size() > 0? View.GONE : View.VISIBLE);
+    }
+
+    private void showAppLockPasscodeDialog() {
+        Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setGravity(Gravity.CENTER);
+
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View promptsView = layoutInflater.inflate(R.layout.screen_passcode, null);
+        TextView textView = promptsView.findViewById(R.id.textView);
+        Lock9View lock9View = (Lock9View) promptsView.findViewById(R.id.lock_9_view);
+        lock9View.setGestureCallback(new Lock9View.GestureCallback() {
+            @Override
+            public void onNodeConnected(@NonNull int[] numbers) {
+            }
+
+            @Override
+            public void onGestureFinished(@NonNull int[] numbers) {
+                if (isEnteringFirstTime) {
+                    passwordNumbers = StringUtils.join("", numbers);
+                    isEnteringFirstTime = false;
+                    isEnteringSecondTime = true;
+                    textView.setText("Re-Draw Pattern");
+                } else if (isEnteringSecondTime) {
+                    String passConfirm = StringUtils.join("", numbers);
+                    if (passwordNumbers.matches(passConfirm)) {
+                        vm.savePhoneLockPasscode(AppDashboardActivity.this, passwordNumbers);
+                        dialog.dismiss();
+                        Toast.makeText(AppDashboardActivity.this, "You set passcode successfully. You can not start locking an app", Toast.LENGTH_SHORT).show();
+                    } else {
+                        isEnteringFirstTime = true;
+                        isEnteringSecondTime = false;
+                        textView.setText("Draw Pattern");
+                        Toast.makeText(AppDashboardActivity.this, "Both Pattern did not match - Try again", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+        dialog.setContentView(promptsView);
+        dialog.show();
     }
 
     @Override

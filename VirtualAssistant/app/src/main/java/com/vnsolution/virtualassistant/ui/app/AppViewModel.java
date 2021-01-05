@@ -4,6 +4,7 @@ import android.app.usage.UsageStats;
 import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -30,6 +31,8 @@ import java.io.OutputStream;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class AppViewModel extends ViewModel {
     private Integer index = 1;
@@ -74,6 +77,22 @@ public class AppViewModel extends ViewModel {
             phoneAppsLiveData.setValue(phoneApps);
         }
         return phoneApps;
+    }
+
+    public boolean hasPhoneLockPasscode(Context context) {
+        return deviceManager.hasPhoneLockPasscode(context);
+    }
+
+    public void savePhoneLockPasscode(Context context, String passwordNumber) {
+        deviceManager.savePhoneLockPasscode(context, passwordNumber);
+    }
+
+    public void lockPhoneApp(Context context, PhoneApp phoneApp) {
+        deviceManager.lockPhoneApp(context, phoneApp);
+    }
+
+    public void unlockPhoneApp(Context context, PhoneApp phoneApp) {
+        deviceManager.unlockPhoneApp(context, phoneApp);
     }
 
     public boolean sharePhoneApp(Context context, PhoneApp phoneApp) {

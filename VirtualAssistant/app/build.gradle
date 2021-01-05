@@ -103,4 +103,7 @@ dependencies {
 
     // Contact VCard format
     implementation 'com.googlecode.ez-vcard:ez-vcard:0.11.2'
+
+    // Lock9View
+    implementation 'com.takwolf.android:lock9view:0.1.3'
 }

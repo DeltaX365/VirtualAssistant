@@ -273,4 +273,25 @@ public class DbMigration {
             database.execSQL(addColumnSystemToPhoneAppTableSql);
         }
     };
+
+    public static final Migration MIGRATION_11_12 = new Migration(11, 12) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Add column Category to PhoneApp table
+            String addColumnCategoryToPhoneAppTableSql = "ALTER TABLE PhoneApp ADD COLUMN Category TEXT";
+            database.execSQL(addColumnCategoryToPhoneAppTableSql);
+
+            // Add column Locked to PhoneApp table
+            String addColumnLockedToPhoneAppTableSql = "ALTER TABLE PhoneApp ADD COLUMN Locked INTEGER NOT NULL DEFAULT 0";
+            database.execSQL(addColumnLockedToPhoneAppTableSql);
+
+            // Add column LockedBeginTime to PhoneApp table
+            String addColumnLockedBeginTimeToPhoneAppTableSql = "ALTER TABLE PhoneApp ADD COLUMN LockedBeginTime TEXT";
+            database.execSQL(addColumnLockedBeginTimeToPhoneAppTableSql);
+
+            // Add column LockedEndTime to PhoneApp table
+            String addColumnLockedEndTimeToPhoneAppTableSql = "ALTER TABLE PhoneApp ADD COLUMN LockedEndTime TEXT";
+            database.execSQL(addColumnLockedEndTimeToPhoneAppTableSql);
+        }
+    };
 }

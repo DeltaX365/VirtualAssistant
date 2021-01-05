@@ -5,6 +5,8 @@
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
@@ -22,12 +24,9 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-
-    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".VirtualAssistantApp"
@@ -56,31 +55,31 @@
         </activity>
         <activity
             android:name=".ui.home.HomeV2Activity"
-            android:label="@string/title_screen_home" />
+            android:label="@string/screen_home" />
         <activity
             android:name=".ui.travel.TravelV2Activity"
-            android:label="@string/title_screen_travel_dashboard" />
+            android:label="@string/screen_travel_dashboard" />
         <activity
             android:name=".ui.travel.TravelDashboardActivity"
-            android:label="@string/title_screen_travel_dashboard" />
+            android:label="@string/screen_travel_dashboard" />
         <activity
             android:name=".ui.travel.TravelHistoryActivity"
-            android:label="@string/title_screen_travel_history" />
+            android:label="@string/screen_travel_history" />
         <activity
             android:name=".ui.travel.TravelViewActivity"
-            android:label="@string/title_screen_travel_view" />
+            android:label="@string/screen_travel_view" />
         <activity
             android:name=".ui.travel.TravelEditActivity"
-            android:label="@string/title_screen_travel_edit" />
+            android:label="@string/screen_travel_edit" />
         <activity
             android:name=".ui.contact.ContactDashboardActivity"
-            android:label="@string/title_screen_contacts"/>
+            android:label="@string/screen_contacts"/>
         <activity
             android:name=".ui.contact.ContactViewActivity"
-            android:label="@string/title_screen_contacts"/>
+            android:label="@string/screen_contacts"/>
         <activity
             android:name=".ui.contact.ContactListActivity"
-            android:label="@string/title_screen_contacts">
+            android:label="@string/screen_contacts">
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.SEARCH" />-->
 <!--            </intent-filter>-->
@@ -90,34 +89,42 @@
         </activity>
         <activity
             android:name=".ui.app.AppDashboardActivity"
-            android:label="@string/title_screen_applications" />
+            android:label="@string/screen_applications" />
         <activity
             android:name=".ui.reminder.ReminderListActivity"
-            android:label="@string/title_screen_reminders" />
+            android:label="@string/screen_reminders" />
         <activity
             android:name=".ui.reminder.ReminderNewActivity"
-            android:label="@string/title_screen_reminders" />
+            android:label="@string/screen_reminders" />
         <activity
             android:name=".ui.reminder.ReminderShowFullScreenActivity"
-            android:label="@string/title_screen_reminders" />
-        <activity android:name=".ui.app.v1.PhoneAppActivity" />
-        <activity android:name=".ui.app.v2.PhoneAppV2Activity" />
+            android:label="@string/screen_reminders" />
+        <activity
+            android:name=".ui.app.v1.PhoneAppActivity" />
+        <activity
+            android:name=".ui.app.v2.PhoneAppV2Activity" />
         <activity
             android:name=".ui.phonecall.v1.PhoneCallActivity"
-            android:label="@string/title_screen_call_history"/>
+            android:label="@string/screen_call_history" />
         <activity
             android:name=".ui.phonesms.v1.PhoneSmsActivity"
-            android:label="@string/title_screen_sms_history"/>
+            android:label="@string/screen_sms_history" />
         <activity
             android:name=".ui.setting.SettingActivity"
-            android:label="@string/title_screen_settings" />
+            android:label="@string/screen_settings" />
 
         <service
             android:name=".service.stoptracking.StopTrackingService"
-            android:exported="true" />
+            android:exported="false" />
         <service
             android:name=".service.device.DeviceService"
-            android:exported="true" />
+            android:exported="false" />
+        <service
+            android:name=".service.device.AppLockService"
+            android:exported="false" />
+        <service
+            android:name=".service.bubble.FloatingViewService"
+            android:exported="false" />
         <service
             android:name=".service.stoptracking.ActivityTransitionsJobIntentService"
             android:exported="true"
@@ -126,13 +133,15 @@
             android:name=".service.stoptracking.GeofenceTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".service.bubble.FloatingViewService" />
 
         <receiver
             android:name=".startup.StartupBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_RESTARTED" />
             </intent-filter>
         </receiver>
         <receiver
@@ -154,13 +163,17 @@
                 <action android:name="com.vnsolution.virtualassistant.ACTION_UPDATE_LOCATIONS" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".service.device.PhoneCallReceiver">
+        <receiver
+            android:name=".service.device.PhoneCallBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".service.device.PhoneSmsReceiver">
+        <receiver
+            android:name=".service.device.PhoneSmsBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

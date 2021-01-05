@@ -1,9 +1,13 @@
 package com.vnsolution.virtualassistant.service.bubble;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -11,6 +15,7 @@ import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -28,20 +33,17 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.service.device.CheckAppLaunchThread;
 import com.vnsolution.virtualassistant.ui.StartupActivity;
 
 public class FloatingViewService extends Service implements View.OnTouchListener {
     private WindowManager windowManager;
-    private View floatingView;
     private WindowManager.LayoutParams layoutParams;
+    private View appLaunchIconView;
 
     private int initialX;
     private int initialY;
     private float initialTouchX;
     private float initialTouchY;
-
-    private CheckAppLaunchThread launchChecker;
 
     @Nullable
     @Override
@@ -57,7 +59,7 @@ public class FloatingViewService extends Service implements View.OnTouchListener
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Create notification channel
-        String chanelId = "com.vnsolution.virtualassistant.BUBBLE_WIDGET_FOREGROUND_SERVICE";
+        String chanelId = BuildConfig.APPLICATION_ID + "." + "BUBBLE_WIDGET_FOREGROUND_SERVICE";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(chanelId, "Bubble Widget", NotificationManager.IMPORTANCE_LOW);
             channel.setShowBadge(false);
@@ -102,44 +104,16 @@ public class FloatingViewService extends Service implements View.OnTouchListener
         }
 
         // Inflate the floating view layout we created
-        floatingView = LayoutInflater.from(this).inflate(R.layout.screen_floating_widget,null);
-
-        // Add the view to the window.
-        layoutParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
-
-        // Specify the view position
-        layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
-        ViewPosition floatingViewPosition = getViewPositionFromCache();
-        if (floatingViewPosition != null) {
-            layoutParams.x = floatingViewPosition.x;
-            layoutParams.y = floatingViewPosition.y;
-        } else {
-            DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-            layoutParams.x = 0;
-            layoutParams.y = displayMetrics.heightPixels / 2;
-        }
+        appLaunchIconView = LayoutInflater.from(this).inflate(R.layout.screen_floating_widget,null);
+        appLaunchIconView.findViewById(R.id.hearing_icon).setOnTouchListener(this);
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        appLaunchIconView.findViewById(R.id.hearing_icon).startAnimation(shake);
+        enableOpacity();
 
         // Add the view to the window
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        windowManager.addView(floatingView, layoutParams);
-
-        // Drag and move floating view using user's touch action.
-        floatingView.findViewById(R.id.hearing_icon).setOnTouchListener(this);
-
-        // Start animation
-        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-        floatingView.findViewById(R.id.hearing_icon).startAnimation(shake);
-        enableOpacity();
-
-        // Watching the running app
-//        Handler handler = new Handler(getMainLooper());
-//        launchChecker = new CheckAppLaunchThread(handler,getApplicationContext());
-//        watchingRunningApp();
+        layoutParams = getOverlayLayoutParams(appLaunchIconView);
+        windowManager.addView(appLaunchIconView, layoutParams);
 
         return START_STICKY;
     }
@@ -147,7 +121,7 @@ public class FloatingViewService extends Service implements View.OnTouchListener
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (floatingView != null) windowManager.removeView(floatingView);
+        if (appLaunchIconView != null) windowManager.removeView(appLaunchIconView);
     }
 
     @Override
@@ -168,7 +142,7 @@ public class FloatingViewService extends Service implements View.OnTouchListener
                 layoutParams.y = initialY + (int) (event.getRawY() - initialTouchY);
 
                 // Update the layout with new X & Y coordinate
-                windowManager.updateViewLayout(floatingView, layoutParams);
+                windowManager.updateViewLayout(appLaunchIconView, layoutParams);
                 return true;
             case MotionEvent.ACTION_UP:
                 // The check for Xdiff < 10 && YDiff < 10 because sometime elements moves a little while clicking. So that is click event.
@@ -187,7 +161,7 @@ public class FloatingViewService extends Service implements View.OnTouchListener
                     } else if (event.getRawX() >= displayMetrics.widthPixels / 2) {
                         layoutParams.x = displayMetrics.widthPixels;
                     }
-                    windowManager.updateViewLayout(floatingView, layoutParams);
+                    windowManager.updateViewLayout(appLaunchIconView, layoutParams);
                     saveViewPositionToCache(new ViewPosition(layoutParams.x, layoutParams.y));
                     enableOpacity();
                 }
@@ -196,15 +170,41 @@ public class FloatingViewService extends Service implements View.OnTouchListener
         return false;
     }
 
+    private WindowManager.LayoutParams getOverlayLayoutParams(View overlayView) {
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+
+        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        layoutParams.format = PixelFormat.TRANSLUCENT;
+        layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+        layoutParams.x = 0;
+        layoutParams.y = 0;
+
+        if (overlayView == appLaunchIconView) {
+            ViewPosition floatingViewPosition = getViewPositionFromCache();
+            if (floatingViewPosition != null) {
+                layoutParams.x = floatingViewPosition.x;
+                layoutParams.y = floatingViewPosition.y;
+            } else {
+                DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+                layoutParams.x = 0;
+                layoutParams.y = displayMetrics.heightPixels / 2;
+            }
+        }
+        return layoutParams;
+    }
+
     private void enableOpacity() {
-        floatingView.findViewById(R.id.hearing_icon).setAlpha(1.0f);
-        floatingView.setAlpha(1.0f);
+        appLaunchIconView.findViewById(R.id.hearing_icon).setAlpha(1.0f);
+        appLaunchIconView.setAlpha(1.0f);
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                floatingView.findViewById(R.id.hearing_icon).setAlpha(0.6f);
-                floatingView.setAlpha(0.6f);
+                appLaunchIconView.findViewById(R.id.hearing_icon).setAlpha(0.6f);
+                appLaunchIconView.setAlpha(0.6f);
             }
         },3 * 1000);
     }
@@ -233,14 +233,6 @@ public class FloatingViewService extends Service implements View.OnTouchListener
         String viewPositionString = sharedPref.getString("FloatingViewService.ViewPosition", "");
         Gson gson = new Gson();
         return !viewPositionString.isEmpty()? gson.fromJson(viewPositionString, ViewPosition.class) : null;
-    }
-
-    private void watchingRunningApp() {
-        while (true) {
-            if (!launchChecker.isAlive()) {
-                launchChecker.start();
-            }
-        }
     }
 
     private class ViewPosition {

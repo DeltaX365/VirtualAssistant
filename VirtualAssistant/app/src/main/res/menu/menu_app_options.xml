@@ -9,7 +9,6 @@
         android:id="@+id/menu_item_lock"
         android:title="Lock"
         android:icon="@drawable/ic_baseline_lock_24"
-        android:enabled="false"
         />
     <item
         android:id="@+id/menu_item_schedule"

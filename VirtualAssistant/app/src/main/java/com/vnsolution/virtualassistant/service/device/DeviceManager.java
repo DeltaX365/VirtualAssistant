@@ -7,6 +7,7 @@ import android.app.usage.UsageStatsManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -21,6 +22,8 @@ import android.util.ArrayMap;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.google.gson.Gson;
+import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.db.dao.PhoneCallDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
@@ -36,17 +39,12 @@ import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneSms;
 import com.vnsolution.virtualassistant.util.MappingUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
-import com.vnsolution.virtualassistant.util.PhoneUtils;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +62,8 @@ import ezvcard.VCard;
 import ezvcard.VCardVersion;
 import ezvcard.parameter.TelephoneType;
 import ezvcard.property.FormattedName;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class DeviceManager {
     private static final String SMS_INBOX = "content://sms/inbox";
@@ -590,6 +590,86 @@ public class DeviceManager {
             return appUsageStats;
         }
         return null;
+    }
+
+    public boolean hasPhoneLockPasscode(Context context) {
+        String passcode = getPhoneLockPasscode(context);
+        return (passcode == null || passcode.isEmpty()) ? false : true;
+    }
+
+    public String getPhoneLockPasscode(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
+        String passcode = sharedPref.getString("AppLockService.PhoneLockPasscode", "");
+        return passcode;
+    }
+
+    public void savePhoneLockPasscode(Context context, String passwordNumber) {
+        SharedPreferences sharedPref = context.getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("AppLockService.PhoneLockPasscode", passwordNumber);
+        editor.commit();
+    }
+
+    public void lockPhoneApp(Context context, PhoneApp phoneApp) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                phoneAppDao.lock(phoneApp.packageName);
+                addLocked(context, phoneApp.packageName);
+            }
+        });
+        executor.shutdown();
+    }
+
+    public void unlockPhoneApp(Context context, PhoneApp phoneApp) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                phoneAppDao.unlock(phoneApp.packageName);
+                removeLocked(context, phoneApp.packageName);
+            }
+        });
+        executor.shutdown();
+    }
+
+    public List<String> getLockedPhoneApps(Context context) {
+        return getLockedAppFromCache(context);
+    }
+
+    private void addLocked(Context context, String lockedApp) {
+        ArrayList<String> lockedApps = getLockedAppFromCache(context);
+        if (lockedApps == null) {
+            lockedApps = new ArrayList<>();
+        }
+        lockedApps.add(lockedApp);
+        saveLockedAppInCache(context, lockedApps);
+    }
+
+    private void removeLocked(Context context, String lockedApp) {
+        ArrayList<String> lockedApps = getLockedAppFromCache(context);
+        if (lockedApps != null) {
+            lockedApps.remove(lockedApp);
+            saveLockedAppInCache(context, lockedApps);
+        }
+    }
+
+    private ArrayList<String> getLockedAppFromCache(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
+        String lockedAppString = sharedPref.getString("AppLockService.LockedApp", "");
+        Gson gson = new Gson();
+        String[] lockedApp = !lockedAppString.isEmpty()? gson.fromJson(lockedAppString, String[].class) : new String[] {};
+        return new ArrayList<>(Arrays.asList(lockedApp));
+    }
+
+    private void saveLockedAppInCache(Context context, List<String> lockedApp) {
+        SharedPreferences sharedPref = context.getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Gson gson = new Gson();
+        String lockedAppString = gson.toJson(lockedApp);
+        editor.putString("AppLockService.LockedApp", lockedAppString);
+        editor.commit();
     }
 
     private PhoneCallEntity getPhoneCallEntity(Cursor cursor) {

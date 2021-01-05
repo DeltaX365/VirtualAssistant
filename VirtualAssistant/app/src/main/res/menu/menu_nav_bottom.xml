@@ -4,26 +4,26 @@
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_screen_dashboard" />
+        android:title="@string/screen_dashboard" />
 
     <item
         android:id="@+id/navigation_places"
         android:icon="@drawable/ic_explore_black_24dp"
-        android:title="@string/title_screen_travel_dashboard" />
+        android:title="@string/screen_travel_dashboard" />
 
     <item
         android:id="@+id/navigation_apps"
         android:icon="@drawable/ic_get_app_black_24dp"
-        android:title="@string/title_screen_applications" />
+        android:title="@string/screen_applications" />
 
     <item
         android:id="@+id/navigation_call_logs"
         android:icon="@drawable/ic_call_black_24dp"
-        android:title="@string/title_screen_call_history" />
+        android:title="@string/screen_call_history" />
 
     <item
         android:id="@+id/navigation_settings"
         android:icon="@drawable/ic_baseline_settings_black_24"
-        android:title="@string/title_screen_settings" />
+        android:title="@string/screen_settings" />
 
 </menu>
