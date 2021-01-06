@@ -10,5 +10,6 @@ public class BotOptions {
     public static final String SHOW_NOTIFICATIONS = "Show notifications";
     public static final String SHOW_CALL_LOGS = "Show call logs";
     public static final String SHOW_SENT_RECEIVED_SMS = "Show sent/received sms";
+    public static final String MANAGE_PERMISSIONS = "Manage permissions";
     public static final String SHOW_SETTINGS = "Show settings";
 }

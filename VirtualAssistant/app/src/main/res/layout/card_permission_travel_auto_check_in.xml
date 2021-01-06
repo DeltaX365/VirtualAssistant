@@ -3,24 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardBackgroundColor="@color/color_grey"
+    app:cardCornerRadius="20dp"
     app:strokeWidth="1dp"
-    app:strokeColor="#cccccc"
-    app:cardCornerRadius="20dp">
+    app:strokeColor="#cccccc">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="20dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Auto Check-In"
-            android:textColor="@color/color_white"
+            android:textColor="@color/color_black"
             android:textStyle="bold"
-            android:textSize="12sp"
             />
         <View
             android:layout_width="match_parent"
@@ -38,11 +36,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Recognize physical activity"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/physical_activity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -64,11 +61,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Access location in the foreground"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/access_foreground_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -90,11 +86,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Access location in the background"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/access_background_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />

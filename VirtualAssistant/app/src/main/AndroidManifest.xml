@@ -112,6 +112,9 @@
         <activity
             android:name=".ui.setting.SettingActivity"
             android:label="@string/screen_settings" />
+        <activity
+            android:name=".ui.setting.PermissionActivity"
+            android:label="Permissions" />
 
         <service
             android:name=".service.stoptracking.StopTrackingService"

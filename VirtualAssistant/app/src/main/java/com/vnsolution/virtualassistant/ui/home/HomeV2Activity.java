@@ -27,6 +27,7 @@ import com.vnsolution.virtualassistant.ui.contact.ContactDashboardActivity;
 import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallActivity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderListActivity;
+import com.vnsolution.virtualassistant.ui.setting.PermissionActivity;
 import com.vnsolution.virtualassistant.ui.setting.SettingActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
@@ -96,6 +97,9 @@ public class HomeV2Activity extends BaseActivity {
                     case BotOptions.SHOW_REMINDERS:
                         intent = new Intent(HomeV2Activity.this, ReminderListActivity.class);
                         break;
+                    case BotOptions.MANAGE_PERMISSIONS:
+                        intent = new Intent(HomeV2Activity.this, PermissionActivity.class);
+                        break;
                     case BotOptions.SHOW_SETTINGS:
                         intent = new Intent(HomeV2Activity.this, SettingActivity.class);
                         break;
@@ -122,6 +126,7 @@ public class HomeV2Activity extends BaseActivity {
 //        availableActions.add(BotOptions.SHOW_NOTIFICATIONS);
 //        availableActions.add(BotOptions.SHOW_CALL_LOGS);
 //        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
+        availableActions.add(BotOptions.MANAGE_PERMISSIONS);
         availableActions.add(BotOptions.SHOW_SETTINGS);
         availableActionsAdapter.setData(availableActions);
     }

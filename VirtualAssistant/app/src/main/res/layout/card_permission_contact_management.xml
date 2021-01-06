@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardBackgroundColor="@color/color_grey"
     app:strokeWidth="1dp"
     app:strokeColor="#cccccc"
     app:cardCornerRadius="20dp">
@@ -12,15 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="20dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Contact Management"
-            android:textColor="@color/color_white"
+            android:textColor="@color/color_black"
             android:textStyle="bold"
-            android:textSize="12sp"
             />
         <View
             android:layout_width="match_parent"
@@ -38,11 +36,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Read call log"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/read_call_log"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -64,11 +61,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Read phone status and identity"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/read_phone_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -90,11 +86,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Read your text messages (SMS)"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/read_sms"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -116,11 +111,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Receive your text messages (SMS)"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/receive_sms"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -142,11 +136,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Read your contacts"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/read_contacts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -168,11 +161,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Modify your contacts"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/write_contacts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -194,11 +186,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Read the contents of SD card"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/read_sd_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -220,11 +211,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Modify or delete SD card contents"
-                android:textColor="@color/color_white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textColor="@color/color_black"
                 />
             <Switch
+                android:id="@+id/write_sd_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
