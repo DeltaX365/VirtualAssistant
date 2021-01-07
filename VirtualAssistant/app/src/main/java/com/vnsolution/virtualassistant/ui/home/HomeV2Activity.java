@@ -1,10 +1,12 @@
 package com.vnsolution.virtualassistant.ui.home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.telecom.TelecomManager;
 import android.view.View;
 import android.widget.TextView;
 
@@ -85,6 +87,12 @@ public class HomeV2Activity extends BaseActivity {
                     case BotSetting.MANAGE_CONTACTS:
                         intent = new Intent(HomeV2Activity.this, ContactListActivity.class);
                         break;
+                    case BotSetting.MANAGE_LOCKED_CONTACTS:
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            TelecomManager telecomManager = (TelecomManager) getSystemService(Context.TELECOM_SERVICE);
+                            intent = telecomManager.createManageBlockedNumbersIntent();
+                        }
+                        break;
                     case BotSetting.SHOW_CALL_STAT:
                         intent = new Intent(HomeV2Activity.this, ContactDashboardActivity.class);
                         break;
@@ -120,6 +128,7 @@ public class HomeV2Activity extends BaseActivity {
         List<String> availableActions = new ArrayList<String>();
         availableActions.add(BotSetting.SHOW_TRAVEL_HISTORY);
         availableActions.add(BotSetting.MANAGE_CONTACTS);
+        availableActions.add(BotSetting.MANAGE_LOCKED_CONTACTS);
         availableActions.add(BotSetting.SHOW_CALL_STAT);
         availableActions.add(BotSetting.MANAGE_YOUR_APPS);
         availableActions.add(BotSetting.SHOW_REMINDERS);

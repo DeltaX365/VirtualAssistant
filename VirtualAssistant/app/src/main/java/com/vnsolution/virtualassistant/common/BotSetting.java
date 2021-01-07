@@ -5,6 +5,7 @@ public class BotSetting {
     public static final String MANAGE_YOUR_APPS = "Manage your apps";
     public static final String SHOW_CALL_STAT = "Show call stat";
     public static final String MANAGE_CONTACTS = "Manage contacts";
+    public static final String MANAGE_LOCKED_CONTACTS = "Manage locked contacts";
     public static final String SHOW_REMINDERS = "Show reminders";
     public static final String ADD_REMINDER = "Add reminder";
     public static final String SHOW_NOTIFICATIONS = "Show notifications";

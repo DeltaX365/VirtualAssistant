@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.BlockedNumberContract;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.provider.Settings;
@@ -393,6 +395,36 @@ public class DeviceManager {
             cursor.close();
         }
         phoneContactDao.insert(phoneContacts);
+    }
+
+    public void lockPhoneNumber(Context context, String phoneNumber) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            ContentValues values = new ContentValues();
+            values.put(BlockedNumberContract.BlockedNumbers.COLUMN_ORIGINAL_NUMBER, phoneNumber);
+            context.getContentResolver().insert(BlockedNumberContract.BlockedNumbers.CONTENT_URI, values);
+        }
+    }
+
+    public void unblockPhoneNumber(Context context, String phoneNumber) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            ContentValues values = new ContentValues();
+            values.put(BlockedNumberContract.BlockedNumbers.COLUMN_ORIGINAL_NUMBER, phoneNumber);
+            Uri uri = context.getContentResolver().insert(BlockedNumberContract.BlockedNumbers.CONTENT_URI, values);
+            context.getContentResolver().delete(uri,null,null);
+        }
+    }
+
+    public boolean isLockedPhoneNumber(Context context, String phoneNumber) {
+        return true;
+    }
+
+    public void getLockedPhoneNumbers(Context context) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            Cursor c = context.getContentResolver().query(BlockedNumberContract.BlockedNumbers.CONTENT_URI,
+                    new String[]{BlockedNumberContract.BlockedNumbers.COLUMN_ID,
+                            BlockedNumberContract.BlockedNumbers.COLUMN_ORIGINAL_NUMBER,
+                            BlockedNumberContract.BlockedNumbers.COLUMN_E164_NUMBER}, null, null, null);
+        }
     }
 
     public String exportPhoneContacts(Context context, List<String> phoneContactIds) {
