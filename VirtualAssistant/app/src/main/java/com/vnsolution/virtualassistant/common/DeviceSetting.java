@@ -4,10 +4,11 @@ import android.Manifest;
 
 import com.vnsolution.virtualassistant.BuildConfig;
 
-public class DeviceOptions {
+public class DeviceSetting {
     public static final String INTENT_ACTION_SYNC_PHONE_CONTACT = BuildConfig.APPLICATION_ID + "." + "ACTION_SYNC_PHONE_CONTACT";
     public static final String INTENT_ACTION_SYNC_PHONE_CALL = BuildConfig.APPLICATION_ID + "." + "ACTION_SYNC_PHONE_CALL";
     public static final String INTENT_ACTION_SYNC_PHONE_SMS = BuildConfig.APPLICATION_ID + "." + "ACTION_SYNC_PHONE_SMS";
+    public static final String INTENT_ACTION_SYNC_PHONE_APP = BuildConfig.APPLICATION_ID + "." + "ACTION_SYNC_PHONE_APP";
 
     public static final int PERMISSIONS_REQUEST_CODE = 2000;
     public static final String[] PERMISSIONS_PHONE_CALL = {Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CALL_LOG, Manifest.permission.PROCESS_OUTGOING_CALLS};

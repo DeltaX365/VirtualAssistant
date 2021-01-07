@@ -2,11 +2,8 @@ package com.vnsolution.virtualassistant.ui.reminder;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,7 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.ReminderOptions;
+import com.vnsolution.virtualassistant.common.ReminderSetting;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 
 import java.text.SimpleDateFormat;
@@ -52,8 +49,8 @@ public class ReminderShowFullScreenActivity extends BaseActivity implements HasA
 
         reminderTitleTextView = findViewById(R.id.reminder_title);
         String title = "";
-        if (getIntent().hasExtra(ReminderOptions.NOTIFY_CONTENT_TEXT)) {
-            title = getIntent().getStringExtra(ReminderOptions.NOTIFY_CONTENT_TEXT);
+        if (getIntent().hasExtra(ReminderSetting.NOTIFY_CONTENT_TEXT)) {
+            title = getIntent().getStringExtra(ReminderSetting.NOTIFY_CONTENT_TEXT);
         }
         title = (title == null || title.isEmpty())? "Reminder" : title;
         reminderTitleTextView.setText(title);
@@ -80,7 +77,7 @@ public class ReminderShowFullScreenActivity extends BaseActivity implements HasA
             @Override
             public void onClick(View v) {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.cancel(ReminderOptions.NOTIFY_ID);
+                notificationManager.cancel(ReminderSetting.NOTIFY_ID);
                 finish();
             }
         });

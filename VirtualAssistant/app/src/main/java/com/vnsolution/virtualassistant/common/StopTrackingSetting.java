@@ -4,7 +4,7 @@ import android.Manifest;
 
 import com.vnsolution.virtualassistant.BuildConfig;
 
-public class StopTrackingOptions {
+public class StopTrackingSetting {
     public static final String BROADCAST_PERMISSIONS_ALL_GRANTED = BuildConfig.APPLICATION_ID + "." + "STOP_TRACKING_BROADCAST_PERMISSIONS_ALL_GRANTED";
     public static final String BROADCAST_PERMISSIONS_LOCATION_GRANTED = BuildConfig.APPLICATION_ID + "." + "STOP_TRACKING_BROADCAST_LOCATION_PERMISSIONS_GRANTED";
     public static final String BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED = BuildConfig.APPLICATION_ID + "." + "STOP_TRACKING_BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED";
@@ -45,4 +45,9 @@ public class StopTrackingOptions {
     public static final String NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME = "Stop Detection";
     public static final String NOTIFY_FOREGROUND_SERVICE_TITLE = "Foreground Service";
     public static final String NOTIFY_FOREGROUND_SERVICE_TEXT = "Checking activity...";
+    public static final String NOTIFY_ID = "NotifyId";
+    public static final String NOTIFY_DETECTED_PLACE_TITLE = "Are you visiting here?";
+    public static final String NOTIFY_DETECTED_PLACE_ACTION_YES = "YES";
+    public static final String NOTIFY_DETECTED_PLACE_ACTION_EDIT = "EDIT";
+    public static final String NOTIFY_DETECTED_PLACE_DATA_PLACE_ID = "PlaceId";
 }

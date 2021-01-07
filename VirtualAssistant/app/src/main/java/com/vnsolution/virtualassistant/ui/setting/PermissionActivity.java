@@ -1,8 +1,6 @@
 package com.vnsolution.virtualassistant.ui.setting;
 
 import android.Manifest;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -12,26 +10,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.annotation.Nullable;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
-import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
-import com.vnsolution.virtualassistant.db.dao.PhoneAppUsageDao;
-import com.vnsolution.virtualassistant.db.dao.PhoneCallDao;
-import com.vnsolution.virtualassistant.db.dao.PhoneContactDao;
-import com.vnsolution.virtualassistant.db.dao.PhoneSmsDao;
-import com.vnsolution.virtualassistant.db.dao.PlaceDao;
-import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
@@ -112,33 +95,33 @@ public class PermissionActivity extends BaseActivity implements HasAndroidInject
 
     private void refreshView() {
         physicalActivitySwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)? true : false);
-        physicalActivitySwitch.setClickable(physicalActivitySwitch.isChecked()? false : true);
+        physicalActivitySwitch.setClickable(!physicalActivitySwitch.isChecked());
         accessForegroundLocationSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)? true : false);
-        accessForegroundLocationSwitch.setClickable(accessForegroundLocationSwitch.isChecked()? false : true);
+        accessForegroundLocationSwitch.setClickable(!accessForegroundLocationSwitch.isChecked());
         accessBackgroundLocationSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)? true : false);
-        accessBackgroundLocationSwitch.setClickable(accessBackgroundLocationSwitch.isChecked()? false : true);
+        accessBackgroundLocationSwitch.setClickable(!accessBackgroundLocationSwitch.isChecked());
 
-        readCallLogSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_CALL_LOG)? true : false);
-        readCallLogSwitch.setClickable(readCallLogSwitch.isChecked()? false : true);
-        readPhoneStateSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_PHONE_STATE)? true : false);
-        readPhoneStateSwitch.setClickable(readPhoneStateSwitch.isChecked()? false : true);
-        readSmsSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_SMS)? true : false);
-        readSmsSwitch.setClickable(readSmsSwitch.isChecked()? false : true);
-        receiveSmsSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.RECEIVE_SMS)? true : false);
-        receiveSmsSwitch.setClickable(receiveSmsSwitch.isChecked()? false : true);
-        readContactsSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_CONTACTS)? true : false);
-        readContactsSwitch.setClickable(readContactsSwitch.isChecked()? false : true);
-        writeContactsSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.WRITE_CONTACTS)? true : false);
-        writeContactsSwitch.setClickable(writeContactsSwitch.isChecked()? false : true);
-        readSDCardSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)? true : false);
-        readSDCardSwitch.setClickable(readSDCardSwitch.isChecked()? false : true);
-        writeSDCardSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)? true : false);
-        writeSDCardSwitch.setClickable(writeSDCardSwitch.isChecked()? false : true);
+        readCallLogSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_CALL_LOG));
+        readCallLogSwitch.setClickable(!readCallLogSwitch.isChecked());
+        readPhoneStateSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_PHONE_STATE));
+        readPhoneStateSwitch.setClickable(!readPhoneStateSwitch.isChecked());
+        readSmsSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_SMS));
+        readSmsSwitch.setClickable(!readSmsSwitch.isChecked());
+        receiveSmsSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.RECEIVE_SMS));
+        receiveSmsSwitch.setClickable(!receiveSmsSwitch.isChecked());
+        readContactsSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_CONTACTS));
+        readContactsSwitch.setClickable(!readContactsSwitch.isChecked());
+        writeContactsSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.WRITE_CONTACTS));
+        writeContactsSwitch.setClickable(!writeContactsSwitch.isChecked());
+        readSDCardSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE));
+        readSDCardSwitch.setClickable(!readSDCardSwitch.isChecked());
+        writeSDCardSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE));
+        writeSDCardSwitch.setClickable(!writeSDCardSwitch.isChecked());
 
-        packageUsageStatSwitch.setChecked(canAccessPackageUsageStat()? true : false);
-        packageUsageStatSwitch.setClickable(packageUsageStatSwitch.isChecked()? false : true);
-        appearOnTopSwitch.setChecked(canDrawOverlays()? true : false);
-        appearOnTopSwitch.setClickable(appearOnTopSwitch.isChecked()? false : true);
+        packageUsageStatSwitch.setChecked(canAccessPackageUsageStat());
+        packageUsageStatSwitch.setClickable(!packageUsageStatSwitch.isChecked());
+        appearOnTopSwitch.setChecked(canDrawOverlays());
+        appearOnTopSwitch.setClickable(!appearOnTopSwitch.isChecked());
     }
 
     @Override
@@ -191,13 +174,21 @@ public class PermissionActivity extends BaseActivity implements HasAndroidInject
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 9999 && resultCode == RESULT_OK) {
+            refreshView();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private boolean canAccessPackageUsageStat() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_YEAR, -7);
             List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, calendar.getTimeInMillis(), System.currentTimeMillis());
-            return usageStats.isEmpty()? false : true;
+            return !usageStats.isEmpty();
         }
         return true;
     }

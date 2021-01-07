@@ -1,6 +1,6 @@
 package com.vnsolution.virtualassistant.common;
 
-public class UiOptions {
+public class UiSetting {
     // Place Dashboard UI
     public static final String PLACE_LIST_RECENT_VISITED = "PLACE_LIST_RECENTLY_VISITED";
     public static final String PLACE_LIST_MOST_VISITED = "PLACE_LIST_MOST_VISITED";

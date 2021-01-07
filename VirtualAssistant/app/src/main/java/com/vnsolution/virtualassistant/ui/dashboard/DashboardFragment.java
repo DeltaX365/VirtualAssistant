@@ -41,7 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
+import com.vnsolution.virtualassistant.common.StopTrackingSetting;
 import com.vnsolution.virtualassistant.di.Injectable;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.StopPoint;
@@ -158,7 +158,7 @@ public class DashboardFragment extends Fragment implements Injectable {
 
     private void startWatchingPermissions() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(StopTrackingOptions.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+        filter.addAction(StopTrackingSetting.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -170,7 +170,7 @@ public class DashboardFragment extends Fragment implements Injectable {
 
     @SuppressLint("MissingPermission")
     private void enableMyLocation() {
-        if (!PermissionUtils.hasPermissions(getActivity(), StopTrackingOptions.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(getActivity(), StopTrackingSetting.PERMISSIONS_LOCATION)) {
             return;
         }
         mGoogleMap.setMyLocationEnabled(true);
@@ -178,12 +178,12 @@ public class DashboardFragment extends Fragment implements Injectable {
 
     @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
-        if (!PermissionUtils.hasPermissions(getActivity(), StopTrackingOptions.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(getActivity(), StopTrackingSetting.PERMISSIONS_LOCATION)) {
             return;
         }
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(StopTrackingOptions.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(StopTrackingOptions.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setInterval(StopTrackingSetting.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(StopTrackingSetting.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationCallback = new LocationCallback() {
             @Override
@@ -234,7 +234,7 @@ public class DashboardFragment extends Fragment implements Injectable {
                     .center(latLng)
                     .strokeColor(Color.argb(50, 70, 70, 70))
                     .fillColor(Color.argb(100, 150, 150, 150))
-                    .radius(StopTrackingOptions.CONFIG_GEOFENCE_RADIUS_IN_METERS);
+                    .radius(StopTrackingSetting.CONFIG_GEOFENCE_RADIUS_IN_METERS);
             mCurrentCircle = mGoogleMap.addCircle(circleOptions);
         }
     }

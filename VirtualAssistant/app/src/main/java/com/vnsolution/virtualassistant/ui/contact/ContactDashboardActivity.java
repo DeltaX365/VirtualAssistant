@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.PhoneCall;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneContactSummary;
@@ -219,7 +219,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentCallsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentCallsRecyclerView.setLayoutManager(recentCallsLayoutManager);
 
-        recentCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_phone_call);
+        recentCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_phone_call);
         recentCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneCall>() {
             @Override
             public void onTap(PhoneCall phoneCall) {
@@ -249,7 +249,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         mostContactsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mostCallsRecyclerView.setLayoutManager(mostContactsLayoutManager);
 
-        mostCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_phone_call);
+        mostCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_phone_call);
         mostCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneCall>() {
             @Override
             public void onTap(PhoneCall phoneCall) {
@@ -279,7 +279,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentIncomingCallsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentIncomingCallsRecyclerView.setLayoutManager(recentIncomingCallsLayoutManager);
 
-        recentIncomingCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_phone_call);
+        recentIncomingCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_phone_call);
         recentIncomingCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneCall>() {
             @Override
             public void onTap(PhoneCall phoneCall) {
@@ -309,7 +309,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentOutgoingCallsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentOutgoingCallsRecyclerView.setLayoutManager(recentOutgoingCallsLayoutManager);
 
-        recentOutgoingCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_phone_call);
+        recentOutgoingCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_phone_call);
         recentOutgoingCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneCall>() {
             @Override
             public void onTap(PhoneCall phoneCall) {
@@ -339,7 +339,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentMissedCallsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentMissedCallsRecyclerView.setLayoutManager(recentMissedCallsLayoutManager);
 
-        recentMissedCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_phone_call);
+        recentMissedCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_phone_call);
         recentMissedCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneCall>() {
             @Override
             public void onTap(PhoneCall phoneCall) {
@@ -369,7 +369,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentRejectedCallsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentRejectedCallsRecyclerView.setLayoutManager(recentRejectedCallsLayoutManager);
 
-        recentRejectedCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_phone_call);
+        recentRejectedCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_phone_call);
         recentRejectedCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneCall>() {
             @Override
             public void onTap(PhoneCall phoneCall) {
@@ -399,7 +399,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         recentBlockedCallsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentBlockedCallsRecyclerView.setLayoutManager(recentBlockedCallsLayoutManager);
 
-        recentBlockedCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_phone_call);
+        recentBlockedCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_phone_call);
         recentBlockedCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneCall>() {
             @Override
             public void onTap(PhoneCall phoneCall) {
@@ -429,7 +429,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         mostIncomingCallsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mostIncomingCallsRecyclerView.setLayoutManager(mostIncomingCallsLayoutManager);
 
-        mostIncomingCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_phone_call);
+        mostIncomingCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_phone_call);
         mostIncomingCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneCall>() {
             @Override
             public void onTap(PhoneCall phoneCall) {
@@ -459,7 +459,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
         mostOutgoingCallsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mostOutgoingCallsRecyclerView.setLayoutManager(mostOutgoingCallsLayoutManager);
 
-        mostOutgoingCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_phone_call);
+        mostOutgoingCallsAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_phone_call);
         mostOutgoingCallsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneCall>() {
             @Override
             public void onTap(PhoneCall phoneCall) {

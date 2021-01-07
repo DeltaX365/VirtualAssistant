@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
@@ -61,8 +61,8 @@ public class AppCardRow extends MaterialCardView implements IRecyclerViewRow<Pho
             appLastUsedTime += DateUtils.formatSameDayTime(phoneApp.usageStats.getLastTimeUsed(), System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM).toString();
             appUsageTime += DateUtils.formatElapsedTime(phoneApp.usageStats.getTotalTimeInForeground() / 1000);
         }
-        String appUsage = (viewType.equals(UiOptions.APP_LIST_RECENT_USAGE))? appLastUsedTime :
-                (viewType.equals(UiOptions.APP_LIST_MOST_USAGE))? appUsageTime : "";
+        String appUsage = (viewType.equals(UiSetting.APP_LIST_RECENT_USAGE))? appLastUsedTime :
+                (viewType.equals(UiSetting.APP_LIST_MOST_USAGE))? appUsageTime : "";
         mAppUsageTextView.setText(appUsage);
     }
 

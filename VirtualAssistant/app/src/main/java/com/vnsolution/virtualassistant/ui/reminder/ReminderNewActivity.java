@@ -19,8 +19,7 @@ import androidx.annotation.NonNull;
 import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog;
 import com.google.android.material.textfield.TextInputEditText;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.ReminderOptions;
-import com.vnsolution.virtualassistant.db.entity.ReminderEntity;
+import com.vnsolution.virtualassistant.common.ReminderSetting;
 import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.Reminder;
@@ -70,8 +69,8 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
         if (reminder == null) {
             reminder = new Reminder();
             reminder.date = new Date();
-            reminder.action = ReminderOptions.ACTION_NONE;
-            reminder.repeat = ReminderOptions.REPEAT_NONE;
+            reminder.action = ReminderSetting.ACTION_NONE;
+            reminder.repeat = ReminderSetting.REPEAT_NONE;
         }
         setupView();
     }
@@ -232,13 +231,13 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
     private void onChangeReminderAction() {
         List<String> items = new ArrayList<>();
         switch (reminder.action) {
-            case ReminderOptions.ACTION_LAUNCH_APP:
+            case ReminderSetting.ACTION_LAUNCH_APP:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     items = phoneApps.stream().map(phoneApp -> phoneApp.appName).collect(Collectors.toList());
                 }
                 break;
-            case ReminderOptions.ACTION_SEND_SMS:
-            case ReminderOptions.ACTION_CALL_PHONE:
+            case ReminderSetting.ACTION_SEND_SMS:
+            case ReminderSetting.ACTION_CALL_PHONE:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     items = phoneContacts.stream().map(phoneContact -> phoneContact.name).collect(Collectors.toList());
                 }
@@ -256,7 +255,7 @@ public class ReminderNewActivity extends BaseActivity implements HasAndroidInjec
     private void validate() {
         if (reminderCreationCompletedMenuItem != null) {
             boolean isValid = (reminder.name != null && !reminder.name.isEmpty() && reminderCreationCompletedMenuItem != null) ? true : false;
-            if (reminder.action != null && !reminder.action.isEmpty() && !reminder.action.equals(ReminderOptions.ACTION_NONE)) {
+            if (reminder.action != null && !reminder.action.isEmpty() && !reminder.action.equals(ReminderSetting.ACTION_NONE)) {
                 isValid = isValid && (reminder.extendedData != null && !reminder.extendedData.isEmpty());
             }
             reminderCreationCompletedMenuItem.setEnabled(isValid);

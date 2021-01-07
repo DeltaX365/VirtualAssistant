@@ -19,6 +19,7 @@ import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.util.ArrayMap;
 
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
@@ -89,7 +90,8 @@ public class DeviceManager {
     public PhoneAppDao phoneAppDao;
 
     @Inject
-    public DeviceManager() {}
+    public DeviceManager() {
+    }
 
     public static synchronized DeviceManager getInstance() {
         if (instance == null) {
@@ -103,7 +105,7 @@ public class DeviceManager {
         Future<List<PhoneCallSummaryEntity>> phoneContactSummaryListFuture = executor.submit(new Callable<List<PhoneCallSummaryEntity>>() {
             @Override
             public List<PhoneCallSummaryEntity> call() throws Exception {
-                return (phoneNumbers != null && phoneNumbers != "")? phoneCallDao.getCallStatByNumbers(phoneNumbers) : phoneCallDao.getCallStat();
+                return (phoneNumbers != null && phoneNumbers != "") ? phoneCallDao.getCallStatByNumbers(phoneNumbers) : phoneCallDao.getCallStat();
             }
         });
         List<PhoneCallSummaryEntity> phoneContactSummary = new ArrayList<>();
@@ -364,7 +366,7 @@ public class DeviceManager {
 
     public void syncPhoneContacts(Context context) {
         List<PhoneContactEntity> phoneContacts = new ArrayList<>();
-        if (context != null) {
+        if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_CONTACTS)) {
             ContentResolver contentResolver = context.getContentResolver();
             Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
             if (cursor.moveToNext()) {
@@ -423,8 +425,10 @@ public class DeviceManager {
         Future<Boolean> deletePhoneContactFuture = executor.submit(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, phoneContactEntity.lookup);
-                context.getContentResolver().delete(contactUri,null,null);
+                if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.WRITE_CONTACTS)) {
+                    Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, phoneContactEntity.lookup);
+                    context.getContentResolver().delete(contactUri, null, null);
+                }
                 phoneContactDao.delete(phoneContactEntity);
                 return Boolean.TRUE;
             }

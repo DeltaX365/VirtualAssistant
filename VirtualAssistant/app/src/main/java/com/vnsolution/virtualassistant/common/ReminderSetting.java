@@ -2,7 +2,7 @@ package com.vnsolution.virtualassistant.common;
 
 import com.vnsolution.virtualassistant.BuildConfig;
 
-public class ReminderOptions {
+public class ReminderSetting {
     public static final String REPEAT_NONE = "No repeat";
     public static final String REPEAT_DAILY = "Daily";
     public static final String REPEAT_WEEKLY = "Weekly";

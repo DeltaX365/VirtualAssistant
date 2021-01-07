@@ -30,8 +30,8 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.StopTrackingSetting;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
@@ -124,7 +124,7 @@ public class TravelHistoryActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (uiOption.equals(UiOptions.PLACE_SUMMARY_YESTERDAY)) {
+        if (uiOption.equals(UiSetting.PLACE_SUMMARY_YESTERDAY)) {
             MenuInflater menuInflater = getMenuInflater();
             menuInflater.inflate(R.menu.menu_travel_history_options, menu);
             return true;
@@ -206,7 +206,7 @@ public class TravelHistoryActivity extends BaseActivity {
         travelHistoryRecyclerView = findViewById(R.id.list_visited_places);
         travelHistoryRecyclerView.setHasFixedSize(true);
 
-        if (uiOption.equals(UiOptions.PLACE_SUMMARY_YESTERDAY) || uiOption.equals(UiOptions.PLACE_SUMMARY_ALL)) {
+        if (uiOption.equals(UiSetting.PLACE_SUMMARY_YESTERDAY) || uiOption.equals(UiSetting.PLACE_SUMMARY_ALL)) {
             travelHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             visitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, uiOption, R.layout.item_place);
             visitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
@@ -221,10 +221,10 @@ public class TravelHistoryActivity extends BaseActivity {
                 @Override
                 public void onAction(Place place, String action) {
                     super.onAction(place, action);
-                    if (action.equals(UiOptions.PLACE_ACTION_CONFIRM)) {
+                    if (action.equals(UiSetting.PLACE_ACTION_CONFIRM)) {
                         new ConfirmVisitedPlaceTask().execute(place.id);
                     }
-                    if (action.equals(UiOptions.PLACE_ACTION_EDIT)) {
+                    if (action.equals(UiSetting.PLACE_ACTION_EDIT)) {
                         Intent intent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
                         intent.putExtra("PlaceId", place.id);
                         startActivity(intent);
@@ -233,7 +233,7 @@ public class TravelHistoryActivity extends BaseActivity {
             });
             travelHistoryRecyclerView.setAdapter(visitedPlacesAdapter);
         }
-        if (uiOption.equals(UiOptions.PLACE_SUMMARY_CITY) || uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY)) {
+        if (uiOption.equals(UiSetting.PLACE_SUMMARY_CITY) || uiOption.equals(UiSetting.PLACE_SUMMARY_COUNTRY)) {
             travelHistoryRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
             visitedRegionsAdapter = new RecyclerViewAdapter<String>(this, uiOption, R.layout.card_region);
             visitedRegionsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<String>() {
@@ -241,11 +241,11 @@ public class TravelHistoryActivity extends BaseActivity {
                 public void onTap(String region) {
                     super.onTap(region);
                     Intent intent = new Intent(TravelHistoryActivity.this, TravelHistoryActivity.class);
-                    if (uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY)) {
-                        intent.putExtra("UiOption", UiOptions.PLACE_SUMMARY_CITY);
+                    if (uiOption.equals(UiSetting.PLACE_SUMMARY_COUNTRY)) {
+                        intent.putExtra("UiOption", UiSetting.PLACE_SUMMARY_CITY);
                         intent.putExtra("Country", region);
                     } else {
-                        intent.putExtra("UiOption", UiOptions.PLACE_SUMMARY_ALL);
+                        intent.putExtra("UiOption", UiSetting.PLACE_SUMMARY_ALL);
                         intent.putExtra("City", region);
                     }
                     startActivity(intent);
@@ -282,7 +282,7 @@ public class TravelHistoryActivity extends BaseActivity {
 
     @SuppressLint("MissingPermission")
     private void enableMyLocation() {
-        if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
             return;
         }
         mGoogleMap.setMyLocationEnabled(true);
@@ -311,7 +311,7 @@ public class TravelHistoryActivity extends BaseActivity {
 
     private void startWatchingPermissions() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(StopTrackingOptions.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+        filter.addAction(StopTrackingSetting.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -323,12 +323,12 @@ public class TravelHistoryActivity extends BaseActivity {
 
     @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
-        if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
             return;
         }
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(StopTrackingOptions.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(StopTrackingOptions.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setInterval(StopTrackingSetting.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(StopTrackingSetting.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationCallback = new LocationCallback() {
             @Override
@@ -374,9 +374,9 @@ public class TravelHistoryActivity extends BaseActivity {
     }
 
     private void refreshView() {
-        if (uiOption.equals(UiOptions.PLACE_SUMMARY_ALL) || uiOption.equals(UiOptions.PLACE_SUMMARY_YESTERDAY)) {
+        if (uiOption.equals(UiSetting.PLACE_SUMMARY_ALL) || uiOption.equals(UiSetting.PLACE_SUMMARY_YESTERDAY)) {
             LiveData<List<Place>> placesLiveData;
-            if (uiOption.equals(UiOptions.PLACE_SUMMARY_ALL)) {
+            if (uiOption.equals(UiSetting.PLACE_SUMMARY_ALL)) {
                 if ((selectedCity != null && selectedCity != "")) {
                     placesLiveData = vm.getPlacesByCity(selectedCity);
                 } else if ((selectedCategory != null && selectedCategory != "")) {
@@ -403,9 +403,9 @@ public class TravelHistoryActivity extends BaseActivity {
                 }
             });
         }
-        if (uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY) || uiOption.equals(UiOptions.PLACE_SUMMARY_CITY)) {
+        if (uiOption.equals(UiSetting.PLACE_SUMMARY_COUNTRY) || uiOption.equals(UiSetting.PLACE_SUMMARY_CITY)) {
             LiveData<List<String>> regionsLiveData;
-            if (uiOption.equals(UiOptions.PLACE_SUMMARY_COUNTRY)) {
+            if (uiOption.equals(UiSetting.PLACE_SUMMARY_COUNTRY)) {
                 regionsLiveData = vm.getVisitedCountries();
             } else {
                 if (selectedCountry != null && selectedCountry != "") {

@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.vnsolution.virtualassistant.api.GoogleApi;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.entity.PlaceHistoryEntity;
 import com.vnsolution.virtualassistant.db.entity.PlaceSummaryEntity;
@@ -143,22 +143,22 @@ public class TravelViewModel extends ViewModel {
         List<PlaceSummary> placeSummaryList = new ArrayList<>();
 
         PlaceSummary yesterdaySummary = new PlaceSummary();
-        yesterdaySummary.type = UiOptions.PLACE_SUMMARY_YESTERDAY;
+        yesterdaySummary.type = UiSetting.PLACE_SUMMARY_YESTERDAY;
         yesterdaySummary.total = placeSummaryEntity.totalPlaceYesterday;
         placeSummaryList.add(yesterdaySummary);
 
         PlaceSummary allSummary = new PlaceSummary();
-        allSummary.type = UiOptions.PLACE_SUMMARY_ALL;
+        allSummary.type = UiSetting.PLACE_SUMMARY_ALL;
         allSummary.total = placeSummaryEntity.totalPlace;
         placeSummaryList.add(allSummary);
 
         PlaceSummary citySummary = new PlaceSummary();
-        citySummary.type = UiOptions.PLACE_SUMMARY_CITY;
+        citySummary.type = UiSetting.PLACE_SUMMARY_CITY;
         citySummary.total = placeSummaryEntity.totalCity;
         placeSummaryList.add(citySummary);
 
         PlaceSummary countrySummary = new PlaceSummary();
-        countrySummary.type = UiOptions.PLACE_SUMMARY_COUNTRY;
+        countrySummary.type = UiSetting.PLACE_SUMMARY_COUNTRY;
         countrySummary.total = placeSummaryEntity.totalCountry;
         placeSummaryList.add(countrySummary);
 

@@ -13,8 +13,8 @@ import androidx.appcompat.widget.PopupMenu;
 
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.ReminderOptions;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.ReminderSetting;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.Reminder;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
@@ -78,7 +78,7 @@ public class ReminderCardFullWidthRow extends MaterialCardView implements IRecyc
         mReminderTitleTextView.setText(reminder.name);
 
         String action = reminder.action;
-        if (action != null && !action.isEmpty() && !action.equals(ReminderOptions.ACTION_NONE)
+        if (action != null && !action.isEmpty() && !action.equals(ReminderSetting.ACTION_NONE)
             && reminder.extendedData != null && !reminder.extendedData.isEmpty()) {
             action += " " + reminder.extendedData;
         }
@@ -101,10 +101,10 @@ public class ReminderCardFullWidthRow extends MaterialCardView implements IRecyc
         String action = "";
         switch (item.getItemId()) {
             case R.id.menu_item_edit:
-                action = UiOptions.REMINDER_ACTION_EDIT;
+                action = UiSetting.REMINDER_ACTION_EDIT;
                 break;
             case R.id.menu_item_remove:
-                action = UiOptions.REMINDER_ACTION_REMOVE;
+                action = UiSetting.REMINDER_ACTION_REMOVE;
                 break;
             default:
                 return false;

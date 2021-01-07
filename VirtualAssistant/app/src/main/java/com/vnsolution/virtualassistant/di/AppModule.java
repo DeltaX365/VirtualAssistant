@@ -6,7 +6,7 @@ import androidx.room.Room;
 
 import com.vnsolution.virtualassistant.api.GoogleApi;
 import com.vnsolution.virtualassistant.api.WeatherApi;
-import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.common.AppSetting;
 import com.vnsolution.virtualassistant.db.DbMigration;
 import com.vnsolution.virtualassistant.db.VirtualAssistantDb;
 import com.vnsolution.virtualassistant.db.dao.PhoneCallDao;
@@ -65,7 +65,7 @@ public class AppModule {
                                 Request request = chain.request();
                                 HttpUrl url = request.url().newBuilder()
                                         .addQueryParameter("units", "metric")
-                                        .addQueryParameter("appid", Constants.OPEN_WEATHER_API_KEY)
+                                        .addQueryParameter("appid", AppSetting.OPEN_WEATHER_API_KEY)
                                         .build();
                                 request = request.newBuilder().url(url).build();
                                 return chain.proceed(request);
@@ -110,7 +110,7 @@ public class AppModule {
                             public Response intercept(Chain chain) throws IOException {
                                 Request request = chain.request();
                                 HttpUrl url = request.url().newBuilder()
-                                        .addQueryParameter("key", Constants.GM_API_KEY)
+                                        .addQueryParameter("key", AppSetting.GM_API_KEY)
                                         .build();
                                 request = request.newBuilder().url(url).build();
                                 return chain.proceed(request);

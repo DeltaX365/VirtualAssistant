@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.Constants;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.AppSetting;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.db.convertor.DateConverter;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
@@ -73,7 +73,7 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
             @Override
             public void onClick(View v) {
                 if (mOnRecyclerViewRowTouchListener != null) {
-                    mOnRecyclerViewRowTouchListener.onAction(mPlace, UiOptions.PLACE_ACTION_CONFIRM);
+                    mOnRecyclerViewRowTouchListener.onAction(mPlace, UiSetting.PLACE_ACTION_CONFIRM);
                 }
             }
         });
@@ -82,7 +82,7 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
             @Override
             public void onClick(View v) {
                 if (mOnRecyclerViewRowTouchListener != null) {
-                    mOnRecyclerViewRowTouchListener.onAction(mPlace, UiOptions.PLACE_ACTION_EDIT);
+                    mOnRecyclerViewRowTouchListener.onAction(mPlace, UiSetting.PLACE_ACTION_EDIT);
                 }
             }
         });
@@ -96,7 +96,7 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
 
         // Place photo
         if (place.photoReference != null && !place.photoReference.isEmpty()) {
-            String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + Constants.GM_API_KEY;
+            String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + AppSetting.GM_API_KEY;
             Glide.with(mContext).load(photoUri).into(mPhotoImageView);
         }
 
@@ -133,7 +133,7 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
         }
 
         // Place confirm
-        if (mViewType != null && mViewType != "" && mViewType.equals(UiOptions.PLACE_SUMMARY_YESTERDAY)) {
+        if (mViewType != null && mViewType != "" && mViewType.equals(UiSetting.PLACE_SUMMARY_YESTERDAY)) {
             int visibility = (place.confirmed == 1) ? View.GONE : View.VISIBLE;
             mConfirmTextView.setVisibility(visibility);
             mConfirmViewGroup.setVisibility(visibility);

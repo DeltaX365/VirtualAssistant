@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.PlaceSummary;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
@@ -48,19 +48,19 @@ public class PlaceCategoryCardRow extends MaterialCardView implements IRecyclerV
         int total = (placeSummary != null) ? placeSummary.total : 0;
         String type = (placeSummary != null) ? placeSummary.type : "";
         switch (type) {
-            case UiOptions.PLACE_SUMMARY_YESTERDAY:
+            case UiSetting.PLACE_SUMMARY_YESTERDAY:
                 mTypeTextView.setText("Yesterday");
                 mTotalTextView.setText(total + " " + ((total == 1)? "place" : "places"));
                 break;
-            case UiOptions.PLACE_SUMMARY_ALL:
+            case UiSetting.PLACE_SUMMARY_ALL:
                 mTypeTextView.setText("Places");
                 mTotalTextView.setText(total + " " + ((total == 1)? "place" : "places"));
                 break;
-            case UiOptions.PLACE_SUMMARY_CITY:
+            case UiSetting.PLACE_SUMMARY_CITY:
                 mTypeTextView.setText("Cities");
                 mTotalTextView.setText(total + " " + ((total == 1)? "city" : "cities"));
                 break;
-            case UiOptions.PLACE_SUMMARY_COUNTRY:
+            case UiSetting.PLACE_SUMMARY_COUNTRY:
                 mTypeTextView.setText("Countries");
                 mTotalTextView.setText(total + " " + ((total == 1)? "country" : "countries"));
                 break;

@@ -4,20 +4,17 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,9 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.takwolf.android.lock9.Lock9View;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.PhoneApp;
-import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.app.component.AppDashboardFilterBottomSheetDialogFragment;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
@@ -40,7 +36,6 @@ import com.vnsolution.virtualassistant.ui.reminder.ReminderNewActivity;
 import com.vnsolution.virtualassistant.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -157,7 +152,7 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
         recentUsageAppsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentUsageAppsRecyclerView.setLayoutManager(recentUsageAppsLayoutManager);
 
-        recentUsageAppsAdapter = new RecyclerViewAdapter<PhoneApp>(this, UiOptions.APP_LIST_RECENT_USAGE, R.layout.card_app);
+        recentUsageAppsAdapter = new RecyclerViewAdapter<PhoneApp>(this, UiSetting.APP_LIST_RECENT_USAGE, R.layout.card_app);
 //        recentlyUsageAppsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
 //            @Override
 //            public void onTap(Place place) {
@@ -197,7 +192,7 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
         mostUsageAppsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mostUsageAppsRecyclerView.setLayoutManager(mostUsageAppsLayoutManager);
 
-        mostUsageAppsAdapter = new RecyclerViewAdapter<PhoneApp>(this, UiOptions.APP_LIST_MOST_USAGE, R.layout.card_app);
+        mostUsageAppsAdapter = new RecyclerViewAdapter<PhoneApp>(this, UiSetting.APP_LIST_MOST_USAGE, R.layout.card_app);
 //        mostUsageAppsTodayAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
 //            @Override
 //            public void onTap(Place place) {
@@ -237,16 +232,16 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
         phoneAppsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         phoneAppsRecyclerView.setLayoutManager(phoneAppsLayoutManager);
 
-        phoneAppsAdapter = new RecyclerViewAdapter<PhoneApp>(this, UiOptions.APP_LIST_CATEGORY, R.layout.card_app_full_width);
+        phoneAppsAdapter = new RecyclerViewAdapter<PhoneApp>(this, UiSetting.APP_LIST_CATEGORY, R.layout.card_app_full_width);
         phoneAppsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneApp>() {
             @Override
             public void onAction(PhoneApp phoneApp, String action) {
                 switch (action) {
-                    case UiOptions.APP_ACTION_LAUNCH:
+                    case UiSetting.APP_ACTION_LAUNCH:
                         Intent launchIntent = getPackageManager().getLaunchIntentForPackage(phoneApp.packageName);
                         startActivity(launchIntent);
                         break;
-                    case UiOptions.APP_ACTION_LOCK:
+                    case UiSetting.APP_ACTION_LOCK:
                         if (vm.hasPhoneLockPasscode(AppDashboardActivity.this)) {
                             vm.lockPhoneApp(AppDashboardActivity.this, phoneApp);
                             onPhoneAppLocked(phoneApp);
@@ -255,7 +250,7 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
                             showAppLockPasscodeDialog();
                         }
                         break;
-                    case UiOptions.APP_ACTION_UNLOCK:
+                    case UiSetting.APP_ACTION_UNLOCK:
                         if (vm.hasPhoneLockPasscode(AppDashboardActivity.this)) {
                             vm.unlockPhoneApp(AppDashboardActivity.this, phoneApp);
                             onPhoneAppUnlocked(phoneApp);
@@ -264,19 +259,19 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
                             showAppLockPasscodeDialog();
                         }
                         break;
-                    case UiOptions.APP_ACTION_SCHEDULE:
+                    case UiSetting.APP_ACTION_SCHEDULE:
                         Intent intent = new Intent(AppDashboardActivity.this, ReminderNewActivity.class);
                         startActivity(intent);
                         break;
-                    case UiOptions.APP_ACTION_EXPORT:
+                    case UiSetting.APP_ACTION_EXPORT:
                         break;
-                    case UiOptions.APP_ACTION_SHARE:
+                    case UiSetting.APP_ACTION_SHARE:
                         boolean result = vm.sharePhoneApp(AppDashboardActivity.this, phoneApp);
                         if (!result) {
                             Toast.makeText(AppDashboardActivity.this, "Can not perform the action.", Toast.LENGTH_SHORT).show();
                         }
                         break;
-                    case UiOptions.APP_ACTION_UNINSTALL:
+                    case UiSetting.APP_ACTION_UNINSTALL:
                         Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + phoneApp.packageName));
                         startActivity(uninstallIntent);
                         break;

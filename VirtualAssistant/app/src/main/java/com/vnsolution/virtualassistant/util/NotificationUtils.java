@@ -3,17 +3,12 @@ package com.vnsolution.virtualassistant.util;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
-import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
-import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
 
 public class NotificationUtils {
     private static final String NOTIFICATION_CHANNEL_ID = "com.vnsolution.virtualassistant.notification";

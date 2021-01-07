@@ -11,8 +11,7 @@ import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
-import com.vnsolution.virtualassistant.service.bubble.FloatingViewBroadcastReceiver;
+import com.vnsolution.virtualassistant.common.StopTrackingSetting;
 import com.vnsolution.virtualassistant.service.device.AppLockService;
 import com.vnsolution.virtualassistant.service.device.DeviceWorker;
 import com.vnsolution.virtualassistant.service.stoptracking.StopTrackingService;
@@ -41,11 +40,10 @@ public class AppService {
     }
 
     private void startStopTrackingService() {
-        if (PermissionUtils.hasPermissions(mContext, StopTrackingOptions.PERMISSIONS_STOP_TRACKING)) {
-            Intent serviceIntent = new Intent(mContext, StopTrackingService.class);
-            serviceIntent.setAction(StopTrackingOptions.INTENT_ACTION_INITIAL);
-            ContextCompat.startForegroundService(mContext, serviceIntent);
-        }
+        Intent serviceIntent = new Intent(mContext, StopTrackingService.class);
+        serviceIntent.setAction(StopTrackingSetting.INTENT_ACTION_INITIAL);
+        ContextCompat.startForegroundService(mContext, serviceIntent);
+
         final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(StopTrackingWorker.class, 24, TimeUnit.HOURS).build();
         WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("StopTrackingWorker", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
     }
@@ -71,7 +69,7 @@ public class AppService {
         }
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mPermissionChangedBroadcastReceiver);
         IntentFilter filter = new IntentFilter();
-        filter.addAction(StopTrackingOptions.BROADCAST_PERMISSIONS_ALL_GRANTED);
+        filter.addAction(StopTrackingSetting.BROADCAST_PERMISSIONS_ALL_GRANTED);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mPermissionChangedBroadcastReceiver, filter);
     }
 

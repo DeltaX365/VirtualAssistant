@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import androidx.core.content.ContextCompat;
 
-import com.vnsolution.virtualassistant.common.DeviceOptions;
+import com.vnsolution.virtualassistant.common.DeviceSetting;
 
 public class PhoneSmsBroadcastReceiver extends BroadcastReceiver {
     @Override
@@ -16,7 +16,7 @@ public class PhoneSmsBroadcastReceiver extends BroadcastReceiver {
 
     private void syncPhoneSms(Context context) {
         Intent serviceIntent = new Intent(context, DeviceService.class);
-        serviceIntent.setAction(DeviceOptions.INTENT_ACTION_SYNC_PHONE_SMS);
+        serviceIntent.setAction(DeviceSetting.INTENT_ACTION_SYNC_PHONE_SMS);
         ContextCompat.startForegroundService(context, serviceIntent);
     }
 }

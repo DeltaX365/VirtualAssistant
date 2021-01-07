@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.Constants;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.AppSetting;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceHistory;
 import com.vnsolution.virtualassistant.model.PlaceType;
@@ -93,7 +92,7 @@ public class TravelViewActivity extends BaseActivity {
         mPlaceHistoryRecyclerView.setHasFixedSize(true);
         mPlaceHistoryLayoutManager = new LinearLayoutManager(this);
         mPlaceHistoryRecyclerView.setLayoutManager(mPlaceHistoryLayoutManager);
-        mPlaceHistoryAdapter = new RecyclerViewAdapter<PlaceHistory>(this, UiOptions.PLACE_LIST_HISTORY, R.layout.item_place_history);
+        mPlaceHistoryAdapter = new RecyclerViewAdapter<PlaceHistory>(this, UiSetting.PLACE_LIST_HISTORY, R.layout.item_place_history);
         mPlaceHistoryRecyclerView.setAdapter(mPlaceHistoryAdapter);
 
         mEditPlaceBtn = findViewById(R.id.edit_place);
@@ -131,7 +130,7 @@ public class TravelViewActivity extends BaseActivity {
         if (place != null) {
             // Place photo
             if (place.photoReference != null && !place.photoReference.isEmpty()) {
-                String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + Constants.GM_API_KEY;
+                String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + AppSetting.GM_API_KEY;
                 Glide.with(this).load(photoUri).into(mPhotoImageView);
             }
 

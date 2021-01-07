@@ -16,7 +16,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.ReminderOptions;
+import com.vnsolution.virtualassistant.common.ReminderSetting;
 import com.vnsolution.virtualassistant.ui.reminder.ReminderShowFullScreenActivity;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -28,10 +28,10 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         // Link: https://developer.android.com/training/notify-user/time-sensitive
         String action = intent.getAction();
         switch (action) {
-            case ReminderOptions.NOTIFY_ACTION_SHOW_FULL_SCREEN:
+            case ReminderSetting.NOTIFY_ACTION_SHOW_FULL_SCREEN:
                 createFullScreenNotification(context, intent);
                 break;
-            case ReminderOptions.NOTIFY_ACTION_DISMISS:
+            case ReminderSetting.NOTIFY_ACTION_DISMISS:
                 dismissNotification(context);
                 break;
         }
@@ -48,7 +48,7 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         }
         long[] vibratePattern = { 500, 500, 500, 500, 500, 500, 500, 500, 500 };
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(ReminderOptions.NOTIFY_CHANEL_ID, ReminderOptions.NOTIFY_CHANEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channel = new NotificationChannel(ReminderSetting.NOTIFY_CHANEL_ID, ReminderSetting.NOTIFY_CHANEL_NAME, NotificationManager.IMPORTANCE_HIGH);
             channel.setLightColor(Color.GREEN);
             channel.enableLights(true);
             channel.setVibrationPattern(vibratePattern);
@@ -65,17 +65,17 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         }
 
         String reminderContent = "";
-        if (intent != null && intent.hasExtra(ReminderOptions.NOTIFY_CONTENT_TEXT)) {
-            reminderContent = intent.getStringExtra(ReminderOptions.NOTIFY_CONTENT_TEXT);
+        if (intent != null && intent.hasExtra(ReminderSetting.NOTIFY_CONTENT_TEXT)) {
+            reminderContent = intent.getStringExtra(ReminderSetting.NOTIFY_CONTENT_TEXT);
         }
 
         Intent fullScreenIntent = new Intent(context, ReminderShowFullScreenActivity.class);
-        fullScreenIntent.putExtra(ReminderOptions.NOTIFY_CONTENT_TEXT, reminderContent);
+        fullScreenIntent.putExtra(ReminderSetting.NOTIFY_CONTENT_TEXT, reminderContent);
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context,0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, ReminderOptions.NOTIFY_CHANEL_ID)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, ReminderSetting.NOTIFY_CHANEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_hearing_24)
-                .setContentTitle(ReminderOptions.NOTIFY_TITLE)
+                .setContentTitle(ReminderSetting.NOTIFY_TITLE)
                 .setContentText(reminderContent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setSound(soundUri)
@@ -93,19 +93,19 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         Notification fullScreenNotification = notificationBuilder.build();
         NotificationManager notificationManager =
                         (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(ReminderOptions.NOTIFY_ID, fullScreenNotification);
+        notificationManager.notify(ReminderSetting.NOTIFY_ID, fullScreenNotification);
 //        NotificationManagerCompat.from(context).notify(9999, fullScreenNotification);
     }
 
     private PendingIntent getDismissPendingIntent(Context context) {
         Intent dismissIntent = new Intent(context, ReminderBroadcastReceiver.class);
-        dismissIntent.setAction(ReminderOptions.NOTIFY_ACTION_DISMISS);
+        dismissIntent.setAction(ReminderSetting.NOTIFY_ACTION_DISMISS);
         PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context,0, dismissIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         return dismissPendingIntent;
     }
 
     private void dismissNotification(Context context) {
         NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        manager.cancel(ReminderOptions.NOTIFY_ID);
+        manager.cancel(ReminderSetting.NOTIFY_ID);
     }
 }

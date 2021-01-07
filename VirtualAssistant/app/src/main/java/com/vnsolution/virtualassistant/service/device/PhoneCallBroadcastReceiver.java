@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
-import com.vnsolution.virtualassistant.common.DeviceOptions;
+import com.vnsolution.virtualassistant.common.DeviceSetting;
 
 import java.util.Date;
 
@@ -102,7 +102,7 @@ public class PhoneCallBroadcastReceiver extends BroadcastReceiver {
 
     private void syncPhoneCalls(Context context) {
         Intent serviceIntent = new Intent(context, DeviceService.class);
-        serviceIntent.setAction(DeviceOptions.INTENT_ACTION_SYNC_PHONE_CALL);
+        serviceIntent.setAction(DeviceSetting.INTENT_ACTION_SYNC_PHONE_CALL);
         ContextCompat.startForegroundService(context, serviceIntent);
     }
 }

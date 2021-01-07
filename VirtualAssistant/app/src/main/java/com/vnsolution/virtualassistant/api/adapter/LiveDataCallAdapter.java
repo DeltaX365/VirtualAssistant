@@ -2,7 +2,7 @@ package com.vnsolution.virtualassistant.api.adapter;
 
 import androidx.lifecycle.LiveData;
 
-import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.common.AppSetting;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -55,7 +55,7 @@ public class LiveDataCallAdapter<T> implements CallAdapter<T, LiveData<ApiRespon
 
                     @Override
                     public void onFailure(Call<T> call, Throwable t) {
-                        postValue(ApiResponse.create(Constants.UNKNOWN_CODE, t));
+                        postValue(ApiResponse.create(AppSetting.UNKNOWN_CODE, t));
                     }
                 });
             }

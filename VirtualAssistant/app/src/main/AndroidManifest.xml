@@ -182,6 +182,17 @@
             </intent-filter>
         </receiver>
         <receiver
+            android:name=".service.device.PhoneAppBroadcastReceiver"
+            android:exported="true">
+            <intent-filter android:priority="100">
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+        <receiver
             android:name=".service.reminder.ReminderBroadcastReceiver"
             android:exported="true">
         </receiver>

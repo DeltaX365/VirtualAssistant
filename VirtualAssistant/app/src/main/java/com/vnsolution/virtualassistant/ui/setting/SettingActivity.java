@@ -13,12 +13,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
+import com.vnsolution.virtualassistant.common.StopTrackingSetting;
 import com.vnsolution.virtualassistant.db.dao.PhoneAppDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneAppUsageDao;
 import com.vnsolution.virtualassistant.db.dao.PhoneCallDao;
@@ -102,21 +101,21 @@ public class SettingActivity extends BaseActivity implements HasAndroidInjector 
 
     private boolean requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_ACTIVITY_RECOGNITION)) {
-                requestPermissions(StopTrackingOptions.PERMISSIONS_ACTIVITY_RECOGNITION, StopTrackingOptions.PERMISSIONS_REQUEST_CODE);
+            if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_ACTIVITY_RECOGNITION)) {
+                requestPermissions(StopTrackingSetting.PERMISSIONS_ACTIVITY_RECOGNITION, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
-            Intent intentUA = new Intent(StopTrackingOptions.BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED);
+            Intent intentUA = new Intent(StopTrackingSetting.BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentUA);
 
-            if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
-                requestPermissions(StopTrackingOptions.PERMISSIONS_LOCATION, StopTrackingOptions.PERMISSIONS_REQUEST_CODE);
+            if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
+                requestPermissions(StopTrackingSetting.PERMISSIONS_LOCATION, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
-            Intent intentL = new Intent(StopTrackingOptions.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+            Intent intentL = new Intent(StopTrackingSetting.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentL);
 
-            Intent intentA = new Intent(StopTrackingOptions.BROADCAST_PERMISSIONS_ALL_GRANTED);
+            Intent intentA = new Intent(StopTrackingSetting.BROADCAST_PERMISSIONS_ALL_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentA);
         }
         Toast.makeText(this, "Stop tracking permissions have been granted", Toast.LENGTH_SHORT).show();
@@ -126,7 +125,7 @@ public class SettingActivity extends BaseActivity implements HasAndroidInjector 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == StopTrackingOptions.PERMISSIONS_REQUEST_CODE) {
+        if (requestCode == StopTrackingSetting.PERMISSIONS_REQUEST_CODE) {
             requestPermissions();
         }
     }

@@ -13,7 +13,6 @@ import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,9 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.DeviceOptions;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.DeviceSetting;
+import com.vnsolution.virtualassistant.common.StopTrackingSetting;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
@@ -97,7 +96,7 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
         favouriteContactsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         favouriteContactsRecyclerView.setLayoutManager(favouriteContactsLayoutManager);
 
-        favouriteContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact);
+        favouriteContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_contact);
         favouriteContactsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
             @Override
             public void onTap(PhoneContact phoneContact) {
@@ -125,7 +124,7 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
         phoneContactsLayoutManager = new LinearLayoutManager(this);
         phoneContactsRecyclerView.setLayoutManager(phoneContactsLayoutManager);
 
-        phoneContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiOptions.CONTACT_LIST_ALL, R.layout.card_contact_full_width);
+        phoneContactsAdapter = new RecyclerViewAdapter<PhoneContact>(this, UiSetting.CONTACT_LIST_ALL, R.layout.card_contact_full_width);
         phoneContactsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PhoneContact>() {
             @Override
             public void onTap(PhoneContact phoneContact) {
@@ -137,23 +136,23 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
             @Override
             public void onAction(PhoneContact phoneContact, String action) {
                 switch (action) {
-                    case UiOptions.CONTACT_ACTION_CALL:
+                    case UiSetting.CONTACT_ACTION_CALL:
                         makePhoneCall(phoneContact.phoneNumbers);
                         break;
-                    case UiOptions.CONTACT_ACTION_SMS:
+                    case UiSetting.CONTACT_ACTION_SMS:
                         sendSms(phoneContact.phoneNumbers);
                         break;
-                    case UiOptions.CONTACT_ACTION_SCHEDULE:
+                    case UiSetting.CONTACT_ACTION_SCHEDULE:
                         Intent intent = new Intent(ContactListActivity.this, ReminderNewActivity.class);
                         startActivity(intent);
                         break;
-                    case UiOptions.CONTACT_ACTION_EXPORT:
+                    case UiSetting.CONTACT_ACTION_EXPORT:
                         exportContact(phoneContact);
                         break;
-                    case UiOptions.CONTACT_ACTION_SHARE:
+                    case UiSetting.CONTACT_ACTION_SHARE:
                         shareContact(phoneContact);
                         break;
-                    case UiOptions.CONTACT_ACTION_REMOVE:
+                    case UiSetting.CONTACT_ACTION_REMOVE:
                         removeContact(phoneContact);
                         break;
                 }
@@ -398,12 +397,12 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
 
     private boolean requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_MAKE_CALL)) {
-                requestPermissions(DeviceOptions.PERMISSIONS_MAKE_CALL, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+            if (!PermissionUtils.hasPermissions(this, DeviceSetting.PERMISSIONS_MAKE_CALL)) {
+                requestPermissions(DeviceSetting.PERMISSIONS_MAKE_CALL, DeviceSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
-            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_EXPORT_CONTACT)) {
-                requestPermissions(DeviceOptions.PERMISSIONS_EXPORT_CONTACT, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+            if (!PermissionUtils.hasPermissions(this, DeviceSetting.PERMISSIONS_EXPORT_CONTACT)) {
+                requestPermissions(DeviceSetting.PERMISSIONS_EXPORT_CONTACT, DeviceSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
         }
@@ -413,8 +412,8 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == StopTrackingOptions.PERMISSIONS_REQUEST_CODE
-                || requestCode == DeviceOptions.PERMISSIONS_REQUEST_CODE) {
+        if (requestCode == StopTrackingSetting.PERMISSIONS_REQUEST_CODE
+                || requestCode == DeviceSetting.PERMISSIONS_REQUEST_CODE) {
             //TODO
         }
     }

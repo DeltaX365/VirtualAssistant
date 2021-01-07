@@ -14,10 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.BotOptions;
-import com.vnsolution.virtualassistant.common.DeviceOptions;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.BotSetting;
+import com.vnsolution.virtualassistant.common.DeviceSetting;
+import com.vnsolution.virtualassistant.common.StopTrackingSetting;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
@@ -70,37 +70,37 @@ public class HomeV2Activity extends BaseActivity {
         availableActionsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         availableActionsRecyclerView.setLayoutManager(availableActionsLayoutManager);
 
-        availableActionsAdapter = new RecyclerViewAdapter<String>(this, UiOptions.BOT_AVAILABLE_ACTIONS, R.layout.item_bot_action);
+        availableActionsAdapter = new RecyclerViewAdapter<String>(this, UiSetting.BOT_AVAILABLE_ACTIONS, R.layout.item_bot_action);
         availableActionsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<String>() {
             @Override
             public void onTap(String action) {
                 Intent intent = null;
                 switch (action) {
-                    case BotOptions.SHOW_TRAVEL_HISTORY:
+                    case BotSetting.SHOW_TRAVEL_HISTORY:
                         intent = new Intent(HomeV2Activity.this, TravelDashboardActivity.class);
                         break;
-                    case BotOptions.MANAGE_YOUR_APPS:
+                    case BotSetting.MANAGE_YOUR_APPS:
                         intent = new Intent(HomeV2Activity.this, AppDashboardActivity.class);
                         break;
-                    case BotOptions.MANAGE_CONTACTS:
+                    case BotSetting.MANAGE_CONTACTS:
                         intent = new Intent(HomeV2Activity.this, ContactListActivity.class);
                         break;
-                    case BotOptions.SHOW_CALL_STAT:
+                    case BotSetting.SHOW_CALL_STAT:
                         intent = new Intent(HomeV2Activity.this, ContactDashboardActivity.class);
                         break;
-                    case BotOptions.SHOW_CALL_LOGS:
+                    case BotSetting.SHOW_CALL_LOGS:
                         intent = new Intent(HomeV2Activity.this, PhoneCallActivity.class);
                         break;
-                    case BotOptions.SHOW_SENT_RECEIVED_SMS:
+                    case BotSetting.SHOW_SENT_RECEIVED_SMS:
                         intent = new Intent(HomeV2Activity.this, PhoneSmsActivity.class);
                         break;
-                    case BotOptions.SHOW_REMINDERS:
+                    case BotSetting.SHOW_REMINDERS:
                         intent = new Intent(HomeV2Activity.this, ReminderListActivity.class);
                         break;
-                    case BotOptions.MANAGE_PERMISSIONS:
+                    case BotSetting.MANAGE_PERMISSIONS:
                         intent = new Intent(HomeV2Activity.this, PermissionActivity.class);
                         break;
-                    case BotOptions.SHOW_SETTINGS:
+                    case BotSetting.SHOW_SETTINGS:
                         intent = new Intent(HomeV2Activity.this, SettingActivity.class);
                         break;
                 }
@@ -118,50 +118,50 @@ public class HomeV2Activity extends BaseActivity {
 
     private void refreshView() {
         List<String> availableActions = new ArrayList<String>();
-        availableActions.add(BotOptions.SHOW_TRAVEL_HISTORY);
-        availableActions.add(BotOptions.MANAGE_CONTACTS);
-        availableActions.add(BotOptions.SHOW_CALL_STAT);
-        availableActions.add(BotOptions.MANAGE_YOUR_APPS);
-        availableActions.add(BotOptions.SHOW_REMINDERS);
+        availableActions.add(BotSetting.SHOW_TRAVEL_HISTORY);
+        availableActions.add(BotSetting.MANAGE_CONTACTS);
+        availableActions.add(BotSetting.SHOW_CALL_STAT);
+        availableActions.add(BotSetting.MANAGE_YOUR_APPS);
+        availableActions.add(BotSetting.SHOW_REMINDERS);
 //        availableActions.add(BotOptions.SHOW_NOTIFICATIONS);
 //        availableActions.add(BotOptions.SHOW_CALL_LOGS);
 //        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
-        availableActions.add(BotOptions.MANAGE_PERMISSIONS);
-        availableActions.add(BotOptions.SHOW_SETTINGS);
+        availableActions.add(BotSetting.MANAGE_PERMISSIONS);
+        availableActions.add(BotSetting.SHOW_SETTINGS);
         availableActionsAdapter.setData(availableActions);
     }
 
     private boolean requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Stop tracking permissions.
-            if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_ACTIVITY_RECOGNITION)) {
-                requestPermissions(StopTrackingOptions.PERMISSIONS_ACTIVITY_RECOGNITION, StopTrackingOptions.PERMISSIONS_REQUEST_CODE);
+            if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_ACTIVITY_RECOGNITION)) {
+                requestPermissions(StopTrackingSetting.PERMISSIONS_ACTIVITY_RECOGNITION, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
-            Intent intentUA = new Intent(StopTrackingOptions.BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED);
+            Intent intentUA = new Intent(StopTrackingSetting.BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentUA);
 
-            if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
-                requestPermissions(StopTrackingOptions.PERMISSIONS_LOCATION, StopTrackingOptions.PERMISSIONS_REQUEST_CODE);
+            if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
+                requestPermissions(StopTrackingSetting.PERMISSIONS_LOCATION, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
-            Intent intentL = new Intent(StopTrackingOptions.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+            Intent intentL = new Intent(StopTrackingSetting.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentL);
 
-            Intent intentA = new Intent(StopTrackingOptions.BROADCAST_PERMISSIONS_ALL_GRANTED);
+            Intent intentA = new Intent(StopTrackingSetting.BROADCAST_PERMISSIONS_ALL_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentA);
 
             // Phone contact/call/sms permissions
-            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_PHONE_CALL)) {
-                requestPermissions(DeviceOptions.PERMISSIONS_PHONE_CALL, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+            if (!PermissionUtils.hasPermissions(this, DeviceSetting.PERMISSIONS_PHONE_CALL)) {
+                requestPermissions(DeviceSetting.PERMISSIONS_PHONE_CALL, DeviceSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
-            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_PHONE_SMS)) {
-                requestPermissions(DeviceOptions.PERMISSIONS_PHONE_SMS, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+            if (!PermissionUtils.hasPermissions(this, DeviceSetting.PERMISSIONS_PHONE_SMS)) {
+                requestPermissions(DeviceSetting.PERMISSIONS_PHONE_SMS, DeviceSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
-            if (!PermissionUtils.hasPermissions(this, DeviceOptions.PERMISSIONS_PHONE_CONTACT)) {
-                requestPermissions(DeviceOptions.PERMISSIONS_PHONE_CONTACT, DeviceOptions.PERMISSIONS_REQUEST_CODE);
+            if (!PermissionUtils.hasPermissions(this, DeviceSetting.PERMISSIONS_PHONE_CONTACT)) {
+                requestPermissions(DeviceSetting.PERMISSIONS_PHONE_CONTACT, DeviceSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
 
@@ -173,7 +173,7 @@ public class HomeV2Activity extends BaseActivity {
 
             if (!Settings.canDrawOverlays(this)) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, StopTrackingOptions.PERMISSIONS_REQUEST_CODE);
+                startActivityForResult(intent, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
             }
         }
         return true;
@@ -182,8 +182,8 @@ public class HomeV2Activity extends BaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == StopTrackingOptions.PERMISSIONS_REQUEST_CODE
-                || requestCode == DeviceOptions.PERMISSIONS_REQUEST_CODE) {
+        if (requestCode == StopTrackingSetting.PERMISSIONS_REQUEST_CODE
+                || requestCode == DeviceSetting.PERMISSIONS_REQUEST_CODE) {
             requestPermissions();
         }
     }

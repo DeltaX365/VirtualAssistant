@@ -11,7 +11,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.ReminderOptions;
+import com.vnsolution.virtualassistant.common.ReminderSetting;
 
 public class ReminderRepeatOptionBottomSheetDialogFragment extends BottomSheetDialogFragment {
     private String value;
@@ -41,22 +41,22 @@ public class ReminderRepeatOptionBottomSheetDialogFragment extends BottomSheetDi
         reminderRepeatOptionRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                String repeatOption = ReminderOptions.REPEAT_NONE;
+                String repeatOption = ReminderSetting.REPEAT_NONE;
                 switch (checkedId) {
                     case R.id.reminder_repeat_option_no_repeat:
-                        repeatOption = ReminderOptions.REPEAT_NONE;
+                        repeatOption = ReminderSetting.REPEAT_NONE;
                         break;
                     case R.id.reminder_repeat_option_daily:
-                        repeatOption = ReminderOptions.REPEAT_DAILY;
+                        repeatOption = ReminderSetting.REPEAT_DAILY;
                         break;
                     case R.id.reminder_repeat_option_weekly:
-                        repeatOption = ReminderOptions.REPEAT_WEEKLY;
+                        repeatOption = ReminderSetting.REPEAT_WEEKLY;
                         break;
                     case R.id.reminder_repeat_option_monthly:
-                        repeatOption = ReminderOptions.REPEAT_MONTHLY;
+                        repeatOption = ReminderSetting.REPEAT_MONTHLY;
                         break;
                     case R.id.reminder_repeat_option_yearly:
-                        repeatOption = ReminderOptions.REPEAT_YEARLY;
+                        repeatOption = ReminderSetting.REPEAT_YEARLY;
                         break;
                 }
                 if (listener != null) {
@@ -67,19 +67,19 @@ public class ReminderRepeatOptionBottomSheetDialogFragment extends BottomSheetDi
         if (value != null) {
             reminderRepeatOptionRadioGroup.clearCheck();
             switch (value) {
-                case ReminderOptions.REPEAT_NONE:
+                case ReminderSetting.REPEAT_NONE:
                     reminderRepeatOptionRadioGroup.check(R.id.reminder_repeat_option_no_repeat);
                     break;
-                case ReminderOptions.REPEAT_DAILY:
+                case ReminderSetting.REPEAT_DAILY:
                     reminderRepeatOptionRadioGroup.check(R.id.reminder_repeat_option_daily);
                     break;
-                case ReminderOptions.REPEAT_WEEKLY:
+                case ReminderSetting.REPEAT_WEEKLY:
                     reminderRepeatOptionRadioGroup.check(R.id.reminder_repeat_option_weekly);
                     break;
-                case ReminderOptions.REPEAT_MONTHLY:
+                case ReminderSetting.REPEAT_MONTHLY:
                     reminderRepeatOptionRadioGroup.check(R.id.reminder_repeat_option_monthly);
                     break;
-                case ReminderOptions.REPEAT_YEARLY:
+                case ReminderSetting.REPEAT_YEARLY:
                     reminderRepeatOptionRadioGroup.check(R.id.reminder_repeat_option_yearly);
                     break;
             }

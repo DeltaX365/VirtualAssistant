@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.Constants;
+import com.vnsolution.virtualassistant.common.AppSetting;
 import com.vnsolution.virtualassistant.db.convertor.DateConverter;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
@@ -60,7 +60,7 @@ public class PlaceCardRow extends MaterialCardView implements IRecyclerViewRow<P
     public void showData(Place place, String viewType) {
         // Place photo
         if (place.photoReference != null && !place.photoReference.isEmpty()) {
-            String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + Constants.GM_API_KEY;
+            String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + AppSetting.GM_API_KEY;
             Glide.with(mContext).load(photoUri).into(mPhotoImageView);
         }
 

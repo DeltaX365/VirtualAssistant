@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.PhoneCall;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.model.PhoneContactSummary;
@@ -26,7 +26,6 @@ import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.util.BitmapUtils;
 import com.vnsolution.virtualassistant.util.DateTimeUtils;
-import com.vnsolution.virtualassistant.util.SerialUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -162,7 +161,7 @@ public class ContactViewActivity extends BaseActivity implements HasAndroidInjec
         phoneCallHistoryLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         phoneCallHistoryRecyclerView.setLayoutManager(phoneCallHistoryLayoutManager);
 
-        phoneCallHistoryAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiOptions.CONTACT_LIST_ALL, R.layout.item_phone_call);
+        phoneCallHistoryAdapter = new RecyclerViewAdapter<PhoneCall>(this, UiSetting.CONTACT_LIST_ALL, R.layout.item_phone_call);
         phoneCallHistoryRecyclerView.setAdapter(phoneCallHistoryAdapter);
 
         String phoneNumbers = (phoneContact != null) ? phoneContact.phoneNumbers : ((phoneCall != null) ? phoneCall.phoneNumber : "");

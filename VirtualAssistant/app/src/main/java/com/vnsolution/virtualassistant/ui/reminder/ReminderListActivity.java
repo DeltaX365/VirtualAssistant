@@ -10,13 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.UiOptions;
-import com.vnsolution.virtualassistant.model.PhoneContact;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.Reminder;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.contact.ContactViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,17 +64,17 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
         reminderListLayoutManager = new LinearLayoutManager(this);
         reminderListRecyclerView.setLayoutManager(reminderListLayoutManager);
 
-        reminderListAdapter = new RecyclerViewAdapter<Reminder>(this, UiOptions.REMINDER_LIST_ALL, R.layout.card_reminder_full_width);
+        reminderListAdapter = new RecyclerViewAdapter<Reminder>(this, UiSetting.REMINDER_LIST_ALL, R.layout.card_reminder_full_width);
         reminderListAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Reminder>() {
             @Override
             public void onAction(Reminder reminder, String action) {
                 switch (action) {
-                    case UiOptions.REMINDER_ACTION_EDIT:
+                    case UiSetting.REMINDER_ACTION_EDIT:
                         Intent intent = new Intent(ReminderListActivity.this, ReminderNewActivity.class);
                         intent.putExtra("ReminderId", reminder.id);
                         startActivity(intent);
                         break;
-                    case UiOptions.REMINDER_ACTION_REMOVE:
+                    case UiSetting.REMINDER_ACTION_REMOVE:
                         vm.deleteReminder(ReminderListActivity.this, reminder.id);
                         refreshView();
                         break;

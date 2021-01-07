@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.vnsolution.virtualassistant.BuildConfig;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.db.convertor.DateConverter;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceSummary;
@@ -133,7 +133,7 @@ public class TravelDashboardActivity extends BaseActivity {
         recentVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recentVisitedPlacesRecyclerView.setLayoutManager(recentVisitedPlacesLayoutManager);
 
-        recentVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_LIST_RECENT_VISITED, R.layout.card_place);
+        recentVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiSetting.PLACE_LIST_RECENT_VISITED, R.layout.card_place);
         recentVisitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
             @Override
             public void onTap(Place place) {
@@ -166,7 +166,7 @@ public class TravelDashboardActivity extends BaseActivity {
         mostVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mostVisitedPlacesRecyclerView.setLayoutManager(mostVisitedPlacesLayoutManager);
 
-        mostVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiOptions.PLACE_LIST_MOST_VISITED, R.layout.card_place);
+        mostVisitedPlacesAdapter = new RecyclerViewAdapter<Place>(this, UiSetting.PLACE_LIST_MOST_VISITED, R.layout.card_place);
         mostVisitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Place>() {
             @Override
             public void onTap(Place place) {
@@ -199,7 +199,7 @@ public class TravelDashboardActivity extends BaseActivity {
         categorizedVisitedPlacesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         categorizedVisitedPlacesRecyclerView.setLayoutManager(categorizedVisitedPlacesLayoutManager);
 
-        categorizedVisitedPlacesAdapter = new RecyclerViewAdapter<PlaceSummary>(this, UiOptions.PLACE_LIST_SUMMARY, R.layout.card_place_category);
+        categorizedVisitedPlacesAdapter = new RecyclerViewAdapter<PlaceSummary>(this, UiSetting.PLACE_LIST_SUMMARY, R.layout.card_place_category);
         categorizedVisitedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<PlaceSummary>() {
             @Override
             public void onTap(PlaceSummary item) {

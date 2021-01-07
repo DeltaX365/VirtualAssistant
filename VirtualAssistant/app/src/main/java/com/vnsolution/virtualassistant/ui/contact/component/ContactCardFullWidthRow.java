@@ -17,16 +17,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.PhoneContact;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.BitmapUtils;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class ContactCardFullWidthRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact>, PopupMenu.OnMenuItemClickListener {
     private ImageView mAvatarImageView;
@@ -118,25 +113,25 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
         String action = "";
         switch (item.getItemId()) {
             case R.id.menu_item_call:
-                action = UiOptions.CONTACT_ACTION_CALL;
+                action = UiSetting.CONTACT_ACTION_CALL;
                 break;
             case R.id.menu_item_sms:
-                action = UiOptions.CONTACT_ACTION_SMS;
+                action = UiSetting.CONTACT_ACTION_SMS;
                 break;
             case R.id.menu_item_lock:
-                action = UiOptions.CONTACT_ACTION_LOCK;
+                action = UiSetting.CONTACT_ACTION_LOCK;
                 break;
             case R.id.menu_item_schedule:
-                action = UiOptions.CONTACT_ACTION_SCHEDULE;
+                action = UiSetting.CONTACT_ACTION_SCHEDULE;
                 break;
 //            case R.id.menu_item_export:
 //                action = UiOptions.CONTACT_ACTION_EXPORT;
 //                break;
             case R.id.menu_item_share:
-                action = UiOptions.CONTACT_ACTION_SHARE;
+                action = UiSetting.CONTACT_ACTION_SHARE;
                 break;
             case R.id.menu_item_remove:
-                action = UiOptions.CONTACT_ACTION_REMOVE;
+                action = UiSetting.CONTACT_ACTION_REMOVE;
                 break;
             default:
                 return false;

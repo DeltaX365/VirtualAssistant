@@ -38,8 +38,8 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
-import com.vnsolution.virtualassistant.common.StopTrackingOptions;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.StopTrackingSetting;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.Place;
 import com.vnsolution.virtualassistant.model.PlaceType;
 import com.vnsolution.virtualassistant.service.place.PlaceManager;
@@ -178,7 +178,7 @@ public class TravelEditActivity extends BaseActivity {
         matchedPlacesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         placeTypes = placeManager.getPlaceTypes();
 
-        matchedPlacesAdapter = new RecyclerViewAdapter<GoogleMapNearByDto.NearBy>(this, UiOptions.PLACE_LIST_NEARBY, R.layout.item_nearby);
+        matchedPlacesAdapter = new RecyclerViewAdapter<GoogleMapNearByDto.NearBy>(this, UiSetting.PLACE_LIST_NEARBY, R.layout.item_nearby);
         matchedPlacesAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<GoogleMapNearByDto.NearBy>() {
             @Override
             public void onTap(GoogleMapNearByDto.NearBy nearByPlace) {
@@ -244,7 +244,7 @@ public class TravelEditActivity extends BaseActivity {
 
     @SuppressLint("MissingPermission")
     private void enableMyLocation() {
-        if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
             return;
         }
         mGoogleMap.setMyLocationEnabled(true);
@@ -252,7 +252,7 @@ public class TravelEditActivity extends BaseActivity {
 
     private void startWatchingPermissions() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(StopTrackingOptions.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+        filter.addAction(StopTrackingSetting.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -264,12 +264,12 @@ public class TravelEditActivity extends BaseActivity {
 
     @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
-        if (!PermissionUtils.hasPermissions(this, StopTrackingOptions.PERMISSIONS_LOCATION)) {
+        if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
             return;
         }
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(StopTrackingOptions.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(StopTrackingOptions.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setInterval(StopTrackingSetting.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
+        locationRequest.setFastestInterval(StopTrackingSetting.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationCallback = new LocationCallback() {
             @Override

@@ -17,7 +17,7 @@ import androidx.appcompat.widget.PopupMenu;
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.UiOptions;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.PhoneApp;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
@@ -114,22 +114,22 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
         String action = "";
         switch (item.getItemId()) {
             case R.id.menu_item_launch:
-                action = UiOptions.APP_ACTION_LAUNCH;
+                action = UiSetting.APP_ACTION_LAUNCH;
                 break;
             case R.id.menu_item_lock:
-                action = (mPhoneApp.locked == 1)? UiOptions.APP_ACTION_UNLOCK : UiOptions.APP_ACTION_LOCK;
+                action = (mPhoneApp.locked == 1)? UiSetting.APP_ACTION_UNLOCK : UiSetting.APP_ACTION_LOCK;
                 break;
             case R.id.menu_item_schedule:
-                action = UiOptions.APP_ACTION_SCHEDULE;
+                action = UiSetting.APP_ACTION_SCHEDULE;
                 break;
 //            case R.id.menu_item_export:
 //                action = UiOptions.APP_ACTION_EXPORT;
 //                break;
             case R.id.menu_item_share:
-                action = UiOptions.APP_ACTION_SHARE;
+                action = UiSetting.APP_ACTION_SHARE;
                 break;
             case R.id.menu_item_uninstall:
-                action = UiOptions.APP_ACTION_UNINSTALL;
+                action = UiSetting.APP_ACTION_UNINSTALL;
                 break;
             default:
                 return false;

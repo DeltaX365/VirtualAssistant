@@ -1,6 +1,6 @@
 package com.vnsolution.virtualassistant.common;
 
-public class BotOptions {
+public class BotSetting {
     public static final String SHOW_TRAVEL_HISTORY = "Show travel history";
     public static final String MANAGE_YOUR_APPS = "Manage your apps";
     public static final String SHOW_CALL_STAT = "Show call stat";

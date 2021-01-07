@@ -11,7 +11,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.vnsolution.virtualassistant.R;
-import com.vnsolution.virtualassistant.common.ReminderOptions;
+import com.vnsolution.virtualassistant.common.ReminderSetting;
 
 public class ReminderActionBottomSheetDialogFragment extends BottomSheetDialogFragment {
     private String value;
@@ -41,16 +41,16 @@ public class ReminderActionBottomSheetDialogFragment extends BottomSheetDialogFr
         reminderActionRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                String action = ReminderOptions.ACTION_NONE;
+                String action = ReminderSetting.ACTION_NONE;
                 switch (checkedId) {
                     case R.id.reminder_action_launch_app:
-                        action = ReminderOptions.ACTION_LAUNCH_APP;
+                        action = ReminderSetting.ACTION_LAUNCH_APP;
                         break;
                     case R.id.reminder_action_send_sms:
-                        action = ReminderOptions.ACTION_SEND_SMS;
+                        action = ReminderSetting.ACTION_SEND_SMS;
                         break;
                     case R.id.reminder_action_call_phone:
-                        action = ReminderOptions.ACTION_CALL_PHONE;
+                        action = ReminderSetting.ACTION_CALL_PHONE;
                         break;
                 }
                 if (listener != null) {
@@ -61,16 +61,16 @@ public class ReminderActionBottomSheetDialogFragment extends BottomSheetDialogFr
         if (value != null) {
             reminderActionRadioGroup.clearCheck();
             switch (value) {
-                case ReminderOptions.ACTION_NONE:
+                case ReminderSetting.ACTION_NONE:
                     reminderActionRadioGroup.check(R.id.reminder_action_none);
                     break;
-                case ReminderOptions.ACTION_LAUNCH_APP:
+                case ReminderSetting.ACTION_LAUNCH_APP:
                     reminderActionRadioGroup.check(R.id.reminder_action_launch_app);
                     break;
-                case ReminderOptions.ACTION_SEND_SMS:
+                case ReminderSetting.ACTION_SEND_SMS:
                     reminderActionRadioGroup.check(R.id.reminder_action_send_sms);
                     break;
-                case ReminderOptions.ACTION_CALL_PHONE:
+                case ReminderSetting.ACTION_CALL_PHONE:
                     reminderActionRadioGroup.check(R.id.reminder_action_call_phone);
                     break;
             }

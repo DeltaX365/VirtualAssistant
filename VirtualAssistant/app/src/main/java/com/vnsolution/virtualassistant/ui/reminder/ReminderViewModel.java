@@ -8,7 +8,7 @@ import android.os.Build;
 
 import androidx.lifecycle.ViewModel;
 
-import com.vnsolution.virtualassistant.common.ReminderOptions;
+import com.vnsolution.virtualassistant.common.ReminderSetting;
 import com.vnsolution.virtualassistant.db.entity.PhoneAppEntity;
 import com.vnsolution.virtualassistant.db.entity.PhoneContactEntity;
 import com.vnsolution.virtualassistant.db.entity.ReminderEntity;
@@ -23,7 +23,6 @@ import com.vnsolution.virtualassistant.util.MappingUtils;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -90,8 +89,8 @@ public class ReminderViewModel extends ViewModel {
 
     private boolean setReminderAlarm(Context context, int requestCode, String repeat, Date reminderDate, String reminderTitle) {
         Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
-        intent.putExtra(ReminderOptions.NOTIFY_CONTENT_TEXT, reminderTitle);
-        intent.setAction(ReminderOptions.NOTIFY_ACTION_SHOW_FULL_SCREEN);
+        intent.putExtra(ReminderSetting.NOTIFY_CONTENT_TEXT, reminderTitle);
+        intent.setAction(ReminderSetting.NOTIFY_ACTION_SHOW_FULL_SCREEN);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -102,23 +101,23 @@ public class ReminderViewModel extends ViewModel {
         long triggerAtMillis = reminderCalendar.getTimeInMillis();
 
         switch (repeat) {
-            case ReminderOptions.REPEAT_NONE:
+            case ReminderSetting.REPEAT_NONE:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
                 } else {
                     alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
                 }
                 break;
-            case ReminderOptions.REPEAT_DAILY:
+            case ReminderSetting.REPEAT_DAILY:
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtMillis, AlarmManager.INTERVAL_DAY, pendingIntent);
                 break;
-            case ReminderOptions.REPEAT_WEEKLY:
+            case ReminderSetting.REPEAT_WEEKLY:
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtMillis, AlarmManager.INTERVAL_DAY * 7, pendingIntent);
                 break;
-            case ReminderOptions.REPEAT_MONTHLY:
+            case ReminderSetting.REPEAT_MONTHLY:
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtMillis, AlarmManager.INTERVAL_DAY * reminderCalendar.getActualMaximum(Calendar.DAY_OF_MONTH), pendingIntent);
                 break;
-            case ReminderOptions.REPEAT_YEARLY:
+            case ReminderSetting.REPEAT_YEARLY:
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtMillis, AlarmManager.INTERVAL_DAY * reminderCalendar.getActualMaximum(Calendar.DAY_OF_YEAR), pendingIntent);
                 break;
         }
