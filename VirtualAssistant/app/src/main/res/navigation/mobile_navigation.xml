@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_apps"
-        android:name="com.vnsolution.virtualassistant.ui.app.v1.PhoneAppsFragment"
+        android:name="com.vnsolution.virtualassistant.ui.apps.v1.PhoneAppsFragment"
         android:label="@string/screen_applications"
         tools:layout="@layout/screen_app_list" />
 
@@ -31,7 +31,7 @@
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.vnsolution.virtualassistant.ui.setting.SettingFragment"
+        android:name="com.vnsolution.virtualassistant.ui.settings.SettingFragment"
         android:label="@string/screen_settings"
         tools:layout="@layout/screen_setting" />
 </navigation>

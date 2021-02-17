@@ -3,12 +3,12 @@ package com.vnsolution.virtualassistant.di;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.vnsolution.virtualassistant.ui.notification.NotificationViewModel;
-import com.vnsolution.virtualassistant.ui.app.AppViewModel;
-import com.vnsolution.virtualassistant.ui.contact.ContactViewModel;
+import com.vnsolution.virtualassistant.ui.notifications.NotificationViewModel;
+import com.vnsolution.virtualassistant.ui.apps.AppViewModel;
+import com.vnsolution.virtualassistant.ui.contacts.ContactViewModel;
 import com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsViewModel;
 import com.vnsolution.virtualassistant.ui.dashboard.DashboardViewModel;
-import com.vnsolution.virtualassistant.ui.reminder.ReminderViewModel;
+import com.vnsolution.virtualassistant.ui.reminders.ReminderViewModel;
 import com.vnsolution.virtualassistant.ui.travel.TravelViewModel;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.SmsViewModel;
 import com.vnsolution.virtualassistant.viewmodel.VirtualAssistantViewModelFactory;

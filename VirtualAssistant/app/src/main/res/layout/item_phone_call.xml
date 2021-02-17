@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.vnsolution.virtualassistant.ui.contact.component.PhoneCallSimpleRow xmlns:android="http://schemas.android.com/apk/res/android"
+<com.vnsolution.virtualassistant.ui.contacts.component.PhoneCallSimpleRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -51,4 +51,4 @@
         android:visibility="gone"
         />
 
-</com.vnsolution.virtualassistant.ui.contact.component.PhoneCallSimpleRow>
+</com.vnsolution.virtualassistant.ui.contacts.component.PhoneCallSimpleRow>

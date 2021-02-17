@@ -72,13 +72,13 @@
             android:name=".ui.travel.TravelEditActivity"
             android:label="@string/screen_travel_edit" />
         <activity
-            android:name=".ui.contact.ContactDashboardActivity"
+            android:name=".ui.contacts.ContactDashboardActivity"
             android:label="@string/screen_contacts"/>
         <activity
-            android:name=".ui.contact.ContactViewActivity"
+            android:name=".ui.contacts.ContactViewActivity"
             android:label="@string/screen_contacts"/>
         <activity
-            android:name=".ui.contact.ContactListActivity"
+            android:name=".ui.contacts.ContactListActivity"
             android:label="@string/screen_contacts">
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.SEARCH" />-->
@@ -88,21 +88,21 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".ui.app.AppDashboardActivity"
+            android:name=".ui.apps.AppDashboardActivity"
             android:label="@string/screen_applications" />
         <activity
-            android:name=".ui.reminder.ReminderListActivity"
+            android:name=".ui.reminders.ReminderListActivity"
             android:label="@string/screen_reminders" />
         <activity
-            android:name=".ui.reminder.ReminderNewActivity"
+            android:name=".ui.reminders.ReminderNewActivity"
             android:label="@string/screen_reminders" />
         <activity
-            android:name=".ui.reminder.ReminderShowFullScreenActivity"
+            android:name=".ui.reminders.ReminderShowFullScreenActivity"
             android:label="@string/screen_reminders" />
         <activity
-            android:name=".ui.app.v1.PhoneAppActivity" />
+            android:name=".ui.apps.v1.PhoneAppActivity" />
         <activity
-            android:name=".ui.app.v2.PhoneAppV2Activity" />
+            android:name=".ui.apps.v2.PhoneAppV2Activity" />
         <activity
             android:name=".ui.phonecall.v1.PhoneCallActivity"
             android:label="@string/screen_call_history" />
@@ -110,10 +110,10 @@
             android:name=".ui.phonesms.v1.PhoneSmsActivity"
             android:label="@string/screen_sms_history" />
         <activity
-            android:name=".ui.setting.SettingActivity"
+            android:name=".ui.settings.SettingActivity"
             android:label="@string/screen_settings" />
         <activity
-            android:name=".ui.setting.PermissionActivity"
+            android:name=".ui.settings.PermissionActivity"
             android:label="Permissions" />
 
         <service

@@ -17,7 +17,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.ReminderSetting;
-import com.vnsolution.virtualassistant.ui.reminder.ReminderShowFullScreenActivity;
+import com.vnsolution.virtualassistant.ui.reminders.ReminderShowFullScreenActivity;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
