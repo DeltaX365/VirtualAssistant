@@ -7,13 +7,11 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -24,9 +22,8 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:name=".VirtualAssistantApp"
@@ -72,17 +69,21 @@
             android:name=".ui.travel.TravelEditActivity"
             android:label="@string/screen_travel_edit" />
         <activity
+            android:name=".ui.travel.TravelTrackingActivity"
+            android:label="@string/screen_travel_dashboard"/>
+        <activity
             android:name=".ui.contacts.ContactDashboardActivity"
-            android:label="@string/screen_contacts"/>
+            android:label="@string/screen_contacts" />
         <activity
             android:name=".ui.contacts.ContactViewActivity"
-            android:label="@string/screen_contacts"/>
+            android:label="@string/screen_contacts" />
         <activity
             android:name=".ui.contacts.ContactListActivity"
             android:label="@string/screen_contacts">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.SEARCH" />-->
-<!--            </intent-filter>-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.SEARCH" /> -->
+            <!-- </intent-filter> -->
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -99,10 +100,8 @@
         <activity
             android:name=".ui.reminders.ReminderShowFullScreenActivity"
             android:label="@string/screen_reminders" />
-        <activity
-            android:name=".ui.apps.v1.PhoneAppActivity" />
-        <activity
-            android:name=".ui.apps.v2.PhoneAppV2Activity" />
+        <activity android:name=".ui.apps.v1.PhoneAppActivity" />
+        <activity android:name=".ui.apps.v2.PhoneAppV2Activity" />
         <activity
             android:name=".ui.phonecall.v1.PhoneCallActivity"
             android:label="@string/screen_call_history" />
@@ -116,26 +115,15 @@
             android:name=".ui.settings.PermissionActivity"
             android:label="Permissions" />
 
-        <service
-            android:name=".service.stoptracking.StopTrackingService"
-            android:exported="false" />
-        <service
-            android:name=".service.device.DeviceService"
-            android:exported="false" />
-        <service
-            android:name=".service.device.AppLockService"
-            android:exported="false" />
-        <service
-            android:name=".service.bubble.FloatingViewService"
-            android:exported="false" />
-        <service
-            android:name=".service.stoptracking.ActivityTransitionsJobIntentService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".service.stoptracking.GeofenceTransitionsJobIntentService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provide_paths" />
+        </provider>
 
         <receiver
             android:name=".startup.StartupBroadcastReceiver"
@@ -157,8 +145,7 @@
         </receiver>
         <receiver
             android:name=".service.stoptracking.GeofenceBroadcastReceiver"
-            android:exported="true">
-        </receiver>
+            android:exported="true" />
         <receiver
             android:name=".service.stoptracking.LocationUpdatesBroadcastReceiver"
             android:exported="true">
@@ -194,23 +181,31 @@
         </receiver>
         <receiver
             android:name=".service.reminder.ReminderBroadcastReceiver"
-            android:exported="true">
-        </receiver>
+            android:exported="true" />
         <receiver
             android:name=".service.place.PlaceBroadcastReceiver"
-            android:exported="true">
-        </receiver>
-        
-        <provider
-            android:authorities="${applicationId}.provider"
-            android:name="androidx.core.content.FileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provide_paths" />
-        </provider>
+            android:exported="true" />
 
+        <service
+            android:name=".service.stoptracking.StopTrackingService"
+            android:exported="false" />
+        <service
+            android:name=".service.device.DeviceService"
+            android:exported="false" />
+        <service
+            android:name=".service.device.AppLockService"
+            android:exported="false" />
+        <service
+            android:name=".service.bubble.FloatingViewService"
+            android:exported="false" />
+        <service
+            android:name=".service.stoptracking.ActivityTransitionsJobIntentService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".service.stoptracking.GeofenceTransitionsJobIntentService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

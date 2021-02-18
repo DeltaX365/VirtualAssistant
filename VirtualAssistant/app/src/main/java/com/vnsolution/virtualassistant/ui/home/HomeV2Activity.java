@@ -32,6 +32,7 @@ import com.vnsolution.virtualassistant.ui.reminders.ReminderListActivity;
 import com.vnsolution.virtualassistant.ui.settings.PermissionActivity;
 import com.vnsolution.virtualassistant.ui.settings.SettingActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
+import com.vnsolution.virtualassistant.ui.travel.TravelTrackingActivity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.ArrayList;
@@ -81,6 +82,9 @@ public class HomeV2Activity extends BaseActivity {
                     case BotSetting.SHOW_TRAVEL_HISTORY:
                         intent = new Intent(HomeV2Activity.this, TravelDashboardActivity.class);
                         break;
+                    case BotSetting.TRAVEL_TRACKING:
+                        intent = new Intent(HomeV2Activity.this, TravelTrackingActivity.class);
+                        break;
                     case BotSetting.MANAGE_YOUR_APPS:
                         intent = new Intent(HomeV2Activity.this, AppDashboardActivity.class);
                         break;
@@ -127,6 +131,7 @@ public class HomeV2Activity extends BaseActivity {
     private void refreshView() {
         List<String> availableActions = new ArrayList<String>();
         availableActions.add(BotSetting.SHOW_TRAVEL_HISTORY);
+        availableActions.add(BotSetting.TRAVEL_TRACKING);
         availableActions.add(BotSetting.MANAGE_CONTACTS);
         availableActions.add(BotSetting.MANAGE_LOCKED_CONTACTS);
         availableActions.add(BotSetting.SHOW_CALL_STAT);

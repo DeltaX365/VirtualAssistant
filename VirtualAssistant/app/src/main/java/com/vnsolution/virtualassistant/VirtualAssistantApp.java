@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant;
 import android.app.Application;
 
 import com.google.android.libraries.places.api.Places;
+
 import com.vnsolution.virtualassistant.common.AppSetting;
 import com.vnsolution.virtualassistant.di.AppComponent;
 import com.vnsolution.virtualassistant.di.AppInjector;

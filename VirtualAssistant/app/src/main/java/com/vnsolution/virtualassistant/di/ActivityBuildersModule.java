@@ -18,6 +18,7 @@ import com.vnsolution.virtualassistant.ui.settings.SettingActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelHistoryActivity;
+import com.vnsolution.virtualassistant.ui.travel.TravelTrackingActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelV2Activity;
 import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
 import com.vnsolution.virtualassistant.ui.travel.TravelViewActivity;
@@ -50,6 +51,9 @@ public abstract class ActivityBuildersModule {
 
     @ContributesAndroidInjector()
     abstract TravelHistoryActivity contributeTravelHistoryActivity();
+
+    @ContributesAndroidInjector()
+    abstract TravelTrackingActivity contributeTravelTrackingActivity();
 
     @ContributesAndroidInjector(modules = TravelFragmentBuildersModule.class)
     abstract TravelV2Activity contributeTravelV2Activity();

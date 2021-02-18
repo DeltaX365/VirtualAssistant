@@ -133,10 +133,10 @@ public class AppModule {
         return Room
                 .databaseBuilder(app, VirtualAssistantDb.class, "virtual_assistant.db")
                 .createFromAsset("database/virtual_assistant.db")
-                .addMigrations(
-                        DbMigration.MIGRATION_2_3, DbMigration.MIGRATION_3_4, DbMigration.MIGRATION_4_5, DbMigration.MIGRATION_5_6,
-                        DbMigration.MIGRATION_6_7, DbMigration.MIGRATION_7_8, DbMigration.MIGRATION_8_9, DbMigration.MIGRATION_9_10,
-                        DbMigration.MIGRATION_10_11, DbMigration.MIGRATION_11_12)
+//                .addMigrations(
+//                        DbMigration.MIGRATION_1_2, DbMigration.MIGRATION_2_3, DbMigration.MIGRATION_3_4, DbMigration.MIGRATION_4_5, DbMigration.MIGRATION_5_6,
+//                        DbMigration.MIGRATION_6_7, DbMigration.MIGRATION_7_8, DbMigration.MIGRATION_8_9, DbMigration.MIGRATION_9_10,
+//                        DbMigration.MIGRATION_10_11, DbMigration.MIGRATION_11_12)
                 // https://medium.com/androiddevelopers/understanding-migrations-with-room-f01e04b07929
                 // If you don’t want to provide migrations and you specifically want your database to be cleared when you upgrade the version, call fallbackToDestructiveMigration in the database builder
 //                .fallbackToDestructiveMigration()

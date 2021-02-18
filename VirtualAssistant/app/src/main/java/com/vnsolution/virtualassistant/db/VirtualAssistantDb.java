@@ -46,8 +46,8 @@ import com.vnsolution.virtualassistant.db.entity.WeatherEntity;
         ReminderEntity.class,
         SettingEntity.class
     },
-    version = 12,
-    exportSchema = false
+    version = 1,
+    exportSchema = true
 )
 @TypeConverters({
     BooleanConverter.class,
