@@ -13,6 +13,7 @@ public class UiSetting {
     public static final String PLACE_ACTION_CONFIRM = "PLACE_ACTION_CONFIRM";
     public static final String PLACE_ACTION_EDIT = "PLACE_ACTION_EDIT";
     public static final String PLACE_LIST_HISTORY = "PLACE_LIST_HISTORY";
+    public static final String PLACE_LIST_DANGER = "PLACE_LIST_DANGER";
 
     // App Dashboard UI
     public static final String APP_LIST_RECENT_USAGE = "APP_LIST_RECENTLY_USAGE";

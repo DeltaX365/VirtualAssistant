@@ -5,7 +5,14 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 public class DbMigration {
-    public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+    public static final Migration MIGRATION_1_12 = new Migration(1, 12) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+        }
+    };
+
+    public static final Migration MIGRATION_12_13 = new Migration(12, 13) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
 

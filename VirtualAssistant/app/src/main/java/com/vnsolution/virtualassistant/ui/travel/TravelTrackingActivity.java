@@ -1,8 +1,9 @@
 package com.vnsolution.virtualassistant.ui.travel;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -13,6 +14,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -31,22 +35,24 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.cache.UserCache;
 import com.vnsolution.virtualassistant.common.StopTrackingSetting;
+import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
+import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
 import com.vnsolution.virtualassistant.util.GoogleMapUtils;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -54,9 +60,15 @@ public class TravelTrackingActivity extends BaseActivity {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
+    private LinearLayout mDangerAreasBottomSheet;
+    private TextView mTotalTextView;
+    private RecyclerView mDangerAreasRecyclerView;
+    private RecyclerViewAdapter<Map<String, Object>> mDangerAreasAdapter;
+
     private LocationCallback mLocationCallback;
     private FusedLocationProviderClient mFusedLocationClient;
     private Location mCurrentLocation;
+    private List<Map<String, Object>> mDangerAreas;
 
     private DocumentReference mCurrentUserDocRef;
     private DocumentReference mCovidVnDocRef;
@@ -74,6 +86,7 @@ public class TravelTrackingActivity extends BaseActivity {
         setupActionBar();
 
         setupMap(savedInstanceState);
+        setupBottomSheet();
     }
 
     private void setupMap(Bundle savedInstanceState) {
@@ -95,9 +108,36 @@ public class TravelTrackingActivity extends BaseActivity {
 //                mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
 //                enableMyLocation();
 //                adjustMyLocation();
+                startWatchingCameraMove();
             }
         });
         startWatchingPermissions();
+    }
+
+    private void setupBottomSheet() {
+        mDangerAreasBottomSheet = findViewById(R.id.bottomsheet_danger_areas);
+        mTotalTextView = findViewById(R.id.total_danger_areas);
+        mDangerAreasRecyclerView = findViewById(R.id.list_danger_areas);
+
+        mDangerAreasRecyclerView.setHasFixedSize(true);
+        mDangerAreasRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mDangerAreasAdapter = new RecyclerViewAdapter<Map<String, Object>>(this, UiSetting.PLACE_LIST_DANGER, R.layout.item_place_danger);;
+        mDangerAreasAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<Map<String, Object>>() {
+            @Override
+            public void onTap(Map<String, Object> area) {
+                try {
+                    double latitude = Double.parseDouble((String) area.get("latitude"));
+                    double longitude = Double.parseDouble((String) area.get("longitude"));
+                    if (latitude > 0 && longitude > 0) {
+                        LatLng latLng = new LatLng(latitude, longitude);
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11f));
+                    }
+                } finally { }
+            }
+        });
+        mDangerAreasRecyclerView.setAdapter(mDangerAreasAdapter);
+
+        adjustMyLocation();
     }
 
     @SuppressLint("MissingPermission")
@@ -109,26 +149,26 @@ public class TravelTrackingActivity extends BaseActivity {
     }
 
     private void adjustMyLocation() {
-//        if (visitedPlaceBottomSheet != null) {
-//            BottomSheetBehavior sheetBehavior = BottomSheetBehavior.from(visitedPlaceBottomSheet);
-//            sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-//                @Override
-//                public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//                    if (mGoogleMap != null) {
-//                        int paddingBottom = GoogleMapUtil.dpToPx(TravelHistoryActivity.this, bottomSheet.getHeight());
-//                        mGoogleMap.setPadding(0, 0, 0, paddingBottom);
-//                    }
-//                }
-//
-//                @Override
-//                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//                    if (mGoogleMap != null) {
-//                        int paddingBottom = GoogleMapUtil.dpToPx(TravelHistoryActivity.this, bottomSheet.getHeight());
-//                        mGoogleMap.setPadding(0, 0, 0, paddingBottom);
-//                    }
-//                }
-//            });
-//        }
+        if (mDangerAreasBottomSheet != null) {
+            BottomSheetBehavior sheetBehavior = BottomSheetBehavior.from(mDangerAreasBottomSheet);
+            sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    if (mGoogleMap != null) {
+                        int paddingBottom = GoogleMapUtils.dpToPx(TravelTrackingActivity.this, bottomSheet.getHeight());
+                        mGoogleMap.setPadding(0, 0, 0, paddingBottom);
+                    }
+                }
+
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                    if (mGoogleMap != null) {
+                        int paddingBottom = GoogleMapUtils.dpToPx(TravelTrackingActivity.this, bottomSheet.getHeight());
+                        mGoogleMap.setPadding(0, 0, 0, paddingBottom);
+                    }
+                }
+            });
+        }
     }
 
     private void startWatchingCameraMove() {
@@ -145,7 +185,7 @@ public class TravelTrackingActivity extends BaseActivity {
                     double top = visibleRegion.latLngBounds.northeast.latitude;
                     double right = visibleRegion.latLngBounds.northeast.longitude;
                     double bottom = visibleRegion.latLngBounds.southwest.latitude;
-                    double bottomPadding = 350;
+                    double bottomPadding = GoogleMapUtils.dpToPx(TravelTrackingActivity.this, mDangerAreasBottomSheet.getHeight());
                     mGoogleMap.setPadding((int) left, (int) top, (int) right, (int) (bottom - bottomPadding));
                 }
             });
@@ -168,9 +208,8 @@ public class TravelTrackingActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
-
         requestLocationUpdates();
-        //refreshView();
+        loadDangerAreas();
     }
 
     @SuppressLint("MissingPermission")
@@ -188,7 +227,7 @@ public class TravelTrackingActivity extends BaseActivity {
             public void onLocationResult(LocationResult locationResult) {
                 mCurrentLocation = locationResult.getLastLocation();
                 syncLocationUp();
-                refreshView();
+                presentCurrentLocationAndDangerAreas();
             }
         };
         mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.getMainLooper());
@@ -223,34 +262,59 @@ public class TravelTrackingActivity extends BaseActivity {
         }
     }
 
-    private void refreshView() {
+    private void loadDangerAreas() {
         mCovidVnDocRef.collection("list")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful() && mGoogleMap != null) {
-                            mGoogleMap.clear();
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        mDangerAreas = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Map<String, Object> data = document.getData();
+                            mDangerAreas.add(data);
+                        }
+                        presentCurrentLocationAndDangerAreas();
+                        String total = mDangerAreas.size() + " " + ((mDangerAreas.size() == 1) ? "danger area" : "danger areas");
+                        mTotalTextView.setText(total);
+                        mDangerAreasAdapter.setData(mDangerAreas);
+                    } else {
+                        Log.d("Virtual Assistant", "Error getting documents: ", task.getException());
+                    }
+                }
+            });
+    }
 
-                            if (mCurrentLocation != null) {
-                                LatLng myLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                                GoogleMapUtils.drawMarker(mGoogleMap, myLatLng, R.drawable.ic_red_dot_10);
-                                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 18f));
-                            }
+    private void presentCurrentLocationAndDangerAreas() {
+        if (mGoogleMap != null) {
+            mGoogleMap.clear();
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Map<String, Object> data = document.getData();
-                                if (data != null && data.containsKey("latitude") && data.containsKey("longitude")) {
-                                    LatLng latLng = new LatLng(Double.valueOf((String) data.get("latitude")), Double.valueOf((String) data.get("longitude")));
-                                    String placeName = (String) data.get("address");
-                                    GoogleMapUtils.drawMarker(mGoogleMap, latLng, placeName, R.drawable.img_baseline_coronavirus_24);
-                                }
-                            }
-                        } else {
-                            Log.d("Virtual Assistant", "Error getting documents: ", task.getException());
+            // Present current location
+            if (mCurrentLocation != null) {
+                LatLng myLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                GoogleMapUtils.drawMarker(mGoogleMap, myLatLng, R.drawable.ic_red_dot_10);
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 11f));
+            }
+
+            // Present danger areas
+            if (mDangerAreas != null) {
+                for (Map<String, Object> area : mDangerAreas) {
+                    if (area != null && area.containsKey("latitude") && area.containsKey("longitude")) {
+                        double latitude;
+                        double longitude;
+                        try {
+                            latitude = Double.parseDouble((String) area.get("latitude"));
+                            longitude = Double.parseDouble((String) area.get("longitude"));
+                        } finally { }
+                        if (latitude > 0 && longitude > 0) {
+                            LatLng latLng = new LatLng(latitude, longitude);
+                            String placeName = (area.get("address") == null) ? "" : (String) area.get("address");
+                            GoogleMapUtils.drawMarker(mGoogleMap, latLng, placeName, R.drawable.img_baseline_coronavirus_24);
                         }
                     }
-                });
+                }
+            }
+        }
     }
 
     @Override
