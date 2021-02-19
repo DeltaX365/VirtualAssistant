@@ -23,11 +23,13 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
 
@@ -56,11 +58,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class TravelTrackingActivity extends BaseActivity {
+public class TravelTrackingActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
+    private float mGoogleMapZoom = 11f;
 
     private LinearLayout mDangerAreasBottomSheet;
+    private BottomSheetBehavior mDangerAreasBottomSheetBehavior;
     private TextView mTotalTextView;
     private RecyclerView mDangerAreasRecyclerView;
     private RecyclerViewAdapter<Map<String, Object>> mDangerAreasAdapter;
@@ -99,25 +103,27 @@ public class TravelTrackingActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mMapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap mMap) {
-                mGoogleMap = mMap;
-//                mGoogleMap.setPadding(0, 0, 0, GoogleMapUtils.dpToPx(TravelTrackingActivity.this, 350));
-//                mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-//                mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
-//                enableMyLocation();
-//                adjustMyLocation();
-                startWatchingCameraMove();
-            }
-        });
+        mMapView.getMapAsync(this);
         startWatchingPermissions();
+    }
+
+    private void startWatchingPermissions() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(StopTrackingSetting.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                requestLocationUpdates();
+            }
+        }, filter);
     }
 
     private void setupBottomSheet() {
         mDangerAreasBottomSheet = findViewById(R.id.bottomsheet_danger_areas);
         mTotalTextView = findViewById(R.id.total_danger_areas);
         mDangerAreasRecyclerView = findViewById(R.id.list_danger_areas);
+
+        mDangerAreasBottomSheetBehavior = BottomSheetBehavior.from(mDangerAreasBottomSheet);
 
         mDangerAreasRecyclerView.setHasFixedSize(true);
         mDangerAreasRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -128,80 +134,48 @@ public class TravelTrackingActivity extends BaseActivity {
                 try {
                     double latitude = Double.parseDouble((String) area.get("latitude"));
                     double longitude = Double.parseDouble((String) area.get("longitude"));
-                    if (latitude > 0 && longitude > 0) {
-                        LatLng latLng = new LatLng(latitude, longitude);
-                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11f));
-                    }
+                    moveToPosition(latitude, longitude);
+                    mDangerAreasBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 } finally { }
             }
         });
         mDangerAreasRecyclerView.setAdapter(mDangerAreasAdapter);
-
-        adjustMyLocation();
     }
 
-    @SuppressLint("MissingPermission")
-    private void enableMyLocation() {
-        if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
-            return;
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        mGoogleMap.setOnCameraMoveListener(this);
+
+        // We will provide our own zoom controls.
+        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+//        mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
+    }
+
+    @Override
+    public void onCameraMove() {
+        CameraPosition cameraPosition = mGoogleMap.getCameraPosition();
+        mGoogleMapZoom = cameraPosition.zoom;
+
+        // Set bottom padding for map
+        // Offseting the center of the MapFragment for an animation moving both the target lat/lng and the zoom level
+        // https://stackoverflow.com/questions/15625970/offseting-the-center-of-the-mapfragment-for-an-animation-moving-both-the-target
+        // https://stackoverflow.com/questions/13739075/how-to-get-latitude-longitude-span-in-google-map-v2-for-android
+//        VisibleRegion visibleRegion = mGoogleMap.getProjection().getVisibleRegion();
+//        double left = visibleRegion.latLngBounds.southwest.longitude;
+//        double top = visibleRegion.latLngBounds.northeast.latitude;
+//        double right = visibleRegion.latLngBounds.northeast.longitude;
+//        double bottom = visibleRegion.latLngBounds.southwest.latitude;
+//        double bottomPadding = GoogleMapUtils.dpToPx(TravelTrackingActivity.this, mDangerAreasBottomSheet.getHeight());
+//        mGoogleMap.setPadding((int) left, (int) top, (int) right, (int) (bottom - bottomPadding));
+    }
+
+    private void moveToPosition(double latitude, double longitude) {
+        if (mGoogleMap != null && latitude > 0 && longitude > 0) {
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), mGoogleMapZoom);
+//            mGoogleMap.moveCamera(cameraUpdate);
+            mGoogleMap.animateCamera(cameraUpdate);
         }
-        mGoogleMap.setMyLocationEnabled(true);
-    }
-
-    private void adjustMyLocation() {
-        if (mDangerAreasBottomSheet != null) {
-            BottomSheetBehavior sheetBehavior = BottomSheetBehavior.from(mDangerAreasBottomSheet);
-            sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-                @Override
-                public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                    if (mGoogleMap != null) {
-                        int paddingBottom = GoogleMapUtils.dpToPx(TravelTrackingActivity.this, bottomSheet.getHeight());
-                        mGoogleMap.setPadding(0, 0, 0, paddingBottom);
-                    }
-                }
-
-                @Override
-                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                    if (mGoogleMap != null) {
-                        int paddingBottom = GoogleMapUtils.dpToPx(TravelTrackingActivity.this, bottomSheet.getHeight());
-                        mGoogleMap.setPadding(0, 0, 0, paddingBottom);
-                    }
-                }
-            });
-        }
-    }
-
-    private void startWatchingCameraMove() {
-        if (mGoogleMap != null) {
-            mGoogleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-                @Override
-                public void onCameraMove() {
-                    // Set bottom padding for map
-                    // Offseting the center of the MapFragment for an animation moving both the target lat/lng and the zoom level
-                    // https://stackoverflow.com/questions/15625970/offseting-the-center-of-the-mapfragment-for-an-animation-moving-both-the-target
-                    // https://stackoverflow.com/questions/13739075/how-to-get-latitude-longitude-span-in-google-map-v2-for-android
-                    VisibleRegion visibleRegion = mGoogleMap.getProjection().getVisibleRegion();
-                    double left = visibleRegion.latLngBounds.southwest.longitude;
-                    double top = visibleRegion.latLngBounds.northeast.latitude;
-                    double right = visibleRegion.latLngBounds.northeast.longitude;
-                    double bottom = visibleRegion.latLngBounds.southwest.latitude;
-                    double bottomPadding = GoogleMapUtils.dpToPx(TravelTrackingActivity.this, mDangerAreasBottomSheet.getHeight());
-                    mGoogleMap.setPadding((int) left, (int) top, (int) right, (int) (bottom - bottomPadding));
-                }
-            });
-        }
-    }
-
-    private void startWatchingPermissions() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(StopTrackingSetting.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                enableMyLocation();
-                requestLocationUpdates();
-            }
-        }, filter);
     }
 
     @Override
@@ -293,7 +267,7 @@ public class TravelTrackingActivity extends BaseActivity {
             if (mCurrentLocation != null) {
                 LatLng myLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 GoogleMapUtils.drawMarker(mGoogleMap, myLatLng, R.drawable.ic_red_dot_10);
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 11f));
+                moveToPosition(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
             }
 
             // Present danger areas
@@ -317,19 +291,6 @@ public class TravelTrackingActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mMapView.onPause();
-        removeLocationUpdates();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mMapView.onDestroy();
-    }
-
     private void removeLocationUpdates() {
         if (mLocationCallback != null) {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
@@ -343,5 +304,18 @@ public class TravelTrackingActivity extends BaseActivity {
             UserCache.saveUserUid(this, currentUserUid);
         }
         return currentUserUid;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMapView.onPause();
+        removeLocationUpdates();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
     }
 }
