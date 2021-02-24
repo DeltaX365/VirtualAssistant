@@ -133,7 +133,7 @@ public class HomeV2Activity extends BaseActivity {
         availableActions.add(BotSetting.SHOW_TRAVEL_HISTORY);
         availableActions.add(BotSetting.TRAVEL_TRACKING);
         availableActions.add(BotSetting.MANAGE_CONTACTS);
-        availableActions.add(BotSetting.MANAGE_LOCKED_CONTACTS);
+//        availableActions.add(BotSetting.MANAGE_LOCKED_CONTACTS);
         availableActions.add(BotSetting.SHOW_CALL_STAT);
         availableActions.add(BotSetting.MANAGE_YOUR_APPS);
         availableActions.add(BotSetting.SHOW_REMINDERS);

@@ -139,4 +139,8 @@ public class AppViewModel extends ViewModel {
         }
         return false;
     }
+
+    public boolean deletePhoneApp(Context context, PhoneApp phoneApp) {
+        return deviceManager.deletePhoneApp(context, phoneApp);
+    }
 }

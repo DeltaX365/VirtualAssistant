@@ -272,8 +272,12 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
                         }
                         break;
                     case UiSetting.APP_ACTION_UNINSTALL:
-                        Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + phoneApp.packageName));
-                        startActivity(uninstallIntent);
+                        if (vm.deletePhoneApp(AppDashboardActivity.this, phoneApp)) {
+                            Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + phoneApp.packageName));
+                            startActivity(uninstallIntent);
+                            onPhoneAppDeleted(phoneApp);
+                            Toast.makeText(AppDashboardActivity.this, "App deleted", Toast.LENGTH_SHORT).show();
+                        }
                         break;
                 }
             }
@@ -300,6 +304,47 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
             }
         }
         refreshPhoneAppsView();
+    }
+
+    private void onPhoneAppDeleted(PhoneApp phoneApp) {
+        // Update recent usage app list
+        PhoneApp deletedRecentUsageApp = null;
+        for(PhoneApp phoneApp1 : recentUsageApps) {
+            if (phoneApp1.packageName.equals(phoneApp.packageName)) {
+                deletedRecentUsageApp = phoneApp1;
+                break;
+            }
+        }
+        if (deletedRecentUsageApp != null) {
+            recentUsageApps.remove(deletedRecentUsageApp);
+            refreshRecentUsageAppsView();
+        }
+
+        // Update most usage app list
+        PhoneApp deletedMostUsageApp = null;
+        for(PhoneApp phoneApp1 : mostUsageApps) {
+            if (phoneApp1.packageName.equals(phoneApp.packageName)) {
+                deletedMostUsageApp = phoneApp1;
+                break;
+            }
+        }
+        if (deletedMostUsageApp != null) {
+            mostUsageApps.remove(deletedMostUsageApp);
+            refreshMostUsageAppsView();
+        }
+
+        // Update app list
+        PhoneApp deletedPhoneApp = null;
+        for(PhoneApp phoneApp1 : phoneApps) {
+            if (phoneApp1.packageName.equals(phoneApp.packageName)) {
+                deletedPhoneApp = phoneApp1;
+                break;
+            }
+        }
+        if (deletedPhoneApp != null) {
+            phoneApps.remove(deletedPhoneApp);
+            refreshPhoneAppsView();
+        }
     }
 
     private void refreshPhoneAppsView() {

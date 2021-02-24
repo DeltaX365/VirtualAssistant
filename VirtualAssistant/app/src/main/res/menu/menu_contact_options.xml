@@ -10,12 +10,11 @@
         android:title="Send Sms"
         android:icon="@drawable/ic_baseline_sms_24"
         />
-    <item
-        android:id="@+id/menu_item_lock"
-        android:title="Lock"
-        android:icon="@drawable/ic_baseline_block_24"
-        android:enabled="false"
-        />
+<!--    <item-->
+<!--        android:id="@+id/menu_item_lock"-->
+<!--        android:title="Lock"-->
+<!--        android:icon="@drawable/ic_baseline_block_24"-->
+<!--        />-->
     <item
         android:id="@+id/menu_item_schedule"
         android:title="Schedule"

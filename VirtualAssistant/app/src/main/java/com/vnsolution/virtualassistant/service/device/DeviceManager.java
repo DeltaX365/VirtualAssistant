@@ -708,6 +708,21 @@ public class DeviceManager {
         editor.commit();
     }
 
+    public boolean deletePhoneApp(Context context, PhoneApp phoneApp) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                PhoneAppEntity phoneAppEntity = phoneAppDao.getByPackageName(phoneApp.packageName);
+                if (phoneAppEntity != null) {
+                    phoneAppDao.delete(phoneAppEntity);
+                }
+            }
+        });
+        executor.shutdown();
+        return true;
+    }
+
     private PhoneCallEntity getPhoneCallEntity(Cursor cursor) {
         PhoneCallEntity call = new PhoneCallEntity();
         call.id = UUID.randomUUID().toString();

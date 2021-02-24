@@ -4,7 +4,6 @@ import androidx.room.Dao;
 import androidx.room.Query;
 
 import com.vnsolution.virtualassistant.db.entity.PhoneAppEntity;
-import com.vnsolution.virtualassistant.db.entity.PhoneCallEntity;
 
 import java.util.List;
 
@@ -18,6 +17,12 @@ public interface PhoneAppDao extends BaseDao<PhoneAppEntity> {
             "WHERE Type = :type " +
             "ORDER BY AppName ASC")
     List<PhoneAppEntity> getPhoneApps(int type);
+
+    @Query("SELECT * FROM PhoneApp WHERE Id=:id")
+    PhoneAppEntity getById(String id);
+
+    @Query("SELECT * FROM PhoneApp WHERE PackageName=:packageName")
+    PhoneAppEntity getByPackageName(String packageName);
 
     @Query("UPDATE PhoneApp SET Locked = 1 WHERE PackageName = :packageName")
     void lock(String packageName);

@@ -20,7 +20,8 @@ import dagger.android.AndroidInjectionModule;
         //https://dagger.dev/android
         //https://github.com/android/architecture-components-samples/issues/253
         ServiceBuildersModule.class,
-        ActivityBuildersModule.class
+        ActivityBuildersModule.class,
+        BroadcastReceiverBuildersModule.class,
 })
 public interface AppComponent {
     @Component.Builder
