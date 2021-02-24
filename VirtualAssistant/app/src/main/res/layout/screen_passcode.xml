@@ -8,8 +8,8 @@
     android:gravity="center">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:background="@drawable/ic_baseline_hearing_24"
         android:backgroundTint="@color/color_white"
         />

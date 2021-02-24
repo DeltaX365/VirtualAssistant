@@ -79,21 +79,6 @@ public class AppLockService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         AndroidInjection.inject(this);
 
-        // Check permission
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                stopSelf();
-                return START_NOT_STICKY;
-            }
-        }
-
         // Create notification channel
         String chanelId = BuildConfig.APPLICATION_ID + "." + "BUBBLE_WIDGET_FOREGROUND_SERVICE";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -110,6 +95,21 @@ public class AppLockService extends Service {
                 .setPriority(NotificationManager.IMPORTANCE_LOW)
                 .build();
         startForeground((int) (Math.random() * 999999), notification);
+
+        // Check permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                stopSelf();
+                return START_NOT_STICKY;
+            }
+        }
 
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         imageView = new ImageView(this);
