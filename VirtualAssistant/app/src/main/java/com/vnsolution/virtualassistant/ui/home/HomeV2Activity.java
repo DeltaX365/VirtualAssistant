@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -70,10 +71,13 @@ public class HomeV2Activity extends BaseActivity {
         availableActionsRecyclerView = findViewById(R.id.list_available_actions);
         availableActionsRecyclerView.setHasFixedSize(true);
 
-        availableActionsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+//        availableActionsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+//        availableActionsRecyclerView.setLayoutManager(availableActionsLayoutManager);
+        availableActionsLayoutManager = new GridLayoutManager(this,2);
         availableActionsRecyclerView.setLayoutManager(availableActionsLayoutManager);
 
-        availableActionsAdapter = new RecyclerViewAdapter<String>(this, UiSetting.BOT_AVAILABLE_ACTIONS, R.layout.item_bot_action);
+//        availableActionsAdapter = new RecyclerViewAdapter<String>(this, UiSetting.BOT_AVAILABLE_ACTIONS, R.layout.item_bot_action);
+        availableActionsAdapter = new RecyclerViewAdapter<String>(this, UiSetting.BOT_AVAILABLE_ACTIONS, R.layout.card_bot_action);
         availableActionsAdapter.setOnItemClickListener(new RecyclerViewRowTouchListener<String>() {
             @Override
             public void onTap(String action) {

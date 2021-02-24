@@ -14,19 +14,19 @@
     <fragment
         android:id="@+id/navigation_places"
         android:name="com.vnsolution.virtualassistant.ui.travel.TravelFragment"
-        android:label="@string/screen_travel_dashboard"
+        android:label="@string/screen_travels"
         tools:layout="@layout/screen_travel_dashboard" />
 
     <fragment
         android:id="@+id/navigation_apps"
         android:name="com.vnsolution.virtualassistant.ui.apps.v1.PhoneAppsFragment"
-        android:label="@string/screen_applications"
+        android:label="@string/screen_apps"
         tools:layout="@layout/screen_app_list" />
 
     <fragment
         android:id="@+id/navigation_call_logs"
         android:name="com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsFragment"
-        android:label="@string/screen_call_history"
+        android:label="@string/screen_call_logs"
         tools:layout="@layout/screen_phone_call_list" />
 
     <fragment

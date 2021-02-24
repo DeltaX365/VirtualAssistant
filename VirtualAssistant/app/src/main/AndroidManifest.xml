@@ -55,22 +55,22 @@
             android:label="@string/screen_home" />
         <activity
             android:name=".ui.travel.TravelV2Activity"
-            android:label="@string/screen_travel_dashboard" />
+            android:label="@string/screen_travels" />
         <activity
             android:name=".ui.travel.TravelDashboardActivity"
-            android:label="@string/screen_travel_dashboard" />
+            android:label="@string/screen_travels" />
         <activity
             android:name=".ui.travel.TravelHistoryActivity"
-            android:label="@string/screen_travel_history" />
+            android:label="@string/screen_travels" />
         <activity
             android:name=".ui.travel.TravelViewActivity"
-            android:label="@string/screen_travel_view" />
+            android:label="@string/screen_travels" />
         <activity
             android:name=".ui.travel.TravelEditActivity"
-            android:label="@string/screen_travel_edit" />
+            android:label="@string/screen_travels" />
         <activity
             android:name=".ui.travel.TravelTrackingActivity"
-            android:label="@string/screen_travel_dashboard"/>
+            android:label="@string/screen_covid"/>
         <activity
             android:name=".ui.contacts.ContactDashboardActivity"
             android:label="@string/screen_contacts" />
@@ -80,7 +80,6 @@
         <activity
             android:name=".ui.contacts.ContactListActivity"
             android:label="@string/screen_contacts">
-
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.SEARCH" /> -->
             <!-- </intent-filter> -->
@@ -90,7 +89,13 @@
         </activity>
         <activity
             android:name=".ui.apps.AppDashboardActivity"
-            android:label="@string/screen_applications" />
+            android:label="@string/screen_apps" />
+        <activity
+            android:name=".ui.apps.v1.PhoneAppActivity"
+            android:label="@string/screen_apps" />
+        <activity
+            android:name=".ui.apps.v2.PhoneAppV2Activity"
+            android:label="@string/screen_apps"/>
         <activity
             android:name=".ui.reminders.ReminderListActivity"
             android:label="@string/screen_reminders" />
@@ -100,20 +105,18 @@
         <activity
             android:name=".ui.reminders.ReminderShowFullScreenActivity"
             android:label="@string/screen_reminders" />
-        <activity android:name=".ui.apps.v1.PhoneAppActivity" />
-        <activity android:name=".ui.apps.v2.PhoneAppV2Activity" />
         <activity
             android:name=".ui.phonecall.v1.PhoneCallActivity"
-            android:label="@string/screen_call_history" />
+            android:label="@string/screen_call_logs" />
         <activity
             android:name=".ui.phonesms.v1.PhoneSmsActivity"
-            android:label="@string/screen_sms_history" />
+            android:label="@string/screen_sms_logs" />
         <activity
             android:name=".ui.settings.SettingActivity"
             android:label="@string/screen_settings" />
         <activity
             android:name=".ui.settings.PermissionActivity"
-            android:label="Permissions" />
+            android:label="@string/screen_permissions" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

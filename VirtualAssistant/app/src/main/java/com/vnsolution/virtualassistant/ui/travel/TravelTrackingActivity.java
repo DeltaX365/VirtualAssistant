@@ -155,7 +155,7 @@ public class TravelTrackingActivity extends BaseActivity implements OnMapReadyCa
     @Override
     public void onCameraMove() {
         CameraPosition cameraPosition = mGoogleMap.getCameraPosition();
-        mGoogleMapZoom = cameraPosition.zoom;
+        mGoogleMapZoom = (cameraPosition.zoom >= 11f)? cameraPosition.zoom : 11f;
 
         // Set bottom padding for map
         // Offseting the center of the MapFragment for an animation moving both the target lat/lng and the zoom level
