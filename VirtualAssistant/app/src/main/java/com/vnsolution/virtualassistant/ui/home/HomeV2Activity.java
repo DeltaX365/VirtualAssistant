@@ -82,16 +82,16 @@ public class HomeV2Activity extends BaseActivity {
                     case BotSetting.SHOW_TRAVEL_HISTORY:
                         intent = new Intent(HomeV2Activity.this, TravelDashboardActivity.class);
                         break;
-                    case BotSetting.TRAVEL_TRACKING:
+                    case BotSetting.TRACK_TRAVEL:
                         intent = new Intent(HomeV2Activity.this, TravelTrackingActivity.class);
                         break;
-                    case BotSetting.MANAGE_YOUR_APPS:
+                    case BotSetting.MANAGE_APPS:
                         intent = new Intent(HomeV2Activity.this, AppDashboardActivity.class);
                         break;
                     case BotSetting.MANAGE_CONTACTS:
                         intent = new Intent(HomeV2Activity.this, ContactListActivity.class);
                         break;
-                    case BotSetting.MANAGE_LOCKED_CONTACTS:
+                    case BotSetting.SHOW_LOCKED_CONTACTS:
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             TelecomManager telecomManager = (TelecomManager) getSystemService(Context.TELECOM_SERVICE);
                             intent = telecomManager.createManageBlockedNumbersIntent();
@@ -103,7 +103,7 @@ public class HomeV2Activity extends BaseActivity {
                     case BotSetting.SHOW_CALL_LOGS:
                         intent = new Intent(HomeV2Activity.this, PhoneCallActivity.class);
                         break;
-                    case BotSetting.SHOW_SENT_RECEIVED_SMS:
+                    case BotSetting.SHOW_SMS:
                         intent = new Intent(HomeV2Activity.this, PhoneSmsActivity.class);
                         break;
                     case BotSetting.SHOW_REMINDERS:
@@ -131,17 +131,17 @@ public class HomeV2Activity extends BaseActivity {
     private void refreshView() {
         List<String> availableActions = new ArrayList<String>();
         availableActions.add(BotSetting.SHOW_TRAVEL_HISTORY);
-        availableActions.add(BotSetting.TRAVEL_TRACKING);
+        availableActions.add(BotSetting.TRACK_TRAVEL);
         availableActions.add(BotSetting.MANAGE_CONTACTS);
 //        availableActions.add(BotSetting.MANAGE_LOCKED_CONTACTS);
         availableActions.add(BotSetting.SHOW_CALL_STAT);
-        availableActions.add(BotSetting.MANAGE_YOUR_APPS);
+        availableActions.add(BotSetting.MANAGE_APPS);
         availableActions.add(BotSetting.SHOW_REMINDERS);
 //        availableActions.add(BotOptions.SHOW_NOTIFICATIONS);
 //        availableActions.add(BotOptions.SHOW_CALL_LOGS);
 //        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
         availableActions.add(BotSetting.MANAGE_PERMISSIONS);
-        availableActions.add(BotSetting.SHOW_SETTINGS);
+//        availableActions.add(BotSetting.SHOW_SETTINGS);
         availableActionsAdapter.setData(availableActions);
     }
 

@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -128,11 +129,26 @@ public class PlaceManager {
     }
 
     public PlaceEntity confirmDetectedPlace(String placeId) {
-        PlaceEntity placeEntity = placeDao.getById(placeId);
-        if (placeEntity != null && placeEntity.confirmed == 0) {
-            placeEntity.confirmed = 1;
-            placeDao.update(placeEntity);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<PlaceEntity> placeUpdateFuture = executor.submit(new Callable<PlaceEntity>() {
+            @Override
+            public PlaceEntity call() throws Exception {
+                PlaceEntity placeEntity = placeDao.getById(placeId);
+                if (placeEntity != null && placeEntity.confirmed == 0) {
+                    placeEntity.confirmed = 1;
+                    placeDao.update(placeEntity);
+                }
+                return placeEntity;
+            }
+        });
+        PlaceEntity placeEntity = null;
+        try {
+            placeEntity = placeUpdateFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
+        executor.shutdown();
         return placeEntity;
     }
 

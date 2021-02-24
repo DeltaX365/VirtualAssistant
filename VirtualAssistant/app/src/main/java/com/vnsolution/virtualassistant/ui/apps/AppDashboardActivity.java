@@ -76,6 +76,11 @@ public class AppDashboardActivity extends BaseActivity implements HasAndroidInje
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         refreshView();
     }
 
