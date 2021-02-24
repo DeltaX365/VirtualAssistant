@@ -82,7 +82,7 @@ public class HomeV2Activity extends BaseActivity {
                     case BotSetting.SHOW_TRAVEL_HISTORY:
                         intent = new Intent(HomeV2Activity.this, TravelDashboardActivity.class);
                         break;
-                    case BotSetting.TRACK_TRAVEL:
+                    case BotSetting.COVID_TRACKING:
                         intent = new Intent(HomeV2Activity.this, TravelTrackingActivity.class);
                         break;
                     case BotSetting.MANAGE_APPS:
@@ -131,7 +131,7 @@ public class HomeV2Activity extends BaseActivity {
     private void refreshView() {
         List<String> availableActions = new ArrayList<String>();
         availableActions.add(BotSetting.SHOW_TRAVEL_HISTORY);
-        availableActions.add(BotSetting.TRACK_TRAVEL);
+        availableActions.add(BotSetting.COVID_TRACKING);
         availableActions.add(BotSetting.MANAGE_CONTACTS);
 //        availableActions.add(BotSetting.MANAGE_LOCKED_CONTACTS);
         availableActions.add(BotSetting.SHOW_CALL_STAT);

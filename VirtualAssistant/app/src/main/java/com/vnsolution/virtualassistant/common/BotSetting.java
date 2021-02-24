@@ -2,7 +2,7 @@ package com.vnsolution.virtualassistant.common;
 
 public class BotSetting {
     public static final String SHOW_TRAVEL_HISTORY = "Show travel history";
-    public static final String TRACK_TRAVEL = "Track your travel";
+    public static final String COVID_TRACKING = "COVID tracking";
     public static final String MANAGE_APPS = "Manage apps";
     public static final String SHOW_CALL_STAT = "Stat your calls";
     public static final String SHOW_CALL_LOGS = "Show call logs";
