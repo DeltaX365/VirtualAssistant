@@ -115,6 +115,30 @@ public class TravelHistoryActivity extends BaseActivity {
         }
     }
 
+    private class ToggleFavouritePlaceTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String placeId = params.length > 0 ? params[0] : "";
+            PlaceEntity placeEntity = placeManager.toggleFavouritePlace(placeId);
+            return (placeEntity != null) ? placeId : null;
+        }
+
+        @Override
+        protected void onPostExecute(String placeId) {
+            super.onPostExecute(placeId);
+            if (visitedPlaces != null && placeId != null) {
+                for(Place place : visitedPlaces) {
+                    if (place.id == placeId) {
+                        place.favourite = (place.favourite == 0)? 1 : 0;
+                        break;
+                    }
+                }
+                visitedPlacesAdapter.setData(visitedPlaces);
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -228,6 +252,9 @@ public class TravelHistoryActivity extends BaseActivity {
                         Intent intent = new Intent(TravelHistoryActivity.this, TravelEditActivity.class);
                         intent.putExtra("PlaceId", place.id);
                         startActivity(intent);
+                    }
+                    if (action.equals(UiSetting.PLACE_ACTION_FAVOURITE)) {
+                        new ToggleFavouritePlaceTask().execute(place.id);
                     }
                 }
             });

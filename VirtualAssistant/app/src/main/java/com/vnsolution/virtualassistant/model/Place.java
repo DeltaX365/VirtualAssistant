@@ -13,6 +13,7 @@ public class Place {
     public double longitude;
     public String photoReference;
     public int confirmed;
+    public int favourite;
     public Date createdDate;
     public List<PlaceHistory> placeHistories;
 }

@@ -87,6 +87,14 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
             }
         });
         mFavouriteButton = findViewById(R.id.favourite_place);
+        mFavouriteButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnRecyclerViewRowTouchListener != null) {
+                    mOnRecyclerViewRowTouchListener.onAction(mPlace, UiSetting.PLACE_ACTION_FAVOURITE);
+                }
+            }
+        });
     }
 
     @Override
@@ -142,6 +150,13 @@ public class PlaceSimpleRow extends LinearLayout implements IRecyclerViewRow<Pla
             mConfirmTextView.setVisibility(View.GONE);
             mConfirmViewGroup.setVisibility(View.GONE);
             mTotalVisitTextView.setVisibility(View.VISIBLE);
+        }
+
+        // Favourite button
+        if (place.favourite == 1) {
+            mFavouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
+        } else {
+            mFavouriteButton.setImageResource(R.drawable.ic_baseline_non_favorite_border_24);
         }
     }
 

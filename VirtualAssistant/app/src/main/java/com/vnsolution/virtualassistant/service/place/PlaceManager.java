@@ -198,6 +198,30 @@ public class PlaceManager {
         }
     }
 
+    public PlaceEntity toggleFavouritePlace(String placeId) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<PlaceEntity> placeUpdateFuture = executor.submit(new Callable<PlaceEntity>() {
+            @Override
+            public PlaceEntity call() throws Exception {
+                PlaceEntity placeEntity = placeDao.getById(placeId);
+                if (placeEntity != null) {
+                    placeEntity.favourite = (placeEntity.favourite == 0) ? 1 : 0;
+                    placeDao.update(placeEntity);
+                }
+                return placeEntity;
+            }
+        });
+        PlaceEntity placeEntity = null;
+        try {
+            placeEntity = placeUpdateFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return placeEntity;
+    }
+
     public GoogleMapPlaceSearchDto.PlaceSearch searchPlaceByAddress(Address address) {
         if (address != null && address.getAddressLine(0) != null && address.getAddressLine(0) != "") {
             String search = "point_of_interest, " + address.getAddressLine(0);

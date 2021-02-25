@@ -82,4 +82,7 @@ public class PlaceEntity extends AuditEntity {
 
     @ColumnInfo(name = "Confirmed")
     public int confirmed;
+
+    @ColumnInfo(name = "Favourite")
+    public int favourite;
 }

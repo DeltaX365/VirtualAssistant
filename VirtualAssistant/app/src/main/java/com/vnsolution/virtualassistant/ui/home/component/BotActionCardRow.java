@@ -1,9 +1,6 @@
 package com.vnsolution.virtualassistant.ui.home.component;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import android.telecom.TelecomManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,19 +9,8 @@ import android.widget.TextView;
 import com.google.android.material.card.MaterialCardView;
 import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.BotSetting;
-import com.vnsolution.virtualassistant.ui.apps.AppDashboardActivity;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
-import com.vnsolution.virtualassistant.ui.contacts.ContactDashboardActivity;
-import com.vnsolution.virtualassistant.ui.contacts.ContactListActivity;
-import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
-import com.vnsolution.virtualassistant.ui.phonecall.v1.PhoneCallActivity;
-import com.vnsolution.virtualassistant.ui.phonesms.v1.PhoneSmsActivity;
-import com.vnsolution.virtualassistant.ui.reminders.ReminderListActivity;
-import com.vnsolution.virtualassistant.ui.settings.PermissionActivity;
-import com.vnsolution.virtualassistant.ui.settings.SettingActivity;
-import com.vnsolution.virtualassistant.ui.travel.TravelDashboardActivity;
-import com.vnsolution.virtualassistant.ui.travel.TravelTrackingActivity;
 
 public class BotActionCardRow extends MaterialCardView implements IRecyclerViewRow<String> {
     private ImageView mBotAvatarImageView;
@@ -97,7 +83,7 @@ public class BotActionCardRow extends MaterialCardView implements IRecyclerViewR
                 mBotAvatarImageView.setImageResource(R.drawable.ic_baseline_vpn_key_24);
                 break;
             case BotSetting.SHOW_SETTINGS:
-                mBotAvatarImageView.setImageResource(R.drawable.ic_baseline_settings_black_24);
+                mBotAvatarImageView.setImageResource(R.drawable.ic_baseline_settings_24);
                 break;
         }
         mBotActionTextView.setText(action);

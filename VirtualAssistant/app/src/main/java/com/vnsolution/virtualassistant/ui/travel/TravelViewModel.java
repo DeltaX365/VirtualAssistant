@@ -177,6 +177,7 @@ public class TravelViewModel extends ViewModel {
             place.longitude = placeEntity.place.longitude;
             place.photoReference = placeEntity.place.photoReference;
             place.confirmed = placeEntity.place.confirmed;
+            place.favourite = placeEntity.place.favourite;
             place.createdDate = placeEntity.place.createdDate;
         }
         place.placeHistories = new ArrayList<>();
