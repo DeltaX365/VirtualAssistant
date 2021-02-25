@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -188,7 +189,7 @@ public class TravelTrackingActivity extends BaseActivity implements OnMapReadyCa
 
     @SuppressLint("MissingPermission")
     private void requestLocationUpdates() {
-        if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
             return;
         }
         LocationRequest locationRequest = new LocationRequest();
