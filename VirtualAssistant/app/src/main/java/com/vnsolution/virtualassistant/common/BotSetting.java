@@ -13,5 +13,5 @@ public class BotSetting {
     public static final String SHOW_NOTIFICATIONS = "Show notifications";
     public static final String SHOW_SMS = "Show sent/received sms";
     public static final String MANAGE_PERMISSIONS = "PERMISSIONS"; //"Manage permissions";
-    public static final String SHOW_SETTINGS = "Show settings";
+    public static final String SHOW_SETTINGS = "SETTINGS"; //"Show settings";
 }

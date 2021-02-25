@@ -17,7 +17,8 @@ public class StopTrackingSetting {
 
     public static final int PERMISSIONS_REQUEST_CODE = 1000;
     public static final String[] PERMISSIONS_STOP_TRACKING = {Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION};
-    public static final String[] PERMISSIONS_LOCATION = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION};
+//    public static final String[] PERMISSIONS_LOCATION = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION};
+    public static final String[] PERMISSIONS_LOCATION = {Manifest.permission.ACCESS_BACKGROUND_LOCATION};
     public static final String[] PERMISSIONS_ACTIVITY_RECOGNITION = {Manifest.permission.ACTIVITY_RECOGNITION};
 
     public static final String REQUEST_START_ACTIVITY_TRANSACTION_MONITOR = "STOP_TRACKING_REQUEST_START_ACTIVITY_TRANSACTION_MONITOR";

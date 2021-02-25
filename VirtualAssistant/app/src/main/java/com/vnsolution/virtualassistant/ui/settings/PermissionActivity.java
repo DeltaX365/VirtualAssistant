@@ -94,11 +94,11 @@ public class PermissionActivity extends BaseActivity implements HasAndroidInject
     }
 
     private void refreshView() {
-        physicalActivitySwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)? true : false);
+        physicalActivitySwitch.setChecked(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || PermissionUtils.hasPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)? true : false);
         physicalActivitySwitch.setClickable(!physicalActivitySwitch.isChecked());
         accessForegroundLocationSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)? true : false);
         accessForegroundLocationSwitch.setClickable(!accessForegroundLocationSwitch.isChecked());
-        accessBackgroundLocationSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)? true : false);
+        accessBackgroundLocationSwitch.setChecked(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)? true : false);
         accessBackgroundLocationSwitch.setClickable(!accessBackgroundLocationSwitch.isChecked());
 
         readCallLogSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_CALL_LOG));

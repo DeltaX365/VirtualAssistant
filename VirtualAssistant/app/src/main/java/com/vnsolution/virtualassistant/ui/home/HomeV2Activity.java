@@ -145,21 +145,22 @@ public class HomeV2Activity extends BaseActivity {
 //        availableActions.add(BotOptions.SHOW_CALL_LOGS);
 //        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
         availableActions.add(BotSetting.MANAGE_PERMISSIONS);
-//        availableActions.add(BotSetting.SHOW_SETTINGS);
+        availableActions.add(BotSetting.SHOW_SETTINGS);
         availableActionsAdapter.setData(availableActions);
     }
 
     private boolean requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Stop tracking permissions.
-            if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_ACTIVITY_RECOGNITION)) {
+            // TODO: Review check for devices with Android 10 (29+).
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_ACTIVITY_RECOGNITION)) {
                 requestPermissions(StopTrackingSetting.PERMISSIONS_ACTIVITY_RECOGNITION, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }
             Intent intentUA = new Intent(StopTrackingSetting.BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentUA);
 
-            if (!PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
                 requestPermissions(StopTrackingSetting.PERMISSIONS_LOCATION, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
                 return false;
             }

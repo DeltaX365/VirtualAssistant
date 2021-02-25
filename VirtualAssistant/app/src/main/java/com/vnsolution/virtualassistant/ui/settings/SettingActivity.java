@@ -38,7 +38,8 @@ import dagger.android.HasAndroidInjector;
 
 public class SettingActivity extends BaseActivity implements HasAndroidInjector {
     private Context mContext;
-    private String[] settings = { "Grant stop tracking permissions", "Remove unused notification channels", "Reset factory" };
+//    private String[] settings = { "Grant stop tracking permissions", "Remove unused notification channels", "Reset factory" };
+    private String[] settings = { "Reset factory" };
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
