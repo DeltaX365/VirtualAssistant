@@ -27,8 +27,9 @@ import java.util.UUID;
 
 public class MappingUtils {
     public static PlaceEntity convertStopPointToPlaceEntity(StopPoint stopPoint) {
-        PlaceEntity placeEntity = new PlaceEntity();
+        PlaceEntity placeEntity = null;
         if (stopPoint != null) {
+            placeEntity = new PlaceEntity();
             placeEntity.id = (stopPoint.placeId != null && stopPoint.placeId != "") ? stopPoint.placeId : UUID.randomUUID().toString();
             placeEntity.latitude = stopPoint.latitude;
             placeEntity.longitude = stopPoint.longitude;
@@ -39,8 +40,9 @@ public class MappingUtils {
     }
 
     public static PlaceEntity convertAddressToPlaceEntity(Address address) {
-        PlaceEntity placeEntity = new PlaceEntity();
+        PlaceEntity placeEntity = null;
         if (address != null) {
+            placeEntity = new PlaceEntity();
             placeEntity.id = UUID.randomUUID().toString();
             placeEntity.placeName = address.getFeatureName();
             placeEntity.formattedAddress = address.getAddressLine(0);
@@ -55,8 +57,9 @@ public class MappingUtils {
     }
 
     public static PlaceEntity convertPlaceSearchDtoToPlaceEntity(GoogleMapPlaceSearchDto.PlaceSearch candidate) {
-        PlaceEntity placeEntity = new PlaceEntity();
+        PlaceEntity placeEntity = null;
         if (candidate != null) {
+            placeEntity = new PlaceEntity();
             placeEntity.id = UUID.randomUUID().toString();
             placeEntity.ggPlaceId = candidate.placeId;
             placeEntity.placeName = candidate.name;
@@ -92,8 +95,9 @@ public class MappingUtils {
     }
 
     public static PlaceEntity convertNearByDtoToPlaceEntity(GoogleMapNearByDto.NearBy nearBy) {
-        PlaceEntity placeEntity = new PlaceEntity();
+        PlaceEntity placeEntity = null;
         if (nearBy != null) {
+            placeEntity = new PlaceEntity();
             placeEntity.id = UUID.randomUUID().toString();
             placeEntity.ggPlaceId = nearBy.placeId;
             placeEntity.placeName = nearBy.name;
@@ -131,8 +135,9 @@ public class MappingUtils {
     }
 
     public static PlaceEntity convertPlaceDetailToPlaceEntity(GoogleMapPlaceDetailDto.PlaceDetail placeDetail) {
-        PlaceEntity placeEntity = new PlaceEntity();
+        PlaceEntity placeEntity = null;
         if (placeDetail != null) {
+            placeEntity = new PlaceEntity();
             placeEntity.id = UUID.randomUUID().toString();
             placeEntity.ggPlaceId = placeDetail.placeId;
             placeEntity.placeName = placeDetail.name;
@@ -182,13 +187,16 @@ public class MappingUtils {
     }
 
     public static PhoneContact convertPhoneContactEntityToPhoneContact(PhoneContactEntity phoneContactEntity) {
-        PhoneContact phoneContact = new PhoneContact();
-        phoneContact.id = phoneContactEntity.id;
-        phoneContact.name = phoneContactEntity.displayName;
-        phoneContact.phoneNumbers = phoneContactEntity.phoneNumbers;
-        phoneContact.starred = phoneContactEntity.starred;
-        phoneContact.lookup = phoneContactEntity.lookup;
-        phoneContact.lastUpdatedTime = phoneContactEntity.contactLastUpdatedTimestamp;
+        PhoneContact phoneContact = null;
+        if (phoneContactEntity != null) {
+            phoneContact = new PhoneContact();
+            phoneContact.id = phoneContactEntity.id;
+            phoneContact.name = phoneContactEntity.displayName;
+            phoneContact.phoneNumbers = phoneContactEntity.phoneNumbers;
+            phoneContact.starred = phoneContactEntity.starred;
+            phoneContact.lookup = phoneContactEntity.lookup;
+            phoneContact.lastUpdatedTime = phoneContactEntity.contactLastUpdatedTimestamp;
+        }
         return phoneContact;
     }
 
@@ -202,12 +210,15 @@ public class MappingUtils {
     }
 
     public static PhoneCall convertPhoneCallEntityToPhoneCall(PhoneCallEntity phoneCallEntity) {
-        PhoneCall phoneCall = new PhoneCall();
-        phoneCall.id = phoneCallEntity.id;
-        phoneCall.phoneNumber = phoneCallEntity.phoneNumber;
-        phoneCall.duration = phoneCallEntity.duration;
-        phoneCall.type = phoneCallEntity.type;
-        phoneCall.date = phoneCallEntity.date;
+        PhoneCall phoneCall = null;
+        if (phoneCallEntity != null) {
+            phoneCall = new PhoneCall();
+            phoneCall.id = phoneCallEntity.id;
+            phoneCall.phoneNumber = phoneCallEntity.phoneNumber;
+            phoneCall.duration = phoneCallEntity.duration;
+            phoneCall.type = phoneCallEntity.type;
+            phoneCall.date = phoneCallEntity.date;
+        }
         return phoneCall;
     }
 
@@ -221,10 +232,13 @@ public class MappingUtils {
     }
 
     public static PhoneContactSummary convertPhoneCallSummaryEntityToPhoneContactSummary(PhoneCallSummaryEntity phoneCallSummaryEntity) {
-        PhoneContactSummary phoneContactSummary = new PhoneContactSummary();
-        phoneContactSummary.type = phoneCallSummaryEntity.type;
-        phoneContactSummary.total = phoneCallSummaryEntity.total;
-        phoneContactSummary.duration = phoneCallSummaryEntity.duration;
+        PhoneContactSummary phoneContactSummary = null;
+        if (phoneCallSummaryEntity != null) {
+            phoneContactSummary = new PhoneContactSummary();
+            phoneContactSummary.type = phoneCallSummaryEntity.type;
+            phoneContactSummary.total = phoneCallSummaryEntity.total;
+            phoneContactSummary.duration = phoneCallSummaryEntity.duration;
+        }
         return phoneContactSummary;
     }
 
@@ -238,11 +252,14 @@ public class MappingUtils {
     }
 
     public static PhoneSms convertPhoneSmsEntityToPhoneSms(PhoneSmsEntity phoneSmsEntity) {
-        PhoneSms phoneSms = new PhoneSms();
-        phoneSms.smsId = phoneSmsEntity.smsId;
-        phoneSms.address = phoneSmsEntity.address;
-        phoneSms.body = phoneSmsEntity.body;
-        phoneSms.dateSent = phoneSmsEntity.dateSent;
+        PhoneSms phoneSms = null;
+        if (phoneSmsEntity != null) {
+            phoneSms = new PhoneSms();
+            phoneSms.smsId = phoneSmsEntity.smsId;
+            phoneSms.address = phoneSmsEntity.address;
+            phoneSms.body = phoneSmsEntity.body;
+            phoneSms.dateSent = phoneSmsEntity.dateSent;
+        }
         return phoneSms;
     }
 
@@ -256,13 +273,16 @@ public class MappingUtils {
     }
 
     public static PhoneApp convertPhoneAppEntityToPhoneApp(PhoneAppEntity phoneAppEntity) {
-        PhoneApp phoneApp = new PhoneApp();
-        phoneApp.appName = phoneAppEntity.appName;
-        phoneApp.packageName = phoneAppEntity.packageName;
-        phoneApp.versionName = phoneAppEntity.versionName;
-        phoneApp.versionCode = phoneAppEntity.versionCode;
-        phoneApp.type = phoneAppEntity.type;
-        phoneApp.locked = phoneAppEntity.locked;
+        PhoneApp phoneApp = null;
+        if (phoneAppEntity != null) {
+            phoneApp = new PhoneApp();
+            phoneApp.appName = phoneAppEntity.appName;
+            phoneApp.packageName = phoneAppEntity.packageName;
+            phoneApp.versionName = phoneAppEntity.versionName;
+            phoneApp.versionCode = phoneAppEntity.versionCode;
+            phoneApp.type = phoneAppEntity.type;
+            phoneApp.locked = phoneAppEntity.locked;
+        }
         return phoneApp;
     }
 
@@ -276,26 +296,32 @@ public class MappingUtils {
     }
 
     public static Reminder convertReminderEntityToReminder(ReminderEntity reminderEntity) {
-        Reminder reminder = new Reminder();
-        reminder.id = reminderEntity.id;
-        reminder.name = reminderEntity.name;
-        reminder.date = reminderEntity.date;
-        reminder.repeat = reminderEntity.repeat;
-        reminder.action = reminderEntity.action;
-        reminder.extendedData = reminderEntity.extendedData;
-        reminder.alarmRequestCode = reminderEntity.alarmRequestCode;
+        Reminder reminder = null;
+        if (reminderEntity != null) {
+            reminder = new Reminder();
+            reminder.id = reminderEntity.id;
+            reminder.name = reminderEntity.name;
+            reminder.date = reminderEntity.date;
+            reminder.repeat = reminderEntity.repeat;
+            reminder.action = reminderEntity.action;
+            reminder.extendedData = reminderEntity.extendedData;
+            reminder.alarmRequestCode = reminderEntity.alarmRequestCode;
+        }
         return reminder;
     }
 
     public static ReminderEntity convertReminderToReminderEntity(Reminder reminder) {
-        ReminderEntity reminderEntity = new ReminderEntity();
-        reminderEntity.id = reminder.id;
-        reminderEntity.name = reminder.name;
-        reminderEntity.date = reminder.date;
-        reminderEntity.repeat = reminder.repeat;
-        reminderEntity.action = reminder.action;
-        reminderEntity.extendedData = reminder.extendedData;
-        reminderEntity.alarmRequestCode = reminder.alarmRequestCode;
+        ReminderEntity reminderEntity = null;
+        if (reminder != null) {
+            reminderEntity = new ReminderEntity();
+            reminderEntity.id = reminder.id;
+            reminderEntity.name = reminder.name;
+            reminderEntity.date = reminder.date;
+            reminderEntity.repeat = reminder.repeat;
+            reminderEntity.action = reminder.action;
+            reminderEntity.extendedData = reminder.extendedData;
+            reminderEntity.alarmRequestCode = reminder.alarmRequestCode;
+        }
         return reminderEntity;
     }
 }
