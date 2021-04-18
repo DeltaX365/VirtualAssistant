@@ -82,7 +82,8 @@ public class ReminderViewModel extends ViewModel {
         int requestCode = 1;
         List<ReminderEntity> reminders = reminderManager.getReminders();
         if (reminders != null && reminders.size() > 0) {
-            requestCode = reminders.get(0).alarmRequestCode + 1;
+            int lastIndex = reminders.size() - 1;
+            requestCode = reminders.get(lastIndex).alarmRequestCode + 1;
         }
         return requestCode;
     }
