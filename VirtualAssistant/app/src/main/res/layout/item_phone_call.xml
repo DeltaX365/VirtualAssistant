@@ -39,9 +39,17 @@
         android:id="@+id/contact_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="14sp"
+        />
+
+    <TextView
+        android:id="@+id/contact_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:textSize="14sp"
         />
+
     <TextView
         android:id="@+id/contact_duration"
         android:layout_width="wrap_content"

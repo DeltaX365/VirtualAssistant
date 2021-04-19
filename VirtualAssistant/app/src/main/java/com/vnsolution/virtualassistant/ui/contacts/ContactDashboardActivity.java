@@ -185,7 +185,7 @@ public class ContactDashboardActivity extends BaseActivity implements HasAndroid
     private void refreshContactStatView() {
         int totalDuration = 0;
         int totalNumber = 0;
-        List<PhoneContactSummary> contactSummaryList = vm.getContactSummaryByNumbers(null);
+        List<PhoneContactSummary> contactSummaryList = vm.getContactSummary();
         for (PhoneContactSummary contactSummary : contactSummaryList) {
             totalDuration += contactSummary.duration;
             totalNumber += contactSummary.total;

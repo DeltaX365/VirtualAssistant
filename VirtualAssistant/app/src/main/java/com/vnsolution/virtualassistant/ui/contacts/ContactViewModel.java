@@ -65,6 +65,11 @@ public class ContactViewModel extends ViewModel {
         return MappingUtils.convertPhoneCallEntityToPhoneCall(phoneCallEntity);
     }
 
+    public List<PhoneContactSummary> getContactSummary() {
+        List<PhoneCallSummaryEntity> contactSummary = deviceManager.getPhoneCallSummary();
+        return MappingUtils.convertPhoneCallSummaryEntitiesToPhoneContacts(contactSummary);
+    }
+
     public List<PhoneContactSummary> getContactSummaryByNumbers(String phoneNumbers) {
         List<PhoneCallSummaryEntity> contactSummary = deviceManager.getPhoneCallSummaryByNumbers(phoneNumbers);
         return MappingUtils.convertPhoneCallSummaryEntitiesToPhoneContacts(contactSummary);

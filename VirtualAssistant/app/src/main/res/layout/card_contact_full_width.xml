@@ -54,7 +54,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_call_made_black_24dp"
+                        android:src="@drawable/ic_call_received_black_24dp"
                         />
                     <TextView
                         android:id="@+id/total_incoming_number"
@@ -76,7 +76,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_call_received_black_24dp"
+                        android:src="@drawable/ic_call_made_black_24dp"
                         />
                     <TextView
                         android:id="@+id/total_outgoing_number"

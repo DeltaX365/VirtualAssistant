@@ -102,12 +102,31 @@ public class DeviceManager {
         return instance;
     }
 
+    public List<PhoneCallSummaryEntity> getPhoneCallSummary() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<List<PhoneCallSummaryEntity>> phoneContactSummaryListFuture = executor.submit(new Callable<List<PhoneCallSummaryEntity>>() {
+            @Override
+            public List<PhoneCallSummaryEntity> call() throws Exception {
+                return phoneCallDao.getCallStat();
+            }
+        });
+        List<PhoneCallSummaryEntity> phoneContactSummary = new ArrayList<>();
+        try {
+            phoneContactSummary = phoneContactSummaryListFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            FirebaseCrashlytics.getInstance().recordException(e);
+        }
+        executor.shutdown();
+        return phoneContactSummary;
+    }
+
     public List<PhoneCallSummaryEntity> getPhoneCallSummaryByNumbers(String phoneNumbers) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<List<PhoneCallSummaryEntity>> phoneContactSummaryListFuture = executor.submit(new Callable<List<PhoneCallSummaryEntity>>() {
             @Override
             public List<PhoneCallSummaryEntity> call() throws Exception {
-                return (phoneNumbers != null && phoneNumbers != "") ? phoneCallDao.getCallStatByNumbers(phoneNumbers) : phoneCallDao.getCallStat();
+                return phoneCallDao.getCallStatByNumbers(phoneNumbers);
             }
         });
         List<PhoneCallSummaryEntity> phoneContactSummary = new ArrayList<>();

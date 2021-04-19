@@ -13,11 +13,15 @@ import com.vnsolution.virtualassistant.model.PhoneCall;
 import com.vnsolution.virtualassistant.ui.common.IRecyclerViewRow;
 import com.vnsolution.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class PhoneCallSimpleRow extends LinearLayout implements IRecyclerViewRow<PhoneCall> {
     public ImageView mIconImageView;
     public TextView mContactNameTextView;
     public TextView mPhoneNumberTextView;
     public TextView mDateTextView;
+    public TextView mTimeTextView;
     public TextView mDurationTextView;
 
     private Context mContext;
@@ -46,6 +50,7 @@ public class PhoneCallSimpleRow extends LinearLayout implements IRecyclerViewRow
         mContactNameTextView = findViewById(R.id.contact_name);
         mPhoneNumberTextView = findViewById(R.id.phone_number);
         mDateTextView = findViewById(R.id.contact_date);
+        mTimeTextView = findViewById(R.id.contact_time);
         mDurationTextView = findViewById(R.id.contact_duration);
     }
 
@@ -72,7 +77,14 @@ public class PhoneCallSimpleRow extends LinearLayout implements IRecyclerViewRow
         mContactNameTextView.setText(contactName);
 
         mPhoneNumberTextView.setText(phoneCall.phoneNumber);
-        mDateTextView.setText(DateUtils.formatDateTime(mContext, phoneCall.date, DateUtils.FORMAT_ABBREV_ALL));
+
+        Date phoneCallDate = new Date(phoneCall.date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd yyyy");
+        mDateTextView.setText(dateFormat.format(phoneCallDate));
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+        mTimeTextView.setText(timeFormat.format(phoneCallDate));
+
         mDurationTextView.setText(DateUtils.formatElapsedTime(phoneCall.duration));
     }
 
