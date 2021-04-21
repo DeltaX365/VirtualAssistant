@@ -60,6 +60,10 @@ public class ContactViewModel extends ViewModel {
         return MappingUtils.convertPhoneContactEntityToPhoneContact(contactEntity);
     }
 
+    public boolean updatePhoneContact(Context context, int contactId, int starred) {
+        return deviceManager.updatePhoneContact(context, contactId, starred);
+    }
+
     public PhoneCall getPhoneCallById(String id) {
         PhoneCallEntity phoneCallEntity = deviceManager.getPhoneCallById(id);
         return MappingUtils.convertPhoneCallEntityToPhoneCall(phoneCallEntity);

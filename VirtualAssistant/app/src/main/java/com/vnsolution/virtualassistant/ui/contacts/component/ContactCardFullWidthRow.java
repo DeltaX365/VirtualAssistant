@@ -72,12 +72,14 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
                 popupMenu.setOnMenuItemClickListener(ContactCardFullWidthRow.this);
                 popupMenu.inflate(R.menu.menu_contact_options);
 
-                if (mPhoneContact.phoneNumbers == null || mPhoneContact.phoneNumbers == "") {
-                    for(int i = 0; i < popupMenu.getMenu().size(); i++) {
-                        MenuItem menuItem = popupMenu.getMenu().getItem(i);
-                        if (menuItem.getItemId() != R.id.menu_item_remove) {
-                            menuItem.setEnabled(false);
-                        }
+                for(int i = 0; i < popupMenu.getMenu().size(); i++) {
+                    MenuItem menuItem = popupMenu.getMenu().getItem(i);
+                    if (menuItem.getItemId() != R.id.menu_item_remove && (mPhoneContact.phoneNumbers == null || mPhoneContact.phoneNumbers == "")) {
+                        menuItem.setEnabled(false);
+                    }
+                    if (menuItem.getItemId() == R.id.menu_item_favourite) {
+                        menuItem.setTitle((mPhoneContact.starred == 1)? "Remove favourite" : "Make favourite");
+                        menuItem.setIcon((mPhoneContact.starred == 1)? R.drawable.ic_baseline_star_24 : R.drawable.ic_baseline_star_outline_24);
                     }
                 }
 
@@ -112,6 +114,9 @@ public class ContactCardFullWidthRow extends MaterialCardView implements IRecycl
     public boolean onMenuItemClick(MenuItem item) {
         String action = "";
         switch (item.getItemId()) {
+            case R.id.menu_item_favourite:
+                action = (mPhoneContact.starred == 1)? UiSetting.CONTACT_ACTION_REMOVE_FAVOURITE : UiSetting.CONTACT_ACTION_MAKE_FAVOURITE;
+                break;
             case R.id.menu_item_call:
                 action = UiSetting.CONTACT_ACTION_CALL;
                 break;

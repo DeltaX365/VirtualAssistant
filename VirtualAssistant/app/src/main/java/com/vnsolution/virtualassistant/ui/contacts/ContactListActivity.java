@@ -136,6 +136,12 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
             @Override
             public void onAction(PhoneContact phoneContact, String action) {
                 switch (action) {
+                    case UiSetting.CONTACT_ACTION_MAKE_FAVOURITE:
+                        updatePhoneContact(phoneContact,1);
+                        break;
+                    case UiSetting.CONTACT_ACTION_REMOVE_FAVOURITE:
+                        updatePhoneContact(phoneContact,0);
+                        break;
                     case UiSetting.CONTACT_ACTION_CALL:
                         makePhoneCall(phoneContact.phoneNumbers);
                         break;
@@ -274,6 +280,17 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
             }
         }
         phoneContactsAdapter.setData(filteredContacts);
+    }
+
+    private void updatePhoneContact(PhoneContact phoneContact, int starred) {
+        if (phoneContact != null) {
+            boolean result = contactViewModel.updatePhoneContact(this, phoneContact.contactId, starred);
+            if (result) {
+                phoneContact.starred = starred;
+                refreshFavouriteContactsView();
+                refreshPhoneContactsView();
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")

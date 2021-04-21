@@ -385,6 +385,34 @@ public class DeviceManager {
         return phoneContact;
     }
 
+    public boolean updatePhoneContact(Context context, int contactId, int starred) {
+        // Update contact on phone
+        int numberOfUpdatedRows = 0;
+        if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.WRITE_CONTACTS)) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(ContactsContract.Contacts.STARRED, starred);
+            ContentResolver contentResolver = context.getContentResolver();
+            numberOfUpdatedRows = contentResolver.update(ContactsContract.Contacts.CONTENT_URI, contentValues, ContactsContract.Contacts._ID + "= ?", new String[] { String.valueOf(contactId) });
+        }
+        // Update contact on database/cache
+        if (numberOfUpdatedRows > 0) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    PhoneContactEntity phoneContactEntity = phoneContactDao.getByContactId(contactId);
+                    if (phoneContactEntity != null) {
+                        phoneContactEntity.starred = starred;
+                        phoneContactDao.update(phoneContactEntity);
+                    }
+                }
+            });
+            executor.shutdown();
+            return true;
+        }
+        return false;
+    }
+
     public void syncPhoneContacts(Context context) {
         List<PhoneContactEntity> phoneContacts = new ArrayList<>();
         if (context != null && PermissionUtils.hasPermission(context, Manifest.permission.READ_CONTACTS)) {

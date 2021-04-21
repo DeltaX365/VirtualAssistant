@@ -191,6 +191,7 @@ public class MappingUtils {
         if (phoneContactEntity != null) {
             phoneContact = new PhoneContact();
             phoneContact.id = phoneContactEntity.id;
+            phoneContact.contactId = phoneContactEntity.contactId;
             phoneContact.name = phoneContactEntity.displayName;
             phoneContact.phoneNumbers = phoneContactEntity.phoneNumbers;
             phoneContact.starred = phoneContactEntity.starred;

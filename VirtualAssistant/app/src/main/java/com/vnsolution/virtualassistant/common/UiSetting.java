@@ -30,6 +30,8 @@ public class UiSetting {
 
     // Phone Contact UI
     public static final String CONTACT_LIST_ALL = "CONTACT_LIST_ALL";
+    public static final String CONTACT_ACTION_MAKE_FAVOURITE = "CONTACT_ACTION_MAKE_FAVOURITE";
+    public static final String CONTACT_ACTION_REMOVE_FAVOURITE = "CONTACT_ACTION_REMOVE_FAVOURITE";
     public static final String CONTACT_ACTION_CALL = "CONTACT_ACTION_CALL";
     public static final String CONTACT_ACTION_SMS = "CONTACT_ACTION_SMS";
     public static final String CONTACT_ACTION_LOCK = "CONTACT_ACTION_LOCK";
