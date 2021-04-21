@@ -1,6 +1,8 @@
 package com.vnsolution.virtualassistant.ui.travel.component;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -59,10 +61,13 @@ public class PlaceCardRow extends MaterialCardView implements IRecyclerViewRow<P
     @Override
     public void showData(Place place, String viewType) {
         // Place photo
-        if (place.photoReference != null && !place.photoReference.isEmpty()) {
+//        if (place.photoReference != null && !place.photoReference.isEmpty()) {
             String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + AppSetting.GM_API_KEY;
-            Glide.with(mContext).load(photoUri).into(mPhotoImageView);
-        }
+            Glide.with(mContext)
+                    .load(photoUri)
+                    .placeholder(R.drawable.img_place_no_thumbnail)
+                    .into(mPhotoImageView);
+//        }
 
         // Place name
         String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
