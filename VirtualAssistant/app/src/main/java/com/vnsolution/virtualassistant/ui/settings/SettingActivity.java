@@ -38,7 +38,7 @@ import dagger.android.HasAndroidInjector;
 
 public class SettingActivity extends BaseActivity implements HasAndroidInjector {
     private Context mContext;
-//    private String[] settings = { "Grant stop tracking permissions", "Remove unused notification channels", "Reset factory" };
+//    private String[] settings = { "Reset factory", "Remove unused notification channels", "Grant stop tracking permissions" };
     private String[] settings = { "Reset factory" };
 
     @Inject
@@ -86,14 +86,14 @@ public class SettingActivity extends BaseActivity implements HasAndroidInjector 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        requestPermissions();
+                        runResetFactory();
+                        Toast.makeText(SettingActivity.this, "Data is reset successfully.", Toast.LENGTH_SHORT).show();
                         break;
                     case 1:
                         removeUnusedNotifyChannel();
                         break;
                     case 2:
-                        runResetFactory();
-                        Toast.makeText(SettingActivity.this, "Data is reset successfully.", Toast.LENGTH_SHORT).show();
+                        requestPermissions();
                         break;
                 }
             }

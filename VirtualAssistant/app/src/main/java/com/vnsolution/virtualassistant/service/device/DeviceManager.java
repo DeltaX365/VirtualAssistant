@@ -403,7 +403,10 @@ public class DeviceManager {
                         List<String> phoneNumbers = new ArrayList<>();
                         while (cursor1.moveToNext()) {
                             String phoneNo = cursor1.getString(cursor1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                            phoneNumbers.add(phoneNo);
+                            phoneNo = phoneNo.replaceAll("\\s+", "");
+                            if (!phoneNumbers.contains(phoneNo)) {
+                                phoneNumbers.add(phoneNo);
+                            }
                         }
                         phoneContact.phoneNumbers = StringUtils.join(",", phoneNumbers);
                         cursor1.close();
