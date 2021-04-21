@@ -65,7 +65,7 @@ public class PlaceCardRow extends MaterialCardView implements IRecyclerViewRow<P
             String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + AppSetting.GM_API_KEY;
             Glide.with(mContext)
                     .load(photoUri)
-                    .placeholder(R.drawable.img_place_no_thumbnail)
+                    .placeholder(R.drawable.img_place_default_4)
                     .into(mPhotoImageView);
 //        }
 

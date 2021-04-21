@@ -129,10 +129,13 @@ public class TravelViewActivity extends BaseActivity {
     private void presentVisitedPlace(Place place) {
         if (place != null) {
             // Place photo
-            if (place.photoReference != null && !place.photoReference.isEmpty()) {
+//            if (place.photoReference != null && !place.photoReference.isEmpty()) {
                 String photoUri = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=320&photoreference=" + place.photoReference + "&key=" + AppSetting.GM_API_KEY;
-                Glide.with(this).load(photoUri).into(mPhotoImageView);
-            }
+                Glide.with(this)
+                        .load(photoUri)
+                        .placeholder(R.drawable.img_place_default_4)
+                        .into(mPhotoImageView);
+//            }
 
             // Place name
             String placeName = (place.placeName == null || place.placeName == "") ? "Unknown" : place.placeName;
