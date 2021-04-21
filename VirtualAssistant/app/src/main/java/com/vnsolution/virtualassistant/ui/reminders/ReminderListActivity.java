@@ -3,6 +3,7 @@ package com.vnsolution.virtualassistant.ui.reminders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,6 +28,7 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
     private RecyclerView reminderListRecyclerView;
     private RecyclerView.LayoutManager reminderListLayoutManager;
     private RecyclerViewAdapter<Reminder> reminderListAdapter;
+    private TextView noReminderTextView;
     private FloatingActionButton addNewReminderButton;
 
     private List<Reminder> reminderList = new ArrayList<>();
@@ -82,6 +84,7 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
             }
         });
         reminderListRecyclerView.setAdapter(reminderListAdapter);
+        noReminderTextView = findViewById(R.id.no_reminder);
     }
 
     private void setupReminderCreateView() {
@@ -98,5 +101,7 @@ public class ReminderListActivity extends BaseActivity implements HasAndroidInje
     private void refreshView() {
         reminderList = vm.getReminders();
         reminderListAdapter.setData(reminderList);
+        reminderListRecyclerView.setVisibility(reminderList.size() > 0? View.VISIBLE : View.GONE);
+        noReminderTextView.setVisibility(reminderList.size() > 0? View.GONE : View.VISIBLE);
     }
 }
