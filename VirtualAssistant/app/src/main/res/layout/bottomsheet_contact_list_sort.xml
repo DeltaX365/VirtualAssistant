@@ -64,10 +64,16 @@
                 android:text="Name (Z-A)"
                 />
             <RadioButton
-                android:id="@+id/contact_list_sort_by_total_call"
+                android:id="@+id/contact_list_sort_by_total_call_asc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Total Call"
+                android:text="Less contact"
+                />
+            <RadioButton
+                android:id="@+id/contact_list_sort_by_total_call_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Most contact"
                 />
 
         </RadioGroup>

@@ -51,7 +51,11 @@ public class ContactListSortBottomSheetDialogFragment extends BottomSheetDialogF
                         sortBy = SortBy.NAME;
                         sortDirection = SortDirection.DESC;
                         break;
-                    case R.id.contact_list_sort_by_total_call:
+                    case R.id.contact_list_sort_by_total_call_asc:
+                        sortBy = SortBy.TOTAL_CALL;
+                        sortDirection = SortDirection.ASC;
+                        break;
+                    case R.id.contact_list_sort_by_total_call_desc:
                         sortBy = SortBy.TOTAL_CALL;
                         sortDirection = SortDirection.DESC;
                         break;
@@ -66,8 +70,11 @@ public class ContactListSortBottomSheetDialogFragment extends BottomSheetDialogF
             if (sortBy.equals(SortBy.NAME) && sortDirection.equals(SortDirection.DESC)) {
                 contactListSortByRadioGroup.check(R.id.contact_list_sort_by_name_desc);
             }
+            if (sortBy.equals(SortBy.TOTAL_CALL) && sortDirection.equals(SortDirection.ASC)) {
+                contactListSortByRadioGroup.check(R.id.contact_list_sort_by_total_call_asc);
+            }
             if (sortBy.equals(SortBy.TOTAL_CALL) && sortDirection.equals(SortDirection.DESC)) {
-                contactListSortByRadioGroup.check(R.id.contact_list_sort_by_total_call);
+                contactListSortByRadioGroup.check(R.id.contact_list_sort_by_total_call_desc);
             }
         }
 

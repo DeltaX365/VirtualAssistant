@@ -54,8 +54,8 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
     private RecyclerViewAdapter<PhoneContact> phoneContactsAdapter;
 
     private List<PhoneContact> phoneContacts = new ArrayList<>();
-    private ContactListSortBottomSheetDialogFragment.SortBy sortBy = ContactListSortBottomSheetDialogFragment.SortBy.NAME;
-    private ContactListSortBottomSheetDialogFragment.SortDirection sortDirection = ContactListSortBottomSheetDialogFragment.SortDirection.ASC;
+    private ContactListSortBottomSheetDialogFragment.SortBy sortBy = ContactListSortBottomSheetDialogFragment.SortBy.TOTAL_CALL;
+    private ContactListSortBottomSheetDialogFragment.SortDirection sortDirection = ContactListSortBottomSheetDialogFragment.SortDirection.DESC;
 
     @Inject
     public ContactViewModel contactViewModel;
@@ -169,6 +169,7 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
     private void refreshPhoneContactsView() {
         phoneContactsAdapter.setData(phoneContacts);
         phoneContactsRecyclerView.setAdapter(phoneContactsAdapter);
+        sort(sortBy, sortDirection);
     }
 
     private List<PhoneContact> filterContacts(List<PhoneContact> phoneContacts, int starred) {
@@ -240,6 +241,15 @@ public class ContactListActivity extends BaseActivity implements HasAndroidInjec
                 @Override
                 public int compare(PhoneContact o1, PhoneContact o2) {
                     return o2.name.compareTo(o1.name);
+                }
+            });
+        }
+        if (sortBy == ContactListSortBottomSheetDialogFragment.SortBy.TOTAL_CALL && sortDirection == ContactListSortBottomSheetDialogFragment.SortDirection.ASC) {
+            Collections.sort(phoneContacts, new Comparator<PhoneContact>() {
+                @Override
+                public int compare(PhoneContact o1, PhoneContact o2) {
+                    return (o1.totalIncomingNumber + o1.totalOutgoingNumber + o1.totalMissedNumber) -
+                            (o2.totalIncomingNumber + o2.totalOutgoingNumber + o2.totalMissedNumber);
                 }
             });
         }
