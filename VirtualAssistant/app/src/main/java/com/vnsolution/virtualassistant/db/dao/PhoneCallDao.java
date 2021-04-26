@@ -42,7 +42,7 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "ORDER BY Date DESC " +
             ") " +
             "GROUP BY PhoneNumber " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     List<PhoneCallEntity> getRecentCalls();
 
     @Query("SELECT * " +
@@ -55,7 +55,7 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "ORDER BY PhoneCall.Date DESC " +
             ") " +
             "GROUP BY PhoneNumber " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     List<PhoneCallEntity> getRecentAuthorizedCalls();
 
     @Query("SELECT * " +
@@ -67,7 +67,7 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "ORDER BY Date DESC " +
             ") " +
             "GROUP BY PhoneNumber " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     List<PhoneCallEntity> getRecentCalls(int type);
 
     @Query("SELECT * " +
@@ -80,7 +80,7 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "ORDER BY PhoneCall.Date DESC " +
             ") " +
             "GROUP BY PhoneNumber " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     List<PhoneCallEntity> getRecentAuthorizedCalls(int type);
 
     @Query("SELECT * " +
@@ -91,7 +91,7 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "GROUP BY PhoneNumber " +
             ") " +
             "ORDER BY TotalDuration DESC " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     List<PhoneCallEntity> getMostCalls();
 
     @Query("SELECT * " +
@@ -104,7 +104,7 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "GROUP BY PhoneCall.PhoneNumber " +
             ") " +
             "ORDER BY TotalDuration DESC " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     List<PhoneCallEntity> getMostAuthorizedCalls();
 
     @Query("SELECT * " +
@@ -116,7 +116,7 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "GROUP BY PhoneNumber " +
             ") " +
             "ORDER BY TotalDuration DESC " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     List<PhoneCallEntity> getMostCalls(int type);
 
     @Query("SELECT * " +
@@ -129,7 +129,7 @@ public interface PhoneCallDao extends BaseDao<PhoneCallEntity> {
             "GROUP BY PhoneCall.PhoneNumber " +
             ") " +
             "ORDER BY TotalDuration DESC " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     List<PhoneCallEntity> getMostAuthorizedCalls(int type);
 
     @Query("DELETE FROM PhoneCall")

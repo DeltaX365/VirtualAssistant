@@ -52,7 +52,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             "LEFT JOIN PlaceHistory as ph on ph.PlaceId = p.Id " +
             "GROUP BY p.Id " +
             "ORDER BY ph.EnterTime DESC " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     LiveData<List<PlaceWithHistoryDetailEntity>> getRecentVisitedPlaces();
 
     @Transaction
@@ -65,7 +65,7 @@ public interface PlaceDao extends BaseDao<PlaceEntity> {
             ") AS ph " +
             "WHERE ph.PlaceId = p.Id " +
             "ORDER BY ph.TotalVisitedTime DESC " +
-            "LIMIT 0, 10")
+            "LIMIT 0, 30")
     LiveData<List<PlaceWithHistoryDetailEntity>> getMostVisitedPlaces();
 
     @Query("SELECT DISTINCT AdministrativeAreaLevel1 " +

@@ -1,5 +1,6 @@
 package com.vnsolution.virtualassistant.ui.travel;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vnsolution.virtualassistant.R;
+import com.vnsolution.virtualassistant.api.dto.GoogleMapNearByDto;
 import com.vnsolution.virtualassistant.common.AppSetting;
 import com.vnsolution.virtualassistant.common.UiSetting;
 import com.vnsolution.virtualassistant.model.Place;
@@ -43,6 +46,7 @@ public class TravelViewActivity extends BaseActivity {
     private FloatingActionButton mDeletePlaceBtn;
 
     private TravelViewModel travelViewModel;
+    private String visitedPlaceId;
     private Place visitedPlace;
     private List<PlaceType> mPlaceTypes;
 
@@ -75,13 +79,16 @@ public class TravelViewActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         travelViewModel = ViewModelProviders.of(this, viewModelFactory).get(TravelViewModel.class);
+
         setupView();
+        refreshView();
     }
 
     private void setupView() {
         setContentView(R.layout.screen_travel_view);
         setupActionBar();
 
+        // Mapping views
         mPhotoImageView = findViewById(R.id.place_photo);
         mNameTextView = findViewById(R.id.place_name);
         mAddressTextView = findViewById(R.id.place_address);
@@ -95,13 +102,20 @@ public class TravelViewActivity extends BaseActivity {
         mPlaceHistoryAdapter = new RecyclerViewAdapter<PlaceHistory>(this, UiSetting.PLACE_LIST_HISTORY, R.layout.item_place_history);
         mPlaceHistoryRecyclerView.setAdapter(mPlaceHistoryAdapter);
 
+        // Initialize data
+        Intent intent = getIntent();
+        if (intent != null) {
+            visitedPlaceId = intent.getStringExtra("PlaceId");
+        }
+
+        // Handle events
         mEditPlaceBtn = findViewById(R.id.edit_place);
         mEditPlaceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TravelViewActivity.this, TravelEditActivity.class);
                 intent.putExtra("PlaceId", visitedPlace.id);
-                startActivity(intent);
+                startActivityForResult(intent,0);
             }
         });
         mDeletePlaceBtn = findViewById(R.id.delete_place);
@@ -111,19 +125,28 @@ public class TravelViewActivity extends BaseActivity {
                 new RemovePlaceTask().execute(visitedPlace.id);
             }
         });
+    }
 
-        Intent intent = getIntent();
-        if (intent != null) {
-            String placeId = intent.getStringExtra("PlaceId");
-            travelViewModel.getPlaceById(placeId).observe(this, new Observer<Place>() {
-                @Override
-                public void onChanged(Place place) {
-                    visitedPlace = place;
-                    presentVisitedPlace(visitedPlace);
-                    mPlaceHistoryAdapter.setData(place.placeHistories);
-                }
-            });
+    private void refreshView() {
+        travelViewModel.getPlaceById(visitedPlaceId).observe(this, new Observer<Place>() {
+            @Override
+            public void onChanged(Place place) {
+                visitedPlace = place;
+                presentVisitedPlace(visitedPlace);
+                mPlaceHistoryAdapter.setData(place.placeHistories);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                visitedPlaceId = data.getStringExtra("PlaceId");
+                refreshView();
+            }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void presentVisitedPlace(Place place) {
