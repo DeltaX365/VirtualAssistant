@@ -30,32 +30,29 @@ public class AppService {
 
     public void run() {
         startBackgroundServices();
+        startWorkers();
         startWatchingPermissions();
     }
 
     private void startBackgroundServices() {
-        startStopTrackingService();
-        startAppLockService();
-        startDeviceSyncWorker();
+        // Running stop tracking service for auto check-in.
+        Intent stopTrackingServiceIntent = new Intent(mContext, StopTrackingService.class);
+        stopTrackingServiceIntent.setAction(StopTrackingSetting.INTENT_ACTION_INITIAL);
+        ContextCompat.startForegroundService(mContext, stopTrackingServiceIntent);
+
+        // Running app lock service for protecting locked apps.
+        Intent appLockServiceIntent = new Intent(mContext, AppLockService.class);
+        ContextCompat.startForegroundService(mContext, appLockServiceIntent);
     }
 
-    private void startStopTrackingService() {
-        Intent serviceIntent = new Intent(mContext, StopTrackingService.class);
-        serviceIntent.setAction(StopTrackingSetting.INTENT_ACTION_INITIAL);
-        ContextCompat.startForegroundService(mContext, serviceIntent);
+    private void startWorkers() {
+        // Syncing stop points to match Google places.
+        final PeriodicWorkRequest placeSyncRequest = new PeriodicWorkRequest.Builder(StopTrackingWorker.class, 24, TimeUnit.HOURS).build();
+        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("StopTrackingWorker", ExistingPeriodicWorkPolicy.REPLACE, placeSyncRequest);
 
-        final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(StopTrackingWorker.class, 24, TimeUnit.HOURS).build();
-        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("StopTrackingWorker", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
-    }
-
-    private void startAppLockService() {
-        Intent serviceIntent = new Intent(mContext, AppLockService.class);
-        ContextCompat.startForegroundService(mContext, serviceIntent);
-    }
-
-    private void startDeviceSyncWorker() {
-        final PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(DeviceWorker.class, 3, TimeUnit.HOURS).build();
-        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("DeviceSyncWorker", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
+        // Syncing everything related to device as follows: apps, contacts, calls & sms.
+        final PeriodicWorkRequest deviceSyncRequest = new PeriodicWorkRequest.Builder(DeviceWorker.class, 24, TimeUnit.HOURS).build();
+        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("DeviceSyncWorker", ExistingPeriodicWorkPolicy.REPLACE, deviceSyncRequest);
     }
 
     private void startWatchingPermissions() {

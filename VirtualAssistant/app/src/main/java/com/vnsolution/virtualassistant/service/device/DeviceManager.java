@@ -51,6 +51,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -659,19 +660,9 @@ public class DeviceManager {
             UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_YEAR, -7);
-            List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, calendar.getTimeInMillis(), System.currentTimeMillis());
-            if (usageStats.isEmpty()) {
+            ArrayMap<String, UsageStats> appUsageStats = (ArrayMap<String, UsageStats>) usageStatsManager.queryAndAggregateUsageStats(calendar.getTimeInMillis(), System.currentTimeMillis());
+            if (appUsageStats.isEmpty()) {
                 context.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-            }
-
-            ArrayMap<String, UsageStats> appUsageStats = new ArrayMap<>();
-            for (UsageStats usageStat: usageStats) {
-                UsageStats existingStat = appUsageStats.get(usageStat.getPackageName());
-                if (existingStat == null) {
-                    appUsageStats.put(usageStat.getPackageName(), usageStat);
-                } else {
-                    existingStat.add(usageStat);
-                }
             }
             return appUsageStats;
         }
