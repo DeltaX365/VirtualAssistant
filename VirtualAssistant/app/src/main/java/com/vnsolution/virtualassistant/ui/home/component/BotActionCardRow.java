@@ -61,6 +61,9 @@ public class BotActionCardRow extends MaterialCardView implements IRecyclerViewR
             case BotSetting.MANAGE_APPS:
                 mBotAvatarImageView.setImageResource(R.drawable.ic_baseline_apps_24);
                 break;
+            case BotSetting.SHOW_APP_USAGE:
+                mBotAvatarImageView.setImageResource(R.drawable.ic_baseline_leaderboard_24);
+                break;
             case BotSetting.MANAGE_CONTACTS:
                 mBotAvatarImageView.setImageResource(R.drawable.ic_baseline_people_24);
                 break;

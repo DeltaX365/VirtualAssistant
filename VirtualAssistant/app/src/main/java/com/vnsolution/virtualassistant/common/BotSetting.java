@@ -4,6 +4,7 @@ public class BotSetting {
     public static final String SHOW_TRAVEL_HISTORY = "TRAVELS"; //"Show travel history";
     public static final String COVID_TRACKING = "COVID-19"; //"COVID tracking";
     public static final String MANAGE_APPS = "APPS"; //"Manage apps";
+    public static final String SHOW_APP_USAGE = "APP USAGE"; //"Stat app usage";
     public static final String SHOW_CALL_STAT = "CALL STATS"; //"Stat your calls";
     public static final String SHOW_CALL_LOGS = "Show call logs";
     public static final String MANAGE_CONTACTS = "CONTACTS"; //"Manage contacts";

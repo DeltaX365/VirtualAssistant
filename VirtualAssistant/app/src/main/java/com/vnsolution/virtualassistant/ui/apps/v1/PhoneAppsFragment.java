@@ -81,7 +81,7 @@ public class PhoneAppsFragment extends Fragment implements Injectable {
         View root = inflater.inflate(R.layout.screen_app_list, container, false);
 
         if (mContext != null) {
-            recyclerView = root.findViewById(R.id.list_applications);
+            recyclerView = root.findViewById(R.id.list_phone_apps);
             progressOverlay =  root.findViewById(R.id.progress_overlay);
 
             // use this setting to improve performance if you know that changes

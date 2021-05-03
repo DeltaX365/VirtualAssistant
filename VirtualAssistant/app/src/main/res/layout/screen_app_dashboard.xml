@@ -76,34 +76,6 @@
                 android:visibility="gone"
                 />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="20dp"
-                android:text="Your apps"
-                android:textColor="@color/color_black"
-                android:layout_marginTop="20dp"
-                android:textStyle="bold"
-                />
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/list_phone_apps"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="20dp"
-                android:clipToPadding="false"
-                android:layout_marginTop="10dp"
-                />
-            <TextView
-                android:id="@+id/no_phone_apps"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="20dp"
-                android:text="There is no phone app"
-                android:textColor="@color/color_black"
-                android:textStyle="italic"
-                android:visibility="gone"
-                />
-
         </LinearLayout>
 
     </ScrollView>

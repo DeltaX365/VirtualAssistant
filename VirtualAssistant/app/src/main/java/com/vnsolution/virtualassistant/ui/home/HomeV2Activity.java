@@ -21,6 +21,7 @@ import com.vnsolution.virtualassistant.common.BotSetting;
 import com.vnsolution.virtualassistant.common.DeviceSetting;
 import com.vnsolution.virtualassistant.common.StopTrackingSetting;
 import com.vnsolution.virtualassistant.common.UiSetting;
+import com.vnsolution.virtualassistant.ui.apps.AppListActivity;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewAdapter;
 import com.vnsolution.virtualassistant.ui.common.RecyclerViewRowTouchListener;
@@ -90,6 +91,9 @@ public class HomeV2Activity extends BaseActivity {
                         intent = new Intent(HomeV2Activity.this, TravelTrackingActivity.class);
                         break;
                     case BotSetting.MANAGE_APPS:
+                        intent = new Intent(HomeV2Activity.this, AppListActivity.class);
+                        break;
+                    case BotSetting.SHOW_APP_USAGE:
                         intent = new Intent(HomeV2Activity.this, AppDashboardActivity.class);
                         break;
                     case BotSetting.MANAGE_CONTACTS:
@@ -140,11 +144,12 @@ public class HomeV2Activity extends BaseActivity {
 //        availableActions.add(BotSetting.MANAGE_LOCKED_CONTACTS);
         availableActions.add(BotSetting.SHOW_CALL_STAT);
         availableActions.add(BotSetting.MANAGE_APPS);
+        availableActions.add(BotSetting.SHOW_APP_USAGE);
         availableActions.add(BotSetting.SHOW_REMINDERS);
 //        availableActions.add(BotOptions.SHOW_NOTIFICATIONS);
 //        availableActions.add(BotOptions.SHOW_CALL_LOGS);
 //        availableActions.add(BotOptions.SHOW_SENT_RECEIVED_SMS);
-        availableActions.add(BotSetting.MANAGE_PERMISSIONS);
+//        availableActions.add(BotSetting.MANAGE_PERMISSIONS);
         availableActions.add(BotSetting.SHOW_SETTINGS);
         availableActionsAdapter.setData(availableActions);
     }

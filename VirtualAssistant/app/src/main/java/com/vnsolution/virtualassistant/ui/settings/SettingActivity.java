@@ -26,6 +26,7 @@ import com.vnsolution.virtualassistant.db.dao.PhoneSmsDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceDao;
 import com.vnsolution.virtualassistant.db.dao.PlaceHistoryDao;
 import com.vnsolution.virtualassistant.ui.common.BaseActivity;
+import com.vnsolution.virtualassistant.ui.home.HomeV2Activity;
 import com.vnsolution.virtualassistant.util.PermissionUtils;
 
 import java.util.List;
@@ -39,7 +40,7 @@ import dagger.android.HasAndroidInjector;
 public class SettingActivity extends BaseActivity implements HasAndroidInjector {
     private Context mContext;
 //    private String[] settings = { "Reset factory", "Remove unused notification channels", "Grant stop tracking permissions" };
-    private String[] settings = { "Reset factory" };
+    private String[] settings = { "Manage Granted Permissions", "Reset factory" };
 
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
@@ -86,13 +87,17 @@ public class SettingActivity extends BaseActivity implements HasAndroidInjector 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
+                        Intent intent = new Intent(SettingActivity.this, PermissionActivity.class);
+                        startActivity(intent);
+                        break;
+                    case 1:
                         runResetFactory();
                         Toast.makeText(SettingActivity.this, "Data is reset successfully.", Toast.LENGTH_SHORT).show();
                         break;
-                    case 1:
+                    case 2:
                         removeUnusedNotifyChannel();
                         break;
-                    case 2:
+                    case 3:
                         requestPermissions();
                         break;
                 }

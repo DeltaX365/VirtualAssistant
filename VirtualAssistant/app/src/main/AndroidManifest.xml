@@ -98,6 +98,9 @@
             android:name=".ui.apps.AppDashboardActivity"
             android:label="@string/screen_apps" />
         <activity
+            android:name=".ui.apps.AppListActivity"
+            android:label="@string/screen_apps" />
+        <activity
             android:name=".ui.apps.v1.PhoneAppActivity"
             android:label="@string/screen_apps" />
         <activity

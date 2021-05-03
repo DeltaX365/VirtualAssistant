@@ -45,7 +45,7 @@ public class PhoneAppActivity extends AppCompatActivity implements HasAndroidInj
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_app_list);
 
-        recyclerView = findViewById(R.id.list_applications);
+        recyclerView = findViewById(R.id.list_phone_apps);
         progressOverlay =  findViewById(R.id.progress_overlay);
 
         // use this setting to improve performance if you know that changes

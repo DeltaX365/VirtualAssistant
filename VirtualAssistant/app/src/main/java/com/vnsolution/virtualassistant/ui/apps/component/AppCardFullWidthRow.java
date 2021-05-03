@@ -2,6 +2,7 @@ package com.vnsolution.virtualassistant.ui.apps.component;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.icu.text.DateFormat;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
@@ -90,18 +91,15 @@ public class AppCardFullWidthRow extends MaterialCardView implements IRecyclerVi
     @Override
     public void showData(PhoneApp phoneApp, String viewType) {
         mPhoneApp = phoneApp;
-        Glide.with(mContext).load(phoneApp.appIcon).into(mAppIconImageView);
 
+        try {
+            Glide.with(mContext).load(mContext.getPackageManager().getApplicationIcon(phoneApp.packageName)).into(mAppIconImageView);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         mAppNameTextView.setText(phoneApp.appName);
         mAppPackageNameTextView.setText(phoneApp.packageName);
         mAppVersionTextView.setText("Ver: " + phoneApp.versionName);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && phoneApp.usageStats != null) {
-            String appLastUsageTime = DateUtils.formatSameDayTime(phoneApp.usageStats.getLastTimeUsed(), System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM).toString();
-            String appTotalUsageTime = DateUtils.formatElapsedTime(phoneApp.usageStats.getTotalTimeInForeground() / 1000);
-            mAppLastUsageTextView.setText("Last usage: " + appLastUsageTime);
-            mAppTotalUsageTextView.setText("Total usage: " + appTotalUsageTime);
-        }
     }
 
     @Override

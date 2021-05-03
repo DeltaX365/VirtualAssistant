@@ -1,6 +1,7 @@
 package com.vnsolution.virtualassistant.ui.apps.component;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.icu.text.DateFormat;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
@@ -50,8 +51,11 @@ public class AppCardRow extends MaterialCardView implements IRecyclerViewRow<Pho
 
     @Override
     public void showData(PhoneApp phoneApp, String viewType) {
-        Glide.with(mContext).load(phoneApp.appIcon).into(mAppIconImageView);
-
+        try {
+            Glide.with(mContext).load(mContext.getPackageManager().getApplicationIcon(phoneApp.packageName)).into(mAppIconImageView);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         mAppNameTextView.setText(phoneApp.appName);
         mAppVersionTextView.setText("v" + phoneApp.versionName);
 

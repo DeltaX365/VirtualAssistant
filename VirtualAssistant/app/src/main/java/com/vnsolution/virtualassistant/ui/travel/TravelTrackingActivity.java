@@ -267,7 +267,7 @@ public class TravelTrackingActivity extends BaseActivity implements OnMapReadyCa
             // Present current location
             if (mCurrentLocation != null) {
                 LatLng myLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                GoogleMapUtils.drawMarker(mGoogleMap, myLatLng, R.drawable.ic_red_dot_10);
+                GoogleMapUtils.drawMarker(mGoogleMap, myLatLng);
                 moveToPosition(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
             }
 

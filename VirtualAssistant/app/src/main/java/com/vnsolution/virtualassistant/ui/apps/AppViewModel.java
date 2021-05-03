@@ -60,11 +60,11 @@ public class AppViewModel extends ViewModel {
         List<PhoneApp> phoneApps = MappingUtils.convertPhoneAppEntitiesToPhoneApps(phoneAppEntities);
         ArrayMap<String, UsageStats> phoneAppUsageStat = deviceManager.getPhoneAppUsageStats(context);
         for (PhoneApp phoneApp : phoneApps) {
-            try {
-                phoneApp.appIcon = context.getPackageManager().getApplicationIcon(phoneApp.packageName);
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                phoneApp.appIcon = context.getPackageManager().getApplicationIcon(phoneApp.packageName);
+//            } catch (PackageManager.NameNotFoundException e) {
+//                e.printStackTrace();
+//            }
             if (includeStat && phoneAppUsageStat != null) {
                 phoneApp.usageStats = phoneAppUsageStat.get(phoneApp.packageName);
             }

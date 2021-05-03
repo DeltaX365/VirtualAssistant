@@ -1,6 +1,7 @@
 package com.vnsolution.virtualassistant.di;
 
 import com.vnsolution.virtualassistant.ui.StartupActivity;
+import com.vnsolution.virtualassistant.ui.apps.AppListActivity;
 import com.vnsolution.virtualassistant.ui.contacts.ContactListActivity;
 import com.vnsolution.virtualassistant.ui.contacts.ContactViewActivity;
 import com.vnsolution.virtualassistant.ui.home.HomeActivity;
@@ -69,6 +70,9 @@ public abstract class ActivityBuildersModule {
 
     @ContributesAndroidInjector()
     abstract AppDashboardActivity contributeAppDashboardActivity();
+
+    @ContributesAndroidInjector()
+    abstract AppListActivity contributeAppListActivity();
 
     @ContributesAndroidInjector()
     abstract PhoneAppActivity contributePhoneAppActivity();
