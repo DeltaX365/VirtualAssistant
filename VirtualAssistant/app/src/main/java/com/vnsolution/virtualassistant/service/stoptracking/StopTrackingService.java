@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
+import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
@@ -117,7 +119,7 @@ public class StopTrackingService extends Service {
                     PlaceEntity placeEntity = MappingUtils.convertStopPointToPlaceEntity(stopPoint);
                     visitedPlace = placeManager.savePlace(StopTrackingService.this, placeEntity);
                     placeManager.visitPlace(visitedPlace, stopPoint.enter, stopPoint.exist);
-                    newDetectedPlace = (stopPoint.isCheckedIn)? false : true;
+                    newDetectedPlace = (stopPoint.isCheckedIn) ? false : true;
                 }
                 removeStopPointFromCache();
             }
@@ -138,7 +140,7 @@ public class StopTrackingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        activityRecognitionClient = new ActivityRecognitionClient(this);
+        activityRecognitionClient = ActivityRecognition.getClient(this);
         geofencingClient = LocationServices.getGeofencingClient(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
@@ -179,6 +181,7 @@ public class StopTrackingService extends Service {
                 switch (intent.getAction()) {
                     case StopTrackingSetting.INTENT_ACTION_INITIAL:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Initial service.");
+                        Toast.makeText(this, "STOP TRACKING INITIALIZED", Toast.LENGTH_LONG).show();
                         StopPoint stopPoint = getStopPointFromCache();
                         if (stopPoint == null) {
                             processInitialRequest();
@@ -188,14 +191,17 @@ public class StopTrackingService extends Service {
                         break;
                     case StopTrackingSetting.INTENT_ACTION_CHECK_IN:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check in.");
+                        Toast.makeText(this, "STOP TRACKING CHECKED IN", Toast.LENGTH_LONG).show();
                         checkIn(true);
                         break;
                     case StopTrackingSetting.INTENT_ACTION_MARK_AS_VISITED:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Mark as visited.");
+                        Toast.makeText(this, "STOP TRACKING MARKED AS VISITED", Toast.LENGTH_LONG).show();
                         processMarkAsVisitedRequest();
                         break;
                     case StopTrackingSetting.INTENT_ACTION_CHECK_OUT:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check out.");
+                        Toast.makeText(this, "STOP TRACKING CHECKED OUT", Toast.LENGTH_LONG).show();
                         processCheckOutRequest();
                         break;
                 }
@@ -402,12 +408,32 @@ public class StopTrackingService extends Service {
             // for ActivityCompat#requestPermissions for more details.
             return null;
         }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
         ActivityTransitionRequest activityTrackingRequest = buildActivityTransitionRequest();
         Task<Void> activityTrackingTask = activityRecognitionClient.requestActivityTransitionUpdates(activityTrackingRequest, getActivityTransitionPendingIntent());
         return activityTrackingTask;
     }
 
     private Task<Void> stopActivityTransitionMonitor() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
         Task<Void> activityTrackingTask = activityRecognitionClient.removeActivityTransitionUpdates(getActivityTransitionPendingIntent());
         return activityTrackingTask;
     }
@@ -489,14 +515,16 @@ public class StopTrackingService extends Service {
             placeFormatted = visitedPlace.placeName + "\n" + visitedPlace.formattedAddress;
         }
 
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+
         Intent travelConfirmYesIntent = new Intent(this, PlaceBroadcastReceiver.class);
         travelConfirmYesIntent.putExtra(StopTrackingSetting.NOTIFY_DETECTED_PLACE_DATA_PLACE_ID, visitedPlace.id);
         travelConfirmYesIntent.putExtra(StopTrackingSetting.NOTIFY_ID, notifyId);
-        PendingIntent travelConfirmPendingIntent = PendingIntent.getBroadcast(this,0, travelConfirmYesIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent travelConfirmPendingIntent = PendingIntent.getBroadcast(this,0, travelConfirmYesIntent, pendingIntentFlag);
 
         Intent travelEditIntent = new Intent(this, TravelEditActivity.class);
         travelEditIntent.putExtra(StopTrackingSetting.NOTIFY_DETECTED_PLACE_DATA_PLACE_ID, visitedPlace.id);
-        PendingIntent travelEditPendingIntent = PendingIntent.getActivity(this,0, travelEditIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent travelEditPendingIntent = PendingIntent.getActivity(this,0, travelEditIntent, pendingIntentFlag);
 
         Notification notification = new NotificationCompat.Builder(this, StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_hearing_24)
@@ -548,7 +576,8 @@ public class StopTrackingService extends Service {
         }
         Intent activityTransitionIntent = new Intent(this, ActivityTransitionBroadcastReceiver.class);
         activityTransitionIntent.setAction(ActivityTransitionBroadcastReceiver.INTENT_ACTION);
-        activityTransitionPendingIntent = PendingIntent.getBroadcast(this, 0, activityTransitionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        activityTransitionPendingIntent = PendingIntent.getBroadcast(this, 0, activityTransitionIntent, pendingIntentFlag);
         return activityTransitionPendingIntent;
     }
 
@@ -558,7 +587,8 @@ public class StopTrackingService extends Service {
             return geofencePendingIntent;
         }
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
-        geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, pendingIntentFlag);
         return geofencePendingIntent;
     }
 
@@ -570,7 +600,8 @@ public class StopTrackingService extends Service {
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.INTENT_ACTION);
         intent.addCategory(StopTrackingSetting.INTENT_CATEGORY_ACTIVITY_TRANSITION);
-        locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, pendingIntentFlag);
         return locationUpdatesPendingIntent;
     }
 

@@ -71,7 +71,8 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
 
         Intent fullScreenIntent = new Intent(context, ReminderShowFullScreenActivity.class);
         fullScreenIntent.putExtra(ReminderSetting.NOTIFY_CONTENT_TEXT, reminderContent);
-        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context,0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context,0, fullScreenIntent, pendingIntentFlag);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, ReminderSetting.NOTIFY_CHANEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_hearing_24)
@@ -100,7 +101,8 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
     private PendingIntent getDismissPendingIntent(Context context) {
         Intent dismissIntent = new Intent(context, ReminderBroadcastReceiver.class);
         dismissIntent.setAction(ReminderSetting.NOTIFY_ACTION_DISMISS);
-        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context,0, dismissIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context,0, dismissIntent, pendingIntentFlag);
         return dismissPendingIntent;
     }
 

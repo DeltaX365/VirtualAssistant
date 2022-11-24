@@ -92,7 +92,8 @@ public class ReminderViewModel extends ViewModel {
         Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
         intent.putExtra(ReminderSetting.NOTIFY_CONTENT_TEXT, reminderTitle);
         intent.setAction(ReminderSetting.NOTIFY_ACTION_SHOW_FULL_SCREEN);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, pendingIntentFlag);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null|| pendingIntent == null) return false;
@@ -127,7 +128,8 @@ public class ReminderViewModel extends ViewModel {
 
     private boolean deleteReminderAlarm(Context context, int requestCode) {
         Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, pendingIntentFlag);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null|| pendingIntent == null) return false;

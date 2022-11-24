@@ -14,6 +14,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.BlockedNumberContract;
 import android.provider.CallLog;
@@ -21,6 +22,7 @@ import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.util.ArrayMap;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.MutableLiveData;
 
@@ -431,11 +433,16 @@ public class DeviceManager {
                                 null);
                         List<String> phoneNumbers = new ArrayList<>();
                         while (cursor1.moveToNext()) {
-                            String phoneNo = cursor1.getString(cursor1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                            phoneNo = phoneNo.replaceAll("\\s+", "");
-                            if (!phoneNumbers.contains(phoneNo)) {
-                                phoneNumbers.add(phoneNo);
+                            int columnIndex = cursor1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                            if (columnIndex < 0) {
+                                continue;
                             }
+                            String phoneNo = cursor1.getString(columnIndex);
+                            phoneNo = phoneNo.replaceAll("\\s+", "");
+                            if (phoneNumbers.contains(phoneNo)) {
+                                continue;
+                            }
+                            phoneNumbers.add(phoneNo);
                         }
                         phoneContact.phoneNumbers = StringUtils.join(",", phoneNumbers);
                         cursor1.close();
@@ -524,7 +531,7 @@ public class DeviceManager {
             FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
-        return (result != null)? result.booleanValue() : false;
+        return result != null && result.booleanValue();
     }
 
     private List<PhoneContactEntity> filterPhoneContactsById(List<PhoneContactEntity> phoneContactEntities, List<String> phoneContactIds) {
@@ -655,12 +662,13 @@ public class DeviceManager {
         return phoneAppEntity;
     }
 
-    public ArrayMap<String, UsageStats> getPhoneAppUsageStats(Context context) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
+    public Map<String, UsageStats> getPhoneAppUsageStats(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_YEAR, -7);
-            ArrayMap<String, UsageStats> appUsageStats = (ArrayMap<String, UsageStats>) usageStatsManager.queryAndAggregateUsageStats(calendar.getTimeInMillis(), System.currentTimeMillis());
+            Map<String, UsageStats> appUsageStats = usageStatsManager.queryAndAggregateUsageStats(calendar.getTimeInMillis(), System.currentTimeMillis());
             if (appUsageStats.isEmpty()) {
                 context.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
             }
@@ -671,7 +679,7 @@ public class DeviceManager {
 
     public boolean hasPhoneLockPasscode(Context context) {
         String passcode = getPhoneLockPasscode(context);
-        return (passcode == null || passcode.isEmpty()) ? false : true;
+        return passcode != null && !passcode.isEmpty();
     }
 
     public String getPhoneLockPasscode(Context context) {
@@ -684,7 +692,7 @@ public class DeviceManager {
         SharedPreferences sharedPref = context.getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("AppLockService.PhoneLockPasscode", passwordNumber);
-        editor.commit();
+        editor.apply();
     }
 
     public void lockPhoneApp(Context context, PhoneApp phoneApp) {
@@ -746,7 +754,7 @@ public class DeviceManager {
         Gson gson = new Gson();
         String lockedAppString = gson.toJson(lockedApp);
         editor.putString("AppLockService.LockedApp", lockedAppString);
-        editor.commit();
+        editor.apply();
     }
 
     public boolean deletePhoneApp(Context context, PhoneApp phoneApp) {

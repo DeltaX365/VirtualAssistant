@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -58,17 +59,30 @@ public class AppViewModel extends ViewModel {
     public List<PhoneApp> getPhoneApps(Context context, boolean shouldGetSystemPackages, boolean forceUpdate, boolean includeStat) {
         List<PhoneAppEntity> phoneAppEntities = deviceManager.getPhoneApps(context, shouldGetSystemPackages, forceUpdate);
         List<PhoneApp> phoneApps = MappingUtils.convertPhoneAppEntitiesToPhoneApps(phoneAppEntities);
-        ArrayMap<String, UsageStats> phoneAppUsageStat = deviceManager.getPhoneAppUsageStats(context);
+
+        Map<String, UsageStats> phoneAppUsageStat = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+            phoneAppUsageStat = deviceManager.getPhoneAppUsageStats(context);
+        }
+
         for (PhoneApp phoneApp : phoneApps) {
+            try {
+                phoneApp.appIcon = context.getPackageManager().getApplicationIcon(phoneApp.packageName);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
 //            try {
-//                phoneApp.appIcon = context.getPackageManager().getApplicationIcon(phoneApp.packageName);
-//            } catch (PackageManager.NameNotFoundException e) {
+//                ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(phoneApp.packageName, 0);
+//                phoneApp.appIcon = applicationInfo.loadIcon(context.getPackageManager());
+//            } catch (Exception e) {
 //                e.printStackTrace();
 //            }
+
             if (includeStat && phoneAppUsageStat != null) {
                 phoneApp.usageStats = phoneAppUsageStat.get(phoneApp.packageName);
             }
         }
+
         if (phoneAppsLiveData != null) {
             phoneAppsLiveData.setValue(phoneApps);
         }

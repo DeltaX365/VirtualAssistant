@@ -37,12 +37,11 @@
             android:textColor="@color/color_black"
             android:layout_marginTop="20dp"
             />
-        <com.google.android.material.progressindicator.ProgressIndicator
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             app:indicatorColor="@color/color_black"
-            app:indicatorType="linear"
             android:indeterminate="true"
             />
 
