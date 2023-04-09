@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
 
 import com.google.android.gms.location.Geofence;
@@ -33,8 +34,11 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
      *               Services (inside a PendingIntent) when addGeofences() is called.
      */
     @Override
-    protected void onHandleWork(Intent intent) {
+    protected void onHandleWork(@NonNull Intent intent) {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+        if (geofencingEvent == null) {
+            return;
+        }
         if (geofencingEvent.hasError()) {
             String errorMessage = getErrorString(geofencingEvent.getErrorCode());
             Log.e(TAG, errorMessage);
@@ -45,12 +49,15 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
     private void handleEvent(GeofencingEvent geofencingEvent) {
         int geoFenceTransition = geofencingEvent.getGeofenceTransition();
-        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) {
-
-            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-            String geofenceTransitionDetails = getGeofenceTransitionDetails(geoFenceTransition, triggeringGeofences );
-            Toast.makeText(this, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
+        if (geoFenceTransition != Geofence.GEOFENCE_TRANSITION_EXIT) {
+            return;
         }
+        List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+        if (triggeringGeofences == null) {
+            return;
+        }
+        String geofenceTransitionDetails = getGeofenceTransitionDetails(geoFenceTransition, triggeringGeofences);
+        Toast.makeText(this, geofenceTransitionDetails, Toast.LENGTH_LONG).show();
     }
 
     /**

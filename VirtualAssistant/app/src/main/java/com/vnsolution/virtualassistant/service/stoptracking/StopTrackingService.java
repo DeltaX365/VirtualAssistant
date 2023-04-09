@@ -50,6 +50,7 @@ import com.vnsolution.virtualassistant.R;
 import com.vnsolution.virtualassistant.common.StopTrackingSetting;
 import com.vnsolution.virtualassistant.model.StopPoint;
 import com.vnsolution.virtualassistant.db.entity.PlaceEntity;
+import com.vnsolution.virtualassistant.service.logging.LoggingService;
 import com.vnsolution.virtualassistant.service.place.PlaceBroadcastReceiver;
 import com.vnsolution.virtualassistant.service.place.PlaceManager;
 import com.vnsolution.virtualassistant.ui.travel.TravelEditActivity;
@@ -119,7 +120,7 @@ public class StopTrackingService extends Service {
                     PlaceEntity placeEntity = MappingUtils.convertStopPointToPlaceEntity(stopPoint);
                     visitedPlace = placeManager.savePlace(StopTrackingService.this, placeEntity);
                     placeManager.visitPlace(visitedPlace, stopPoint.enter, stopPoint.exist);
-                    newDetectedPlace = (stopPoint.isCheckedIn) ? false : true;
+                    newDetectedPlace = !stopPoint.isCheckedIn;
                 }
                 removeStopPointFromCache();
             }
@@ -148,6 +149,7 @@ public class StopTrackingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         AndroidInjection.inject(this);
+        LoggingService.getInstance().log("StopTrackingService is starting...");
 
         //notification channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -171,6 +173,7 @@ public class StopTrackingService extends Service {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            LoggingService.getInstance().log("StopTrackingService is stopped without sticky because of no PERMISSIONS_STOP_TRACKING permission");
             stopSelf();
             return START_NOT_STICKY;
         }
@@ -205,10 +208,11 @@ public class StopTrackingService extends Service {
                         processCheckOutRequest();
                         break;
                 }
+                LoggingService.getInstance().log("StopTrackingService is finished with action: " + intent.getAction());
                 //stopSelf();
             } catch (Exception e) {
-                e.printStackTrace();
-                FirebaseCrashlytics.getInstance().recordException(e);
+                LoggingService.getInstance().log("StopTrackingService is finished with exception: " + e.getMessage());
+                LoggingService.getInstance().recordException(e);
             }
         }
 
@@ -515,7 +519,7 @@ public class StopTrackingService extends Service {
             placeFormatted = visitedPlace.placeName + "\n" + visitedPlace.formattedAddress;
         }
 
-        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
 
         Intent travelConfirmYesIntent = new Intent(this, PlaceBroadcastReceiver.class);
         travelConfirmYesIntent.putExtra(StopTrackingSetting.NOTIFY_DETECTED_PLACE_DATA_PLACE_ID, visitedPlace.id);
@@ -576,7 +580,7 @@ public class StopTrackingService extends Service {
         }
         Intent activityTransitionIntent = new Intent(this, ActivityTransitionBroadcastReceiver.class);
         activityTransitionIntent.setAction(ActivityTransitionBroadcastReceiver.INTENT_ACTION);
-        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
         activityTransitionPendingIntent = PendingIntent.getBroadcast(this, 0, activityTransitionIntent, pendingIntentFlag);
         return activityTransitionPendingIntent;
     }
@@ -587,7 +591,7 @@ public class StopTrackingService extends Service {
             return geofencePendingIntent;
         }
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
-        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
         geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, pendingIntentFlag);
         return geofencePendingIntent;
     }
@@ -600,7 +604,7 @@ public class StopTrackingService extends Service {
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.INTENT_ACTION);
         intent.addCategory(StopTrackingSetting.INTENT_CATEGORY_ACTIVITY_TRANSITION);
-        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
         locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, pendingIntentFlag);
         return locationUpdatesPendingIntent;
     }

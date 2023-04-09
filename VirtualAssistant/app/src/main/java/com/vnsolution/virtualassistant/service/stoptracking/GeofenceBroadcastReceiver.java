@@ -24,6 +24,9 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         // Enqueues a JobIntentService passing the context and intent as parameters
         // GeofenceTransitionsJobIntentService.enqueueWork(context, intent);
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+        if (geofencingEvent == null) {
+            return;
+        }
         if (geofencingEvent.hasError()) {
             String errorMessage = getErrorString(geofencingEvent.getErrorCode());
             NotificationUtils.sendNotification(context, "GEOFENCE BROADCAST", errorMessage);
