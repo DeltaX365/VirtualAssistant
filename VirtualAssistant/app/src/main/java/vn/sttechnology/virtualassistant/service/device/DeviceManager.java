@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -637,17 +638,34 @@ public class DeviceManager {
 
     public void syncPhoneApps(Context context) {
         List<PhoneAppEntity> phoneApps = new ArrayList<>();
+
         if (context != null) {
-            List<PackageInfo> packageInfoList = context.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA);
-            for (PackageInfo packageInfo : packageInfoList) {
-                PhoneAppEntity phoneAppEntity = getPhoneAppEntity(context, packageInfo);
+            Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+            List<ResolveInfo> pkgAppsList;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                pkgAppsList = context.getPackageManager().queryIntentActivities(mainIntent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL));
+            } else {
+                pkgAppsList = context.getPackageManager().queryIntentActivities( mainIntent, 0);
+            }
+
+            for (ResolveInfo resolveInfo : pkgAppsList) {
+                PhoneAppEntity phoneAppEntity;
+                try {
+                    PackageInfo packageInfo = context.getPackageManager().getPackageInfo(resolveInfo.activityInfo.packageName, 0);
+                    phoneAppEntity = getPhoneAppEntityFromPackageInfo(context, packageInfo);
+                } catch (PackageManager.NameNotFoundException e) {
+                    phoneAppEntity = getPhoneAppEntityFromApplicationInfo(context, resolveInfo.activityInfo.applicationInfo);
+                }
                 phoneApps.add(phoneAppEntity);
             }
         }
+
         phoneAppDao.insert(phoneApps);
     }
 
-    private PhoneAppEntity getPhoneAppEntity(Context context, PackageInfo packageInfo) {
+    private PhoneAppEntity getPhoneAppEntityFromPackageInfo(Context context, PackageInfo packageInfo) {
         PhoneAppEntity phoneAppEntity = new PhoneAppEntity();
         phoneAppEntity.id = UUID.randomUUID().toString();
         phoneAppEntity.appId = packageInfo.applicationInfo.uid;
@@ -655,24 +673,34 @@ public class DeviceManager {
         phoneAppEntity.packageName = packageInfo.packageName;
         phoneAppEntity.versionCode = packageInfo.versionCode;
         phoneAppEntity.versionName = packageInfo.versionName;
-        phoneAppEntity.type = isSystemPackage(packageInfo)? 1 : 2; //1 system app, 2 normal app
+        phoneAppEntity.type = isSystemPackage(packageInfo.applicationInfo)? 1 : 2; //1 system app, 2 normal app
+        phoneAppEntity.createdDate = new Date();
+        return phoneAppEntity;
+    }
+
+    private PhoneAppEntity getPhoneAppEntityFromApplicationInfo(Context context, ApplicationInfo applicationInfo) {
+        PhoneAppEntity phoneAppEntity = new PhoneAppEntity();
+        phoneAppEntity.id = UUID.randomUUID().toString();
+        phoneAppEntity.appId = applicationInfo.uid;
+        phoneAppEntity.appName = applicationInfo.loadLabel(context.getPackageManager()).toString();
+        phoneAppEntity.packageName = applicationInfo.packageName;
+        phoneAppEntity.versionCode = 0;
+        phoneAppEntity.versionName = "-";
+        phoneAppEntity.type = isSystemPackage(applicationInfo)? 1 : 2; //1 system app, 2 normal app
         phoneAppEntity.createdDate = new Date();
         return phoneAppEntity;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
     public Map<String, UsageStats> getPhoneAppUsageStats(Context context) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DAY_OF_YEAR, -7);
-            Map<String, UsageStats> appUsageStats = usageStatsManager.queryAndAggregateUsageStats(calendar.getTimeInMillis(), System.currentTimeMillis());
-            if (appUsageStats.isEmpty()) {
-                context.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-            }
-            return appUsageStats;
+        UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -7);
+        Map<String, UsageStats> appUsageStats = usageStatsManager.queryAndAggregateUsageStats(calendar.getTimeInMillis(), System.currentTimeMillis());
+        if (appUsageStats.isEmpty()) {
+            context.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         }
-        return null;
+        return appUsageStats;
     }
 
     public boolean hasPhoneLockPasscode(Context context) {
@@ -723,19 +751,14 @@ public class DeviceManager {
 
     private void addLocked(Context context, String lockedApp) {
         ArrayList<String> lockedApps = getLockedAppFromCache(context);
-        if (lockedApps == null) {
-            lockedApps = new ArrayList<>();
-        }
         lockedApps.add(lockedApp);
         saveLockedAppInCache(context, lockedApps);
     }
 
     private void removeLocked(Context context, String lockedApp) {
         ArrayList<String> lockedApps = getLockedAppFromCache(context);
-        if (lockedApps != null) {
-            lockedApps.remove(lockedApp);
-            saveLockedAppInCache(context, lockedApps);
-        }
+        lockedApps.remove(lockedApp);
+        saveLockedAppInCache(context, lockedApps);
     }
 
     private ArrayList<String> getLockedAppFromCache(Context context) {
@@ -949,7 +972,7 @@ public class DeviceManager {
         return contact;
     }
 
-    private boolean isSystemPackage(PackageInfo packageInfo) {
-        return ((packageInfo != null) && ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0));
+    private boolean isSystemPackage(ApplicationInfo applicationInfo) {
+        return ((applicationInfo != null) && ((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0));
     }
 }

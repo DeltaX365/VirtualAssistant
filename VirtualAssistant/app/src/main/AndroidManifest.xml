@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="vn.sttechnology.virtualassistant">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -32,9 +35,16 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
 
     <application
-        android:name="vn.sttechnology.virtualassistant.VirtualAssistantApp"
+        android:name=".VirtualAssistantApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -50,7 +60,7 @@
             android:value="AIzaSyAyNsXJawLoHr38jaPyJiBs1iwvyxMfYfg" />
 
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.StartupActivity"
+            android:name=".ui.StartupActivity"
             android:noHistory="true"
             android:theme="@style/AppTheme.Launcher"
             android:exported="true">
@@ -60,34 +70,34 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.home.HomeV2Activity"
+            android:name=".ui.home.HomeV2Activity"
             android:label="@string/screen_home" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.travel.TravelV2Activity"
+            android:name=".ui.travel.TravelV2Activity"
             android:label="@string/screen_travels" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.travel.TravelDashboardActivity"
+            android:name=".ui.travel.TravelDashboardActivity"
             android:label="@string/screen_travels" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.travel.TravelHistoryActivity"
+            android:name=".ui.travel.TravelHistoryActivity"
             android:label="@string/screen_travels" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.travel.TravelViewActivity"
+            android:name=".ui.travel.TravelViewActivity"
             android:label="@string/screen_travels" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.travel.TravelEditActivity"
+            android:name=".ui.travel.TravelEditActivity"
             android:label="@string/screen_travels" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.travel.TravelTrackingActivity"
+            android:name=".ui.travel.TravelTrackingActivity"
             android:label="@string/screen_covid"/>
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.contacts.ContactDashboardActivity"
+            android:name=".ui.contacts.ContactDashboardActivity"
             android:label="@string/screen_contacts" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.contacts.ContactViewActivity"
+            android:name=".ui.contacts.ContactViewActivity"
             android:label="@string/screen_contacts" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.contacts.ContactListActivity"
+            android:name=".ui.contacts.ContactListActivity"
             android:label="@string/screen_contacts">
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.SEARCH" /> -->
@@ -97,37 +107,37 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.apps.AppDashboardActivity"
+            android:name=".ui.apps.AppDashboardActivity"
             android:label="@string/screen_apps" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.apps.AppListActivity"
+            android:name=".ui.apps.AppListActivity"
             android:label="@string/screen_apps" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.apps.v1.PhoneAppActivity"
+            android:name=".ui.apps.v1.PhoneAppActivity"
             android:label="@string/screen_apps" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.apps.v2.PhoneAppV2Activity"
+            android:name=".ui.apps.v2.PhoneAppV2Activity"
             android:label="@string/screen_apps"/>
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.reminders.ReminderListActivity"
+            android:name=".ui.reminders.ReminderListActivity"
             android:label="@string/screen_reminders" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.reminders.ReminderNewActivity"
+            android:name=".ui.reminders.ReminderNewActivity"
             android:label="@string/screen_reminders" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.reminders.ReminderShowFullScreenActivity"
+            android:name=".ui.reminders.ReminderShowFullScreenActivity"
             android:label="@string/screen_reminders" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.phonecall.v1.PhoneCallActivity"
+            android:name=".ui.phonecall.v1.PhoneCallActivity"
             android:label="@string/screen_call_logs" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.phonesms.v1.PhoneSmsActivity"
+            android:name=".ui.phonesms.v1.PhoneSmsActivity"
             android:label="@string/screen_sms_logs" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.settings.SettingActivity"
+            android:name=".ui.settings.SettingActivity"
             android:label="@string/screen_settings" />
         <activity
-            android:name="vn.sttechnology.virtualassistant.ui.settings.PermissionActivity"
+            android:name=".ui.settings.PermissionActivity"
             android:label="@string/screen_permissions" />
 
         <provider
@@ -141,7 +151,7 @@
         </provider>
 
         <receiver
-            android:name="vn.sttechnology.virtualassistant.startup.StartupBroadcastReceiver"
+            android:name=".startup.StartupBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -151,7 +161,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="vn.sttechnology.virtualassistant.service.stoptracking.ActivityTransitionBroadcastReceiver"
+            android:name=".service.stoptracking.ActivityTransitionBroadcastReceiver"
             android:exported="true"
             android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">
             <intent-filter>
@@ -159,17 +169,17 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="vn.sttechnology.virtualassistant.service.stoptracking.GeofenceBroadcastReceiver"
+            android:name=".service.stoptracking.GeofenceBroadcastReceiver"
             android:exported="true" />
         <receiver
-            android:name="vn.sttechnology.virtualassistant.service.stoptracking.LocationUpdatesBroadcastReceiver"
+            android:name=".service.stoptracking.LocationUpdatesBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="vn.sttechnology.virtualassistant.ACTION_UPDATE_LOCATIONS" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="vn.sttechnology.virtualassistant.service.device.PhoneCallBroadcastReceiver"
+            android:name=".service.device.PhoneCallBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
@@ -177,14 +187,14 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="vn.sttechnology.virtualassistant.service.device.PhoneSmsBroadcastReceiver"
+            android:name=".service.device.PhoneSmsBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="vn.sttechnology.virtualassistant.service.device.PhoneAppBroadcastReceiver"
+            android:name=".service.device.PhoneAppBroadcastReceiver"
             android:exported="true">
             <intent-filter android:priority="100">
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
@@ -195,30 +205,30 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="vn.sttechnology.virtualassistant.service.reminder.ReminderBroadcastReceiver"
+            android:name=".service.reminder.ReminderBroadcastReceiver"
             android:exported="true" />
         <receiver
-            android:name="vn.sttechnology.virtualassistant.service.place.PlaceBroadcastReceiver"
+            android:name=".service.place.PlaceBroadcastReceiver"
             android:exported="true" />
 
         <service
-            android:name="vn.sttechnology.virtualassistant.service.stoptracking.StopTrackingService"
+            android:name=".service.stoptracking.StopTrackingService"
             android:exported="false" />
         <service
-            android:name="vn.sttechnology.virtualassistant.service.device.DeviceService"
+            android:name=".service.device.DeviceService"
             android:exported="false" />
         <service
-            android:name="vn.sttechnology.virtualassistant.service.device.AppLockService"
+            android:name=".service.device.AppLockService"
             android:exported="false" />
         <service
-            android:name="vn.sttechnology.virtualassistant.service.bubble.FloatingViewService"
+            android:name=".service.bubble.FloatingViewService"
             android:exported="false" />
         <service
-            android:name="vn.sttechnology.virtualassistant.service.stoptracking.ActivityTransitionsJobIntentService"
+            android:name=".service.stoptracking.ActivityTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
-            android:name="vn.sttechnology.virtualassistant.service.stoptracking.GeofenceTransitionsJobIntentService"
+            android:name=".service.stoptracking.GeofenceTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>

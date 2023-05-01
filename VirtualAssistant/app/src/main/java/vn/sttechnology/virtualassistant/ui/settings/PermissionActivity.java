@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Switch;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import vn.sttechnology.virtualassistant.R;
 import vn.sttechnology.virtualassistant.ui.common.BaseActivity;
@@ -31,6 +32,7 @@ public class PermissionActivity extends BaseActivity implements HasAndroidInject
     @Inject
     public DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
+    private Switch postNotificationSwitch;
     private Switch physicalActivitySwitch;
     private Switch accessForegroundLocationSwitch;
     private Switch accessBackgroundLocationSwitch;
@@ -63,6 +65,8 @@ public class PermissionActivity extends BaseActivity implements HasAndroidInject
         setContentView(R.layout.screen_permission);
         setupActionBar();
 
+        postNotificationSwitch = findViewById(R.id.post_notification);
+        postNotificationSwitch.setOnClickListener(this);
         physicalActivitySwitch = findViewById(R.id.physical_activity);
         physicalActivitySwitch.setOnClickListener(this);
         accessForegroundLocationSwitch = findViewById(R.id.access_foreground_location);
@@ -94,11 +98,13 @@ public class PermissionActivity extends BaseActivity implements HasAndroidInject
     }
 
     private void refreshView() {
-        physicalActivitySwitch.setChecked(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || PermissionUtils.hasPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)? true : false);
+        postNotificationSwitch.setChecked(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || PermissionUtils.hasPermission(this, Manifest.permission.POST_NOTIFICATIONS));
+        postNotificationSwitch.setClickable(!physicalActivitySwitch.isChecked());
+        physicalActivitySwitch.setChecked(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || PermissionUtils.hasPermission(this, Manifest.permission.ACTIVITY_RECOGNITION));
         physicalActivitySwitch.setClickable(!physicalActivitySwitch.isChecked());
-        accessForegroundLocationSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)? true : false);
+        accessForegroundLocationSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION));
         accessForegroundLocationSwitch.setClickable(!accessForegroundLocationSwitch.isChecked());
-        accessBackgroundLocationSwitch.setChecked(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)? true : false);
+        accessBackgroundLocationSwitch.setChecked(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION));
         accessBackgroundLocationSwitch.setClickable(!accessBackgroundLocationSwitch.isChecked());
 
         readCallLogSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.READ_CALL_LOG));
@@ -118,7 +124,11 @@ public class PermissionActivity extends BaseActivity implements HasAndroidInject
         writeSDCardSwitch.setChecked(PermissionUtils.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE));
         writeSDCardSwitch.setClickable(!writeSDCardSwitch.isChecked());
 
-        packageUsageStatSwitch.setChecked(canAccessPackageUsageStat());
+        boolean packageUsageStatSwitchEnabled = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            packageUsageStatSwitchEnabled = canAccessPackageUsageStat();
+        }
+        packageUsageStatSwitch.setChecked(packageUsageStatSwitchEnabled);
         packageUsageStatSwitch.setClickable(!packageUsageStatSwitch.isChecked());
         appearOnTopSwitch.setChecked(canDrawOverlays());
         appearOnTopSwitch.setClickable(!appearOnTopSwitch.isChecked());
@@ -128,6 +138,9 @@ public class PermissionActivity extends BaseActivity implements HasAndroidInject
     public void onClick(View v) {
         String[] permissions = null;
         switch (v.getId()) {
+            case R.id.post_notification:
+                permissions = new String[] {Manifest.permission.POST_NOTIFICATIONS};
+                break;
             case R.id.physical_activity:
                 permissions = new String[] {Manifest.permission.ACTIVITY_RECOGNITION};
                 break;
@@ -182,15 +195,13 @@ public class PermissionActivity extends BaseActivity implements HasAndroidInject
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
     private boolean canAccessPackageUsageStat() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DAY_OF_YEAR, -7);
-            List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, calendar.getTimeInMillis(), System.currentTimeMillis());
-            return !usageStats.isEmpty();
-        }
-        return true;
+        UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -7);
+        List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, calendar.getTimeInMillis(), System.currentTimeMillis());
+        return !usageStats.isEmpty();
     }
 
     private boolean canDrawOverlays() {

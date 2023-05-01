@@ -38,7 +38,7 @@ public class ActivityTransitionsJobIntentService extends JobIntentService {
 
     private void handleActivityTransitionResult(ActivityTransitionResult result) {
         List<ActivityTransitionEvent> events = result.getTransitionEvents();
-        if (events != null && !events.isEmpty()) {
+        if (!events.isEmpty()) {
             ActivityTransitionEvent event = result.getTransitionEvents().get(0);
             if ((event.getActivityType() == DetectedActivity.STILL)
                     && (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_ENTER)) {

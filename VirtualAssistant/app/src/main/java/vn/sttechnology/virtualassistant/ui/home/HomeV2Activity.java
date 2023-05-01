@@ -153,20 +153,24 @@ public class HomeV2Activity extends BaseActivity {
         availableActionsAdapter.setData(availableActions);
     }
 
-    private boolean requestPermissions() {
+    private void requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Stop tracking permissions.
             // TODO: Review check for devices with Android 10 (29+).
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_POST_NOTIFICATION)) {
+                requestPermissions(StopTrackingSetting.PERMISSIONS_POST_NOTIFICATION, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
+                return;
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_ACTIVITY_RECOGNITION)) {
                 requestPermissions(StopTrackingSetting.PERMISSIONS_ACTIVITY_RECOGNITION, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
-                return false;
+                return;
             }
             Intent intentUA = new Intent(StopTrackingSetting.BROADCAST_PERMISSIONS_USER_ACTIVITY_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentUA);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !PermissionUtils.hasPermissions(this, StopTrackingSetting.PERMISSIONS_LOCATION)) {
                 requestPermissions(StopTrackingSetting.PERMISSIONS_LOCATION, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
-                return false;
+                return;
             }
             Intent intentL = new Intent(StopTrackingSetting.BROADCAST_PERMISSIONS_LOCATION_GRANTED);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentL);
@@ -177,15 +181,15 @@ public class HomeV2Activity extends BaseActivity {
             // Phone contact/call/sms permissions
             if (!PermissionUtils.hasPermissions(this, DeviceSetting.PERMISSIONS_PHONE_CALL)) {
                 requestPermissions(DeviceSetting.PERMISSIONS_PHONE_CALL, DeviceSetting.PERMISSIONS_REQUEST_CODE);
-                return false;
+                return;
             }
             if (!PermissionUtils.hasPermissions(this, DeviceSetting.PERMISSIONS_PHONE_SMS)) {
                 requestPermissions(DeviceSetting.PERMISSIONS_PHONE_SMS, DeviceSetting.PERMISSIONS_REQUEST_CODE);
-                return false;
+                return;
             }
             if (!PermissionUtils.hasPermissions(this, DeviceSetting.PERMISSIONS_PHONE_CONTACT)) {
                 requestPermissions(DeviceSetting.PERMISSIONS_PHONE_CONTACT, DeviceSetting.PERMISSIONS_REQUEST_CODE);
-                return false;
+                return;
             }
 
             // Full Screen permission
@@ -199,7 +203,6 @@ public class HomeV2Activity extends BaseActivity {
                 startActivityForResult(intent, StopTrackingSetting.PERMISSIONS_REQUEST_CODE);
             }
         }
-        return true;
     }
 
     @Override
