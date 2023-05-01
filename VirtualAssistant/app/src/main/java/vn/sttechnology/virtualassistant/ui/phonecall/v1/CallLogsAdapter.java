@@ -1,0 +1,78 @@
+package vn.sttechnology.virtualassistant.ui.phonecall.v1;
+
+import android.content.Context;
+import android.text.format.DateUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import vn.sttechnology.virtualassistant.R;
+import vn.sttechnology.virtualassistant.model.PhoneCall;
+import vn.sttechnology.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
+
+import java.util.List;
+
+public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsViewHolder> {
+    private Context context;
+    private List<PhoneCall> dataSource;
+    private OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener;
+
+    public CallLogsAdapter(Context context, List<PhoneCall> dataSource) {
+        this.context = context;
+        this.dataSource = dataSource;
+    }
+
+    public void setData(List<PhoneCall> phoneCalls) {
+        this.dataSource = phoneCalls;
+        notifyDataSetChanged();
+    }
+
+    public void setHandler(OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener) {
+        this.onRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
+    }
+
+    // Create new views (invoked by the layout manager)
+    @NonNull
+    @Override
+    public CallLogsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view = inflater.inflate(R.layout.item_phone_call, parent, false);
+        CallLogsViewHolder viewHolder = new CallLogsViewHolder(view);
+        return viewHolder;
+    }
+
+    // Replace the contents of a view (invoked by the layout manager)
+    @Override
+    public void onBindViewHolder(@NonNull CallLogsViewHolder holder, int position) {
+        // - get element from your dataset at this position
+        // - replace the contents of the view with that element
+        try {
+            switch (dataSource.get(position).type) {
+                case android.provider.CallLog.Calls.INCOMING_TYPE:
+                    holder.imageCallIcon.setImageResource(R.drawable.ic_call_received_black_24dp);
+                    break;
+                case android.provider.CallLog.Calls.OUTGOING_TYPE:
+                    holder.imageCallIcon.setImageResource(R.drawable.ic_call_made_black_24dp);
+                    break;
+                case android.provider.CallLog.Calls.MISSED_TYPE:
+                    holder.imageCallIcon.setImageResource(R.drawable.ic_call_missed_black_24dp);
+                    break;
+            }
+            holder.textPhoneNumber.setText(dataSource.get(position).phoneNumber);
+            holder.textCallDate.setText("Time: " + DateUtils.formatDateTime(context, dataSource.get(position).date, DateUtils.FORMAT_ABBREV_ALL));
+            holder.textCallDuration.setText("Duration: " + DateUtils.formatElapsedTime(dataSource.get(position).duration));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        holder.onRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataSource.size();
+    }
+}

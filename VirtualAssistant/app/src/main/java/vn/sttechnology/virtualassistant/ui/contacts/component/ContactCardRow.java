@@ -1,0 +1,66 @@
+package vn.sttechnology.virtualassistant.ui.contacts.component;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.AttributeSet;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.card.MaterialCardView;
+import vn.sttechnology.virtualassistant.R;
+import vn.sttechnology.virtualassistant.model.PhoneContact;
+import vn.sttechnology.virtualassistant.ui.common.IRecyclerViewRow;
+import vn.sttechnology.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
+import vn.sttechnology.virtualassistant.util.BitmapUtils;
+
+public class ContactCardRow extends MaterialCardView implements IRecyclerViewRow<PhoneContact> {
+    private ImageView mAvatarImageView;
+    private TextView mContactNameTextView;
+    private TextView mPhoneNumberTextView;
+
+    private Context mContext;
+    private PhoneContact mPhoneContact;
+    private OnRecyclerViewRowTouchListener<PhoneContact> mOnRecyclerViewRowTouchListener;
+
+    public ContactCardRow(Context context) {
+        super(context);
+        mContext = context;
+    }
+
+    public ContactCardRow(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        mContext = context;
+    }
+
+    public ContactCardRow(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        mContext = context;
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mAvatarImageView = findViewById(R.id.contact_avatar);
+        mContactNameTextView = findViewById(R.id.contact_name);
+        mPhoneNumberTextView = findViewById(R.id.phone_number);
+    }
+
+    @Override
+    public void showData(PhoneContact phoneContact, String viewType) {
+        mPhoneContact = phoneContact;
+        String contactName = (phoneContact != null) ? phoneContact.name : "";
+
+        Bitmap avatar = BitmapUtils.generateBitmapByText(mContext, contactName, 10, 60, 60);
+        Glide.with(mContext).load(avatar).apply(RequestOptions.circleCropTransform()).circleCrop().into(mAvatarImageView);
+
+        mContactNameTextView.setText(contactName);
+        mPhoneNumberTextView.setText(phoneContact.phoneNumbers);
+    }
+
+    @Override
+    public void setOnItemClickListener(OnRecyclerViewRowTouchListener<PhoneContact> onRecyclerViewRowTouchListener) {
+        this.mOnRecyclerViewRowTouchListener = onRecyclerViewRowTouchListener;
+    }
+}

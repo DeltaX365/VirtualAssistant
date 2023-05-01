@@ -1,0 +1,1450 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 14,
+    "identityHash": "27219c4c8c9c038a73755f9ed5c85977",
+    "entities": [
+      {
+        "tableName": "Device",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`AvailableLocationProviders` TEXT, `BatteryLevel` TEXT, `Carrier` TEXT, `FreeDiskStorage` REAL NOT NULL, `UsedMemory` REAL NOT NULL, `Host` TEXT, `IpAddress` TEXT, `MacAddress` TEXT, `Manufacturer` TEXT, `PhoneNumber` TEXT, `PowerState` TEXT, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "availableLocationProviders",
+            "columnName": "AvailableLocationProviders",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "batteryLevel",
+            "columnName": "BatteryLevel",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "carrier",
+            "columnName": "Carrier",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "freeDiskStorage",
+            "columnName": "FreeDiskStorage",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usedMemory",
+            "columnName": "UsedMemory",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "host",
+            "columnName": "Host",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ipAddress",
+            "columnName": "IpAddress",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "macAddress",
+            "columnName": "MacAddress",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "manufacturer",
+            "columnName": "Manufacturer",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "phoneNumber",
+            "columnName": "PhoneNumber",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "powerState",
+            "columnName": "PowerState",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "GeolocationHistory",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`Latitude` REAL NOT NULL, `Longitude` REAL NOT NULL, `Accuracy` INTEGER NOT NULL, `Altitude` INTEGER NOT NULL, `Bearing` REAL NOT NULL, `IsFromMockProvider` INTEGER NOT NULL, `Provider` TEXT, `Speed` REAL NOT NULL, `RecordTime` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "latitude",
+            "columnName": "Latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "Longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accuracy",
+            "columnName": "Accuracy",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "altitude",
+            "columnName": "Altitude",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bearing",
+            "columnName": "Bearing",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isFromMockProvider",
+            "columnName": "IsFromMockProvider",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "provider",
+            "columnName": "Provider",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "speed",
+            "columnName": "Speed",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordTime",
+            "columnName": "RecordTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Place",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`GGPlaceId` TEXT, `FormattedAddress` TEXT, `FormattedAddressInHtml` TEXT, `Latitude` REAL NOT NULL, `Longitude` REAL NOT NULL, `PlusCodeCompound` TEXT, `PlusCodeGlobal` TEXT, `Types` TEXT, `Icon` TEXT, `Name` TEXT, `Rating` INTEGER NOT NULL, `Reference` TEXT, `Scope` TEXT, `Url` TEXT, `UserRatingsTotal` INTEGER NOT NULL, `UtcOffset` TEXT, `Vicinity` TEXT, `PhotoReference` TEXT, `Synced` INTEGER NOT NULL, `StreetNumber` TEXT, `Route` TEXT, `AdministrativeAreaLevel3` TEXT, `AdministrativeAreaLevel2` TEXT, `AdministrativeAreaLevel1` TEXT, `Country` TEXT, `Confirmed` INTEGER NOT NULL, `Favourite` INTEGER NOT NULL, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "ggPlaceId",
+            "columnName": "GGPlaceId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "formattedAddress",
+            "columnName": "FormattedAddress",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "formattedAddressInHtml",
+            "columnName": "FormattedAddressInHtml",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "Latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "Longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "plusCodeCompound",
+            "columnName": "PlusCodeCompound",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "plusCodeGlobal",
+            "columnName": "PlusCodeGlobal",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "types",
+            "columnName": "Types",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "icon",
+            "columnName": "Icon",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "placeName",
+            "columnName": "Name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "rating",
+            "columnName": "Rating",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reference",
+            "columnName": "Reference",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "scope",
+            "columnName": "Scope",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "Url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userRatingsTotal",
+            "columnName": "UserRatingsTotal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "utcOffset",
+            "columnName": "UtcOffset",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vicinity",
+            "columnName": "Vicinity",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photoReference",
+            "columnName": "PhotoReference",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "synced",
+            "columnName": "Synced",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "streetNumber",
+            "columnName": "StreetNumber",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "route",
+            "columnName": "Route",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "administrativeAreaLevel3",
+            "columnName": "AdministrativeAreaLevel3",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "administrativeAreaLevel2",
+            "columnName": "AdministrativeAreaLevel2",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "administrativeAreaLevel1",
+            "columnName": "AdministrativeAreaLevel1",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "country",
+            "columnName": "Country",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "confirmed",
+            "columnName": "Confirmed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "favourite",
+            "columnName": "Favourite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PlaceHistory",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`PlaceId` TEXT, `EnterTime` TEXT, `ExistTime` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`), FOREIGN KEY(`PlaceId`) REFERENCES `Place`(`Id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "placeId",
+            "columnName": "PlaceId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "enterTime",
+            "columnName": "EnterTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "existTime",
+            "columnName": "ExistTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_PlaceHistory_PlaceId",
+            "unique": false,
+            "columnNames": [
+              "PlaceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_PlaceHistory_PlaceId` ON `${TABLE_NAME}` (`PlaceId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Place",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "PlaceId"
+            ],
+            "referencedColumns": [
+              "Id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Weather",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`Longitude` REAL NOT NULL, `Latitude` REAL NOT NULL, `Weather` TEXT, `WeatherDescription` TEXT, `WeatherIcon` TEXT, `Temp` INTEGER NOT NULL, `TempFeelsLike` REAL NOT NULL, `TempMin` INTEGER NOT NULL, `TempMax` INTEGER NOT NULL, `Pressure` INTEGER NOT NULL, `Humidity` INTEGER NOT NULL, `Visibility` INTEGER NOT NULL, `WindSpeed` REAL NOT NULL, `WindDeg` INTEGER NOT NULL, `Sunrise` INTEGER NOT NULL, `Sunset` INTEGER NOT NULL, `Timezone` INTEGER NOT NULL, `Name` TEXT, `Cod` INTEGER NOT NULL, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "longitude",
+            "columnName": "Longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "Latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weather",
+            "columnName": "Weather",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weatherDescription",
+            "columnName": "WeatherDescription",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weatherIcon",
+            "columnName": "WeatherIcon",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "temp",
+            "columnName": "Temp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tempFeelsLike",
+            "columnName": "TempFeelsLike",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tempMin",
+            "columnName": "TempMin",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tempMax",
+            "columnName": "TempMax",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pressure",
+            "columnName": "Pressure",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "humidity",
+            "columnName": "Humidity",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "visibility",
+            "columnName": "Visibility",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "windSpeed",
+            "columnName": "WindSpeed",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "windDeg",
+            "columnName": "WindDeg",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sunrise",
+            "columnName": "Sunrise",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sunset",
+            "columnName": "Sunset",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timezone",
+            "columnName": "Timezone",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "Name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cod",
+            "columnName": "Cod",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PhoneCall",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`CallId` INTEGER NOT NULL, `PhoneNumber` TEXT, `Type` INTEGER NOT NULL, `GeocodedLocation` TEXT, `Presentation` INTEGER NOT NULL, `Duration` INTEGER NOT NULL, `IsRead` INTEGER NOT NULL, `Date` INTEGER NOT NULL, `Features` INTEGER NOT NULL, `NormalizedNumber` TEXT, `LastModified` INTEGER NOT NULL, `IsNew` INTEGER NOT NULL, `FormattedNumber` TEXT, `BlockReason` INTEGER NOT NULL, `CountryIso` TEXT, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "callId",
+            "columnName": "CallId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phoneNumber",
+            "columnName": "PhoneNumber",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "Type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "geocodedLocation",
+            "columnName": "GeocodedLocation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "presentation",
+            "columnName": "Presentation",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "duration",
+            "columnName": "Duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isRead",
+            "columnName": "IsRead",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "Date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "features",
+            "columnName": "Features",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "normalizedNumber",
+            "columnName": "NormalizedNumber",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastModified",
+            "columnName": "LastModified",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isNew",
+            "columnName": "IsNew",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "formattedNumber",
+            "columnName": "FormattedNumber",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "blockReason",
+            "columnName": "BlockReason",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryIso",
+            "columnName": "CountryIso",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_PhoneCall_CallId",
+            "unique": true,
+            "columnNames": [
+              "CallId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_PhoneCall_CallId` ON `${TABLE_NAME}` (`CallId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PhoneSms",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`SmsId` INTEGER NOT NULL, `ThreadId` INTEGER NOT NULL, `Address` TEXT, `Date` INTEGER NOT NULL, `DateSent` INTEGER NOT NULL, `Protocol` INTEGER NOT NULL, `Read` INTEGER NOT NULL, `Status` INTEGER NOT NULL, `Type` INTEGER NOT NULL, `ReplyPathPresent` INTEGER NOT NULL, `Subject` TEXT, `Body` TEXT, `ServiceCenter` TEXT, `Locked` INTEGER NOT NULL, `ErrorCode` INTEGER NOT NULL, `SubId` INTEGER NOT NULL, `Creator` TEXT, `Seen` INTEGER NOT NULL, `Deletable` INTEGER NOT NULL, `SimSlot` INTEGER NOT NULL, `SimImsi` TEXT, `Hidden` INTEGER NOT NULL, `GroupId` INTEGER NOT NULL, `AppId` INTEGER NOT NULL, `MsgId` INTEGER NOT NULL, `CallbackNumber` TEXT, `Reserved` INTEGER NOT NULL, `Pri` INTEGER NOT NULL, `TeleserviceId` INTEGER NOT NULL, `LinkUrl` TEXT, `RoamPending` INTEGER NOT NULL, `SpamReport` INTEGER NOT NULL, `SecretMode` INTEGER NOT NULL, `SafeMessage` INTEGER NOT NULL, `Favorite` INTEGER NOT NULL, `UsingMode` INTEGER NOT NULL, `FromAddress` TEXT, `AnnouncementsSubtype` INTEGER NOT NULL, `DeviceName` TEXT, `CorrelationTag` TEXT, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "smsId",
+            "columnName": "SmsId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "threadId",
+            "columnName": "ThreadId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "Address",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "Date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dateSent",
+            "columnName": "DateSent",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "protocol",
+            "columnName": "Protocol",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "read",
+            "columnName": "Read",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "Status",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "Type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "replyPathPresent",
+            "columnName": "ReplyPathPresent",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subject",
+            "columnName": "Subject",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "body",
+            "columnName": "Body",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "serviceCenter",
+            "columnName": "ServiceCenter",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "locked",
+            "columnName": "Locked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "errorCode",
+            "columnName": "ErrorCode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subId",
+            "columnName": "SubId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "creator",
+            "columnName": "Creator",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "seen",
+            "columnName": "Seen",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deletable",
+            "columnName": "Deletable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "simSlot",
+            "columnName": "SimSlot",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "simImsi",
+            "columnName": "SimImsi",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "hidden",
+            "columnName": "Hidden",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupId",
+            "columnName": "GroupId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appId",
+            "columnName": "AppId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "msgId",
+            "columnName": "MsgId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "callbackNumber",
+            "columnName": "CallbackNumber",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "reserved",
+            "columnName": "Reserved",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pri",
+            "columnName": "Pri",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "teleserviceId",
+            "columnName": "TeleserviceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "linkUrl",
+            "columnName": "LinkUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "roamPending",
+            "columnName": "RoamPending",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spamReport",
+            "columnName": "SpamReport",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "secretMode",
+            "columnName": "SecretMode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "safeMessage",
+            "columnName": "SafeMessage",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "favorite",
+            "columnName": "Favorite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usingMode",
+            "columnName": "UsingMode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fromAddress",
+            "columnName": "FromAddress",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "announcementsSubtype",
+            "columnName": "AnnouncementsSubtype",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceName",
+            "columnName": "DeviceName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "correlationTag",
+            "columnName": "CorrelationTag",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_PhoneSms_SmsId",
+            "unique": true,
+            "columnNames": [
+              "SmsId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_PhoneSms_SmsId` ON `${TABLE_NAME}` (`SmsId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PhoneContact",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ContactId` INTEGER NOT NULL, `DisplayName` TEXT, `PhoneticName` TEXT, `PhoneNumber` TEXT, `Pinned` INTEGER NOT NULL, `DisplayNameAlt` TEXT, `SortKeyAlt` TEXT, `InVisibleGroup` INTEGER NOT NULL, `Starred` INTEGER NOT NULL, `ContactStatusLabel` TEXT, `IsUserProfile` INTEGER NOT NULL, `HasPhoneNumber` INTEGER NOT NULL, `DisplayNameSource` INTEGER NOT NULL, `PhoneticNameStyle` INTEGER NOT NULL, `Lookup` TEXT, `ContactLastUpdatedTimestamp` INTEGER NOT NULL, `PhotoUri` TEXT, `SortKey` TEXT, `InDefaultDirectory` INTEGER NOT NULL, `NameRawContactId` INTEGER NOT NULL, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "contactId",
+            "columnName": "ContactId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "DisplayName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "phoneticName",
+            "columnName": "PhoneticName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "phoneNumbers",
+            "columnName": "PhoneNumber",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pinned",
+            "columnName": "Pinned",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayNameAlt",
+            "columnName": "DisplayNameAlt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sortKeyAlt",
+            "columnName": "SortKeyAlt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "inVisibleGroup",
+            "columnName": "InVisibleGroup",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "starred",
+            "columnName": "Starred",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contactStatusLabel",
+            "columnName": "ContactStatusLabel",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isUserProfile",
+            "columnName": "IsUserProfile",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasPhoneNumber",
+            "columnName": "HasPhoneNumber",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayNameSource",
+            "columnName": "DisplayNameSource",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phoneticNameStyle",
+            "columnName": "PhoneticNameStyle",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lookup",
+            "columnName": "Lookup",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "contactLastUpdatedTimestamp",
+            "columnName": "ContactLastUpdatedTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "photoUri",
+            "columnName": "PhotoUri",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sortKey",
+            "columnName": "SortKey",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "inDefaultDirectory",
+            "columnName": "InDefaultDirectory",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameRawContactId",
+            "columnName": "NameRawContactId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_PhoneContact_ContactId",
+            "unique": true,
+            "columnNames": [
+              "ContactId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_PhoneContact_ContactId` ON `${TABLE_NAME}` (`ContactId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PhoneApp",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`AppId` INTEGER NOT NULL, `AppName` TEXT, `PackageName` TEXT, `VersionName` TEXT, `VersionCode` INTEGER NOT NULL, `AppIcon` TEXT, `Type` INTEGER NOT NULL, `Category` TEXT, `Locked` INTEGER NOT NULL, `LockedBeginTime` TEXT, `LockedEndTime` TEXT, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "appId",
+            "columnName": "AppId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appName",
+            "columnName": "AppName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "PackageName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "versionName",
+            "columnName": "VersionName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "versionCode",
+            "columnName": "VersionCode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appIcon",
+            "columnName": "AppIcon",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "Type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "Category",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "locked",
+            "columnName": "Locked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lockedBeginTime",
+            "columnName": "LockedBeginTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lockedEndTime",
+            "columnName": "LockedEndTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_PhoneApp_AppId",
+            "unique": true,
+            "columnNames": [
+              "AppId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_PhoneApp_AppId` ON `${TABLE_NAME}` (`AppId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PhoneAppUsage",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`AppId` TEXT, `AppLastUsedTime` INTEGER NOT NULL, `AppUsageTime` INTEGER NOT NULL, `QueryBeginTime` INTEGER NOT NULL, `QueryEndTime` INTEGER NOT NULL, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "appId",
+            "columnName": "AppId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "appLastUsedTime",
+            "columnName": "AppLastUsedTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appUsageTime",
+            "columnName": "AppUsageTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "queryBeginTime",
+            "columnName": "QueryBeginTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "queryEndTime",
+            "columnName": "QueryEndTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Reminder",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`Title` TEXT, `Date` TEXT, `Repeat` TEXT, `Action` TEXT, `ExtendedData` TEXT, `AlarmRequestCode` INTEGER NOT NULL, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "Title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "Date",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "repeat",
+            "columnName": "Repeat",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "action",
+            "columnName": "Action",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "extendedData",
+            "columnName": "ExtendedData",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "alarmRequestCode",
+            "columnName": "AlarmRequestCode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Setting",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`Name` TEXT, `Value` TEXT, `Description` TEXT, `CreatedDate` TEXT, `UpdatedDate` TEXT, `Id` TEXT NOT NULL, PRIMARY KEY(`Id`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "Name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "Value",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "desc",
+            "columnName": "Description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "CreatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedDate",
+            "columnName": "UpdatedDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "Id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "Id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '27219c4c8c9c038a73755f9ed5c85977')"
+    ]
+  }
+}

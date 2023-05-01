@@ -1,0 +1,188 @@
+package vn.sttechnology.virtualassistant.di;
+
+import android.app.Application;
+
+import androidx.room.Room;
+
+import vn.sttechnology.virtualassistant.api.GoogleApi;
+import vn.sttechnology.virtualassistant.api.WeatherApi;
+import vn.sttechnology.virtualassistant.common.AppSetting;
+import vn.sttechnology.virtualassistant.db.DbMigration;
+import vn.sttechnology.virtualassistant.db.VirtualAssistantDb;
+import vn.sttechnology.virtualassistant.db.dao.PhoneCallDao;
+import vn.sttechnology.virtualassistant.db.dao.PhoneAppDao;
+import vn.sttechnology.virtualassistant.db.dao.PhoneAppUsageDao;
+import vn.sttechnology.virtualassistant.db.dao.PhoneContactDao;
+import vn.sttechnology.virtualassistant.db.dao.PlaceDao;
+import vn.sttechnology.virtualassistant.db.dao.PlaceHistoryDao;
+import vn.sttechnology.virtualassistant.db.dao.ReminderDao;
+import vn.sttechnology.virtualassistant.db.dao.SettingDao;
+import vn.sttechnology.virtualassistant.db.dao.PhoneSmsDao;
+
+import java.io.IOException;
+
+import javax.inject.Singleton;
+
+import dagger.Module;
+import dagger.Provides;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+@Module(includes = ViewModelModule.class)
+public class AppModule {
+    @Singleton
+    @Provides
+    public WeatherApi provideWeatherService() {
+        // https://stackoverflow.com/questions/32948083/is-there-a-way-to-add-query-parameter-to-every-request-with-retrofit-2
+        // Add query params to each request.
+        // Issue: https://stackoverflow.com/questions/34674820/unsupported-operation-android-retrofit-okhttp-adding-interceptor-in-okhttpcl
+        // Retrofit 2.0-beta2
+//        OkHttpClient client = new OkHttpClient();
+//        client.interceptors().add(new Interceptor() {
+//            @Override
+//            public Response intercept(Chain chain) throws IOException {
+//                Request request = chain.request();
+//                HttpUrl url = request.url().newBuilder()
+//                        .addQueryParameter("units", "metric")
+//                        .addQueryParameter("appid", openWeatherKey)
+//                        .build();
+//                request = request.newBuilder().url(url).build();
+//                return chain.proceed(request);
+//            }
+//        });
+        // Retrofit 2.0-beta3
+        // We have to use builder if you want to create OkHttpClient object.
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(
+                        new Interceptor() {
+                            @Override
+                            public Response intercept(Chain chain) throws IOException {
+                                Request request = chain.request();
+                                HttpUrl url = request.url().newBuilder()
+                                        .addQueryParameter("units", "metric")
+                                        .addQueryParameter("appid", AppSetting.OPEN_WEATHER_API_KEY)
+                                        .build();
+                                request = request.newBuilder().url(url).build();
+                                return chain.proceed(request);
+                            }
+                        })
+                .build();
+
+        return new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
+                .client(okHttpClient)
+                .build()
+                .create(WeatherApi.class);
+    }
+
+    @Singleton
+    @Provides
+    public GoogleApi provideGoogleService() {
+        // https://stackoverflow.com/questions/32948083/is-there-a-way-to-add-query-parameter-to-every-request-with-retrofit-2
+        // Add query params to each request.
+        // Issue: https://stackoverflow.com/questions/34674820/unsupported-operation-android-retrofit-okhttp-adding-interceptor-in-okhttpcl
+        // Retrofit 2.0-beta2
+//        OkHttpClient client = new OkHttpClient();
+//        client.interceptors().add(new Interceptor() {
+//            @Override
+//            public Response intercept(Chain chain) throws IOException {
+//                Request request = chain.request();
+//                HttpUrl url = request.url().newBuilder()
+//                        .addQueryParameter("key", Constants.GM_API_KEY)
+//                        .build();
+//                request = request.newBuilder().url(url).build();
+//                return chain.proceed(request);
+//            }
+//        });
+        // Retrofit 2.0-beta3
+        // We have to use builder if you want to create OkHttpClient object.
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(
+                        new Interceptor() {
+                            @Override
+                            public Response intercept(Chain chain) throws IOException {
+                                Request request = chain.request();
+                                HttpUrl url = request.url().newBuilder()
+                                        .addQueryParameter("key", AppSetting.GM_API_KEY)
+                                        .build();
+                                request = request.newBuilder().url(url).build();
+                                return chain.proceed(request);
+                            }
+                        })
+                .build();
+
+        return new Retrofit.Builder()
+                .baseUrl("https://maps.googleapis.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
+                .client(okHttpClient)
+                .build()
+                .create(GoogleApi.class);
+    }
+
+    @Singleton
+    @Provides
+    public VirtualAssistantDb provideDb(Application app) {
+        return Room
+                .databaseBuilder(app, VirtualAssistantDb.class, "virtual_assistant.db")
+                .createFromAsset("database/virtual_assistant.db")
+                .addMigrations(DbMigration.MIGRATION_1_12, DbMigration.MIGRATION_12_13, DbMigration.MIGRATION_13_14)
+                // https://medium.com/androiddevelopers/understanding-migrations-with-room-f01e04b07929
+                // If you don’t want to provide migrations and you specifically want your database to be cleared when you upgrade the version, call fallbackToDestructiveMigration in the database builder
+//                .fallbackToDestructiveMigration()
+                // https://stackoverflow.com/questions/44167111/android-room-simple-select-query-cannot-access-database-on-the-main-thread
+                // It's not recommended but you can access to database on main thread with allowMainThreadQueries()
+                // Cannot access database on the main thread since it may potentially lock the UI for a long period of time.
+                //.allowMainThreadQueries()
+                .build();
+    }
+
+    @Singleton
+    @Provides
+    public PlaceDao providePlaceDao(VirtualAssistantDb db) {
+        return db.placeDao();
+    }
+
+    @Singleton
+    @Provides
+    public PlaceHistoryDao providePlaceHistoryDao(VirtualAssistantDb db) { return db.placeHistoryDao(); }
+
+    @Singleton
+    @Provides
+    public PhoneCallDao providePhoneCallDao(VirtualAssistantDb db) { return db.phoneCallDao(); }
+
+    @Singleton
+    @Provides
+    public PhoneSmsDao providePhoneSmsDao(VirtualAssistantDb db) { return db.phoneSmsDao(); }
+
+    @Singleton
+    @Provides
+    public PhoneContactDao providePhoneContactDao(VirtualAssistantDb db) { return db.phoneContactDao(); }
+
+    @Singleton
+    @Provides
+    public PhoneAppDao providePhoneAppDao(VirtualAssistantDb db) { return db.phoneAppDao(); }
+
+    @Singleton
+    @Provides
+    public PhoneAppUsageDao providePhoneAppUsageDao(VirtualAssistantDb db) { return db.phoneAppUsageDao(); }
+
+    @Singleton
+    @Provides
+    public ReminderDao provideReminderDao(VirtualAssistantDb db) {
+        return db.reminderDao();
+    }
+
+    @Singleton
+    @Provides
+    public SettingDao provideSettingDao(VirtualAssistantDb db) {
+        return db.settingDao();
+    }
+}

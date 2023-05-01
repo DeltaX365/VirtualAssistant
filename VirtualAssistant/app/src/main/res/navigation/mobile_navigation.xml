@@ -7,31 +7,31 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.vnsolution.virtualassistant.ui.dashboard.DashboardFragment"
+        android:name="vn.sttechnology.virtualassistant.ui.dashboard.DashboardFragment"
         android:label="@string/screen_dashboard"
         tools:layout="@layout/screen_dashboard" />
 
     <fragment
         android:id="@+id/navigation_places"
-        android:name="com.vnsolution.virtualassistant.ui.travel.TravelFragment"
+        android:name="vn.sttechnology.virtualassistant.ui.travel.TravelFragment"
         android:label="@string/screen_travels"
         tools:layout="@layout/screen_travel_dashboard" />
 
     <fragment
         android:id="@+id/navigation_apps"
-        android:name="com.vnsolution.virtualassistant.ui.apps.v1.PhoneAppsFragment"
+        android:name="vn.sttechnology.virtualassistant.ui.apps.v1.PhoneAppsFragment"
         android:label="@string/screen_apps"
         tools:layout="@layout/screen_app_list" />
 
     <fragment
         android:id="@+id/navigation_call_logs"
-        android:name="com.vnsolution.virtualassistant.ui.phonecall.v1.CallLogsFragment"
+        android:name="vn.sttechnology.virtualassistant.ui.phonecall.v1.CallLogsFragment"
         android:label="@string/screen_call_logs"
         tools:layout="@layout/screen_phone_call_list" />
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.vnsolution.virtualassistant.ui.settings.SettingFragment"
+        android:name="vn.sttechnology.virtualassistant.ui.settings.SettingFragment"
         android:label="@string/screen_settings"
         tools:layout="@layout/screen_setting" />
 </navigation>

@@ -1,0 +1,27 @@
+package vn.sttechnology.virtualassistant.ui.phonecall.v1;
+
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import vn.sttechnology.virtualassistant.R;
+import vn.sttechnology.virtualassistant.ui.common.OnRecyclerViewRowTouchListener;
+
+public class CallLogsViewHolder extends RecyclerView.ViewHolder {
+    public ImageView imageCallIcon;
+    public TextView textPhoneNumber;
+    public TextView textCallDate;
+    public TextView textCallDuration;
+    public OnRecyclerViewRowTouchListener onRecyclerViewRowTouchListener;
+
+    public CallLogsViewHolder(View view) {
+        super(view);
+
+        imageCallIcon = view.findViewById(R.id.call_icon);
+        textPhoneNumber = view.findViewById(R.id.phone_number);
+        textCallDate = view.findViewById(R.id.contact_date);
+        textCallDuration = view.findViewById(R.id.contact_duration);
+    }
+}

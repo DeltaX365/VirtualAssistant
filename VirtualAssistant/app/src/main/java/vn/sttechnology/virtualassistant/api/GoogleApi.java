@@ -1,0 +1,25 @@
+package vn.sttechnology.virtualassistant.api;
+
+import vn.sttechnology.virtualassistant.api.dto.GoogleMapNearByDto;
+import vn.sttechnology.virtualassistant.api.dto.GoogleMapPlaceDto;
+import vn.sttechnology.virtualassistant.api.dto.GoogleMapPlaceDetailDto;
+import vn.sttechnology.virtualassistant.api.dto.GoogleMapPlaceSearchDto;
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+
+public interface GoogleApi {
+    @GET("maps/api/geocode/json")
+    Call<GoogleMapPlaceDto> getPlaceByLocation(@Query(value = "latlng", encoded = false) String latlng);
+
+    @GET("maps/api/place/details/json")
+    Call<GoogleMapPlaceDetailDto> getPlaceDetail(@Query("place_id") String placeId);
+
+    @GET("maps/api/place/findplacefromtext/json")
+    Call<GoogleMapPlaceSearchDto> searchPlaceByAddress(@Query("input") String search, @Query("inputtype") String type, @Query("fields") String fields);
+
+    @GET("maps/api/place/nearbysearch/json")
+    Call<GoogleMapNearByDto> searchNearByLocation(@Query(value = "location", encoded = false) String location, @Query("rankby") String rankby);
+//    LiveData<ApiResponse<GoogleMapNearByDto>> searchNearByLocation(@Query(value = "location", encoded = false) String location, @Query("rankby") String rankby);
+}

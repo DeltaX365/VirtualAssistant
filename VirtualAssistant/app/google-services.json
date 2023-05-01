@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "292763891316",
-    "firebase_url": "https://virtual-assistant-70a1c.firebaseio.com",
-    "project_id": "virtual-assistant-70a1c",
-    "storage_bucket": "virtual-assistant-70a1c.appspot.com"
+    "project_number": "679823106144",
+    "project_id": "st-virtual-assistant",
+    "storage_bucket": "st-virtual-assistant.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:292763891316:android:b296591a3ef376b5f78321",
+        "mobilesdk_app_id": "1:679823106144:android:10253f0ba6c0f8ca1b2305",
         "android_client_info": {
-          "package_name": "com.vnsolution.virtualassistant"
+          "package_name": "vn.sttechnology.virtualassistant"
         }
       },
       "oauth_client": [
         {
-          "client_id": "292763891316-d3dqvusj7ibmuo4jfrca2f557eh25crv.apps.googleusercontent.com",
+          "client_id": "679823106144-4su04544kb5sdkov5s252e5hj9ka8o3q.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDV6uhL8CrV-ZMLyBhdBx58hC4kcpG76No"
+          "current_key": "AIzaSyAUQOIukM_BDQKQ21g3Ib-awgFjfCSQItk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "292763891316-d3dqvusj7ibmuo4jfrca2f557eh25crv.apps.googleusercontent.com",
+              "client_id": "679823106144-4su04544kb5sdkov5s252e5hj9ka8o3q.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
