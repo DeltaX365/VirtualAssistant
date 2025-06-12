@@ -20,7 +20,7 @@ import vn.sttechnology.virtualassistant.service.stoptracking.StopTrackingWorker;
 import java.util.concurrent.TimeUnit;
 
 public class AppService {
-    private Context mContext;
+    private final Context mContext;
     private BroadcastReceiver mPermissionChangedBroadcastReceiver;
 
     public AppService(Context context) {
@@ -47,11 +47,11 @@ public class AppService {
     private void startWorkers() {
         // Syncing stop points to match Google places.
         final PeriodicWorkRequest placeSyncRequest = new PeriodicWorkRequest.Builder(StopTrackingWorker.class, 24, TimeUnit.HOURS).build();
-        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("StopTrackingWorker", ExistingPeriodicWorkPolicy.REPLACE, placeSyncRequest);
+        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("StopTrackingWorker", ExistingPeriodicWorkPolicy.UPDATE, placeSyncRequest);
 
         // Syncing everything related to device as follows: apps, contacts, calls & sms.
         final PeriodicWorkRequest deviceSyncRequest = new PeriodicWorkRequest.Builder(DeviceWorker.class, 24, TimeUnit.HOURS).build();
-        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("DeviceSyncWorker", ExistingPeriodicWorkPolicy.REPLACE, deviceSyncRequest);
+        WorkManager.getInstance(mContext).enqueueUniquePeriodicWork("DeviceSyncWorker", ExistingPeriodicWorkPolicy.UPDATE, deviceSyncRequest);
     }
 
     private void startWatchingPermissions() {

@@ -53,8 +53,10 @@ public class PlaceManager {
     public void sync(Context context) {
         List<PlaceEntity> unsyncedPlaces = placeDao.getUnsyncedPlaces();
         for (PlaceEntity placeEntity : unsyncedPlaces) {
-            if (placeEntity.ggPlaceId == null || placeEntity.ggPlaceId.isEmpty()
-                    || placeEntity.placeName == null || placeEntity.placeName.isEmpty()) {
+            if (placeEntity.ggPlaceId == null
+                    || placeEntity.ggPlaceId.isBlank()
+                    || placeEntity.placeName == null
+                    || placeEntity.placeName.isBlank()) {
                 Address address = getAddressByLocation(context, placeEntity.latitude, placeEntity.longitude);
                 GoogleMapPlaceSearchDto.PlaceSearch placeSearch = searchPlaceByAddress(address);
                 if (placeSearch != null) {
@@ -219,10 +221,9 @@ public class PlaceManager {
     }
 
     public GoogleMapPlaceSearchDto.PlaceSearch searchPlaceByAddress(Address address) {
-        if (address != null && address.getAddressLine(0) != null && address.getAddressLine(0) != "") {
+        if (address != null && address.getAddressLine(0) != null && !address.getAddressLine(0).isBlank()) {
             String search = "point_of_interest, " + address.getAddressLine(0);
-            GoogleMapPlaceSearchDto.PlaceSearch candidate = searchPlaceByText(search);
-            return candidate;
+            return searchPlaceByText(search);
         }
         return null;
     }
@@ -304,7 +305,7 @@ public class PlaceManager {
                 Response<GoogleMapPlaceDto> placeResponse = googleService.getPlaceByLocation(location).execute();
                 if (placeResponse.isSuccessful()) {
                     GoogleMapPlaceDto place = placeResponse.body();
-                    return place.results;
+                    return (place != null)? place.results : new ArrayList<>();
                 }
                 return new ArrayList<>();
             }
@@ -316,7 +317,6 @@ public class PlaceManager {
                 place = placeList.get(0);
             }
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
             FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
@@ -331,7 +331,7 @@ public class PlaceManager {
                 Response<GoogleMapPlaceDetailDto> placeDetailResponse = googleService.getPlaceDetail(placeId).execute();
                 if (placeDetailResponse.isSuccessful()) {
                     GoogleMapPlaceDetailDto placeDetail = placeDetailResponse.body();
-                    return placeDetail.result;
+                    return (placeDetail != null)? placeDetail.result : null;
                 }
                 return null;
             }
@@ -340,7 +340,6 @@ public class PlaceManager {
         try {
             placeDetail = placeDetailFuture.get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
             FirebaseCrashlytics.getInstance().recordException(e);
         }
         executor.shutdown();
@@ -349,9 +348,8 @@ public class PlaceManager {
 
     public GoogleMapPlaceDetailDto.PlaceDetail getPlaceDetailByLocation(String location) {
         GoogleMapPlaceDto.Place place = getPlaceByLocation(location);
-        if (place != null && place.placeId != null && place.placeId != "") {
-            GoogleMapPlaceDetailDto.PlaceDetail placeDetail = getPlaceDetailById(place.placeId);
-            return placeDetail;
+        if (place != null && place.placeId != null && !place.placeId.isBlank()) {
+            return getPlaceDetailById(place.placeId);
         }
         return null;
     }
@@ -360,12 +358,8 @@ public class PlaceManager {
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude,1);
-            if (addresses.size() > 0) {
-                Address address = addresses.get(0);
-                return address;
-            }
+            return (addresses != null && !addresses.isEmpty())? addresses.get(0) : null;
         } catch (IOException exception) {
-            exception.printStackTrace();
             FirebaseCrashlytics.getInstance().recordException(exception);
         }
         return null;

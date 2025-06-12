@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 public class StopTrackingWorker extends Worker {
     private static boolean isProcessing;
-    private Context context;
+    private final Context context;
 
     @Inject
     public PlaceManager placeManager;
@@ -39,7 +39,6 @@ public class StopTrackingWorker extends Worker {
             placeManager.sync(context);
         }
         catch (Exception exception) {
-            exception.printStackTrace();
             FirebaseCrashlytics.getInstance().recordException(exception);
         }
         finally {

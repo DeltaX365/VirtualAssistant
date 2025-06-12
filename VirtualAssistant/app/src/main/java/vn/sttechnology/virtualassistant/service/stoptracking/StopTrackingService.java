@@ -40,6 +40,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -59,6 +60,7 @@ import vn.sttechnology.virtualassistant.util.PermissionUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -151,11 +153,9 @@ public class StopTrackingService extends Service {
         LoggingService.getInstance().log("StopTrackingService is starting...");
 
         //notification channel
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID, StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
+        NotificationChannel channel = new NotificationChannel(StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID, StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(channel);
         Notification notification = new NotificationCompat.Builder(this, StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID)
                 .setContentTitle(StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_TITLE)
                 .setContentText(StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_TEXT)
@@ -178,41 +178,44 @@ public class StopTrackingService extends Service {
         }
 
         //do heavy work on a background thread
-        if (intent != null) {
-            try {
-                switch (intent.getAction()) {
-                    case StopTrackingSetting.INTENT_ACTION_INITIAL:
+        try {
+            switch (Objects.requireNonNull(intent.getAction())) {
+                case StopTrackingSetting.INTENT_ACTION_INITIAL:
 //                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Initial service.");
-                        Toast.makeText(this, "STOP TRACKING INITIALIZED", Toast.LENGTH_LONG).show();
-                        StopPoint stopPoint = getStopPointFromCache();
-                        if (stopPoint == null) {
-                            processInitialRequest();
-                        } else {
-                            processMarkAsVisitedRequest();
-                        }
-                        break;
-                    case StopTrackingSetting.INTENT_ACTION_CHECK_IN:
-//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check in.");
-                        Toast.makeText(this, "STOP TRACKING CHECKED IN", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "STOP TRACKING INITIALIZED", Toast.LENGTH_LONG).show();
+                    StopPoint stopPoint = getStopPointFromCache();
+                    if (stopPoint == null) {
                         checkIn(true);
-                        break;
-                    case StopTrackingSetting.INTENT_ACTION_MARK_AS_VISITED:
-//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Mark as visited.");
-                        Toast.makeText(this, "STOP TRACKING MARKED AS VISITED", Toast.LENGTH_LONG).show();
+                        processInitialRequest();
+                    } else if (!stopPoint.isCheckedIn) {
                         processMarkAsVisitedRequest();
-                        break;
-                    case StopTrackingSetting.INTENT_ACTION_CHECK_OUT:
-//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check out.");
-                        Toast.makeText(this, "STOP TRACKING CHECKED OUT", Toast.LENGTH_LONG).show();
+                    } else {
                         processCheckOutRequest();
-                        break;
-                }
-                LoggingService.getInstance().log("StopTrackingService is finished with action: " + intent.getAction());
-                //stopSelf();
-            } catch (Exception e) {
-                LoggingService.getInstance().log("StopTrackingService is finished with exception: " + e.getMessage());
-                LoggingService.getInstance().recordException(e);
+                        checkIn(true);
+                        processInitialRequest();
+                    }
+                    break;
+                case StopTrackingSetting.INTENT_ACTION_CHECK_IN:
+//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check in.");
+                    Toast.makeText(this, "STOP TRACKING CHECKED IN", Toast.LENGTH_LONG).show();
+                    checkIn(true);
+                    break;
+                case StopTrackingSetting.INTENT_ACTION_MARK_AS_VISITED:
+//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Mark as visited.");
+                    Toast.makeText(this, "STOP TRACKING MARKED AS VISITED", Toast.LENGTH_LONG).show();
+                    processMarkAsVisitedRequest();
+                    break;
+                case StopTrackingSetting.INTENT_ACTION_CHECK_OUT:
+//                    NotificationUtils.sendNotification(this, "EVENT TRIGGER", "Check out.");
+                    Toast.makeText(this, "STOP TRACKING CHECKED OUT", Toast.LENGTH_LONG).show();
+                    processCheckOutRequest();
+                    break;
             }
+            LoggingService.getInstance().log("StopTrackingService is finished with action: " + intent.getAction());
+            //stopSelf();
+        } catch (Exception e) {
+            LoggingService.getInstance().log("StopTrackingService is finished with exception: " + e.getMessage());
+            LoggingService.getInstance().recordException(e);
         }
 
         return START_NOT_STICKY;
@@ -236,7 +239,7 @@ public class StopTrackingService extends Service {
     }
 
     private void processChainTasksRecurring(List<String> taskQueue, int taskIndex, List<String> taskResult) {
-        if (taskQueue == null || taskQueue.size() == 0 || taskIndex > taskQueue.size() - 1) return;
+        if (taskQueue == null || taskQueue.isEmpty() || taskIndex > taskQueue.size() - 1) return;
         String taskName = taskQueue.get(taskIndex);
 
         Task<Void> runningTask = null;
@@ -344,7 +347,7 @@ public class StopTrackingService extends Service {
         if (locationCallback == null) {
             locationCallback = new LocationCallback() {
                 @Override
-                public void onLocationResult(LocationResult locationResult) {
+                public void onLocationResult(@NonNull LocationResult locationResult) {
                     Location location = locationResult.getLastLocation();
                     if (location != null) {
                         fusedLocationClient.removeLocationUpdates(locationCallback);
@@ -503,11 +506,9 @@ public class StopTrackingService extends Service {
 
     private void confirmVisitedPlace(PlaceEntity visitedPlace) {
         // Create notification channel
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID, StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
+        NotificationChannel channel = new NotificationChannel(StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID, StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(channel);
 
         // Build notification
         int notifyId = (int) (Math.random() * 999999);
@@ -518,16 +519,14 @@ public class StopTrackingService extends Service {
             placeFormatted = visitedPlace.placeName + "\n" + visitedPlace.formattedAddress;
         }
 
-        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
-
         Intent travelConfirmYesIntent = new Intent(this, PlaceBroadcastReceiver.class);
         travelConfirmYesIntent.putExtra(StopTrackingSetting.NOTIFY_DETECTED_PLACE_DATA_PLACE_ID, visitedPlace.id);
         travelConfirmYesIntent.putExtra(StopTrackingSetting.NOTIFY_ID, notifyId);
-        PendingIntent travelConfirmPendingIntent = PendingIntent.getBroadcast(this,0, travelConfirmYesIntent, pendingIntentFlag);
+        PendingIntent travelConfirmPendingIntent = PendingIntent.getBroadcast(this,0, travelConfirmYesIntent, PendingIntent.FLAG_MUTABLE);
 
         Intent travelEditIntent = new Intent(this, TravelEditActivity.class);
         travelEditIntent.putExtra(StopTrackingSetting.NOTIFY_DETECTED_PLACE_DATA_PLACE_ID, visitedPlace.id);
-        PendingIntent travelEditPendingIntent = PendingIntent.getActivity(this,0, travelEditIntent, pendingIntentFlag);
+        PendingIntent travelEditPendingIntent = PendingIntent.getActivity(this,0, travelEditIntent, PendingIntent.FLAG_MUTABLE);
 
         Notification notification = new NotificationCompat.Builder(this, StopTrackingSetting.NOTIFY_FOREGROUND_SERVICE_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_hearing_24)
@@ -579,8 +578,7 @@ public class StopTrackingService extends Service {
         }
         Intent activityTransitionIntent = new Intent(this, ActivityTransitionBroadcastReceiver.class);
         activityTransitionIntent.setAction(ActivityTransitionBroadcastReceiver.INTENT_ACTION);
-        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
-        activityTransitionPendingIntent = PendingIntent.getBroadcast(this, 0, activityTransitionIntent, pendingIntentFlag);
+        activityTransitionPendingIntent = PendingIntent.getBroadcast(this, 0, activityTransitionIntent, PendingIntent.FLAG_MUTABLE);
         return activityTransitionPendingIntent;
     }
 
@@ -590,8 +588,7 @@ public class StopTrackingService extends Service {
             return geofencePendingIntent;
         }
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
-        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
-        geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, pendingIntentFlag);
+        geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_MUTABLE);
         return geofencePendingIntent;
     }
 
@@ -603,8 +600,7 @@ public class StopTrackingService extends Service {
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.INTENT_ACTION);
         intent.addCategory(StopTrackingSetting.INTENT_CATEGORY_ACTIVITY_TRANSITION);
-        int pendingIntentFlag = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
-        locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, pendingIntentFlag);
+        locationUpdatesPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_MUTABLE);
         return locationUpdatesPendingIntent;
     }
 
@@ -665,11 +661,10 @@ public class StopTrackingService extends Service {
     }
 
     private LocationRequest buildLocationUpdatesRequest() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(StopTrackingSetting.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(StopTrackingSetting.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return locationRequest;
+        return LocationRequest.create()
+                .setInterval(StopTrackingSetting.CONFIG_GEOLOCATION_INTERVAL_UPDATE_IN_MILLISECONDS)
+                .setFastestInterval(StopTrackingSetting.CONFIG_GEOLOCATION_FAST_INTERVAL_UPDATE_IN_MILLISECONDS)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY);
     }
 
     private void saveStopPointInCache(StopPoint stopPoint) {
@@ -678,7 +673,7 @@ public class StopTrackingService extends Service {
         Gson gson = new Gson();
         String stopPointString = gson.toJson(stopPoint);
         editor.putString("StopTrackingService.StopPoint", stopPointString);
-        editor.commit();
+        editor.apply();
     }
 
     private StopPoint getStopPointFromCache() {
@@ -692,7 +687,7 @@ public class StopTrackingService extends Service {
         SharedPreferences sharedPref = getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.remove("StopTrackingService.StopPoint");
-        editor.commit();
+        editor.apply();
     }
 
 //    private BroadcastReceiver registerBroadcastReceiver() {
@@ -719,7 +714,6 @@ public class StopTrackingService extends Service {
 //        }
 //    }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void simulateTransition() {
         Intent intent = new Intent(this, ActivityTransitionBroadcastReceiver.class);
         intent.setAction(ActivityTransitionBroadcastReceiver.INTENT_ACTION);
